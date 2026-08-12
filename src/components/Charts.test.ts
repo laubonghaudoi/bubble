@@ -3,6 +3,8 @@ import {
   buildMainChartOption,
   buildOverlayChartOption,
   buildOverlayUnion,
+  OVERLAY_CONFIG,
+  resolveChartPalette,
 } from './Charts';
 
 type LooseOption=Record<string,any>;
@@ -21,11 +23,15 @@ describe('chart option builders',()=>{
 
     expect(option.animation).toBe(false);
     expect(option.yAxis).toMatchObject({min:-15,max:5,interval:5});
+    expect(option.series[0]).toMatchObject({
+      lineStyle:{color:'#0064FA'},
+      itemStyle:{color:'#0064FA'},
+    });
     expect(markLines).toEqual(expect.arrayContaining([
       expect.objectContaining({
         yAxis:3,
-        lineStyle:expect.objectContaining({type:'dashed'}),
-        label:expect.objectContaining({formatter:expect.stringContaining('+3 bp')}),
+        lineStyle:expect.objectContaining({color:'#E51503',type:'dashed'}),
+        label:expect.objectContaining({color:'#E51503',formatter:expect.stringContaining('+3 bp')}),
       }),
     ]));
   });
@@ -88,5 +94,34 @@ describe('chart option builders',()=>{
     expect(option.series[0]).toMatchObject({name:'SOFR',data:[3.61,null,3.63],connectNulls:true});
     expect(option.series[1]).toMatchObject({name:'IORB',data:[null,3.65,null],connectNulls:true});
     expect(option.yAxis.axisLabel.formatter(3.65)).toBe('3.65%');
+  });
+
+  it('keeps the ordered overlay config and fallback canvas colours in one source of truth',()=>{
+    expect(OVERLAY_CONFIG).toEqual([
+      {id:'sofr',label:'SOFR',colour:'#0064FA',cssVariable:'--series-sofr'},
+      {id:'iorb',label:'IORB',colour:'#E51503',cssVariable:'--series-iorb'},
+      {id:'effr',label:'EFFR',colour:'#000000',cssVariable:'--series-effr'},
+      {id:'obfr',label:'OBFR',colour:'#338736',cssVariable:'--series-obfr'},
+      {id:'tgcr',label:'TGCR',colour:'#8A4A00',cssVariable:'--series-tgcr'},
+      {id:'bgcr',label:'BGCR',colour:'#767676',cssVariable:'--series-bgcr'},
+    ]);
+
+    const palette=resolveChartPalette();
+    const option=buildOverlayChartOption({
+      series:Object.fromEntries(OVERLAY_CONFIG.map(({id})=>[
+        id,[{date:'2026-08-10',value:3.65}],
+      ])),
+      selected:OVERLAY_CONFIG.map(({id})=>id),
+      palette,
+    }) as LooseOption;
+
+    expect(option.series.map((item:LooseOption)=>[item.name,item.lineStyle.color])).toEqual([
+      ['SOFR','#0064FA'],
+      ['IORB','#E51503'],
+      ['EFFR','#000000'],
+      ['OBFR','#338736'],
+      ['TGCR','#8A4A00'],
+      ['BGCR','#767676'],
+    ]);
   });
 });

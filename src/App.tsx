@@ -5,32 +5,23 @@ import {
   loadDashboardData,
   type DashboardData,
   type RangeKey,
-  type Theme,
 } from './dashboard';
 
 const baseUrl = import.meta.env.BASE_URL;
 
-function initialTheme(): Theme {
-  if (typeof window === 'undefined') return 'light';
-  try {
-    const stored = window.localStorage.getItem('liq-theme');
-    return stored === 'dark' || stored === 'light' ? stored : 'light';
-  } catch {
-    return 'light';
-  }
-}
-
-const seededTheme = initialTheme();
-if (typeof document !== 'undefined') document.documentElement.dataset.theme = seededTheme;
-
 export default function App() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [error, setError] = useState('');
-  const [theme, setTheme] = useState<Theme>(seededTheme);
   const [main, setMain] = useState('sofr_iorb_spread');
   const [range, setRange] = useState<RangeKey>('3M');
   const [overlay, setOverlay] = useState<Record<string, boolean>>({ ...DEFAULT_OVERLAY });
   const [drawer, setDrawer] = useState<'sources' | string | null>(null);
+
+  useEffect(() => {
+    document.documentElement.removeAttribute('data-theme');
+    document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')?.setAttribute('content', '#000000');
+    try { window.localStorage.removeItem('liq-theme'); } catch { /* storage can be unavailable */ }
+  }, []);
 
   useEffect(() => {
     let live = true;
@@ -42,13 +33,6 @@ export default function App() {
     return () => { live = false; };
   }, []);
 
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-    meta?.setAttribute('content', theme === 'dark' ? '#000000' : '#ffffff');
-    try { window.localStorage.setItem('liq-theme', theme); } catch { /* storage can be unavailable */ }
-  }, [theme]);
-
   if (error) return <StateScreen error={error} />;
   if (!data) return <StateScreen />;
 
@@ -58,17 +42,11 @@ export default function App() {
       catalog={data.catalog}
       catalogError={data.catalogError ?? ''}
       series={data.series}
-      theme={theme}
       main={main}
       range={range}
       overlay={overlay}
       drawer={drawer}
       baseUrl={baseUrl}
-      onThemeToggle={() => setTheme((current) => {
-        const next = current === 'dark' ? 'light' : 'dark';
-        document.documentElement.dataset.theme = next;
-        return next;
-      })}
       onMain={setMain}
       onRange={setRange}
       onOverlay={(id) => setOverlay((current) => ({ ...current, [id]: !current[id] }))}

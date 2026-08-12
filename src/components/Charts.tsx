@@ -3,11 +3,21 @@ import ReactECharts from 'echarts-for-react';
 import type {EChartsOption} from 'echarts';
 import type {Point} from '../types';
 
-export type ChartTheme='light'|'dark';
+export const OVERLAY_CONFIG=[
+  {id:'sofr',label:'SOFR',colour:'#0064FA',cssVariable:'--series-sofr'},
+  {id:'iorb',label:'IORB',colour:'#E51503',cssVariable:'--series-iorb'},
+  {id:'effr',label:'EFFR',colour:'#000000',cssVariable:'--series-effr'},
+  {id:'obfr',label:'OBFR',colour:'#338736',cssVariable:'--series-obfr'},
+  {id:'tgcr',label:'TGCR',colour:'#8A4A00',cssVariable:'--series-tgcr'},
+  {id:'bgcr',label:'BGCR',colour:'#767676',cssVariable:'--series-bgcr'},
+] as const satisfies ReadonlyArray<{id:string;label:string;colour:string;cssVariable:string}>;
+
+type OverlayId=(typeof OVERLAY_CONFIG)[number]['id'];
 
 export interface ChartPalette{
-  accent:string;
-  rise:string;
+  main:string;
+  action:string;
+  threshold:string;
   ink:string;
   muted:string;
   faint:string;
@@ -20,45 +30,44 @@ export interface ChartPalette{
   area:string;
   areaSelected:string;
   areaMuted:string;
-  secondary:string;
-  watch:string;
-  unavailable:string;
+  orange:string;
+  green:string;
+  red:string;
   sparkOff:string;
+  series:Record<OverlayId,string>;
 }
 
-const FALLBACK_PALETTES:Record<ChartTheme,ChartPalette>={
-  light:{
-    accent:'#0047c7',rise:'#c00000',ink:'#000000',muted:'#4a4f56',faint:'#4a4f56',
-    gridX:'#f2f3f5',gridY:'#e6e8ec',zero:'#8b9198',panel:'#ffffff',hover:'#f2f4f7',
-    button:'#9aa0a8',area:'rgba(0,71,199,.08)',areaSelected:'rgba(0,71,199,.13)',
-    areaMuted:'rgba(0,71,199,.05)',secondary:'#6a6f76',watch:'#6a6f76',
-    unavailable:'#6a6f76',sparkOff:'#a8adb4',
-  },
-  dark:{
-    accent:'#4d9bff',rise:'#ff5a52',ink:'#ffffff',muted:'#9aa0a8',faint:'#9aa0a8',
-    gridX:'#101216',gridY:'#1c1f24',zero:'#4a4f57',panel:'#0a0b0d',hover:'#14171b',
-    button:'#4a4f57',area:'rgba(77,155,255,.15)',areaSelected:'rgba(77,155,255,.22)',
-    areaMuted:'rgba(77,155,255,.07)',secondary:'#9aa0a8',watch:'#9aa0a8',
-    unavailable:'#7a8088',sparkOff:'#4a5058',
-  },
+const FALLBACK_PALETTE:ChartPalette={
+  main:'#0064FA',action:'#0064FA',threshold:'#E51503',ink:'#000000',muted:'#545454',
+  faint:'#767676',gridX:'#F8F8F8',gridY:'#EFEFEF',zero:'#767676',panel:'#FFFFFF',
+  hover:'#F8F8F8',button:'#B3B3B3',area:'rgba(0,100,250,.08)',
+  areaSelected:'rgba(0,100,250,.16)',areaMuted:'rgba(0,100,250,.04)',
+  orange:'#8A4A00',green:'#338736',red:'#E51503',sparkOff:'#B3B3B3',
+  series:Object.fromEntries(OVERLAY_CONFIG.map(({id,colour})=>[id,colour])) as Record<OverlayId,string>,
 };
 
-const CSS_VARIABLES:Record<keyof ChartPalette,string>={
-  accent:'--accent',rise:'--rise',ink:'--ink',muted:'--muted',faint:'--faint',
+type CorePaletteKey=Exclude<keyof ChartPalette,'series'>;
+const CSS_VARIABLES:Record<CorePaletteKey,string>={
+  main:'--action',action:'--action',threshold:'--negative-fg',ink:'--ink',muted:'--chart-muted',faint:'--faint',
   gridX:'--gridx',gridY:'--gridy',zero:'--zero',panel:'--panel',hover:'--hover',
-  button:'--btn2',area:'--area',areaSelected:'--area2',areaMuted:'--area3',
-  secondary:'--s3',watch:'--watch',unavailable:'--unavail',sparkOff:'--sparkoff',
+  button:'--btn',area:'--area-main',areaSelected:'--area-selected',areaMuted:'--area-muted',
+  orange:'--warning-fg',green:'--positive-fg',red:'--negative-fg',sparkOff:'--sparkoff',
 };
 
 /** Resolve CSS custom properties before handing colours to ECharts' canvas renderer. */
-export function resolveChartPalette(theme:ChartTheme):ChartPalette{
-  const fallback=FALLBACK_PALETTES[theme];
-  if(typeof window==='undefined'||typeof document==='undefined')return {...fallback};
+export function resolveChartPalette():ChartPalette{
+  if(typeof window==='undefined'||typeof document==='undefined')return {
+    ...FALLBACK_PALETTE,series:{...FALLBACK_PALETTE.series},
+  };
   const computed=window.getComputedStyle(document.documentElement);
-  return (Object.keys(CSS_VARIABLES) as Array<keyof ChartPalette>).reduce((out,key)=>{
-    out[key]=computed.getPropertyValue(CSS_VARIABLES[key]).trim()||fallback[key];
+  const core=(Object.keys(CSS_VARIABLES) as CorePaletteKey[]).reduce((out,key)=>{
+    out[key]=computed.getPropertyValue(CSS_VARIABLES[key]).trim()||FALLBACK_PALETTE[key];
     return out;
-  },{} as ChartPalette);
+  },{} as Omit<ChartPalette,'series'>);
+  const series=Object.fromEntries(OVERLAY_CONFIG.map(({id,colour,cssVariable})=>[
+    id,computed.getPropertyValue(cssVariable).trim()||colour,
+  ])) as Record<OverlayId,string>;
+  return {...core,series};
 }
 
 type SeriesFileLike={observations:readonly Point[];label?:string};
@@ -79,16 +88,6 @@ export interface OverlayValuesUnion{
 
 export type OverlayData=SeriesMap|OverlayUnion|OverlayValuesUnion;
 export type SelectedSeries=readonly string[]|ReadonlySet<string>|Readonly<Record<string,boolean|0|1>>;
-
-type OverlayColourKey='accent'|'rise'|'ink'|'secondary'|'watch'|'unavailable';
-export const OVERLAY_CONFIG=[
-  {id:'sofr',label:'SOFR',colour:'accent'},
-  {id:'iorb',label:'IORB',colour:'rise'},
-  {id:'effr',label:'EFFR',colour:'ink'},
-  {id:'obfr',label:'OBFR',colour:'secondary'},
-  {id:'tgcr',label:'TGCR',colour:'watch'},
-  {id:'bgcr',label:'BGCR',colour:'unavailable'},
-] as const satisfies ReadonlyArray<{id:string;label:string;colour:OverlayColourKey}>;
 
 const isFiniteNumber=(value:unknown):value is number=>typeof value==='number'&&Number.isFinite(value);
 
@@ -258,13 +257,12 @@ export interface MainChartOptionInput{
   label:string;
   unit:string;
   points:ChartPoints;
-  theme?:ChartTheme;
   thresholdBp?:number;
   palette?:ChartPalette;
 }
 
 export function buildMainChartOption({
-  metricId,label,unit,points,theme='light',thresholdBp=3,palette=FALLBACK_PALETTES[theme],
+  metricId,label,unit,points,thresholdBp=3,palette=FALLBACK_PALETTE,
 }:MainChartOptionInput):EChartsOption{
   const ordered=orderedPoints(pointsFrom(points));
   const dates=ordered.map(point=>point.date);
@@ -290,8 +288,8 @@ export function buildMainChartOption({
     thresholdBp>=bounds.min&&thresholdBp<=bounds.max){
     markLines.push({
       yAxis:thresholdBp,
-      label:{show:true,formatter:`操作觀察線 ${signedThreshold(thresholdBp)}`,position:'insideEndTop',color:palette.rise,fontSize:11},
-      lineStyle:{color:palette.rise,width:1,type:'dashed'},
+      label:{show:true,formatter:`操作觀察線 ${signedThreshold(thresholdBp)}`,position:'insideEndTop',color:palette.threshold,fontSize:11},
+      lineStyle:{color:palette.threshold,width:1,type:'dashed'},
     });
   }
 
@@ -341,13 +339,13 @@ export function buildMainChartOption({
     },
     series:[{
       name:label,type:'line',data:values,connectNulls:false,showSymbol:false,
-      lineStyle:{color:palette.accent,width:1.6},
-      itemStyle:{color:palette.accent},
+      lineStyle:{color:palette.main,width:1.6},
+      itemStyle:{color:palette.main},
       areaStyle:{color:palette.area},
       emphasis:{focus:'series'},
       markPoint:lastIndex>=0?{
         silent:true,symbol:'circle',symbolSize:6,label:{show:false},
-        itemStyle:{color:palette.accent},
+        itemStyle:{color:palette.main},
         data:[{coord:[dates[lastIndex],values[lastIndex]]}],
       }:undefined,
       markLine:markLines.length?{silent:true,symbol:['none','none'],data:markLines}:undefined,
@@ -364,28 +362,27 @@ function selectedSet(selected:SelectedSeries):Set<string>{
 export interface OverlayChartOptionInput{
   series:OverlayData;
   selected:SelectedSeries;
-  theme?:ChartTheme;
   palette?:ChartPalette;
 }
 
 export function buildOverlayChartOption({
-  series,selected,theme='light',palette=FALLBACK_PALETTES[theme],
+  series,selected,palette=FALLBACK_PALETTE,
 }:OverlayChartOptionInput):EChartsOption{
   const union=normaliseOverlayData(series);
   const enabled=selectedSet(selected);
-  const configById=new Map<string,{id:string;label:string;colour:OverlayColourKey}>(
+  const configById=new Map<string,{id:string;label:string;colour:string;cssVariable:string}>(
     OVERLAY_CONFIG.map(item=>[item.id,item]),
   );
   const knownIds=OVERLAY_CONFIG.map(item=>item.id).filter(id=>id in union.series);
   const unknownIds=Object.keys(union.series).filter(id=>!configById.has(id)).sort();
   const ids=[...knownIds,...unknownIds].filter(id=>enabled.has(id));
-  const greyKeys:OverlayColourKey[]=['secondary','watch','unavailable'];
+  const fallbackColours=[palette.faint,palette.orange,palette.button];
 
   const lineSeries=ids.map((id,index)=>{
     const config=configById.get(id)??{
-      id,label:id.toUpperCase(),colour:greyKeys[index%greyKeys.length],
+      id,label:id.toUpperCase(),colour:fallbackColours[index%fallbackColours.length],cssVariable:'',
     };
-    const colour=palette[config.colour];
+    const colour=id in palette.series?palette.series[id as OverlayId]:config.colour;
     return {
       name:config.label,type:'line',data:union.series[id],connectNulls:true,showSymbol:false,
       lineStyle:{color:colour,width:1.4},itemStyle:{color:colour},
@@ -437,17 +434,16 @@ export interface MainMetricChartProps{
   label:string;
   unit:string;
   points:ChartPoints;
-  theme:ChartTheme;
   thresholdBp?:number;
 }
 
 export function MainMetricChart({
-  metricId,label,unit,points,theme,thresholdBp=3,
+  metricId,label,unit,points,thresholdBp=3,
 }:MainMetricChartProps){
-  const palette=useMemo(()=>resolveChartPalette(theme),[theme]);
+  const palette=useMemo(()=>resolveChartPalette(),[]);
   const option=useMemo(()=>buildMainChartOption({
-    metricId,label,unit,points,theme,thresholdBp,palette,
-  }),[metricId,label,unit,points,theme,thresholdBp,palette]);
+    metricId,label,unit,points,thresholdBp,palette,
+  }),[metricId,label,unit,points,thresholdBp,palette]);
   return <div className="metric-chart metric-chart--main" style={{width:'100%',height:'100%',minHeight:0}}>
     <ReactECharts option={option} notMerge lazyUpdate style={{width:'100%',height:'100%'}}/>
   </div>;
@@ -456,13 +452,12 @@ export function MainMetricChart({
 export interface RateOverlayChartProps{
   series:OverlayData;
   selected:SelectedSeries;
-  theme:ChartTheme;
 }
 
-export function RateOverlayChart({series,selected,theme}:RateOverlayChartProps){
-  const palette=useMemo(()=>resolveChartPalette(theme),[theme]);
-  const option=useMemo(()=>buildOverlayChartOption({series,selected,theme,palette}),[
-    series,selected,theme,palette,
+export function RateOverlayChart({series,selected}:RateOverlayChartProps){
+  const palette=useMemo(()=>resolveChartPalette(),[]);
+  const option=useMemo(()=>buildOverlayChartOption({series,selected,palette}),[
+    series,selected,palette,
   ]);
   return <div className="metric-chart metric-chart--overlay" style={{width:'100%',height:'100%',minHeight:0}}>
     <ReactECharts option={option} notMerge lazyUpdate style={{width:'100%',height:'100%'}}/>
@@ -520,11 +515,11 @@ export function Sparkline({points,selected,label}:SparklineProps){
     <title>{summary}</title>
     {segments.map((segment,index)=><path
       key={`area-${index}`} d={segment.area}
-      fill={selected?'var(--area2)':'var(--area3)'} stroke="none"
+      fill={selected?'var(--area-selected)':'var(--area-muted)'} stroke="none"
     />)}
     {segments.map((segment,index)=><path
       key={`line-${index}`} d={segment.line} fill="none"
-      stroke={selected?'var(--accent)':'var(--sparkoff)'} strokeWidth="1.25"
+      stroke={selected?'var(--action)':'var(--sparkoff)'} strokeWidth="1.25"
       vectorEffect="non-scaling-stroke"
     />)}
   </svg>;

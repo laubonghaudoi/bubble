@@ -1,6 +1,5 @@
 import type { CatalogMetric, Point, Snapshot, Status } from './types';
 
-export type Theme = 'light' | 'dark';
 export type RangeKey = '1M' | '3M' | '1Y' | 'MAX';
 
 export interface SeriesFile {
@@ -93,15 +92,6 @@ export const SERIES_IDS = [
   'tga_weekly_h41',
   'reserve_balances',
   'fed_total_assets',
-] as const;
-
-export const OVERLAY_CONFIG = [
-  { id: 'sofr', label: 'SOFR', color: 'var(--accent)' },
-  { id: 'iorb', label: 'IORB', color: 'var(--rise)' },
-  { id: 'effr', label: 'EFFR', color: 'var(--ink)' },
-  { id: 'obfr', label: 'OBFR', color: 'var(--s3)' },
-  { id: 'tgcr', label: 'TGCR', color: 'var(--watch)' },
-  { id: 'bgcr', label: 'BGCR', color: 'var(--unavail)' },
 ] as const;
 
 export const DEFAULT_OVERLAY: Readonly<Record<string, boolean>> = {

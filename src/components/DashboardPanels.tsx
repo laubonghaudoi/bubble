@@ -6,13 +6,13 @@ import {
   useRef,
 } from 'react';
 import type { CatalogMetric, Snapshot, Source } from '../types';
-import type { RangeKey, SeriesMap, Theme } from '../dashboard';
+import type { RangeKey, SeriesMap } from '../dashboard';
 import {
   getGlobalLatestDate,
   THRESHOLD_BP,
   windowPoints,
 } from '../dashboard';
-import { MainMetricChart, RateOverlayChart, Sparkline } from './Charts';
+import { MainMetricChart, OVERLAY_CONFIG, RateOverlayChart, Sparkline } from './Charts';
 
 const SWITCHES = [
   { id: 'liquidity_fuel', number: '01', kicker: 'LIQUIDITY FUEL', title: '流動性燃料' },
@@ -56,17 +56,8 @@ const MAIN_TABS = [
   ['fed_total_assets', 'WALCL'],
 ] as const;
 
-const OVERLAY_SERIES = [
-  ['sofr', 'SOFR'],
-  ['iorb', 'IORB'],
-  ['effr', 'EFFR'],
-  ['obfr', 'OBFR'],
-  ['tgcr', 'TGCR'],
-  ['bgcr', 'BGCR'],
-] as const;
-
 const BALANCE_IDS = ['fed_total_assets', 'reserve_balances', 'tga_daily', 'tga_weekly_h41'] as const;
-const BALANCE_COLORS = ['var(--accent)', 'var(--bar2)', 'var(--watch)', 'var(--bar4)'];
+const BALANCE_COLORS = ['var(--balance-1)', 'var(--balance-2)', 'var(--balance-3)', 'var(--balance-4)'];
 const RANGES: RangeKey[] = ['1M', '3M', '1Y', 'MAX'];
 
 const STATUS_TEXT: Record<string, string> = {
@@ -125,22 +116,22 @@ function deltaClass(value: number | null | undefined) {
   return value > 0 ? 'is-positive' : 'is-negative';
 }
 
-function statusTone(status: string) {
-  if (['normal', 'ample', 'neutral', 'ok'].includes(status)) return 'accent';
-  if (['watch', 'elevated', 'stale', 'not_released', 'manual_update_due'].includes(status)) return 'rise';
-  if (['tightening', 'warning', 'stress', 'error'].includes(status)) return 'stress';
+type StatusTone = 'positive' | 'neutral' | 'warning' | 'negative' | 'unavailable';
+
+function statusTone(status: string): StatusTone {
+  if (['normal', 'ample', 'ok'].includes(status)) return 'positive';
+  if (status === 'neutral') return 'neutral';
+  if (['watch', 'elevated', 'stale', 'not_released', 'manual_update_due'].includes(status)) return 'warning';
+  if (['tightening', 'warning', 'stress', 'error'].includes(status)) return 'negative';
   return 'unavailable';
 }
 
-function signalColor(status: string) {
+function statusStyle(status: string): CSSProperties {
   const tone = statusTone(status);
-  return tone === 'accent'
-    ? 'var(--accent)'
-    : tone === 'rise'
-      ? 'var(--rise)'
-      : tone === 'stress'
-        ? 'var(--stress)'
-        : 'var(--unavail)';
+  return {
+    '--status-color': `var(--${tone})`,
+    '--status-fg': `var(--${tone}-fg)`,
+  } as CSSProperties;
 }
 
 function updateStamp(value: string) {
@@ -150,25 +141,22 @@ function updateStamp(value: string) {
 }
 
 function Badge({ status }: { status: string }) {
-  return <span className={`badge badge-${status}`} data-status={status}>{STATUS_TEXT[status] ?? status}</span>;
+  return <span className={`badge badge-${status}`} data-status={status} style={statusStyle(status)}>{STATUS_TEXT[status] ?? status}</span>;
 }
 
 interface StatusBarProps {
   snapshot: Snapshot;
-  theme: Theme;
-  onThemeToggle: () => void;
   onOpenSources: () => void;
 }
 
-function StatusBar({ snapshot, theme, onThemeToggle, onOpenSources }: StatusBarProps) {
+function StatusBar({ snapshot, onOpenSources }: StatusBarProps) {
   const total = Object.keys(snapshot.sources).length;
-  const healthTone = snapshot.source_health.ok === total
-    ? 'var(--accent)'
+  const healthTone = total > 0 && snapshot.source_health.ok === total
+    ? 'var(--positive)'
     : snapshot.source_health.ok > 0
-      ? 'var(--rise)'
-      : 'var(--stress)';
+      ? 'var(--warning)'
+      : 'var(--negative)';
   const overall = snapshot.overall_status || 'unavailable';
-  const color = signalColor(overall);
   return (
     <header className="status-bar">
       <div className="brand"><span className="brand-mark">USD·LIQ</span>
@@ -181,10 +169,7 @@ function StatusBar({ snapshot, theme, onThemeToggle, onOpenSources }: StatusBarP
           SRC <strong>{snapshot.source_health.ok}/{total}</strong>
           <span className="health-dot" style={{ '--health-color': healthTone } as CSSProperties} aria-hidden="true" />
         </button>
-        <span className="overall-pill" style={{ '--status-color': color } as CSSProperties}>{overall.toUpperCase()}</span>
-        <button className="theme-toggle" type="button" onClick={onThemeToggle} aria-label={`切換至${theme === 'dark' ? '淺色' : '深色'}主題`}>
-          {theme === 'dark' ? 'LIGHT' : 'DARK'}
-        </button>
+        <span className="overall-pill" style={statusStyle(overall)}>{overall.toUpperCase()}</span>
       </div>
     </header>
   );
@@ -196,8 +181,7 @@ function SwitchStrip({ snapshot }: { snapshot: Snapshot }) {
       {SWITCHES.map((config) => {
         const value = snapshot.switches[config.id];
         const score = Math.max(0, Math.min(4, value?.score ?? 0));
-        const color = signalColor(value?.status ?? 'unavailable');
-        const style = { '--status-color': color } as CSSProperties;
+        const style = statusStyle(value?.status ?? 'unavailable');
         return (
           <article className="switch-card" key={config.id} style={style}>
             <div className="switch-head">
@@ -270,20 +254,19 @@ interface ChartPanelProps {
   main: string;
   range: RangeKey;
   overlay: Record<string, boolean>;
-  theme: Theme;
   onMain: (id: string) => void;
   onRange: (range: RangeKey) => void;
   onOverlay: (id: string) => void;
 }
 
-function ChartPanel({ snapshot, series, main, range, overlay, theme, onMain, onRange, onOverlay }: ChartPanelProps) {
+function ChartPanel({ snapshot, series, main, range, overlay, onMain, onRange, onOverlay }: ChartPanelProps) {
   const globalLatest = getGlobalLatestDate(series);
   const metric = snapshot.metrics[main] ?? snapshot.metrics.sofr_iorb_spread;
   const points = windowPoints(series[main]?.observations ?? metric.short_series ?? [], range, globalLatest);
   const overlaySeries = useMemo(() => Object.fromEntries(
-    OVERLAY_SERIES
-      .filter(([id]) => overlay[id])
-      .map(([id]) => [id, windowPoints(series[id]?.observations ?? snapshot.metrics[id]?.short_series ?? [], range, globalLatest)]),
+    OVERLAY_CONFIG
+      .filter(({ id }) => overlay[id])
+      .map(({ id }) => [id, windowPoints(series[id]?.observations ?? snapshot.metrics[id]?.short_series ?? [], range, globalLatest)]),
   ), [globalLatest, overlay, range, series, snapshot.metrics]);
   const start = points[0]?.date ?? '—';
   const end = points.at(-1)?.date ?? '—';
@@ -308,21 +291,18 @@ function ChartPanel({ snapshot, series, main, range, overlay, theme, onMain, onR
         <div className="readout-meta"><span>{start} → {end} · {points.length} pts</span><span>HOVER 睇每日數值</span></div>
       </div>
       <div className="main-chart">
-        <MainMetricChart metricId={main} label={metric.label} unit={metric.unit} points={points} theme={theme} thresholdBp={THRESHOLD_BP} />
+        <MainMetricChart metricId={main} label={metric.label} unit={metric.unit} points={points} thresholdBp={THRESHOLD_BP} />
       </div>
       <div className="overlay-toolbar">
         <span className="overlay-title">OVERLAY · 隔夜利率</span>
-        {OVERLAY_SERIES.map(([id, label]) => {
+        {OVERLAY_CONFIG.map(({ id, label, cssVariable }) => {
           const item = snapshot.metrics[id];
           return (
             <button
               type="button"
               key={id}
               className={`overlay-toggle${overlay[id] ? '' : ' is-off'}`}
-              style={{ '--series-color': ({
-                sofr: 'var(--accent)', iorb: 'var(--rise)', effr: 'var(--ink)',
-                obfr: 'var(--s3)', tgcr: 'var(--watch)', bgcr: 'var(--unavail)',
-              } as Record<string, string>)[id] } as CSSProperties}
+              style={{ '--series-color': `var(${cssVariable})` } as CSSProperties}
               aria-label={`${label} 疊加序列`}
               aria-pressed={Boolean(overlay[id])}
               onClick={() => onOverlay(id)}
@@ -333,7 +313,7 @@ function ChartPanel({ snapshot, series, main, range, overlay, theme, onMain, onR
         })}
       </div>
       <div className="overlay-chart">
-        <RateOverlayChart series={overlaySeries} selected={overlay} theme={theme} />
+        <RateOverlayChart series={overlaySeries} selected={overlay} />
       </div>
     </section>
   );
@@ -364,7 +344,7 @@ function ReadRail({ snapshot, catalog, onMetric }: { snapshot: Snapshot; catalog
           if (!item) return null;
           return (
             <div className="balance-row" key={id}>
-              <div className="balance-row-head"><span className="balance-label">{item.label}</span><strong className="balance-value">{formatMetricValue(item.value, item.unit)}</strong><b className={`balance-delta ${item.delta_1d == null ? 'is-missing' : item.delta_1d > 0 ? 'is-positive' : 'is-negative'}`}>{formatDelta(item.delta_1d, item.unit)}</b></div>
+              <div className="balance-row-head"><span className="balance-label">{item.label}</span><strong className="balance-value">{formatMetricValue(item.value, item.unit)}</strong><b className={`balance-delta ${deltaClass(item.delta_1d)}`}>{formatDelta(item.delta_1d, item.unit)}</b></div>
               <div className="balance-track"><span className="balance-fill" style={{ width: `${Math.max(0, ((item.value ?? 0) / maxBalance) * 100)}%`, '--bar-color': BALANCE_COLORS[index] } as CSSProperties} /></div>
               <small className="balance-meta">as-of {item.as_of ?? '—'} · {id === 'tga_daily' ? 'daily' : 'weekly'}</small>
             </div>
@@ -401,9 +381,9 @@ function FooterTicker({ snapshotUrl, onSources }: { snapshotUrl: string; onSourc
 
 function Provenance({ snapshot }: { snapshot: Snapshot }) {
   const legend = [
-    ['accent', 'OK / 正常', '官方來源已更新，數值可用。'],
-    ['watch', 'WATCH / 過期', '數值存在但過期或待人工更新。'],
-    ['stress', 'STRESS / 缺失', '抓取錯誤或需要付費供應商。'],
+    ['positive', 'OK / 正常', '官方來源已更新，數值可用。'],
+    ['warning', 'WATCH / 過期', '數值存在但過期或待人工更新。'],
+    ['negative', 'STRESS / 缺失', '抓取錯誤或需要付費供應商。'],
     ['unavailable', 'NOT WIRED', '尚未接通，永不以零代替。'],
   ];
   return (
@@ -502,29 +482,27 @@ export interface DashboardProps {
   catalog: CatalogMetric[];
   catalogError: string;
   series: SeriesMap;
-  theme: Theme;
   main: string;
   range: RangeKey;
   overlay: Record<string, boolean>;
   drawer: 'sources' | string | null;
   baseUrl: string;
-  onThemeToggle: () => void;
   onMain: (id: string) => void;
   onRange: (range: RangeKey) => void;
   onOverlay: (id: string) => void;
   onDrawer: (mode: 'sources' | string | null) => void;
 }
 
-export function Dashboard({ snapshot, catalog, catalogError, series, theme, main, range, overlay, drawer, baseUrl, onThemeToggle, onMain, onRange, onOverlay, onDrawer }: DashboardProps) {
+export function Dashboard({ snapshot, catalog, catalogError, series, main, range, overlay, drawer, baseUrl, onMain, onRange, onOverlay, onDrawer }: DashboardProps) {
   const openSources = () => onDrawer('sources');
   return (
     <div className="app-shell">
       <div className="deck">
-        <StatusBar snapshot={snapshot} theme={theme} onThemeToggle={onThemeToggle} onOpenSources={openSources} />
+        <StatusBar snapshot={snapshot} onOpenSources={openSources} />
         <SwitchStrip snapshot={snapshot} />
         <main className="body-grid">
           <LiveTape snapshot={snapshot} series={series} selected={main} onSelect={onMain} />
-          <ChartPanel snapshot={snapshot} series={series} main={main} range={range} overlay={overlay} theme={theme} onMain={onMain} onRange={onRange} onOverlay={onOverlay} />
+          <ChartPanel snapshot={snapshot} series={series} main={main} range={range} overlay={overlay} onMain={onMain} onRange={onRange} onOverlay={onOverlay} />
           <ReadRail snapshot={snapshot} catalog={catalog} onMetric={onDrawer} />
         </main>
         <FooterTicker snapshotUrl={`${baseUrl}data/snapshot.json`} onSources={openSources} />
