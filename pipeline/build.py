@@ -21,7 +21,6 @@ LEGACY_SERIES_IDS: dict[str, str] = {
     "on_rrp_accepted": "on_rrp",
     "srf_accepted": "srf_usage",
     "vix_vix3m_term_structure_proxy": "vix_curve",
-    "cftc_leveraged_funds_positioning_proxy": "cta_proxy",
     "cross_asset_correlation": "cross_asset_corr",
     "put_call_vol_skew": "put_call_skew",
     "spy_holdings_top10_weight_proxy": "sp500_top10_weight",
@@ -114,7 +113,7 @@ class SeriesState:
     health: str
     freshness: str
     last_success_at: str | None
-    last_attempt_at: str
+    last_attempt_at: str | None
     failure_reason: str | None = None
     released_at: str | None = None
     updated_at: str | None = None
@@ -274,10 +273,14 @@ def changes_for(points: Sequence[Mapping[str, Any]], frequency: str) -> dict[str
         "one_observation": one,
         "five_observations": five,
         "twenty_observations": twenty,
+        "eight_weeks": None,
+        "twelve_weeks": None,
     }
     if frequency == "weekly":
         output["one_week"] = one
         output["four_weeks"] = round(values[-1] - values[-5], 6) if len(values) >= 5 else None
+        output["eight_weeks"] = round(values[-1] - values[-9], 6) if len(values) >= 9 else None
+        output["twelve_weeks"] = round(values[-1] - values[-13], 6) if len(values) >= 13 else None
     if frequency == "monthly":
         output["one_month"] = one
     if frequency == "quarterly":
@@ -449,6 +452,7 @@ def series_record(metric: Mapping[str, Any], state: SeriesState | None) -> dict[
         "observation_date": metric["observation_date"],
         "released_at": metric["released_at"],
         "updated_at": metric["updated_at"],
+        "expected_next_update": metric["expected_next_update"],
         "source": metric["source"],
         "observations": observations,
     }

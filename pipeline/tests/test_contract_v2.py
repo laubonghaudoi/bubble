@@ -29,6 +29,106 @@ from pipeline.contracts import (
 FIXTURE = Path(__file__).parent / "fixtures" / "snapshot_v2_minimal.json"
 
 
+def fixture_snapshot():
+    """Expand the compact JSON seed into the complete locked P1 metric roster."""
+
+    snapshot = json.loads(FIXTURE.read_text())
+    template = snapshot["metrics"]["spx_0dte_share"]
+    held_ids = {
+        "vix_vix3m_term_structure_proxy",
+        "cboe_skew_tail_risk_proxy",
+        "crypto_funding_btc",
+        "crypto_funding_eth",
+        "trend_following_positioning_proxy",
+        "cross_asset_correlation",
+    }
+    for metric_id in held_ids:
+        metric = copy.deepcopy(template)
+        metric["metric_id"] = metric_id
+        metric["label"] = metric_id
+        metric["availability"] = "UNAVAILABLE_FREE"
+        snapshot["metrics"][metric_id] = metric
+
+    cftc_ids = {
+        "cftc_e_mini_sp500_asset_manager_net_pct_oi": "ACTIVE_FREE",
+        "cftc_e_mini_sp500_leveraged_funds_net_pct_oi": "ACTIVE_PROXY",
+        "cftc_nasdaq100_consolidated_asset_manager_net_pct_oi": "ACTIVE_FREE",
+        "cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi": "ACTIVE_PROXY",
+    }
+    for metric_id, availability in cftc_ids.items():
+        metric = copy.deepcopy(template)
+        metric.update(
+            {
+                "metric_id": metric_id,
+                "label": metric_id,
+                "availability": availability,
+                "unit": "percent_open_interest",
+                "frequency": "weekly",
+                "updated_at": snapshot["generated_at"],
+            }
+        )
+        metric["quality"].update(
+            {
+                "status": "ERROR",
+                "freshness": "UNKNOWN",
+                "last_attempt_at": snapshot["generated_at"],
+                "failure_reason": "Fixture has no CFTC observations.",
+                "sample_size": 0,
+            }
+        )
+        metric["statistics"] = {
+            "sample_size": 0,
+            "net_position": None,
+            "open_interest": None,
+            "net_percent_open_interest": None,
+            "change_8_weeks": None,
+            "change_12_weeks": None,
+            "z_score_3_year": None,
+            "z_score_3_year_sample_size": 0,
+        }
+        metric["source"] = {
+            "source_id": "cftc_pre",
+            "name": "CFTC PRE",
+            "url": "https://publicreporting.cftc.gov/",
+            "tier": "OFFICIAL",
+            "retrieved_at": snapshot["generated_at"],
+            "rights_note": "Official CFTC data.",
+        }
+        is_proxy = availability == "ACTIVE_PROXY"
+        metric["context"]["is_proxy"] = is_proxy
+        metric["context"]["direction"] = "UNKNOWN"
+        metric["methodology"]["proxy_disclosure"] = (
+            "CFTC category is a proxy, not every CTA." if is_proxy else ""
+        )
+        snapshot["metrics"][metric_id] = metric
+    snapshot["sources"]["cftc_tff_futures_only"] = {
+        "collector_id": "cftc_tff_futures_only",
+        "name": "CFTC PRE",
+        "url": "https://publicreporting.cftc.gov/",
+        "tier": "OFFICIAL",
+        "rights_note": "Official CFTC data.",
+        "status": "ERROR",
+        "freshness": "UNKNOWN",
+        "observation_date": None,
+        "released_at": None,
+        "updated_at": snapshot["generated_at"],
+        "last_success_at": None,
+        "last_attempt_at": snapshot["generated_at"],
+        "expected_next_update": None,
+        "failure_reason": "Fixture has no CFTC observations.",
+    }
+    snapshot["source_health"]["error"] += 1
+    snapshot.update(
+        {
+            "active_free_count": 3,
+            "active_proxy_count": 2,
+            "manual_ready_count": 1,
+            "unavailable_free_count": 6,
+        }
+    )
+    return snapshot
+
+
 def test_loads_schema_2_registry_bundle_and_canonical_p0_ids():
     bundle = load_config_bundle()
     assert bundle.metric_registry["schema_version"] == "2.0.0"
@@ -45,16 +145,14 @@ def test_every_registry_metric_has_locked_methodology_contract():
         assert methodology["proxy_disclosure"] == metric["proxy_disclosure"]
 
 
-def test_only_p0_is_marked_implemented_in_release_one():
+def test_release_two_marks_p0_and_p1_interfaces_implemented():
     bundle = load_config_bundle()
-    assert all(
-        metric["implemented"] is (metric["phase"] == "P0")
-        for metric in bundle.metrics_by_id.values()
-    )
+    assert all(metric["implemented"] for metric in bundle.metrics_by_id.values() if metric["phase"] in {"P0", "P1"})
+    assert all(not metric["implemented"] for metric in bundle.metrics_by_id.values() if metric["phase"] in {"P2", "P3"})
 
 
 def test_snapshot_v2_contract_preserves_null_and_zero_distinction():
-    snapshot = json.loads(FIXTURE.read_text())
+    snapshot = fixture_snapshot()
     validate_snapshot(snapshot)
     assert snapshot["metrics"]["spx_0dte_share"]["value"] is None
 
@@ -70,14 +168,14 @@ def test_snapshot_v2_contract_preserves_null_and_zero_distinction():
 
 
 def test_contract_axes_reject_legacy_or_conflated_states():
-    snapshot = json.loads(FIXTURE.read_text())
+    snapshot = fixture_snapshot()
     snapshot["metrics"]["on_rrp_accepted"]["quality"]["status"] = "missing"
     with pytest.raises(ContractValidationError, match="quality.status"):
         validate_snapshot(snapshot)
 
 
 def test_statistics_are_numeric_or_null_and_attempt_time_is_utc():
-    snapshot = json.loads(FIXTURE.read_text())
+    snapshot = fixture_snapshot()
     snapshot["metrics"]["on_rrp_accepted"]["statistics"]["optional"] = None
     validate_snapshot(snapshot)
 
@@ -95,7 +193,7 @@ def test_statistics_are_numeric_or_null_and_attempt_time_is_utc():
 
 
 def test_publication_contract_hard_cuts_v1_and_cross_checks_all_metric_ids():
-    snapshot = json.loads(FIXTURE.read_text())
+    snapshot = fixture_snapshot()
     manifest = {
         "schema_version": "2.0.0",
         "generated_at": snapshot["generated_at"],
@@ -125,8 +223,9 @@ def test_publication_contract_hard_cuts_v1_and_cross_checks_all_metric_ids():
             "quality": metric["quality"],
             "observation_date": metric["observation_date"],
             "released_at": metric["released_at"],
-            "updated_at": metric["updated_at"],
-            "source": metric["source"],
+                "updated_at": metric["updated_at"],
+                "expected_next_update": metric["expected_next_update"],
+                "source": metric["source"],
             "observations": metric["short_series"],
         }
         for metric_id, metric in snapshot["metrics"].items()
@@ -149,7 +248,7 @@ def test_publication_contract_hard_cuts_v1_and_cross_checks_all_metric_ids():
 
 
 def test_series_contract_requires_sorted_unique_real_dates():
-    snapshot = json.loads(FIXTURE.read_text())
+    snapshot = fixture_snapshot()
     metric = snapshot["metrics"]["on_rrp_accepted"]
     series = {
         "schema_version": "2.0.0",
@@ -161,8 +260,9 @@ def test_series_contract_requires_sorted_unique_real_dates():
         "quality": metric["quality"],
         "observation_date": metric["observation_date"],
         "released_at": metric["released_at"],
-        "updated_at": metric["updated_at"],
-        "source": metric["source"],
+                "updated_at": metric["updated_at"],
+                "expected_next_update": metric["expected_next_update"],
+                "source": metric["source"],
         "observations": list(reversed(metric["short_series"])),
     }
     with pytest.raises(ContractValidationError, match="strictly increasing"):
@@ -170,7 +270,7 @@ def test_series_contract_requires_sorted_unique_real_dates():
 
 
 def test_publication_cross_checks_contract_critical_metric_fields():
-    snapshot = json.loads(FIXTURE.read_text())
+    snapshot = fixture_snapshot()
     manifest = {
         "schema_version": "2.0.0",
         "generated_at": snapshot["generated_at"],
@@ -201,8 +301,9 @@ def test_publication_cross_checks_contract_critical_metric_fields():
             "quality": metric["quality"],
             "observation_date": metric["observation_date"],
             "released_at": metric["released_at"],
-            "updated_at": metric["updated_at"],
-            "source": metric["source"],
+                "updated_at": metric["updated_at"],
+                "expected_next_update": metric["expected_next_update"],
+                "source": metric["source"],
             "observations": metric["short_series"],
         }
     series["on_rrp_accepted"] = {
@@ -228,7 +329,7 @@ def test_publication_cross_checks_contract_critical_metric_fields():
 
 
 def test_publication_rejects_internally_mixed_switches_and_timestamps():
-    snapshot = json.loads(FIXTURE.read_text())
+    snapshot = fixture_snapshot()
     manifest = {
         "schema_version": "2.0.0",
         "generated_at": snapshot["generated_at"],
@@ -332,15 +433,13 @@ def test_every_canonical_p0_metric_passes_static_rights_gate():
         assert assert_metric_network_eligible(bundle, metric_id)
 
 
-def test_future_phase_metric_cannot_claim_network_eligibility_before_implementation():
+def test_rights_held_p1_interface_stays_null_after_implementation():
     bundle = load_config_bundle()
-    metric = bundle.metrics_by_id["cftc_leveraged_funds_positioning_proxy"]
-    assert metric["availability"] == "ACTIVE_PROXY"
-    assert metric["implemented"] is False
-    with pytest.raises(SourceNotNetworkEligible, match="implemented=false"):
-        assert_metric_network_eligible(
-            bundle, "cftc_leveraged_funds_positioning_proxy"
-        )
+    metric = bundle.metrics_by_id["vix_vix3m_term_structure_proxy"]
+    assert metric["availability"] == "UNAVAILABLE_FREE"
+    assert metric["implemented"] is True
+    with pytest.raises(SourceNotNetworkEligible):
+        assert_metric_network_eligible(bundle, metric["metric_id"])
     state = effective_metric_state(metric)
     assert state.availability.value == "UNAVAILABLE_FREE"
     assert state.health.value == "NOT_APPLICABLE"

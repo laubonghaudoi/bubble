@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import '@testing-library/jest-dom/vitest';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
 import {
@@ -91,6 +91,12 @@ describe('v2 routed dashboard', () => {
     expect(screen.getByText(/New York Fed is not responsible for publication/)).toBeVisible();
     expect(screen.getByText(/is not affiliated with the New York Fed/)).toBeVisible();
     expect(screen.getByText(/does not sanction, endorse, or recommend/)).toBeVisible();
+    expect(screen.getByText(/Positions are measured as of Tuesday and normally released Friday/)).toBeVisible();
+    expect(screen.getByText(/neither is “CTA exposure”/)).toBeVisible();
+    expect(screen.getByRole('link', { name: /official TFF Futures Only dataset/ })).toHaveAttribute('href', 'https://publicreporting.cftc.gov/Commitments-of-Traders/TFF-Futures-Only/gpe5-46if');
+    expect(screen.getByRole('link', { name: /COT release schedule/ })).toHaveAttribute('href', 'https://www.cftc.gov/MarketReports/CommitmentsofTraders/ReleaseSchedule/index.htm');
+    expect(screen.getByRole('link', { name: /CFTC Web Policy/ })).toHaveAttribute('href', 'https://www.cftc.gov/WebPolicy/index.htm');
+    expect(screen.getByText(/No CFTC seal or logo is used/)).toBeVisible();
     expect(window.localStorage.getItem('liq-theme')).toBeNull();
     expect(document.documentElement).not.toHaveAttribute('data-theme');
   });
@@ -100,7 +106,7 @@ describe('v2 routed dashboard', () => {
     render(<App />);
     const marketHeading = await findRouteHeading('市場引信');
     await waitFor(() => expect(marketHeading).toHaveFocus());
-    expect(screen.getByText(/P1 · MARKET IGNITION FREE LAYER/)).toBeVisible();
+    expect(screen.getByText(/P1 · CFTC TFF FUTURES ONLY/)).toBeVisible();
     expect(screen.getByText(/P2 · BUBBLE/)).toBeVisible();
     expect(vi.mocked(loadRouteSeries)).toHaveBeenCalledWith(expect.any(String), 'market-ignition', snapshot, catalog);
 
@@ -122,6 +128,49 @@ describe('v2 routed dashboard', () => {
     await waitFor(() => expect(overviewHeading).toHaveFocus());
   });
 
+  it('renders P1 as four evidence-only blocks with quantitative CFTC cards and fail-closed rights holds', async () => {
+    window.history.replaceState(null, '', '/#/market-ignition');
+    const { container } = render(<App />);
+    await findRouteHeading('市場引信');
+
+    expect(snapshot.switches.market_ignition.assessment).toBeNull();
+    const coverage = screen.getByRole('region', { name: /Market Ignition evidence coverage/ });
+    expect(coverage).toHaveTextContent('1/4 AVAILABLE');
+    expect(coverage.querySelectorAll('.evidence-card')).toHaveLength(4);
+    expect(coverage).toHaveTextContent('MIXED');
+    expect(coverage).toHaveTextContent('CONFIDENCE LOW');
+    expect(coverage).toHaveTextContent('UNAVAILABLE · CONFIDENCE UNKNOWN · NOT AN IMPLIED NEUTRAL');
+    const directions = [...coverage.querySelectorAll<HTMLElement>('.evidence-direction b')].map(({ textContent }) => textContent);
+    expect(directions).toEqual(['UNKNOWN', 'MIXED', 'UNKNOWN', 'UNKNOWN']);
+    expect(directions.join(' ')).not.toMatch(/WATCH|STRESS|NEUTRAL/);
+
+    const cftc = screen.getByRole('region', { name: 'P1 · CFTC TFF FUTURES ONLY' });
+    expect(cftc.querySelectorAll('.cftc-card')).toHaveLength(4);
+    expect(within(cftc).getAllByText('E-MINI S&P 500')).toHaveLength(2);
+    expect(within(cftc).getAllByText('NASDAQ-100 CONSOLIDATED')).toHaveLength(2);
+    expect(within(cftc).getAllByText('ASSET MANAGER / INSTITUTIONAL')).toHaveLength(2);
+    expect(within(cftc).getAllByText('LEVERAGED FUNDS · PROXY')).toHaveLength(2);
+    expect(within(cftc).getAllByText('免費自動')).toHaveLength(2);
+    expect(within(cftc).getAllByText('免費代理')).toHaveLength(2);
+    expect(within(cftc).getAllByText('123,456')).toHaveLength(2);
+    expect(within(cftc).getAllByText('+1.25 pp')).toHaveLength(2);
+    expect(within(cftc).getAllByText('-0.75 pp')).toHaveLength(2);
+    expect(within(cftc).getAllByText('NET LONG')).toHaveLength(2);
+    expect(within(cftc).getAllByText('NET SHORT')).toHaveLength(2);
+    expect(within(cftc).getAllByText('AS-OF · TUE POSITIONS')).toHaveLength(4);
+
+    fireEvent.click(within(cftc).getByRole('button', { name: '12W' }));
+    expect(within(cftc).getByRole('button', { name: '12W' })).toHaveAttribute('aria-pressed', 'true');
+    expect(within(cftc).getAllByRole('img', { name: /12W regime window/ })).toHaveLength(4);
+
+    const gates = screen.getByRole('region', { name: 'P1 · RIGHTS-GATED PROVIDER INTERFACES' });
+    const vix = gates.querySelector<HTMLElement>('[data-metric-id="vix_vix3m_term_structure_proxy"]');
+    expect(vix).toHaveTextContent('—');
+    expect(vix).toHaveTextContent('No redistribution-cleared Cboe feed is configured.');
+    expect(vix).toHaveTextContent('免費數據不足');
+    expect(container.querySelector('[data-metric-id="vix_vix3m_term_structure_proxy"] .rights-null')).toHaveTextContent('—');
+  });
+
   it('renders the detailed P0 page and confirmation spreads', async () => {
     window.history.replaceState(null, '', '/#/liquidity-fuel');
     render(<App />);
@@ -139,10 +188,10 @@ describe('v2 routed dashboard', () => {
     window.history.replaceState(null, '', '/#/market-ignition');
     render(<App />);
     await findRouteHeading('市場引信');
-    const metricButton = screen.getByRole('button', { name: /VIX_VIX3M_PROXY/ });
+    const metricButton = screen.getByRole('button', { name: /開啟 CFTC_E_MINI_SP500_LEVERAGED_FUNDS_NET_PCT_OI 方法/ });
     metricButton.focus();
     fireEvent.click(metricButton);
-    const dialog = await screen.findByRole('dialog', { name: 'VIX_VIX3M_PROXY' });
+    const dialog = await screen.findByRole('dialog', { name: 'CFTC_E_MINI_SP500_LEVERAGED_FUNDS_NET_PCT_OI' });
     expect(dialog).toHaveTextContent('免費代理');
     expect(dialog).toHaveTextContent('正常');
     expect(dialog).toHaveTextContent('新鮮');
@@ -151,7 +200,10 @@ describe('v2 routed dashboard', () => {
     expect(dialog).toHaveTextContent('PIPELINE UPDATED');
     expect(dialog).toHaveTextContent('LAST ATTEMPT');
     expect(dialog).toHaveTextContent('STATISTICS');
-    expect(dialog).toHaveTextContent('mean_20_observations');
+    expect(dialog).toHaveTextContent('net_position');
+    expect(dialog).toHaveTextContent('-45,678');
+    expect(dialog).not.toHaveTextContent('-45,678.00');
+    expect(dialog).toHaveTextContent('-0.75 pp');
     expect(dialog).toHaveTextContent('RIGHTS / USE');
     fireEvent.keyDown(document, { key: 'Escape' });
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
@@ -161,6 +213,8 @@ describe('v2 routed dashboard', () => {
     const sourcesDialog = await screen.findByRole('dialog', { name: '來源與健康狀態' });
     expect(sourcesDialog).toHaveTextContent('LAST ATTEMPT');
     expect(sourcesDialog).toHaveTextContent('LAST SUCCESS');
+    expect(within(sourcesDialog).getByRole('link', { name: /official TFF Futures Only dataset/ })).toBeVisible();
+    expect(within(sourcesDialog).getByRole('link', { name: /CFTC Web Policy/ })).toBeVisible();
   });
 
   it('keeps non-OK numeric values visible but labels every dashboard surface as last-good', async () => {

@@ -287,6 +287,8 @@ change_4w = value[t] - value[t-4]
 
 ## 4. Phase P1：用免費數據建立 Market Ignition
 
+> 2026-08-12 implementation lock：本節保留完整 provider／transform interface 作未來 permission-ready 路線，但 production 只啟用 rights-cleared CFTC TFF Futures Only positioning。Cboe VIX/VIX3M、SKEW、Coinbase／Bybit funding、third-party FRED price series、trend 同 cross-asset inputs 未獲明確公開再發布權前一律 `UNAVAILABLE_FREE`、value `null`、network disabled。現階段 Market Ignition coverage 預期係 positioning `1/4`，`assessment: null`，只報 direction／confidence，唔產生 `WATCH`／`STRESS`。呢項後來鎖定決定凌駕本節較早嘅 `3/4` 或 active-source驗收描述。
+
 ### 4.1 VIX term-structure proxy
 
 免費穩定版本先使用：
@@ -1013,13 +1015,10 @@ GitHub cron 用 UTC，亦可能延遲；collector 必須依 source as-of 判斷�
 
 ### P1：Market Ignition 免費版可用
 
-- [ ] VIX/VIX3M proxy；
-- [ ] Cboe SKEW proxy；
-- [ ] BTC＋ETH funding；
-- [ ] CFTC positioning proxy；
-- [ ] cross-asset correlations；
+- [ ] VIX/VIX3M、Cboe SKEW、BTC／ETH funding、trend 同 cross-asset provider interfaces／transforms／fixtures 完成，但 production rights gate 關閉、零 network、value `null`；
+- [ ] CFTC E-mini S&P 500／Nasdaq-100 Consolidated × Asset Manager／Leveraged Funds 四條 positioning series；
 - [ ] 8W／12W views；
-- [ ] 3/4 availability rule；
+- [ ] 四個 evidence blocks 分開報 direction／confidence；現階段 positioning `1/4`，唔輸出 composite severity；
 - [ ] 所有 proxy 有 badge 及定義。
 
 ### P2：泡沫指標免費層

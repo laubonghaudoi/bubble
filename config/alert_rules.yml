@@ -39,8 +39,9 @@ alerts:
 
   market_ignition:
     total_blocks: 4
-    minimum_fresh_blocks_for_directional_status: 3
-    insufficient_data_status: UNAVAILABLE
+    mode: EVIDENCE_ONLY
+    assessments_enabled: false
+    insufficient_coverage_direction: UNKNOWN
 
   fundamental_exit:
     total_blocks: 4

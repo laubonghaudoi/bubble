@@ -13,6 +13,105 @@ from typing import Any, Mapping
 
 
 SCHEMA_VERSION = "2.0.0"
+P1_BLOCK_IDS = (
+    "volatility_term_structure",
+    "trend_positioning",
+    "options_tail_risk",
+    "crypto_cross_asset",
+)
+P1_DIRECTIONS = frozenset(
+    {"MORE_NET_LONG", "MORE_NET_SHORT", "FLAT", "MIXED", "UNKNOWN"}
+)
+P1_CFTC_METRICS = {
+    "cftc_e_mini_sp500_asset_manager_net_pct_oi": "ACTIVE_FREE",
+    "cftc_e_mini_sp500_leveraged_funds_net_pct_oi": "ACTIVE_PROXY",
+    "cftc_nasdaq100_consolidated_asset_manager_net_pct_oi": "ACTIVE_FREE",
+    "cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi": "ACTIVE_PROXY",
+}
+P1_CFTC_IDENTITIES = {
+    "cftc_e_mini_sp500_asset_manager_net_pct_oi": ("13874A", "E-MINI S&P 500", "asset_manager"),
+    "cftc_e_mini_sp500_leveraged_funds_net_pct_oi": ("13874A", "E-MINI S&P 500", "leveraged_funds"),
+    "cftc_nasdaq100_consolidated_asset_manager_net_pct_oi": ("20974+", "NASDAQ-100 Consolidated", "asset_manager"),
+    "cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi": ("20974+", "NASDAQ-100 Consolidated", "leveraged_funds"),
+}
+P1_CFTC_EXCHANGES = {
+    "13874A": "E-MINI S&P 500 - CHICAGO MERCANTILE EXCHANGE",
+    "20974+": "NASDAQ-100 Consolidated - CHICAGO MERCANTILE EXCHANGE",
+}
+P1_HELD_METRICS = frozenset(
+    {
+        "vix_vix3m_term_structure_proxy",
+        "cboe_skew_tail_risk_proxy",
+        "crypto_funding_btc",
+        "crypto_funding_eth",
+        "trend_following_positioning_proxy",
+        "cross_asset_correlation",
+    }
+)
+
+
+def _p1_direction(change: Any) -> str:
+    if change is None:
+        return "UNKNOWN"
+    if change > 0:
+        return "MORE_NET_LONG"
+    if change < 0:
+        return "MORE_NET_SHORT"
+    return "FLAT"
+
+
+def _same_nullable_number(left: Any, right: Any, *, tolerance: float = 1e-12) -> bool:
+    if left is None or right is None:
+        return left is right
+    return (
+        not isinstance(left, bool)
+        and not isinstance(right, bool)
+        and isinstance(left, (int, float))
+        and isinstance(right, (int, float))
+        and math.isfinite(float(left))
+        and math.isfinite(float(right))
+        and abs(float(left) - float(right)) <= tolerance
+    )
+
+
+def _cftc_statistics_from_points(
+    points: list[Mapping[str, Any]],
+) -> dict[str, int | float | None]:
+    if not points:
+        return {
+            "sample_size": 0,
+            "net_position": None,
+            "open_interest": None,
+            "net_percent_open_interest": None,
+            "change_8_weeks": None,
+            "change_12_weeks": None,
+            "z_score_3_year": None,
+            "z_score_3_year_sample_size": 0,
+        }
+    values = [float(point["net_percent_open_interest_raw"]) for point in points]
+    window = values[-156:]
+    mean = sum(window) / len(window)
+    variance = sum((value - mean) ** 2 for value in window) / len(window)
+    deviation = math.sqrt(variance)
+    z_score = (
+        round((window[-1] - mean) / deviation, 6)
+        if len(window) == 156 and deviation != 0
+        else None
+    )
+    return {
+        "sample_size": len(points),
+        "net_position": points[-1]["net_position"],
+        "open_interest": points[-1]["open_interest"],
+        "net_percent_open_interest": values[-1],
+        "change_8_weeks": (
+            round(values[-1] - values[-9], 6) if len(values) > 8 else None
+        ),
+        "change_12_weeks": (
+            round(values[-1] - values[-13], 6) if len(values) > 12 else None
+        ),
+        "z_score_3_year": z_score,
+        "z_score_3_year_sample_size": min(len(points), 156),
+    }
 
 METHODOLOGY_FIELDS = frozenset(
     {
@@ -181,7 +280,12 @@ def validate_metric_record(metric: Mapping[str, Any]) -> None:
     )
 
     changes = _require_mapping(metric.get("changes"), "metric.changes")
-    for field in ("one_observation", "five_observations"):
+    for field in (
+        "one_observation",
+        "five_observations",
+        "eight_weeks",
+        "twelve_weeks",
+    ):
         if field not in changes:
             raise ContractValidationError(f"metric.changes.{field} is required")
         _validate_nullable_number(changes[field], f"metric.changes.{field}")
@@ -283,9 +387,16 @@ def validate_metric_record(metric: Mapping[str, Any]) -> None:
     if availability in (Availability.ACTIVE_FREE, Availability.ACTIVE_PROXY):
         for field in ("source_id", "name", "url", "tier", "rights_note"):
             _require_nonempty_string(source.get(field), f"metric.source.{field}")
-        _validate_required_utc_datetime(
-            source.get("retrieved_at"), "metric.source.retrieved_at"
-        )
+        if source.get("retrieved_at") is None:
+            if value is not None or health is not Health.ERROR:
+                raise ContractValidationError(
+                    "active metric.source.retrieved_at may be null only before "
+                    "the first failed/unattempted collection"
+                )
+        else:
+            _validate_required_utc_datetime(
+                source.get("retrieved_at"), "metric.source.retrieved_at"
+            )
 
     short_series = metric.get("short_series")
     if not isinstance(short_series, list):
@@ -296,7 +407,7 @@ def validate_metric_record(metric: Mapping[str, Any]) -> None:
 
 def _validate_evidence_block(value: Any, path: str) -> None:
     block = _require_mapping(value, path)
-    for field in ("id", "label", "status", "summary"):
+    for field in ("id", "label", "status", "summary", "direction", "confidence"):
         _require_nonempty_string(block.get(field), f"{path}.{field}")
     if not isinstance(block.get("available"), bool):
         raise ContractValidationError(f"{path}.available must be boolean")
@@ -401,6 +512,249 @@ def validate_snapshot(snapshot: Mapping[str, Any]) -> None:
         if metric.get("metric_id") != metric_id:
             raise ContractValidationError(
                 f"snapshot metric key {metric_id!r} does not match metric_id"
+            )
+
+    market_switch = switches["market_ignition"]
+    if market_switch.get("mode") != "EVIDENCE_ONLY":
+        raise ContractValidationError("market_ignition.mode must be EVIDENCE_ONLY")
+    if market_switch.get("mode") == "EVIDENCE_ONLY":
+        if market_switch.get("assessment") is not None:
+            raise ContractValidationError("market_ignition.assessment must be null")
+        blocks = market_switch["evidence_blocks"]
+        if tuple(block["id"] for block in blocks) != P1_BLOCK_IDS:
+            raise ContractValidationError(
+                "market_ignition evidence block IDs/order do not match P1 contract"
+            )
+        for block in blocks:
+            if block["triggered"] is not None:
+                raise ContractValidationError(
+                    "market_ignition evidence triggered must remain null"
+                )
+            if block["direction"] not in P1_DIRECTIONS:
+                raise ContractValidationError(
+                    "market_ignition evidence direction is invalid"
+                )
+            if block["confidence"] not in {"HIGH", "MEDIUM", "LOW", "UNKNOWN"}:
+                raise ContractValidationError(
+                    "market_ignition evidence confidence is invalid"
+                )
+        for block in (blocks[0], blocks[2], blocks[3]):
+            if (
+                block["available"]
+                or block["status"] != "UNAVAILABLE_FREE"
+                or block["direction"] != "UNKNOWN"
+                or block["confidence"] != "UNKNOWN"
+            ):
+                raise ContractValidationError(
+                    "rights-held P1 evidence blocks must remain unavailable/unknown"
+                )
+        missing_held = P1_HELD_METRICS - metrics.keys()
+        if missing_held:
+            raise ContractValidationError(
+                "snapshot is missing rights-held P1 metrics: "
+                + ", ".join(sorted(missing_held))
+            )
+        for metric_id in P1_HELD_METRICS:
+            metric = metrics[metric_id]
+            if (
+                metric["availability"] != "UNAVAILABLE_FREE"
+                or metric["value"] is not None
+                or metric["quality"]["status"] != "NOT_APPLICABLE"
+                or metric["short_series"]
+            ):
+                raise ContractValidationError(
+                    f"rights-held P1 metric {metric_id} must fail closed"
+                )
+        missing_cftc = P1_CFTC_METRICS.keys() - metrics.keys()
+        if missing_cftc:
+            raise ContractValidationError(
+                "snapshot is missing canonical CFTC metrics: "
+                + ", ".join(sorted(missing_cftc))
+            )
+        retired_cftc = {
+            "cftc_asset_manager_positioning",
+            "cftc_leveraged_funds_positioning_proxy",
+            "cta_proxy",
+        } & metrics.keys()
+        if retired_cftc:
+            raise ContractValidationError(
+                "snapshot contains retired CFTC metric IDs: "
+                + ", ".join(sorted(retired_cftc))
+            )
+        cftc_metrics = {
+            metric_id: metrics[metric_id] for metric_id in P1_CFTC_METRICS
+        }
+        dates = {metric["observation_date"] for metric in cftc_metrics.values()}
+        for metric_id, expected_availability in P1_CFTC_METRICS.items():
+            metric = cftc_metrics[metric_id]
+            if metric["availability"] != expected_availability:
+                raise ContractValidationError(
+                    f"{metric_id}.availability does not match P1 contract"
+                )
+            if metric["unit"] != "percent_open_interest":
+                raise ContractValidationError(
+                    f"{metric_id}.unit must be percent_open_interest"
+                )
+            if metric["frequency"] != "weekly":
+                raise ContractValidationError(f"{metric_id}.frequency must be weekly")
+            stats = metric["statistics"]
+            for field in (
+                "sample_size",
+                "net_position",
+                "open_interest",
+                "net_percent_open_interest",
+                "change_8_weeks",
+                "change_12_weeks",
+                "z_score_3_year",
+                "z_score_3_year_sample_size",
+            ):
+                if field not in stats:
+                    raise ContractValidationError(
+                        f"{metric_id}.statistics.{field} is required"
+                    )
+            if stats["sample_size"] != metric["quality"]["sample_size"]:
+                raise ContractValidationError(
+                    f"{metric_id}.statistics.sample_size must match quality"
+                )
+            if metric["changes"]["eight_weeks"] != stats["change_8_weeks"]:
+                raise ContractValidationError(
+                    f"{metric_id} 8W changes/statistics must match"
+                )
+            if metric["changes"]["twelve_weeks"] != stats["change_12_weeks"]:
+                raise ContractValidationError(
+                    f"{metric_id} 12W changes/statistics must match"
+                )
+            expected_direction = _p1_direction(stats["change_8_weeks"])
+            if metric["context"].get("direction") != expected_direction:
+                raise ContractValidationError(
+                    f"{metric_id}.context.direction must match 8W change"
+                )
+        expected_positioning_available = (
+            len(dates) == 1
+            and None not in dates
+            and all(
+                metric["quality"]["status"] == "OK"
+                and metric["quality"]["freshness"] == "FRESH"
+                and metric["value"] is not None
+                and metric["statistics"]["change_8_weeks"] is not None
+                and metric["statistics"]["change_12_weeks"] is not None
+                and metric["statistics"]["z_score_3_year"] is not None
+                and metric["statistics"]["z_score_3_year_sample_size"] == 156
+                for metric in cftc_metrics.values()
+            )
+        )
+        if blocks[1]["available"] != expected_positioning_available:
+            raise ContractValidationError(
+                "trend_positioning availability does not match CFTC evidence coverage"
+            )
+        component_directions = [
+            _p1_direction(metric["statistics"]["change_8_weeks"])
+            for metric in cftc_metrics.values()
+        ]
+        expected_block_direction = (
+            component_directions[0]
+            if expected_positioning_available
+            and len(set(component_directions)) == 1
+            else "MIXED"
+            if expected_positioning_available
+            else "UNKNOWN"
+        )
+        expected_confidence = "LOW" if expected_positioning_available else "UNKNOWN"
+        if (
+            blocks[1]["direction"] != expected_block_direction
+            or blocks[1]["status"]
+            != (expected_block_direction if expected_positioning_available else "UNAVAILABLE_FREE")
+            or blocks[1]["confidence"] != expected_confidence
+            or market_switch["confidence"] != expected_confidence
+        ):
+            raise ContractValidationError(
+                "trend_positioning direction/status/confidence does not match CFTC metrics"
+            )
+
+        source_map = _require_mapping(snapshot.get("sources"), "snapshot.sources")
+        if "cftc_tff_futures_only" not in source_map:
+            raise ContractValidationError(
+                "snapshot.sources.cftc_tff_futures_only is required"
+            )
+        cftc_source = _require_mapping(
+            source_map["cftc_tff_futures_only"],
+            "snapshot.sources.cftc_tff_futures_only",
+        )
+        if cftc_source.get("collector_id") != "cftc_tff_futures_only":
+            raise ContractValidationError(
+                "cftc source collector_id must be cftc_tff_futures_only"
+            )
+        health_rank = {"NOT_APPLICABLE": -1, "OK": 0, "NOT_RELEASED_YET": 1, "STALE": 2, "ERROR": 3}
+        freshness_rank = {"FRESH": 0, "LATE": 1, "STALE": 2, "UNKNOWN": 3}
+        expected_health = max(
+            (metric["quality"]["status"] for metric in cftc_metrics.values()),
+            key=health_rank.__getitem__,
+        )
+        expected_freshness = max(
+            (metric["quality"]["freshness"] for metric in cftc_metrics.values()),
+            key=freshness_rank.__getitem__,
+        )
+        expected_date = max(
+            (metric["observation_date"] for metric in cftc_metrics.values() if metric["observation_date"]),
+            default=None,
+        )
+        expected_release = max(
+            (metric["released_at"] for metric in cftc_metrics.values() if metric["released_at"]),
+            default=None,
+        )
+        expected_next = max(
+            (metric["expected_next_update"] for metric in cftc_metrics.values() if metric["expected_next_update"]),
+            default=None,
+        )
+        successes = [
+            metric["quality"]["last_success_at"]
+            for metric in cftc_metrics.values()
+            if metric["quality"]["last_success_at"]
+        ]
+        attempts = [
+            metric["quality"]["last_attempt_at"]
+            for metric in cftc_metrics.values()
+            if metric["quality"]["last_attempt_at"]
+        ]
+        updates = [
+            metric["updated_at"] for metric in cftc_metrics.values() if metric["updated_at"]
+        ]
+        failures = list(
+            dict.fromkeys(
+                metric["quality"]["failure_reason"]
+                for metric in cftc_metrics.values()
+                if metric["quality"]["failure_reason"]
+            )
+        )
+        expected_attempt = max(attempts, default=None)
+        expected_updated = (
+            expected_attempt
+            if expected_attempt == snapshot.get("generated_at")
+            else max(updates, default=None)
+        )
+        expected_source_fields = {
+            "status": expected_health,
+            "freshness": expected_freshness,
+            "observation_date": expected_date,
+            "released_at": expected_release,
+            "expected_next_update": expected_next,
+            "last_success_at": (
+                min(successes)
+                if successes and all(
+                    metric["quality"]["status"] == "OK"
+                    for metric in cftc_metrics.values()
+                )
+                else max(successes, default=None)
+            ),
+            "last_attempt_at": expected_attempt,
+            "failure_reason": "; ".join(failures) if failures else None,
+        }
+        if any(
+            cftc_source.get(field) != value
+            for field, value in expected_source_fields.items()
+        ) or cftc_source.get("updated_at") != expected_updated:
+            raise ContractValidationError(
+                "cftc source state/provenance must match its four canonical metrics"
             )
 
     technical_context = snapshot.get("technical_context")
@@ -598,6 +952,9 @@ def validate_series_file(series: Mapping[str, Any]) -> None:
     _validate_optional_date(series.get("observation_date"), "series.observation_date")
     _validate_optional_utc_datetime(series.get("released_at"), "series.released_at")
     _validate_optional_utc_datetime(series.get("updated_at"), "series.updated_at")
+    _validate_optional_date(
+        series.get("expected_next_update"), "series.expected_next_update"
+    )
     source = _require_mapping(series.get("source"), "series.source")
     for field in ("source_id", "name", "url", "tier"):
         _validate_optional_string(source.get(field), f"series.source.{field}")
@@ -716,7 +1073,12 @@ def validate_publication(
                 raise ContractValidationError(
                     f"{metric_id}.{field} must match across snapshot, manifest, and series"
                 )
-        for field in ("observation_date", "released_at", "updated_at"):
+        for field in (
+            "observation_date",
+            "released_at",
+            "updated_at",
+            "expected_next_update",
+        ):
             if snapshot_metric.get(field) != series.get(field):
                 raise ContractValidationError(
                     f"{metric_id}.{field} must match across snapshot and series"
@@ -729,6 +1091,114 @@ def validate_publication(
             raise ContractValidationError(
                 f"{metric_id}.source must match across snapshot and series"
             )
+        if metric_id in P1_CFTC_IDENTITIES:
+            contract_code, contract_name, category = P1_CFTC_IDENTITIES[metric_id]
+            for index, point in enumerate(series["observations"]):
+                path = f"{metric_id}.observations[{index}]"
+                expected_identity = {
+                    "contract_code": contract_code,
+                    "contract_name": contract_name,
+                    "trader_category": category,
+                    "report_type": "TFF_FUTURES_ONLY",
+                }
+                if any(point.get(field) != expected for field, expected in expected_identity.items()):
+                    raise ContractValidationError(
+                        f"{path} CFTC identity metadata does not match metric"
+                    )
+                if point.get("market_and_exchange_name") != P1_CFTC_EXCHANGES[contract_code]:
+                    raise ContractValidationError(
+                        f"{path}.market_and_exchange_name does not match contract"
+                    )
+                for field in (
+                    "cftc_market_code",
+                    "cftc_commodity_code",
+                    "commodity_name",
+                    "contract_units",
+                ):
+                    _require_nonempty_string(point.get(field), f"{path}.{field}")
+                for field in ("row_id", "source_report_id"):
+                    _require_nonempty_string(point.get(field), f"{path}.{field}")
+                _validate_optional_utc_datetime(
+                    point.get("released_at"), f"{path}.released_at"
+                )
+                numeric_fields = (
+                    "open_interest",
+                    "long_position",
+                    "short_position",
+                    "net_position",
+                    f"{category}_spread",
+                )
+                for field in numeric_fields:
+                    value = point.get(field)
+                    if isinstance(value, bool) or not isinstance(value, int):
+                        raise ContractValidationError(f"{path}.{field} must be an integer")
+                if (
+                    point["open_interest"] <= 0
+                    or min(
+                        point["long_position"],
+                        point["short_position"],
+                        point[f"{category}_spread"],
+                    ) < 0
+                ):
+                    raise ContractValidationError(f"{path} CFTC position domain is invalid")
+                if point["net_position"] != point["long_position"] - point["short_position"]:
+                    raise ContractValidationError(f"{path}.net_position does not reconcile")
+                for position, field in (
+                    (point["long_position"], f"{category}_pct_long"),
+                    (point["short_position"], f"{category}_pct_short"),
+                ):
+                    percent = point.get(field)
+                    if (
+                        isinstance(percent, bool)
+                        or not isinstance(percent, (int, float))
+                        or not math.isfinite(float(percent))
+                        or not 0 <= percent <= 100
+                        or abs(percent - (100 * position / point["open_interest"])) > 0.11
+                    ):
+                        raise ContractValidationError(
+                            f"{path}.{field} does not reconcile"
+                        )
+                expected_raw = 100 * point["net_position"] / point["open_interest"]
+                raw = point.get("net_percent_open_interest_raw")
+                if (
+                    isinstance(raw, bool)
+                    or not isinstance(raw, (int, float))
+                    or not math.isfinite(raw)
+                    or abs(raw - expected_raw) > 1e-12
+                ):
+                    raise ContractValidationError(f"{path} raw net percent does not reconcile")
+                value = point.get("value")
+                if (
+                    isinstance(value, bool)
+                    or not isinstance(value, (int, float))
+                    or not math.isfinite(float(value))
+                    or abs(value - round(expected_raw, 6)) > 1e-12
+                ):
+                    raise ContractValidationError(f"{path}.value does not reconcile")
+            latest_point_release = (
+                series["observations"][-1].get("released_at")
+                if series["observations"]
+                else None
+            )
+            if series.get("released_at") != latest_point_release:
+                raise ContractValidationError(
+                    f"{metric_id}.released_at must match latest CFTC point"
+                )
+            expected_statistics = _cftc_statistics_from_points(
+                list(series["observations"])
+            )
+            actual_statistics = snapshot_metric.get("statistics", {})
+            for field, expected in expected_statistics.items():
+                if not _same_nullable_number(actual_statistics.get(field), expected):
+                    raise ContractValidationError(
+                        f"{metric_id}.statistics.{field} must match full series"
+                    )
+            if snapshot_metric["quality"].get("sample_size") != len(
+                series["observations"]
+            ):
+                raise ContractValidationError(
+                    f"{metric_id}.quality.sample_size must match full series"
+                )
         normalized_observations = [
             {"date": point["date"], "value": point["value"]}
             for point in series["observations"]

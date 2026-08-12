@@ -19,6 +19,11 @@ canonical_p0_metric_ids:
 - reserve_balances
 - fed_total_assets
 - tga_weekly_h41
+canonical_p1_metric_ids:
+- cftc_e_mini_sp500_asset_manager_net_pct_oi
+- cftc_e_mini_sp500_leveraged_funds_net_pct_oi
+- cftc_nasdaq100_consolidated_asset_manager_net_pct_oi
+- cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi
 metrics:
 - metric_id: sofr
   legacy_ids: []
@@ -609,7 +614,7 @@ metrics:
     cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
     source_and_license_note: No redistribution-cleared Cboe feed is configured. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
     proxy_disclosure: This two-index ratio is not the VIX futures curve.
-  implemented: false
+  implemented: true
 - metric_id: cboe_skew_tail_risk_proxy
   legacy_ids: []
   label: Cboe SKEW tail-risk proxy
@@ -637,7 +642,7 @@ metrics:
     cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
     source_and_license_note: No redistribution-cleared Cboe feed is configured. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
     proxy_disclosure: SKEW is not dealer positioning or put/call implied-volatility skew.
-  implemented: false
+  implemented: true
 - metric_id: crypto_funding_btc
   legacy_ids: []
   label: BTC perpetual funding
@@ -666,7 +671,7 @@ metrics:
     cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
     source_and_license_note: Public endpoints do not provide redistribution rights for this public dashboard. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
     proxy_disclosure: ''
-  implemented: false
+  implemented: true
 - metric_id: crypto_funding_eth
   legacy_ids: []
   label: ETH perpetual funding
@@ -695,11 +700,10 @@ metrics:
     cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
     source_and_license_note: Public endpoints do not provide redistribution rights for this public dashboard. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
     proxy_disclosure: ''
-  implemented: false
-- metric_id: cftc_leveraged_funds_positioning_proxy
-  legacy_ids:
-  - cta_proxy
-  label: CFTC leveraged-funds positioning proxy
+  implemented: true
+- metric_id: cftc_e_mini_sp500_leveraged_funds_net_pct_oi
+  legacy_ids: []
+  label: CFTC E-mini S&P 500 leveraged-funds net % OI
   layer: MARKET_IGNITION
   phase: P1
   availability: ACTIVE_PROXY
@@ -707,27 +711,32 @@ metrics:
   - cftc_pre
   network_enabled: true
   is_proxy: true
-  unit: z-score
+  unit: percent_open_interest
   frequency: weekly
   reason: null
   proxy_disclosure: CFTC business categories do not measure every CTA or actual model exposure.
+  contract_code: 13874A
+  contract_name: E-MINI S&P 500
+  trader_category: leveraged_funds
   methodology:
-    question: What does CFTC leveraged-funds positioning proxy reveal within its dashboard evidence block?
-    definition: CFTC business categories do not measure every CTA or actual model exposure.
-    why_it_matters: It supplies an independent evidence input; it is never sufficient alone.
-    direction: Interpret direction only with the metric definition, freshness, and independent confirmations.
-    calculation: Apply the documented metric transform to validated source observations; never coerce null to zero.
-    frequency_and_lag: 'Expected cadence: CFTC leveraged-funds positioning proxy; the observation date and release lag must be shown separately.'
-    common_misreads: CFTC business categories do not measure every CTA or actual model exposure.
-    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
-    confirm_with: []
-    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
-    source_and_license_note: Use only the source IDs whose automated-fetch and redistribution rights gates pass.
+    question: How is the CFTC leveraged-funds category positioned in E-mini S&P 500 futures?
+    definition: Leveraged Funds long minus short futures-only positions divided by total open interest for CFTC contract 13874A.
+    why_it_matters: It is a transparent proxy for changes in leveraged-fund E-mini S&P 500 positioning.
+    direction: A rising value is more net long; a falling value is more net short, without implying a forecast.
+    calculation: 100 times net contracts divided by open interest; changes use 8 and 12 weekly observations and the z-score uses 156 reports with population standard deviation.
+    frequency_and_lag: Tuesday observation; the version-controlled official CFTC schedule and actual PRE update time determine release timing.
+    common_misreads: Leveraged Funds is a CFTC business category, not every CTA or a proprietary model target.
+    technical_distortions: Rolls, changing open interest, holidays, and delayed CFTC releases can affect comparisons.
+    confirm_with:
+    - cftc_e_mini_sp500_asset_manager_net_pct_oi
+    - cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi
+    cannot_infer: Cannot alone establish market direction, causality, or a timing signal.
+    source_and_license_note: Official CFTC TFF Futures Only PRE data; attribute CFTC and preserve code 13874A.
     proxy_disclosure: CFTC business categories do not measure every CTA or actual model exposure.
-  implemented: false
-- metric_id: cftc_asset_manager_positioning
+  implemented: true
+- metric_id: cftc_e_mini_sp500_asset_manager_net_pct_oi
   legacy_ids: []
-  label: CFTC asset-manager positioning
+  label: CFTC E-mini S&P 500 asset-manager net % OI
   layer: MARKET_IGNITION
   phase: P1
   availability: ACTIVE_FREE
@@ -739,20 +748,91 @@ metrics:
   frequency: weekly
   reason: null
   proxy_disclosure: ''
+  contract_code: 13874A
+  contract_name: E-MINI S&P 500
+  trader_category: asset_manager
   methodology:
-    question: What does CFTC asset-manager positioning reveal within its dashboard evidence block?
-    definition: Canonical CFTC asset-manager positioning metric as defined by the registry.
-    why_it_matters: It supplies an independent evidence input; it is never sufficient alone.
-    direction: Interpret direction only with the metric definition, freshness, and independent confirmations.
-    calculation: Apply the documented metric transform to validated source observations; never coerce null to zero.
-    frequency_and_lag: 'Expected cadence: CFTC asset-manager positioning; the observation date and release lag must be shown separately.'
-    common_misreads: A single observation is not a forecast or causal proof.
-    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
-    confirm_with: []
-    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
-    source_and_license_note: Use only the source IDs whose automated-fetch and redistribution rights gates pass.
+    question: How are CFTC asset managers positioned in E-mini S&P 500 futures?
+    definition: Asset Manager long minus short futures-only positions divided by total open interest for CFTC contract 13874A.
+    why_it_matters: It separates a disclosed institutional positioning category from leveraged-fund exposure.
+    direction: A rising value is more net long; a falling value is more net short, without implying a forecast.
+    calculation: 100 times net contracts divided by open interest; changes use 8 and 12 weekly observations and the z-score uses 156 reports with population standard deviation.
+    frequency_and_lag: Tuesday observation; the version-controlled official CFTC schedule and actual PRE update time determine release timing.
+    common_misreads: Asset Manager is a CFTC business category, not all institutional investors.
+    technical_distortions: Rolls, changing open interest, holidays, and delayed CFTC releases can affect comparisons.
+    confirm_with:
+    - cftc_e_mini_sp500_leveraged_funds_net_pct_oi
+    - cftc_nasdaq100_consolidated_asset_manager_net_pct_oi
+    cannot_infer: Cannot alone establish market direction, causality, or a timing signal.
+    source_and_license_note: Official CFTC TFF Futures Only PRE data; attribute CFTC and preserve code 13874A.
     proxy_disclosure: ''
-  implemented: false
+  implemented: true
+- metric_id: cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi
+  legacy_ids: []
+  label: CFTC Nasdaq-100 consolidated leveraged-funds net % OI
+  layer: MARKET_IGNITION
+  phase: P1
+  availability: ACTIVE_PROXY
+  source_ids:
+  - cftc_pre
+  network_enabled: true
+  is_proxy: true
+  unit: percent_open_interest
+  frequency: weekly
+  reason: null
+  proxy_disclosure: CFTC business categories do not measure every CTA or actual model exposure.
+  contract_code: 20974+
+  contract_name: NASDAQ-100 Consolidated
+  trader_category: leveraged_funds
+  methodology:
+    question: How is the CFTC leveraged-funds category positioned in consolidated Nasdaq-100 futures?
+    definition: Leveraged Funds long minus short futures-only positions divided by total open interest for consolidated CFTC contract 20974+.
+    why_it_matters: It is a transparent proxy for changes in leveraged Nasdaq-100 futures positioning.
+    direction: A rising value is more net long; a falling value is more net short, without implying a forecast.
+    calculation: 100 times net contracts divided by open interest; changes use 8 and 12 weekly observations and the z-score uses 156 reports with population standard deviation.
+    frequency_and_lag: Tuesday observation, normally released Friday; actual PRE update time is kept separately.
+    common_misreads: Consolidated Nasdaq-100 is not E-mini-only and Leveraged Funds does not equal every CTA.
+    technical_distortions: Consolidation scope, rolls, changing open interest, holidays, and delayed releases can affect comparisons.
+    confirm_with:
+    - cftc_nasdaq100_consolidated_asset_manager_net_pct_oi
+    - cftc_e_mini_sp500_leveraged_funds_net_pct_oi
+    cannot_infer: Cannot alone establish market direction, causality, or a timing signal.
+    source_and_license_note: Official CFTC TFF Futures Only PRE data; attribute CFTC and preserve code 20974+.
+    proxy_disclosure: CFTC business categories do not measure every CTA or actual model exposure.
+  implemented: true
+- metric_id: cftc_nasdaq100_consolidated_asset_manager_net_pct_oi
+  legacy_ids: []
+  label: CFTC Nasdaq-100 consolidated asset-manager net % OI
+  layer: MARKET_IGNITION
+  phase: P1
+  availability: ACTIVE_FREE
+  source_ids:
+  - cftc_pre
+  network_enabled: true
+  is_proxy: false
+  unit: percent_open_interest
+  frequency: weekly
+  reason: null
+  proxy_disclosure: ''
+  contract_code: 20974+
+  contract_name: NASDAQ-100 Consolidated
+  trader_category: asset_manager
+  methodology:
+    question: How are CFTC asset managers positioned in consolidated Nasdaq-100 futures?
+    definition: Asset Manager long minus short futures-only positions divided by total open interest for consolidated CFTC contract 20974+.
+    why_it_matters: It separates Nasdaq-100 institutional-category positioning from S&P 500 exposure.
+    direction: A rising value is more net long; a falling value is more net short, without implying a forecast.
+    calculation: 100 times net contracts divided by open interest; changes use 8 and 12 weekly observations and the z-score uses 156 reports with population standard deviation.
+    frequency_and_lag: Tuesday observation, normally released Friday; actual PRE update time is kept separately.
+    common_misreads: Consolidated Nasdaq-100 is not E-mini-only and Asset Manager is a CFTC business category.
+    technical_distortions: Consolidation scope, rolls, changing open interest, holidays, and delayed releases can affect comparisons.
+    confirm_with:
+    - cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi
+    - cftc_e_mini_sp500_asset_manager_net_pct_oi
+    cannot_infer: Cannot alone establish market direction, causality, or a timing signal.
+    source_and_license_note: Official CFTC TFF Futures Only PRE data; attribute CFTC and preserve code 20974+.
+    proxy_disclosure: ''
+  implemented: true
 - metric_id: trend_following_positioning_proxy
   legacy_ids: []
   label: Rule-based trend-following positioning proxy
@@ -780,7 +860,7 @@ metrics:
     cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
     source_and_license_note: Redistribution-cleared equity and cross-asset price inputs are not configured. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
     proxy_disclosure: A disclosed rules model would be a proxy, not proprietary CTA exposure.
-  implemented: false
+  implemented: true
 - metric_id: cross_asset_correlation
   legacy_ids:
   - cross_asset_corr
@@ -809,7 +889,7 @@ metrics:
     cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
     source_and_license_note: Several planned FRED series carry third-party redistribution restrictions. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
     proxy_disclosure: ''
-  implemented: false
+  implemented: true
 - metric_id: gamma_flip
   legacy_ids: []
   label: Gamma flip level

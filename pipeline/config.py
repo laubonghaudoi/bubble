@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -26,6 +26,7 @@ CONFIG_FILENAMES = (
     "companies.yml",
     "us_tax_dates.yml",
     "nyfed_operational_readiness.yml",
+    "cftc_release_schedule.yml",
 )
 
 CANONICAL_P0_METRIC_IDS = frozenset(
@@ -47,6 +48,15 @@ CANONICAL_P0_METRIC_IDS = frozenset(
         "reserve_balances",
         "fed_total_assets",
         "tga_weekly_h41",
+    }
+)
+
+CANONICAL_P1_CFTC_METRIC_IDS = frozenset(
+    {
+        "cftc_e_mini_sp500_asset_manager_net_pct_oi",
+        "cftc_e_mini_sp500_leveraged_funds_net_pct_oi",
+        "cftc_nasdaq100_consolidated_asset_manager_net_pct_oi",
+        "cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi",
     }
 )
 
@@ -78,6 +88,7 @@ class ConfigBundle:
     companies: Mapping[str, Any]
     us_tax_dates: Mapping[str, Any]
     nyfed_operational_readiness: Mapping[str, Any]
+    cftc_release_schedule: Mapping[str, Any]
 
     @property
     def metrics_by_id(self) -> dict[str, Mapping[str, Any]]:
@@ -103,7 +114,7 @@ def _load_yaml(path: Path) -> Mapping[str, Any]:
 
 
 def load_config_bundle(config_dir: str | Path | None = None) -> ConfigBundle:
-    """Load the six canonical YAML files and validate their cross-references."""
+    """Load the seven canonical YAML files and validate their cross-references."""
 
     root = (
         Path(config_dir)
@@ -118,6 +129,7 @@ def load_config_bundle(config_dir: str | Path | None = None) -> ConfigBundle:
         companies=loaded["companies.yml"],
         us_tax_dates=loaded["us_tax_dates.yml"],
         nyfed_operational_readiness=loaded["nyfed_operational_readiness.yml"],
+        cftc_release_schedule=loaded["cftc_release_schedule.yml"],
     )
     validate_config_bundle(bundle)
     return bundle
@@ -284,6 +296,42 @@ def validate_config_bundle(bundle: ConfigBundle) -> None:
     sources = _unique_records(
         bundle.source_registry.get("sources"), "source_id", "sources"
     )
+    releases = bundle.cftc_release_schedule.get("releases")
+    if not isinstance(releases, list) or not releases:
+        raise ConfigValidationError("cftc release schedule must be non-empty")
+    if bundle.cftc_release_schedule.get("source_url") != (
+        "https://www.cftc.gov/MarketReports/CommitmentsofTraders/ReleaseSchedule/index.htm"
+    ):
+        raise ConfigValidationError("cftc release schedule source_url must be official")
+    if bundle.cftc_release_schedule.get("release_time_et") != "15:30":
+        raise ConfigValidationError("cftc release_time_et must be 15:30")
+    reviewed_at = bundle.cftc_release_schedule.get("reviewed_at")
+    try:
+        reviewed = datetime.fromisoformat(str(reviewed_at).replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ConfigValidationError("cftc reviewed_at must be ISO-8601") from exc
+    if reviewed.utcoffset() is None or reviewed.utcoffset().total_seconds() != 0:
+        raise ConfigValidationError("cftc reviewed_at must use UTC")
+    previous_release: str | None = None
+    previous_observation: str | None = None
+    for item in releases:
+        if not isinstance(item, Mapping):
+            raise ConfigValidationError("cftc release schedule entries must be objects")
+        try:
+            observation = date.fromisoformat(item["observation_date"])
+            release = date.fromisoformat(item["release_date"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ConfigValidationError("cftc release schedule has invalid dates") from exc
+        if release <= observation or (release - observation).days > 7:
+            raise ConfigValidationError("cftc release schedule has an invalid lag")
+        if previous_release is not None and item["release_date"] <= previous_release:
+            raise ConfigValidationError("cftc release dates must be strictly increasing")
+        previous_release = item["release_date"]
+        if previous_observation is not None and item["observation_date"] <= previous_observation:
+            raise ConfigValidationError("cftc observation dates must be strictly increasing")
+        previous_observation = item["observation_date"]
+        if not isinstance(item.get("delayed_for_holiday"), bool):
+            raise ConfigValidationError("cftc delayed_for_holiday must be boolean")
 
     declared_p0 = bundle.metric_registry.get("canonical_p0_metric_ids")
     if not isinstance(declared_p0, list) or set(declared_p0) != CANONICAL_P0_METRIC_IDS:
@@ -293,6 +341,32 @@ def validate_config_bundle(bundle: ConfigBundle) -> None:
         raise ConfigValidationError(
             f"metric registry is missing canonical P0 IDs: {', '.join(missing_p0)}"
         )
+    declared_p1 = bundle.metric_registry.get("canonical_p1_metric_ids")
+    if not isinstance(declared_p1, list) or set(declared_p1) != CANONICAL_P1_CFTC_METRIC_IDS:
+        raise ConfigValidationError("canonical_p1_metric_ids does not match contract")
+    retired_p1_ids = {
+        "cftc_asset_manager_positioning",
+        "cftc_leveraged_funds_positioning_proxy",
+    }
+    if retired_p1_ids & set(metrics):
+        raise ConfigValidationError("retired generic CFTC metric IDs remain in registry")
+    expected_cftc_identity = {
+        "cftc_e_mini_sp500_asset_manager_net_pct_oi": ("13874A", "E-MINI S&P 500", "asset_manager"),
+        "cftc_e_mini_sp500_leveraged_funds_net_pct_oi": ("13874A", "E-MINI S&P 500", "leveraged_funds"),
+        "cftc_nasdaq100_consolidated_asset_manager_net_pct_oi": ("20974+", "NASDAQ-100 Consolidated", "asset_manager"),
+        "cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi": ("20974+", "NASDAQ-100 Consolidated", "leveraged_funds"),
+    }
+    for metric_id, identity in expected_cftc_identity.items():
+        metric = metrics.get(metric_id)
+        if metric is None:
+            raise ConfigValidationError(f"metric registry is missing canonical P1 ID: {metric_id}")
+        actual = (
+            metric.get("contract_code"),
+            metric.get("contract_name"),
+            metric.get("trader_category"),
+        )
+        if actual != identity:
+            raise ConfigValidationError(f"CFTC identity mismatch for {metric_id}")
 
     for metric_id, metric in metrics.items():
         try:

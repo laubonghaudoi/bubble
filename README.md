@@ -37,7 +37,7 @@ npm test
 npm run build
 ```
 
-可用 group：`all`、`daily`、`h41`、`weekly`、`monthly`、`quarterly`、`manual`。Release 1 已接通 `daily`、`h41` 同 weekly H.4.1 P0 collectors；monthly、quarterly、manual 等未實作 phase group 只會安全重建 last-good schema v2 output，唔會假裝新 metric 已 active。
+可用 group：`all`、`daily`、`h41`、`weekly`、`monthly`、`quarterly`、`manual`。`weekly` 同時處理 H.4.1 同 CFTC TFF positioning；monthly、quarterly、manual 等未實作 phase group 只會安全重建 last-good schema v2 output，唔會假裝新 metric 已 active。
 
 ## Schema 2.0.0 contract
 
@@ -71,7 +71,7 @@ Generated-data push 使用本次 job 嘅 repository `GITHUB_TOKEN`。按 [GitHub
 
 Cron 只係喚醒時間，而且 GitHub 可能延遲；collector 會用官方 observation/release metadata 判斷 `NOT_RELEASED_YET`、freshness 同 expected next update，唔會將 job start time 當 source as-of。
 
-## Release 1 資料範圍
+## Release 1–2 資料範圍
 
 P0 包括：
 
@@ -82,7 +82,15 @@ P0 包括：
 - FRED 政府來源 allowlist：IORB、WRESBAL、WALCL、WTREGEN；
 - 月／季／年結、已覆核報稅窗口同大型 Treasury settlement context。
 
-未推出嘅 P1–P3 metric 在 registry 保留最終 availability/rights/methodology 設計，但 `implemented: false`；published snapshot 會 fail closed 成 `UNAVAILABLE_FREE / NOT_APPLICABLE / UNKNOWN`，value 保持 `null`。
+P1 Market Ignition 使用 CFTC 官方 TFF Futures Only：
+
+- E-mini S&P 500 同 Nasdaq-100 Consolidated 分開；
+- Asset Manager／Institutional 同 Leveraged Funds 分開，唔會合併成一個「CTA」數字；
+- 每條 series 顯示 net contracts、net % open interest、8W／12W change 同 trailing 156-observation z-score；
+- positioning 只係 evidence direction，Market Ignition `assessment` 保持 `null`，唔產生 `WATCH`／`STRESS`；
+- CFTC Tuesday observation、實際 release timestamp 同 pipeline update 分開顯示。
+
+VIX/VIX3M、Cboe SKEW、BTC／ETH funding、trend 同 cross-asset transforms 有獨立 provider interface 同 fixture tests，但 production rights gate 維持關閉；佢哋會明確顯示 `UNAVAILABLE_FREE` 同精確原因，value 保持 `null`，亦唔會發 network request。未推出嘅 P2–P3 metric 同樣 fail closed。
 
 ## 文件
 

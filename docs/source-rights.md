@@ -11,7 +11,7 @@
 
 任何一項唔成立都會 fail closed，唔會因 endpoint 無需登入就視為獲得再發布權。呢份工程分類按公開條款建立，唔係法律意見；條款或用途改變時要重新覆核。
 
-## Release 1 network sources
+## Production network sources
 
 | Source | Auth／識別 | Production policy |
 | --- | --- | --- |
@@ -19,7 +19,18 @@
 | Treasury FiscalData | 無 key | Daily TGA 同 auction settlement 可自動化；`"null"` 字串要當缺失，並保留 dataset/as-of attribution。 |
 | FRED government-origin allowlist | `FRED_API_KEY` repository secret | 只容許 IORB、WRESBAL、WALCL、WTREGEN；registry 已預留之後覆核嘅 NCBEILQ027S/GDP。每項仍要標示 FRED 同原發布機構。 |
 | SEC EDGAR | `SEC_USER_AGENT` repository variable | 目前 P0 唔會抓 SEC，但 production workflow 要預先提供可識別 User-Agent；之後 Form 4/CompanyFacts 必須限速、cache 同引用 accession。 |
-| CFTC PRE | 無 key | 權利 gate 已 cleared，但 Release 1 metric `implemented: false`，所以唔會發 network request 或發布 active value。 |
+| CFTC PRE | 無 key | Release 2 只讀官方 TFF Futures Only dataset；E-mini S&P 500 同 Nasdaq-100 Consolidated、Asset Manager 同 Leveraged Funds 分開發布，並保留 weekly release lag。 |
+
+## CFTC attribution and interpretation limits
+
+CFTC 政府資料可按其 Web Policy 分發及複製，但要適當 acknowledgement；dashboard 會連結官方 PRE／COT 頁面，唔使用 CFTC seal，亦唔暗示 CFTC 認可、推薦或保證本工具。
+
+Production 只會請求 TFF Futures Only dataset `gpe5-46if` 嘅兩個固定 CFTC contract market codes：
+
+- `13874A`：E-mini S&P 500；
+- `20974+`：Nasdaq-100 Consolidated。
+
+數據係一般以星期二持倉、星期五 15:30 ET 發布；假期或官方 catch-up schedule 可以改變日期，所以 observation、release 同 retrieval timestamps 必須分開。Asset Manager／Institutional 同 Leveraged Funds 係 CFTC Form 40 business classifications，唔等於所有 CTA、唔代表實際 model exposure，亦唔係價格預測。
 
 ## FRED attribution and limits
 
@@ -49,7 +60,7 @@ Bubble USD Liquidity Dashboard laubonghaudoi@icloud.com
 
 ## Rights-held sources
 
-以下來源即使技術上有公開 download/API，Release 1 都係 disabled、`network_eligible: false`：
+以下來源即使技術上有公開 download/API，production 都係 disabled、`network_eligible: false`：
 
 - FINRA margin statistics：公開條款未清除 automated database construction、bulk monitoring 同 redistribution；
 - Cboe indices/options statistics：未有適合本公開 dashboard 嘅 storage/derived-publication licence；

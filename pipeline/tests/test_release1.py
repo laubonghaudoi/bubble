@@ -102,6 +102,42 @@ def fixture_collectors(
         }
         return [row, dict(row)]
 
+    def cftc(**_kwargs):
+        output = {}
+        for code, name in (("13874A", "E-MINI S&P 500"), ("20974+", "NASDAQ-100 Consolidated")):
+            rows = []
+            for index in range(14):
+                day = (datetime(2026, 5, 5, tzinfo=timezone.utc) + timedelta(days=7 * index)).date().isoformat()
+                rows.append(
+                    {
+                        "date": day,
+                        "contract_code": code,
+                        "contract_name": name,
+                        "market_and_exchange_name": f"{name} - CHICAGO MERCANTILE EXCHANGE",
+                        "cftc_market_code": "CME",
+                        "cftc_commodity_code": "138" if code == "13874A" else "209",
+                        "commodity_name": "STOCK INDICES",
+                        "contract_units": "INDEX",
+                        "report_type": "TFF_FUTURES_ONLY",
+                        "row_id": f"row-{code}-{index}",
+                        "source_report_id": f"report-{code}-{index}",
+                        "released_at": (datetime(2026, 5, 8, 19, 30, tzinfo=timezone.utc) + timedelta(days=7 * index)).isoformat().replace("+00:00", "Z"),
+                        "open_interest": 1_000_000,
+                        "asset_manager_long": 400_000 + index * 1_000,
+                        "asset_manager_short": 200_000,
+                        "asset_manager_spread": 10_000,
+                        "asset_manager_pct_long": 40 + index * 0.1,
+                        "asset_manager_pct_short": 20.0,
+                        "leveraged_funds_long": 150_000 + index * 500,
+                        "leveraged_funds_short": 250_000,
+                        "leveraged_funds_spread": 8_000,
+                        "leveraged_funds_pct_long": 15 + index * 0.05,
+                        "leveraged_funds_pct_short": 25.0,
+                    }
+                )
+            output[code] = rows
+        return output
+
     return CollectorFunctions(
         rate=rate,
         fred=fred,
@@ -109,6 +145,7 @@ def fixture_collectors(
         srf_operations=srf_operations,
         tga=tga,
         auctions=auctions,
+        cftc=cftc,
     )
 
 
@@ -124,8 +161,8 @@ def test_release_one_builds_complete_v2_contract_and_preserves_real_zero(tmp_pat
     )
     assert publication.snapshot["schema_version"] == "2.0.0"
     assert CANONICAL_P0_METRIC_IDS <= publication.snapshot["metrics"].keys()
-    assert len(publication.snapshot["sources"]) == 7
-    assert sum(publication.snapshot["source_health"].values()) == 7
+    assert len(publication.snapshot["sources"]) == 8
+    assert sum(publication.snapshot["source_health"].values()) == 8
     assert publication.snapshot["metrics"]["srf_accepted"]["value"] == 0
     assert publication.snapshot["metrics"]["on_rrp_accepted"]["value"] == 0
     on_rrp = publication.snapshot["metrics"]["on_rrp_accepted"]
@@ -303,6 +340,13 @@ def test_stage_only_then_cross_parent_promotion_removes_v1_aliases(tmp_path):
     output = tmp_path / "workspace" / "public" / "data"
     output.mkdir(parents=True)
     (output / "old-v1-alias.json").write_text("legacy")
+    (output / "series").mkdir()
+    retired_cftc_files = (
+        "cftc_asset_manager_positioning.json",
+        "cftc_leveraged_funds_positioning_proxy.json",
+    )
+    for filename in retired_cftc_files:
+        (output / "series" / filename).write_text("legacy")
     stage = tmp_path / "runner-temp" / "candidate"
     publication = build_release(
         data_dir=output,
@@ -322,6 +366,7 @@ def test_stage_only_then_cross_parent_promotion_removes_v1_aliases(tmp_path):
     assert not (output / "old-v1-alias.json").exists()
     assert json.loads((output / "snapshot.json").read_text())["schema_version"] == "2.0.0"
     assert not (output / "series" / "sofr_iorb_spread.json").exists()
+    assert all(not (output / "series" / filename).exists() for filename in retired_cftc_files)
 
 
 def test_load_stage_rejects_tampered_alerts_and_events(tmp_path):
@@ -410,6 +455,17 @@ def test_h41_build_marks_unchanged_thursday_response_not_released(tmp_path):
         metric = publication.snapshot["metrics"][metric_id]
         assert metric["quality"]["status"] == "NOT_RELEASED_YET"
         assert metric["quality"]["freshness"] == "LATE"
+    cftc_source = publication.snapshot["sources"]["cftc_tff_futures_only"]
+    assert cftc_source["last_attempt_at"] is None
+    assert cftc_source["updated_at"] is None
+    for metric_id in (
+        "cftc_e_mini_sp500_asset_manager_net_pct_oi",
+        "cftc_e_mini_sp500_leveraged_funds_net_pct_oi",
+        "cftc_nasdaq100_consolidated_asset_manager_net_pct_oi",
+        "cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi",
+    ):
+        assert publication.snapshot["metrics"][metric_id]["quality"]["last_attempt_at"] is None
+        assert publication.snapshot["metrics"][metric_id]["updated_at"] is None
 
 
 def test_tax_window_flags_business_day_before_reviewed_deadline():

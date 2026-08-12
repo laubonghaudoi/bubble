@@ -38,6 +38,18 @@ Collector 失敗時 pipeline 應保留 last-good observations：有歷史值用 
 
 如果 Thursday job 喺官方 release 前執行，保留上一個 observation 並顯示 `NOT_RELEASED_YET` 係正常行為，唔係 pipeline failure。Cron 係 UTC 並受 DST/GitHub delay 影響；判斷應以官方 release metadata，而唔係 job 開始時間。
 
+## CFTC TFF positioning 未更新
+
+CFTC COT/TFF 一般用星期二持倉、星期五 15:30 ET 發布，但假期同官方 catch-up schedule 可以延遲或改日。先核對官方 release schedule，再檢查：
+
+- dataset 必須係 TFF Futures Only `gpe5-46if`；
+- CFTC code 必須係 E-mini S&P 500 `13874A` 或 Nasdaq-100 Consolidated `20974+`；
+- `futonly_or_combined`、contract identity、long／short／open interest 同 release timestamp 必須全部通過 validation；
+- 同一 contract/date 完全相同嘅 duplicate 可以 dedupe；衝突 duplicate 要 fail closed；
+- 8W、12W 同 3Y z-score 只用有效 weekly observations，唔用 calendar interpolation。
+
+正常 release window 之前沿用最新 weekly value仍可係 `OK/FRESH`；預期發布時間過後冇新 row先進入 `NOT_RELEASED_YET/LATE`，再按 tolerance 變成 `STALE`。CFTC stale 只會降低 evidence coverage，唔可以令 Market Ignition 變成 neutral。
+
 ## FRED series 被拒絕
 
 Release 1 allowlist 係 IORB、WRESBAL、WALCL、WTREGEN；registry 亦預留經覆核嘅 NCBEILQ027S/GDP。SP500、NASDAQCOM、VIXCLS、VXVCLS、CBBTCUSD 屬第三方 rights hold，唔可以因為有 FRED API key 就加入 production fetch。

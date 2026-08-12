@@ -40,6 +40,7 @@ from pipeline.build import (
     utc_string,
 )
 from pipeline.collectors.fred import fetch_series as fetch_fred_series
+from pipeline.collectors.cftc import fetch_tff_futures_only
 from pipeline.collectors.nyfed import (
     fetch_on_rrp,
     fetch_reference_rate,
@@ -48,6 +49,7 @@ from pipeline.collectors.nyfed import (
 from pipeline.collectors.treasury import fetch_auctions, fetch_tga
 from pipeline.config import (
     CANONICAL_P0_METRIC_IDS,
+    CANONICAL_P1_CFTC_METRIC_IDS,
     ConfigBundle,
     assert_metric_network_eligible,
     assert_source_network_eligible,
@@ -81,6 +83,12 @@ from pipeline.transforms.p0 import (
     srf_nontechnical_positive_use_streak,
     spread_observation_stats,
 )
+from pipeline.transforms.p1 import (
+    cftc_position_series,
+    cftc_position_statistics,
+    common_direction,
+    positioning_direction,
+)
 
 
 VALID_MODES = frozenset({"incremental", "backfill"})
@@ -94,6 +102,12 @@ H41_SERIES = {
     "fed_total_assets": ("WALCL", 1_000),
     "tga_weekly_h41": ("WTREGEN", 1_000),
 }
+CFTC_METRICS = {
+    "cftc_e_mini_sp500_asset_manager_net_pct_oi": ("13874A", "asset_manager"),
+    "cftc_e_mini_sp500_leveraged_funds_net_pct_oi": ("13874A", "leveraged_funds"),
+    "cftc_nasdaq100_consolidated_asset_manager_net_pct_oi": ("20974+", "asset_manager"),
+    "cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi": ("20974+", "leveraged_funds"),
+}
 
 
 @dataclass(frozen=True)
@@ -106,6 +120,7 @@ class CollectorFunctions:
     srf_operations: Callable[..., list[dict[str, Any]]] = fetch_srf_operations
     tga: Callable[..., list[dict[str, Any]]] = fetch_tga
     auctions: Callable[..., list[dict[str, Any]]] = fetch_auctions
+    cftc: Callable[..., dict[str, list[dict[str, Any]]]] = fetch_tff_futures_only
 
 
 @dataclass(frozen=True)
@@ -245,6 +260,65 @@ def _success_with_history(
         attempted_at=attempted_at,
         now_et=now_et,
     )
+
+
+def _cftc_expected_next_update(
+    observation_date: str | None,
+    released_at: str | None,
+    release_schedule: Sequence[Mapping[str, Any]],
+) -> str | None:
+    """Return the next expected TFF publication date, never H.4.1 Thursday."""
+
+    if observation_date is None:
+        return None
+    if released_at:
+        anchor = datetime.fromisoformat(released_at.replace("Z", "+00:00")).date()
+    else:
+        anchor = date.fromisoformat(observation_date)
+    future = [
+        item["release_date"]
+        for item in release_schedule
+        if date.fromisoformat(item["release_date"]) > anchor
+        and date.fromisoformat(item["observation_date"])
+        > date.fromisoformat(observation_date)
+    ]
+    return min(future, default=None)
+
+
+def _cftc_freshness_for(
+    observation_date: str | None,
+    released_at: str | None,
+    *,
+    now_et: datetime,
+    release_schedule: Sequence[Mapping[str, Any]],
+) -> tuple[str, str]:
+    if not release_schedule:
+        # A reviewed schedule is part of the source contract.  Never invent a
+        # Friday cadence when the schedule is missing or failed validation.
+        return "UNKNOWN", "ERROR"
+    freshness, health = freshness_for(observation_date, "weekly", now_et=now_et)
+    if observation_date is None or health == "STALE":
+        return freshness, health
+    next_release = _cftc_expected_next_update(
+        observation_date, released_at, release_schedule
+    )
+    if next_release is None:
+        return freshness, health
+    # CFTC's normal TFF release is Friday 15:30 ET.  Allow two hours for PRE
+    # propagation; actual :updated_at remains authoritative when a row arrives.
+    release_deadline = datetime.combine(
+        date.fromisoformat(next_release),
+        datetime.min.time(),
+        tzinfo=NEW_YORK,
+    ).replace(hour=17, minute=30)
+    expected_report_date = next(
+        date.fromisoformat(item["observation_date"])
+        for item in release_schedule
+        if item["release_date"] == next_release
+    )
+    if now_et > release_deadline and date.fromisoformat(observation_date) < expected_report_date:
+        return "LATE", "NOT_RELEASED_YET"
+    return freshness, health
 
 
 def _prior_events(data_dir: Path) -> list[dict[str, Any]]:
@@ -411,10 +485,10 @@ def _technical_events(
 def _future_evidence_blocks(layer: str) -> list[dict[str, Any]]:
     labels = {
         "market_ignition": (
-            ("volatility", "Volatility term structure"),
-            ("positioning", "CFTC positioning"),
-            ("crypto_funding", "Crypto funding"),
-            ("trend_cross_asset", "Trend / cross-asset"),
+            ("volatility_term_structure", "Volatility term structure"),
+            ("trend_positioning", "Trend / positioning"),
+            ("options_tail_risk", "Options / tail risk"),
+            ("crypto_cross_asset", "Crypto funding / cross-asset"),
         ),
         "fundamental_exit": (
             ("capex", "Hyperscaler CapEx"),
@@ -430,6 +504,8 @@ def _future_evidence_blocks(layer: str) -> list[dict[str, Any]]:
             "available": False,
             "triggered": None,
             "status": "UNAVAILABLE_FREE",
+            "direction": "UNKNOWN",
+            "confidence": "UNKNOWN",
             "summary": "本階段未啟用；權利未清楚嘅來源保持 null。",
         }
         for block_id, label in labels
@@ -503,7 +579,7 @@ def build_release(
     bundle: ConfigBundle | None = None,
     collectors: CollectorFunctions | None = None,
 ) -> Publication:
-    """Collect and assemble a complete in-memory Release 1 publication."""
+    """Collect and assemble a complete in-memory schema-v2 publication."""
 
     if mode not in VALID_MODES:
         raise ValueError(f"unsupported mode: {mode}")
@@ -521,6 +597,7 @@ def build_release(
     rate_years = 6 if mode == "backfill" else 2
     rate_start = now_et.date() - timedelta(days=366 * rate_years)
     fred_start = now_et.date() - timedelta(days=366 * 6)
+    cftc_due = group in {"all", "daily", "weekly"}
 
     states = {
         metric_id: _preserved_state(
@@ -533,6 +610,51 @@ def build_release(
         for metric_id in CANONICAL_P0_METRIC_IDS
         if metric_id not in SPREAD_IDS
     }
+    for metric_id in CANONICAL_P1_CFTC_METRIC_IDS:
+        state = _preserved_state(
+            metric_id,
+            data_dir=root,
+            frequency="weekly",
+            attempted_at=attempted_at,
+            now_et=now_et,
+        )
+        if not cftc_due:
+            prior_payload = _prior_series_payload(root, metric_id)
+            prior_quality = (
+                prior_payload.get("quality")
+                if isinstance(prior_payload.get("quality"), Mapping)
+                else {}
+            )
+            state = replace(
+                state,
+                last_attempt_at=(
+                    prior_quality.get("last_attempt_at")
+                    if isinstance(prior_quality.get("last_attempt_at"), str)
+                    else None
+                ),
+                updated_at=(
+                    prior_payload.get("updated_at")
+                    if isinstance(prior_payload.get("updated_at"), str)
+                    else None
+                ),
+            )
+        cftc_freshness, cftc_health = _cftc_freshness_for(
+            state.observation_date,
+            state.released_at,
+            now_et=now_et,
+            release_schedule=bundle.cftc_release_schedule["releases"],
+        )
+        states[metric_id] = replace(
+            state,
+            freshness=max(
+                (state.freshness, cftc_freshness),
+                key=FRESHNESS_ORDER.__getitem__,
+            ),
+            health=max(
+                (state.health, cftc_health),
+                key=HEALTH_ORDER.__getitem__,
+            ),
+        )
     attempted_collectors: set[str] = set()
     daily = group in {"all", "daily"}
     h41 = group in {"all", "h41", "weekly"}
@@ -673,6 +795,65 @@ def build_release(
                     metric_id, prior=prior, attempted_at=attempted_at, error=error
                 )
 
+    if cftc_due:
+        attempted_collectors.add("cftc_tff_futures_only")
+        priors = {metric_id: states[metric_id] for metric_id in CFTC_METRICS}
+        try:
+            for metric_id in CFTC_METRICS:
+                assert_metric_network_eligible(bundle, metric_id)
+            raw_by_contract = collectors.cftc(
+                start=now_et.date() - timedelta(days=366 * 3 + 35),
+                end=now_et.date(),
+            )
+            if set(raw_by_contract) != {"13874A", "20974+"}:
+                raise ValueError("CFTC collector returned an incomplete contract bundle")
+            latest_dates = {
+                rows[-1]["date"]
+                for rows in raw_by_contract.values()
+                if rows
+            }
+            if len(latest_dates) != 1 or any(not rows for rows in raw_by_contract.values()):
+                raise ValueError("CFTC contract bundle has mismatched latest dates")
+            candidate_states: dict[str, SeriesState] = {}
+            for metric_id, (contract_code, category) in CFTC_METRICS.items():
+                points = cftc_position_series(
+                    raw_by_contract[contract_code], category=category
+                )
+                state = _success_with_history(
+                    metric_id,
+                    points,
+                    prior=priors[metric_id],
+                    frequency="weekly",
+                    attempted_at=attempted_at,
+                    now_et=now_et,
+                    mode=mode,
+                )
+                freshness, health = _cftc_freshness_for(
+                    state.observation_date,
+                    state.released_at,
+                    now_et=now_et,
+                    release_schedule=bundle.cftc_release_schedule["releases"],
+                )
+                candidate_states[metric_id] = replace(
+                    state,
+                    freshness=freshness,
+                    health=health,
+                    released_at=(
+                        state.observations[-1].get("released_at")
+                        if state.observations
+                        else None
+                    ),
+                )
+            states.update(candidate_states)
+        except Exception as error:
+            for metric_id, prior in priors.items():
+                states[metric_id] = _failed_from_prior(
+                    metric_id,
+                    prior=prior,
+                    attempted_at=attempted_at,
+                    error=error,
+                )
+
     spreads = build_iorb_spreads(
         {metric_id: states[metric_id].observations for metric_id in RATE_IDS},
         states["iorb"].observations,
@@ -791,6 +972,10 @@ def build_release(
             for point in srf_points[-3:]
         ),
     }
+    for metric_id in CFTC_METRICS:
+        statistics[metric_id] = cftc_position_statistics(
+            states[metric_id].observations
+        )
 
     sofr_stats = statistics["sofr_iorb_spread_bp"]
     confirmations = {
@@ -870,6 +1055,12 @@ def build_release(
                 for key, value in state.observations[-1].items()
                 if key not in {"date", "value"}
             }
+        if metric_id in CFTC_METRICS and state and state.observations:
+            extra["details"] = {
+                key: value
+                for key, value in state.observations[-1].items()
+                if key not in {"date", "value", "net_percent_open_interest_raw"}
+            }
         record = metric_record(
             bundle,
             registry_metric,
@@ -882,6 +1073,20 @@ def build_release(
         )
         if metric_id == "on_rrp_accepted":
             record["context"]["near_floor_context"] = on_rrp_floor
+        if metric_id in CFTC_METRICS:
+            if not cftc_due:
+                record["updated_at"] = state.updated_at if state else None
+            record["expected_next_update"] = _cftc_expected_next_update(
+                state.observation_date if state else None,
+                state.released_at if state else None,
+                bundle.cftc_release_schedule["releases"],
+            )
+            change_8w = record["statistics"].get("change_8_weeks")
+            record["changes"]["eight_weeks"] = change_8w
+            record["changes"]["twelve_weeks"] = record["statistics"].get(
+                "change_12_weeks"
+            )
+            record["context"]["direction"] = positioning_direction(change_8w)
         metric_records[metric_id] = record
         registry_for_manifest.append(
             {**registry_metric, "effective_availability": availability}
@@ -918,6 +1123,8 @@ def build_release(
             "available": price_available,
             "triggered": price_triggered if price_available else None,
             "status": ("WATCH" if price_triggered else "NORMAL") if price_available else "UNAVAILABLE",
+            "direction": ("TIGHTER" if price_triggered else "STABLE") if price_available else "UNKNOWN",
+            "confidence": rule["confidence"] if price_available else "UNKNOWN",
             "summary": "+3bp 或連續三個正數 observations 觸發 WATCH。",
         },
         {
@@ -926,6 +1133,8 @@ def build_release(
             "available": confirmation_available,
             "triggered": rule["funding_confirmation_count"] > 0 if confirmation_available else None,
             "status": f"{rule['funding_confirmation_count']}/3 UP" if confirmation_available else "UNAVAILABLE",
+            "direction": "TIGHTER" if rule["funding_confirmation_count"] > 0 and confirmation_available else "STABLE" if confirmation_available else "UNKNOWN",
+            "confidence": rule["confidence"] if confirmation_available else "UNKNOWN",
             "summary": "change_5obs 與 5-observation slope 同時向上先計確認。",
         },
         {
@@ -934,6 +1143,8 @@ def build_release(
             "available": srf_available,
             "triggered": rule["srf_positive_operation_days_latest_3"] >= 2 if srf_available else None,
             "status": f"{rule['srf_positive_operation_days_latest_3']}/3 POSITIVE" if srf_available else "UNAVAILABLE",
+            "direction": "MORE_USE" if rule["srf_positive_operation_days_latest_3"] > 0 and srf_available else "FLAT" if srf_available else "UNKNOWN",
+            "confidence": rule["confidence"] if srf_available else "UNKNOWN",
             "summary": "技術演習按官方 allowlist 標記，唔按金額猜測。",
         },
         {
@@ -946,6 +1157,8 @@ def build_release(
                 if rule["reserve_4w_at_or_below_trailing_5y_p10"]
                 else "NO P10 BREACH"
             ) if reserve_available else "UNAVAILABLE",
+            "direction": "LOWER" if rule["reserve_4w_at_or_below_trailing_5y_p10"] and reserve_available else "STABLE" if reserve_available else "UNKNOWN",
+            "confidence": rule["confidence"] if reserve_available else "UNKNOWN",
             "summary": "2.9T/2.8T/2.5T 只係參考線，並非固定壓力門檻。",
         },
     ]
@@ -957,6 +1170,101 @@ def build_release(
         "confidence": rule["confidence"],
         "evidence_blocks": p0_blocks,
         "summary": "Overview overall assessment 只以 Liquidity Fuel P0 規則為基礎。",
+    }
+
+    cftc_latest_dates = {
+        states[metric_id].observation_date for metric_id in CFTC_METRICS
+    }
+    cftc_available = (
+        len(cftc_latest_dates) == 1
+        and None not in cftc_latest_dates
+        and all(
+            states[metric_id].health == "OK"
+            and states[metric_id].freshness == "FRESH"
+            and states[metric_id].observations
+            and states[metric_id].observations[-1].get("value") is not None
+            and statistics[metric_id].get("change_8_weeks") is not None
+            and statistics[metric_id].get("change_12_weeks") is not None
+            and statistics[metric_id].get("z_score_3_year") is not None
+            and statistics[metric_id].get("z_score_3_year_sample_size") == 156
+            for metric_id in CFTC_METRICS
+        )
+    )
+    cftc_directions = {
+        metric_id: positioning_direction(
+            statistics[metric_id].get("change_8_weeks")
+        )
+        for metric_id in CFTC_METRICS
+    }
+    cftc_block_direction = (
+        common_direction(list(cftc_directions.values()))
+        if cftc_available
+        else "UNKNOWN"
+    )
+    direction_labels = {
+        "cftc_e_mini_sp500_asset_manager_net_pct_oi": "ES Asset Manager",
+        "cftc_e_mini_sp500_leveraged_funds_net_pct_oi": "ES Leveraged Funds",
+        "cftc_nasdaq100_consolidated_asset_manager_net_pct_oi": "NQ consolidated Asset Manager",
+        "cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi": "NQ consolidated Leveraged Funds",
+    }
+    cftc_direction_summary = "; ".join(
+        f"{direction_labels[metric_id]}: {cftc_directions[metric_id]}"
+        for metric_id in CFTC_METRICS
+    )
+    p1_blocks = [
+        {
+            "id": "volatility_term_structure",
+            "label": "Volatility term structure",
+            "available": False,
+            "triggered": None,
+            "status": "UNAVAILABLE_FREE",
+            "direction": "UNKNOWN",
+            "confidence": "UNKNOWN",
+            "summary": bundle.metrics_by_id["vix_vix3m_term_structure_proxy"]["reason"],
+        },
+        {
+            "id": "trend_positioning",
+            "label": "Trend / positioning",
+            "available": cftc_available,
+            "triggered": None,
+            "status": cftc_block_direction if cftc_available else "UNAVAILABLE_FREE",
+            "direction": cftc_block_direction,
+            "confidence": "LOW" if cftc_available else "UNKNOWN",
+            "summary": (
+                cftc_direction_summary
+                if cftc_available
+                else "四條 CFTC contract/category series 未全部健康；不當作 neutral。"
+            ),
+        },
+        {
+            "id": "options_tail_risk",
+            "label": "Options / tail risk",
+            "available": False,
+            "triggered": None,
+            "status": "UNAVAILABLE_FREE",
+            "direction": "UNKNOWN",
+            "confidence": "UNKNOWN",
+            "summary": bundle.metrics_by_id["cboe_skew_tail_risk_proxy"]["reason"],
+        },
+        {
+            "id": "crypto_cross_asset",
+            "label": "Crypto funding / cross-asset",
+            "available": False,
+            "triggered": None,
+            "status": "UNAVAILABLE_FREE",
+            "direction": "UNKNOWN",
+            "confidence": "UNKNOWN",
+            "summary": bundle.metrics_by_id["crypto_funding_btc"]["reason"],
+        },
+    ]
+    market_ignition_switch = {
+        "mode": "EVIDENCE_ONLY",
+        "assessment": None,
+        "available_blocks": sum(block["available"] for block in p1_blocks),
+        "total_blocks": len(p1_blocks),
+        "confidence": "LOW" if cftc_available else "UNKNOWN",
+        "evidence_blocks": p1_blocks,
+        "summary": "只展示 evidence coverage、方向與信心；Market Ignition 不產生 WATCH/STRESS。",
     }
 
     sources = {
@@ -989,7 +1297,24 @@ def build_release(
         "treasury_auctions": collector_source_record(
             bundle, "treasury_auctions", "treasury_fiscaldata", [settlement_state], attempted_at=attempted_at
         ),
+        "cftc_tff_futures_only": collector_source_record(
+            bundle,
+            "cftc_tff_futures_only",
+            "cftc_pre",
+            [states[metric_id] for metric_id in CFTC_METRICS],
+            attempted_at=attempted_at,
+        ),
     }
+    cftc_latest_state = states[
+        "cftc_e_mini_sp500_asset_manager_net_pct_oi"
+    ]
+    sources["cftc_tff_futures_only"]["expected_next_update"] = (
+        _cftc_expected_next_update(
+            cftc_latest_state.observation_date,
+            cftc_latest_state.released_at,
+            bundle.cftc_release_schedule["releases"],
+        )
+    )
     for collector_id, source in sources.items():
         if collector_id not in attempted_collectors:
             relevant_states = {
@@ -1000,6 +1325,9 @@ def build_release(
                 "nyfed_on_rrp": [states["on_rrp_accepted"]],
                 "nyfed_srf": [states["srf_accepted"]],
                 "treasury_auctions": [settlement_state],
+                "cftc_tff_futures_only": [
+                    states[metric_id] for metric_id in CFTC_METRICS
+                ],
             }[collector_id]
             source["last_attempt_at"] = max(
                 (state.last_attempt_at for state in relevant_states if state.last_attempt_at),
@@ -1028,13 +1356,7 @@ def build_release(
         "switches": {
             "liquidity_fuel": liquidity_switch,
             "market_ignition": {
-                "mode": "EVIDENCE_ONLY",
-                "assessment": None,
-                "available_blocks": 0,
-                "total_blocks": 4,
-                "confidence": "UNKNOWN",
-                "evidence_blocks": _future_evidence_blocks("market_ignition"),
-                "summary": "P1 production evidence 未上線；不產生 WATCH/STRESS。",
+                **market_ignition_switch,
             },
             "fundamental_exit": {
                 "mode": "EVIDENCE_ONLY",

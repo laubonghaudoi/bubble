@@ -1,0 +1,59 @@
+---
+schema_version: 2.0.0
+registry_kind: cftc_release_schedule
+source_url: https://www.cftc.gov/MarketReports/CommitmentsofTraders/ReleaseSchedule/index.htm
+reviewed_at: '2026-08-12T20:00:00Z'
+release_time_et: '15:30'
+releases:
+- {observation_date: '2025-12-30', release_date: '2026-01-05', delayed_for_holiday: true}
+- {observation_date: '2026-01-06', release_date: '2026-01-09', delayed_for_holiday: false}
+- {observation_date: '2026-01-13', release_date: '2026-01-16', delayed_for_holiday: false}
+- {observation_date: '2026-01-20', release_date: '2026-01-23', delayed_for_holiday: false}
+- {observation_date: '2026-01-27', release_date: '2026-01-30', delayed_for_holiday: false}
+- {observation_date: '2026-02-03', release_date: '2026-02-06', delayed_for_holiday: false}
+- {observation_date: '2026-02-10', release_date: '2026-02-13', delayed_for_holiday: false}
+- {observation_date: '2026-02-17', release_date: '2026-02-20', delayed_for_holiday: false}
+- {observation_date: '2026-02-24', release_date: '2026-02-27', delayed_for_holiday: false}
+- {observation_date: '2026-03-03', release_date: '2026-03-06', delayed_for_holiday: false}
+- {observation_date: '2026-03-10', release_date: '2026-03-13', delayed_for_holiday: false}
+- {observation_date: '2026-03-17', release_date: '2026-03-20', delayed_for_holiday: false}
+- {observation_date: '2026-03-24', release_date: '2026-03-27', delayed_for_holiday: false}
+- {observation_date: '2026-03-31', release_date: '2026-04-03', delayed_for_holiday: false}
+- {observation_date: '2026-04-07', release_date: '2026-04-10', delayed_for_holiday: false}
+- {observation_date: '2026-04-14', release_date: '2026-04-17', delayed_for_holiday: false}
+- {observation_date: '2026-04-21', release_date: '2026-04-24', delayed_for_holiday: false}
+- {observation_date: '2026-04-28', release_date: '2026-05-01', delayed_for_holiday: false}
+- {observation_date: '2026-05-05', release_date: '2026-05-08', delayed_for_holiday: false}
+- {observation_date: '2026-05-12', release_date: '2026-05-15', delayed_for_holiday: false}
+- {observation_date: '2026-05-19', release_date: '2026-05-22', delayed_for_holiday: false}
+- {observation_date: '2026-05-26', release_date: '2026-05-29', delayed_for_holiday: false}
+- {observation_date: '2026-06-02', release_date: '2026-06-05', delayed_for_holiday: false}
+- {observation_date: '2026-06-09', release_date: '2026-06-12', delayed_for_holiday: false}
+- {observation_date: '2026-06-16', release_date: '2026-06-22', delayed_for_holiday: true}
+- {observation_date: '2026-06-23', release_date: '2026-06-26', delayed_for_holiday: false}
+- {observation_date: '2026-06-30', release_date: '2026-07-06', delayed_for_holiday: true}
+- {observation_date: '2026-07-07', release_date: '2026-07-10', delayed_for_holiday: false}
+- {observation_date: '2026-07-14', release_date: '2026-07-17', delayed_for_holiday: false}
+- {observation_date: '2026-07-21', release_date: '2026-07-24', delayed_for_holiday: false}
+- {observation_date: '2026-07-28', release_date: '2026-07-31', delayed_for_holiday: false}
+- {observation_date: '2026-08-04', release_date: '2026-08-07', delayed_for_holiday: false}
+- {observation_date: '2026-08-11', release_date: '2026-08-14', delayed_for_holiday: false}
+- {observation_date: '2026-08-18', release_date: '2026-08-21', delayed_for_holiday: false}
+- {observation_date: '2026-08-25', release_date: '2026-08-28', delayed_for_holiday: false}
+- {observation_date: '2026-09-01', release_date: '2026-09-04', delayed_for_holiday: false}
+- {observation_date: '2026-09-08', release_date: '2026-09-11', delayed_for_holiday: false}
+- {observation_date: '2026-09-15', release_date: '2026-09-18', delayed_for_holiday: false}
+- {observation_date: '2026-09-22', release_date: '2026-09-25', delayed_for_holiday: false}
+- {observation_date: '2026-09-29', release_date: '2026-10-02', delayed_for_holiday: false}
+- {observation_date: '2026-10-06', release_date: '2026-10-09', delayed_for_holiday: false}
+- {observation_date: '2026-10-13', release_date: '2026-10-16', delayed_for_holiday: false}
+- {observation_date: '2026-10-20', release_date: '2026-10-23', delayed_for_holiday: false}
+- {observation_date: '2026-10-27', release_date: '2026-10-30', delayed_for_holiday: false}
+- {observation_date: '2026-11-03', release_date: '2026-11-06', delayed_for_holiday: false}
+- {observation_date: '2026-11-10', release_date: '2026-11-16', delayed_for_holiday: true}
+- {observation_date: '2026-11-17', release_date: '2026-11-20', delayed_for_holiday: false}
+- {observation_date: '2026-11-24', release_date: '2026-11-30', delayed_for_holiday: true}
+- {observation_date: '2026-12-01', release_date: '2026-12-04', delayed_for_holiday: false}
+- {observation_date: '2026-12-08', release_date: '2026-12-11', delayed_for_holiday: false}
+- {observation_date: '2026-12-15', release_date: '2026-12-18', delayed_for_holiday: false}
+- {observation_date: '2026-12-22', release_date: '2026-12-28', delayed_for_holiday: true}

@@ -19,18 +19,25 @@
           "available": true,
           "triggered": false,
           "status": "NORMAL",
+          "direction": "STABLE",
+          "confidence": "HIGH",
           "summary": "Fixture evidence."
         }
       ],
       "summary": "P0 fixture."
     },
     "market_ignition": {
-      "mode": "UNAVAILABLE",
+      "mode": "EVIDENCE_ONLY",
       "assessment": null,
       "available_blocks": 0,
-      "total_blocks": 0,
-      "confidence": "LOW",
-      "evidence_blocks": [],
+      "total_blocks": 4,
+      "confidence": "UNKNOWN",
+      "evidence_blocks": [
+        {"id":"volatility_term_structure","label":"Volatility","available":false,"triggered":null,"status":"UNAVAILABLE_FREE","direction":"UNKNOWN","confidence":"UNKNOWN","summary":"Held."},
+        {"id":"trend_positioning","label":"Positioning","available":false,"triggered":null,"status":"UNAVAILABLE_FREE","direction":"UNKNOWN","confidence":"UNKNOWN","summary":"Missing."},
+        {"id":"options_tail_risk","label":"Tail risk","available":false,"triggered":null,"status":"UNAVAILABLE_FREE","direction":"UNKNOWN","confidence":"UNKNOWN","summary":"Held."},
+        {"id":"crypto_cross_asset","label":"Crypto","available":false,"triggered":null,"status":"UNAVAILABLE_FREE","direction":"UNKNOWN","confidence":"UNKNOWN","summary":"Held."}
+      ],
       "summary": "Not implemented in this fixture."
     },
     "fundamental_exit": {
@@ -107,6 +114,8 @@
       "changes": {
         "one_observation": -1.2,
         "five_observations": -3.4,
+        "eight_weeks": null,
+        "twelve_weeks": null,
         "twenty_observations": -8.1
       },
       "statistics": {
@@ -166,7 +175,9 @@
       "expected_next_update": null,
       "changes": {
         "one_observation": null,
-        "five_observations": null
+        "five_observations": null,
+        "eight_weeks": null,
+        "twelve_weeks": null
       },
       "statistics": {},
       "quality": {

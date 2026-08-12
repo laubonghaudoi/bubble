@@ -28,6 +28,8 @@ export interface MetricChanges {
   four_weeks?: number | null;
   one_month?: number | null;
   one_quarter?: number | null;
+  eight_weeks?: number | null;
+  twelve_weeks?: number | null;
 }
 
 export interface QualityInfo {
@@ -43,6 +45,7 @@ export interface MetricContext {
   technical_flags: string[];
   is_proxy: boolean;
   confidence: string;
+  direction?: string;
 }
 
 export interface MetricSource {
@@ -95,6 +98,8 @@ export interface EvidenceBlock {
   available: boolean;
   triggered: boolean | null;
   status: string;
+  direction: string;
+  confidence: string;
   summary: string;
 }
 

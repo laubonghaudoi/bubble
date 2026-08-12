@@ -143,6 +143,65 @@ export const LIQUIDITY_MAIN_TABS = [
   { id: 'reserve_balances', label: 'RESERVES' },
 ] as const;
 
+export const P1_CFTC_CONFIG = [
+  {
+    id: 'cftc_e_mini_sp500_asset_manager_net_pct_oi',
+    contract: 'E-MINI S&P 500',
+    category: 'ASSET MANAGER / INSTITUTIONAL',
+    availability: 'ACTIVE_FREE',
+  },
+  {
+    id: 'cftc_e_mini_sp500_leveraged_funds_net_pct_oi',
+    contract: 'E-MINI S&P 500',
+    category: 'LEVERAGED FUNDS · PROXY',
+    availability: 'ACTIVE_PROXY',
+  },
+  {
+    id: 'cftc_nasdaq100_consolidated_asset_manager_net_pct_oi',
+    contract: 'NASDAQ-100 CONSOLIDATED',
+    category: 'ASSET MANAGER / INSTITUTIONAL',
+    availability: 'ACTIVE_FREE',
+  },
+  {
+    id: 'cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi',
+    contract: 'NASDAQ-100 CONSOLIDATED',
+    category: 'LEVERAGED FUNDS · PROXY',
+    availability: 'ACTIVE_PROXY',
+  },
+] as const;
+
+export const P1_RIGHTS_GATED_IDS = [
+  'vix_vix3m_term_structure_proxy',
+  'cboe_skew_tail_risk_proxy',
+  'crypto_funding_btc',
+  'crypto_funding_eth',
+  'trend_following_positioning_proxy',
+  'cross_asset_correlation',
+] as const;
+
+export const P1_EVIDENCE_BLOCK_IDS = [
+  'volatility_term_structure',
+  'trend_positioning',
+  'options_tail_risk',
+  'crypto_cross_asset',
+] as const;
+
+const P1_DIRECTIONS = new Set(['MORE_NET_LONG', 'MORE_NET_SHORT', 'FLAT', 'MIXED', 'UNKNOWN']);
+const EVIDENCE_CONFIDENCE = new Set(['HIGH', 'MEDIUM', 'LOW', 'UNKNOWN']);
+const HEALTH_RANK: Readonly<Record<HealthStatus, number>> = {
+  NOT_APPLICABLE: -1,
+  OK: 0,
+  NOT_RELEASED_YET: 1,
+  STALE: 2,
+  ERROR: 3,
+};
+const FRESHNESS_RANK: Readonly<Record<Freshness, number>> = {
+  FRESH: 0,
+  LATE: 1,
+  STALE: 2,
+  UNKNOWN: 3,
+};
+
 export const OVERVIEW_SERIES_IDS = TAPE_GROUPS.flatMap(({ ids }) => [...ids]);
 export const LIQUIDITY_SERIES_IDS = [...new Set([
   ...OVERVIEW_SERIES_IDS,
@@ -261,7 +320,20 @@ function isStatistics(value: unknown): value is Record<string, number | null> {
 function isContext(value: unknown): value is MetricContext {
   return isRecord(value) && Array.isArray(value.technical_flags) &&
     value.technical_flags.every((flag) => typeof flag === 'string') &&
-    typeof value.is_proxy === 'boolean' && typeof value.confidence === 'string';
+    typeof value.is_proxy === 'boolean' && typeof value.confidence === 'string' &&
+    (value.direction === undefined || typeof value.direction === 'string');
+}
+
+function p1Direction(change: number | null | undefined): string {
+  if (change === null || change === undefined) return 'UNKNOWN';
+  if (change > 0) return 'MORE_NET_LONG';
+  if (change < 0) return 'MORE_NET_SHORT';
+  return 'FLAT';
+}
+
+function maxNullableString(values: Array<string | null>): string | null {
+  return values.reduce<string | null>((latest, current) =>
+    current !== null && (latest === null || current > latest) ? current : latest, null);
 }
 
 function isMetricSource(value: unknown): value is MetricSource {
@@ -284,7 +356,7 @@ function isMethodology(value: unknown): value is Methodology {
 
 function isChanges(value: unknown): boolean {
   if (!isRecord(value) || !isNullableNumber(value.one_observation) || !isNullableNumber(value.five_observations)) return false;
-  return ['twenty_observations', 'one_week', 'four_weeks', 'one_month', 'one_quarter']
+  return ['twenty_observations', 'one_week', 'four_weeks', 'one_month', 'one_quarter', 'eight_weeks', 'twelve_weeks']
     .every((key) => value[key] === undefined || isNullableNumber(value[key]));
 }
 
@@ -303,7 +375,8 @@ function isMetric(value: unknown, id?: string): value is Metric {
 function isEvidenceBlock(value: unknown): value is EvidenceBlock {
   return isRecord(value) && typeof value.id === 'string' && typeof value.label === 'string' &&
     typeof value.available === 'boolean' && (value.triggered === null || typeof value.triggered === 'boolean') &&
-    typeof value.status === 'string' && typeof value.summary === 'string';
+    typeof value.status === 'string' && typeof value.direction === 'string' &&
+    typeof value.confidence === 'string' && typeof value.summary === 'string';
 }
 
 function isSwitch(value: unknown): value is SwitchState {
@@ -341,10 +414,78 @@ export function isSnapshot(value: unknown): value is Snapshot {
   const metrics = value.metrics as Record<string, unknown>;
   if (!(['liquidity_fuel', 'market_ignition', 'fundamental_exit'] as const)
     .every((id) => isSwitch(switches[id]))) return false;
+  const marketIgnition = switches.market_ignition as SwitchState;
+  if (marketIgnition.mode !== 'EVIDENCE_ONLY' || marketIgnition.assessment !== null ||
+    marketIgnition.total_blocks !== P1_EVIDENCE_BLOCK_IDS.length ||
+    marketIgnition.available_blocks !== marketIgnition.evidence_blocks.filter(({ available }) => available).length ||
+    marketIgnition.evidence_blocks.length !== P1_EVIDENCE_BLOCK_IDS.length ||
+    !P1_EVIDENCE_BLOCK_IDS.every((id, index) => marketIgnition.evidence_blocks[index]?.id === id) ||
+    marketIgnition.evidence_blocks.some((block) => block.triggered !== null ||
+      !P1_DIRECTIONS.has(block.direction) || !EVIDENCE_CONFIDENCE.has(block.confidence) ||
+      (block.available === (block.direction === 'UNKNOWN')))) return false;
+  if ((switches.fundamental_exit as SwitchState).assessment !== null) return false;
   if (!Object.entries(metrics).every(([id, metric]) => isMetric(metric, id))) return false;
-  if (![...OVERVIEW_SERIES_IDS, ...CONFIRMATION_SPREAD_IDS].every((id) => isMetric(metrics[id], id))) return false;
+  if (![...OVERVIEW_SERIES_IDS, ...CONFIRMATION_SPREAD_IDS, ...P1_CFTC_CONFIG.map(({ id }) => id), ...P1_RIGHTS_GATED_IDS]
+    .every((id) => isMetric(metrics[id], id))) return false;
+  if (P1_CFTC_CONFIG.some(({ id, availability }) => {
+    const metric = metrics[id] as Metric;
+    const requiredStatistics = [
+      'net_position', 'net_percent_open_interest', 'change_8_weeks', 'change_12_weeks',
+      'z_score_3_year', 'z_score_3_year_sample_size', 'open_interest', 'sample_size',
+    ];
+    return metric.availability !== availability || metric.unit !== 'percent_open_interest' ||
+      !metric.frequency.toLowerCase().includes('week') ||
+      !Object.hasOwn(metric.changes, 'eight_weeks') || !Object.hasOwn(metric.changes, 'twelve_weeks') ||
+      requiredStatistics.some((name) => !Object.hasOwn(metric.statistics, name)) ||
+      metric.statistics.sample_size !== metric.quality.sample_size ||
+      metric.changes.eight_weeks !== metric.statistics.change_8_weeks ||
+      metric.changes.twelve_weeks !== metric.statistics.change_12_weeks ||
+      metric.context.direction !== p1Direction(metric.statistics.change_8_weeks);
+  })) return false;
+  if (P1_RIGHTS_GATED_IDS.some((id) => {
+    const metric = metrics[id] as Metric;
+    return metric.availability !== 'UNAVAILABLE_FREE' || metric.value !== null ||
+      metric.short_series.length !== 0 || metric.quality.status !== 'NOT_APPLICABLE' ||
+      metric.quality.freshness !== 'UNKNOWN';
+  })) return false;
+  const positioningBlock = marketIgnition.evidence_blocks[1];
+  const cftcMetrics = P1_CFTC_CONFIG.map(({ id }) => metrics[id] as Metric);
+  const cftcAlignedDate = cftcMetrics[0].observation_date;
+  const cftcAvailable = cftcAlignedDate !== null && cftcMetrics.every((metric) =>
+    metric.quality.status === 'OK' && metric.quality.freshness === 'FRESH' &&
+    metric.value !== null && metric.observation_date === cftcAlignedDate &&
+    metric.changes.eight_weeks !== null && metric.changes.eight_weeks !== undefined &&
+    metric.changes.twelve_weeks !== null && metric.changes.twelve_weeks !== undefined &&
+    metric.statistics.change_8_weeks !== null && metric.statistics.change_8_weeks !== undefined &&
+    metric.statistics.change_12_weeks !== null && metric.statistics.change_12_weeks !== undefined &&
+    metric.statistics.z_score_3_year !== null && metric.statistics.z_score_3_year !== undefined &&
+    isNonnegativeInteger(metric.statistics.z_score_3_year_sample_size) &&
+    metric.statistics.z_score_3_year_sample_size >= 156);
+  const componentDirections = cftcMetrics.map((metric) => p1Direction(metric.statistics.change_8_weeks));
+  const positioningDirection = cftcAvailable
+    ? new Set(componentDirections).size === 1 ? componentDirections[0] : 'MIXED'
+    : 'UNKNOWN';
+  const positioningConfidence = cftcAvailable ? 'LOW' : 'UNKNOWN';
+  if (positioningBlock.available !== cftcAvailable ||
+    positioningBlock.direction !== positioningDirection ||
+    positioningBlock.status !== (cftcAvailable ? positioningDirection : 'UNAVAILABLE_FREE') ||
+    positioningBlock.confidence !== positioningConfidence ||
+    marketIgnition.confidence !== positioningConfidence ||
+    marketIgnition.evidence_blocks.some((block, index) => index !== 1 &&
+      (block.available || block.status !== 'UNAVAILABLE_FREE' ||
+        block.direction !== 'UNKNOWN' || block.confidence !== 'UNKNOWN'))) return false;
   if (!Object.values(value.sources).every(isCollectorSource)) return false;
   const sources = value.sources as Record<string, CollectorSource>;
+  const cftcSource = sources.cftc_tff_futures_only;
+  if (!cftcSource) return false;
+  const expectedHealth = cftcMetrics.map(({ quality }) => quality.status)
+    .reduce((worst, current) => HEALTH_RANK[current] > HEALTH_RANK[worst] ? current : worst);
+  const expectedFreshness = cftcMetrics.map(({ quality }) => quality.freshness)
+    .reduce((worst, current) => FRESHNESS_RANK[current] > FRESHNESS_RANK[worst] ? current : worst);
+  if (cftcSource.status !== expectedHealth || cftcSource.freshness !== expectedFreshness ||
+    cftcSource.observation_date !== maxNullableString(cftcMetrics.map(({ observation_date }) => observation_date)) ||
+    cftcSource.released_at !== maxNullableString(cftcMetrics.map(({ released_at }) => released_at)) ||
+    cftcSource.expected_next_update !== maxNullableString(cftcMetrics.map(({ expected_next_update }) => expected_next_update))) return false;
   const sourceHealth = value.source_health as SourceHealthCounts;
   const collectorStatusKeys: Record<HealthStatus, keyof SourceHealthCounts> = {
     OK: 'ok', STALE: 'stale', ERROR: 'error',
@@ -410,7 +551,11 @@ export function parseRoute(hash: string): RouteId {
 
 export function routeMetricIds(route: RouteId, catalog: readonly CatalogMetric[], snapshot: Snapshot): string[] {
   const dynamic = route === 'market-ignition'
-    ? catalog.filter(({ layer }) => layer === 'market_ignition').map(({ metric_id }) => metric_id)
+    ? [
+        ...P1_CFTC_CONFIG.map(({ id }) => id),
+        ...P1_RIGHTS_GATED_IDS,
+        ...catalog.filter(({ layer }) => layer === 'market_ignition').map(({ metric_id }) => metric_id),
+      ]
     : route === 'fundamental-exit'
       ? catalog.filter(({ layer }) => layer === 'fundamental_exit').map(({ metric_id }) => metric_id)
       : route === 'liquidity-fuel'
@@ -483,7 +628,7 @@ export async function loadRouteSeries(
 }
 
 function fractionDigitsFor(unit: string, value?: number | null): number {
-  if (unit === 'percent') return 2;
+  if (unit === 'percent' || unit === 'percent_open_interest') return 2;
   if (unit === 'bp') return 1;
   if (unit === 'USD bn') {
     if (value === 0 || value == null) return 0;
@@ -496,6 +641,7 @@ function fractionDigitsFor(unit: string, value?: number | null): number {
 
 function suffixFor(unit: string): string {
   if (unit === 'percent') return '%';
+  if (unit === 'percent_open_interest') return '% OI';
   if (unit === 'bp') return ' bp';
   if (unit === 'USD bn') return 'B';
   return '';
