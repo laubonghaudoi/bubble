@@ -1015,11 +1015,11 @@ GitHub cron 用 UTC，亦可能延遲；collector 必須依 source as-of 判斷�
 
 ### P1：Market Ignition 免費版可用
 
-- [ ] VIX/VIX3M、Cboe SKEW、BTC／ETH funding、trend 同 cross-asset provider interfaces／transforms／fixtures 完成，但 production rights gate 關閉、零 network、value `null`；
-- [ ] CFTC E-mini S&P 500／Nasdaq-100 Consolidated × Asset Manager／Leveraged Funds 四條 positioning series；
-- [ ] 8W／12W views；
-- [ ] 四個 evidence blocks 分開報 direction／confidence；現階段 positioning `1/4`，唔輸出 composite severity；
-- [ ] 所有 proxy 有 badge 及定義。
+- [x] VIX/VIX3M、Cboe SKEW、BTC／ETH funding、trend 同 cross-asset provider interfaces／transforms／fixtures 完成，但 production rights gate 關閉、零 network、value `null`；
+- [x] CFTC E-mini S&P 500／Nasdaq-100 Consolidated × Asset Manager／Leveraged Funds 四條 positioning series；
+- [x] 8W／12W views；
+- [x] 四個 evidence blocks 分開報 direction／confidence；現階段 positioning `1/4`，唔輸出 composite severity；
+- [x] 所有 proxy 有 badge 及定義。
 
 ### P2：泡沫指標免費層
 
