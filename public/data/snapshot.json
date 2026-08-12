@@ -39,7 +39,7 @@
     ],
     "headline": "Liquidity Fuel 暫未觸發監察條件。"
   },
-  "generated_at": "2026-08-12T19:47:03.985141Z",
+  "generated_at": "2026-08-12T19:56:17.629765Z",
   "manual_ready_count": 0,
   "market_date": "2026-08-11",
   "metrics": {
@@ -84,7 +84,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -94,8 +94,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+        "last_success_at": "2026-08-12T19:56:17.629765Z",
         "sample_size": 498,
         "status": "OK"
       },
@@ -192,7 +192,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "retrieved_at": "2026-08-12T19:56:17.629765Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -205,7 +205,7 @@
       },
       "unavailability_reason": null,
       "unit": "percent",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "value": 3.63
     },
     "bgcr_iorb_spread_bp": {
@@ -248,7 +248,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -256,7 +256,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -266,8 +266,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+        "last_success_at": "2026-08-12T19:56:17.629765Z",
         "sample_size": 498,
         "status": "OK"
       },
@@ -364,7 +364,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "retrieved_at": "2026-08-12T19:56:17.629765Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -382,7 +382,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "value": -2.0
     },
     "capex_acceleration": {
@@ -901,7 +901,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -911,8 +911,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+        "last_success_at": "2026-08-12T19:56:17.629765Z",
         "sample_size": 501,
         "status": "OK"
       },
@@ -1009,7 +1009,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "retrieved_at": "2026-08-12T19:56:17.629765Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -1022,7 +1022,7 @@
       },
       "unavailability_reason": null,
       "unit": "percent",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "value": 3.63
     },
     "effr_iorb_spread_bp": {
@@ -1065,7 +1065,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -1073,7 +1073,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -1083,8 +1083,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+        "last_success_at": "2026-08-12T19:56:17.629765Z",
         "sample_size": 501,
         "status": "OK"
       },
@@ -1181,7 +1181,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "retrieved_at": "2026-08-12T19:56:17.629765Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -1199,7 +1199,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "value": -2.0
     },
     "fed_total_assets": {
@@ -1242,7 +1242,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -1252,8 +1252,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+        "last_success_at": "2026-08-12T19:56:17.629765Z",
         "sample_size": 313,
         "status": "OK"
       },
@@ -1350,7 +1350,7 @@
       ],
       "source": {
         "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "retrieved_at": "2026-08-12T19:56:17.629765Z",
         "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
         "source_id": "fred_government",
         "tier": "DISTRIBUTOR",
@@ -1364,7 +1364,7 @@
       },
       "unavailability_reason": null,
       "unit": "USD bn",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "value": 6748.567
     },
     "finra_margin_debt": {
@@ -1669,7 +1669,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -1679,8 +1679,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+        "last_success_at": "2026-08-12T19:56:17.629765Z",
         "sample_size": 1841,
         "status": "OK"
       },
@@ -1777,7 +1777,7 @@
       ],
       "source": {
         "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "retrieved_at": "2026-08-12T19:56:17.629765Z",
         "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
         "source_id": "fred_government",
         "tier": "DISTRIBUTOR",
@@ -1790,7 +1790,7 @@
       },
       "unavailability_reason": null,
       "unit": "percent",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "value": 3.65
     },
     "m2_nasdaq_divergence": {
@@ -2030,7 +2030,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -2040,8 +2040,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+        "last_success_at": "2026-08-12T19:56:17.629765Z",
         "sample_size": 501,
         "status": "OK"
       },
@@ -2138,7 +2138,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "retrieved_at": "2026-08-12T19:56:17.629765Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -2151,7 +2151,7 @@
       },
       "unavailability_reason": null,
       "unit": "percent",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "value": 3.63
     },
     "obfr_iorb_spread_bp": {
@@ -2194,7 +2194,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -2202,7 +2202,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -2212,8 +2212,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+        "last_success_at": "2026-08-12T19:56:17.629765Z",
         "sample_size": 501,
         "status": "OK"
       },
@@ -2310,7 +2310,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "retrieved_at": "2026-08-12T19:56:17.629765Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -2328,7 +2328,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "value": -2.0
     },
     "on_rrp_accepted": {
@@ -2385,7 +2385,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -2395,8 +2395,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+        "last_success_at": "2026-08-12T19:56:17.629765Z",
         "sample_size": 396,
         "status": "OK"
       },
@@ -2493,7 +2493,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "retrieved_at": "2026-08-12T19:56:17.629765Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -2510,7 +2510,7 @@
       },
       "unavailability_reason": null,
       "unit": "USD bn",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "value": 0.725
     },
     "prepayments": {
@@ -2685,7 +2685,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -2695,8 +2695,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+        "last_success_at": "2026-08-12T19:56:17.629765Z",
         "sample_size": 313,
         "status": "OK"
       },
@@ -2793,7 +2793,7 @@
       ],
       "source": {
         "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "retrieved_at": "2026-08-12T19:56:17.629765Z",
         "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
         "source_id": "fred_government",
         "tier": "DISTRIBUTOR",
@@ -2809,7 +2809,7 @@
       },
       "unavailability_reason": null,
       "unit": "USD bn",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "value": 2993.349
     },
     "sofr": {
@@ -2853,7 +2853,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -2863,8 +2863,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+        "last_success_at": "2026-08-12T19:56:17.629765Z",
         "sample_size": 498,
         "status": "OK"
       },
@@ -2961,7 +2961,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "retrieved_at": "2026-08-12T19:56:17.629765Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -2974,7 +2974,7 @@
       },
       "unavailability_reason": null,
       "unit": "percent",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "value": 3.64
     },
     "sofr_iorb_spread_bp": {
@@ -3019,7 +3019,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -3027,7 +3027,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -3037,8 +3037,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+        "last_success_at": "2026-08-12T19:56:17.629765Z",
         "sample_size": 498,
         "status": "OK"
       },
@@ -3135,7 +3135,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "retrieved_at": "2026-08-12T19:56:17.629765Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -3153,7 +3153,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "value": -1.0
     },
     "spx_0dte_share": {
@@ -3356,7 +3356,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -3366,8 +3366,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+        "last_success_at": "2026-08-12T19:56:17.629765Z",
         "sample_size": 167,
         "status": "OK"
       },
@@ -3464,7 +3464,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "retrieved_at": "2026-08-12T19:56:17.629765Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -3477,7 +3477,7 @@
       },
       "unavailability_reason": null,
       "unit": "USD bn",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "value": 0.0
     },
     "take_or_pay": {
@@ -3584,7 +3584,7 @@
       "provenance": [
         {
           "name": "U.S. Treasury FiscalData API",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "Cite FiscalData and preserve the dataset as-of date.",
           "source_id": "treasury_fiscaldata",
           "tier": "OFFICIAL",
@@ -3594,8 +3594,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+        "last_success_at": "2026-08-12T19:56:17.629765Z",
         "sample_size": 400,
         "status": "OK"
       },
@@ -3692,7 +3692,7 @@
       ],
       "source": {
         "name": "U.S. Treasury FiscalData API",
-        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "retrieved_at": "2026-08-12T19:56:17.629765Z",
         "rights_note": "Cite FiscalData and preserve the dataset as-of date.",
         "source_id": "treasury_fiscaldata",
         "tier": "OFFICIAL",
@@ -3705,7 +3705,7 @@
       },
       "unavailability_reason": null,
       "unit": "USD bn",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "value": 966.851
     },
     "tga_weekly_h41": {
@@ -3748,7 +3748,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -3758,8 +3758,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+        "last_success_at": "2026-08-12T19:56:17.629765Z",
         "sample_size": 313,
         "status": "OK"
       },
@@ -3856,7 +3856,7 @@
       ],
       "source": {
         "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "retrieved_at": "2026-08-12T19:56:17.629765Z",
         "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
         "source_id": "fred_government",
         "tier": "DISTRIBUTOR",
@@ -3870,7 +3870,7 @@
       },
       "unavailability_reason": null,
       "unit": "USD bn",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "value": 907.324
     },
     "tgcr": {
@@ -3914,7 +3914,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -3924,8 +3924,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+        "last_success_at": "2026-08-12T19:56:17.629765Z",
         "sample_size": 498,
         "status": "OK"
       },
@@ -4022,7 +4022,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "retrieved_at": "2026-08-12T19:56:17.629765Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -4035,7 +4035,7 @@
       },
       "unavailability_reason": null,
       "unit": "percent",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "value": 3.63
     },
     "tgcr_iorb_spread_bp": {
@@ -4078,7 +4078,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -4086,7 +4086,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "retrieved_at": "2026-08-12T19:56:17.629765Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -4096,8 +4096,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+        "last_success_at": "2026-08-12T19:56:17.629765Z",
         "sample_size": 498,
         "status": "OK"
       },
@@ -4194,7 +4194,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "retrieved_at": "2026-08-12T19:56:17.629765Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -4212,7 +4212,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "value": -2.0
     },
     "trend_following_positioning_proxy": {
@@ -4413,7 +4413,7 @@
     }
   },
   "overall_assessment": "NEUTRAL",
-  "pipeline_updated_at": "2026-08-12T19:47:03.985141Z",
+  "pipeline_updated_at": "2026-08-12T19:56:17.629765Z",
   "schema_version": "2.0.0",
   "source_health": {
     "error": 0,
@@ -4428,15 +4428,15 @@
       "expected_next_update": "2026-08-06",
       "failure_reason": null,
       "freshness": "FRESH",
-      "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-      "last_success_at": "2026-08-12T19:47:03.985141Z",
+      "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+      "last_success_at": "2026-08-12T19:56:17.629765Z",
       "name": "Federal Reserve Economic Data API, reviewed government-origin series",
       "observation_date": "2026-08-05",
       "released_at": null,
       "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
       "status": "OK",
       "tier": "DISTRIBUTOR",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "url": "https://fred.stlouisfed.org/docs/api/fred/"
     },
     "fred_iorb": {
@@ -4444,15 +4444,15 @@
       "expected_next_update": null,
       "failure_reason": null,
       "freshness": "FRESH",
-      "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-      "last_success_at": "2026-08-12T19:47:03.985141Z",
+      "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+      "last_success_at": "2026-08-12T19:56:17.629765Z",
       "name": "Federal Reserve Economic Data API, reviewed government-origin series",
       "observation_date": "2026-08-12",
       "released_at": null,
       "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
       "status": "OK",
       "tier": "DISTRIBUTOR",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "url": "https://fred.stlouisfed.org/docs/api/fred/"
     },
     "nyfed_on_rrp": {
@@ -4460,15 +4460,15 @@
       "expected_next_update": "2026-08-13",
       "failure_reason": null,
       "freshness": "FRESH",
-      "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-      "last_success_at": "2026-08-12T19:47:03.985141Z",
+      "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+      "last_success_at": "2026-08-12T19:56:17.629765Z",
       "name": "Federal Reserve Bank of New York Markets Data API",
       "observation_date": "2026-08-12",
       "released_at": "2026-08-12T17:15:30Z",
       "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
       "status": "OK",
       "tier": "OFFICIAL",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
     },
     "nyfed_rates": {
@@ -4476,15 +4476,15 @@
       "expected_next_update": "2026-08-12",
       "failure_reason": null,
       "freshness": "FRESH",
-      "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-      "last_success_at": "2026-08-12T19:47:03.985141Z",
+      "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+      "last_success_at": "2026-08-12T19:56:17.629765Z",
       "name": "Federal Reserve Bank of New York Markets Data API",
       "observation_date": "2026-08-11",
       "released_at": null,
       "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
       "status": "OK",
       "tier": "OFFICIAL",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
     },
     "nyfed_srf": {
@@ -4492,15 +4492,15 @@
       "expected_next_update": "2026-08-13",
       "failure_reason": null,
       "freshness": "FRESH",
-      "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-      "last_success_at": "2026-08-12T19:47:03.985141Z",
+      "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+      "last_success_at": "2026-08-12T19:56:17.629765Z",
       "name": "Federal Reserve Bank of New York Markets Data API",
       "observation_date": "2026-08-12",
       "released_at": "2026-08-12T17:45:22Z",
       "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
       "status": "OK",
       "tier": "OFFICIAL",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
     },
     "treasury_auctions": {
@@ -4508,15 +4508,15 @@
       "expected_next_update": null,
       "failure_reason": null,
       "freshness": "FRESH",
-      "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-      "last_success_at": "2026-08-12T19:47:03.985141Z",
+      "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+      "last_success_at": "2026-08-12T19:56:17.629765Z",
       "name": "U.S. Treasury FiscalData API",
       "observation_date": "2026-08-18",
       "released_at": null,
       "rights_note": "Cite FiscalData and preserve the dataset as-of date.",
       "status": "OK",
       "tier": "OFFICIAL",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "url": "https://fiscaldata.treasury.gov/api-documentation/"
     },
     "treasury_tga": {
@@ -4524,15 +4524,15 @@
       "expected_next_update": "2026-08-11",
       "failure_reason": null,
       "freshness": "FRESH",
-      "last_attempt_at": "2026-08-12T19:47:03.985141Z",
-      "last_success_at": "2026-08-12T19:47:03.985141Z",
+      "last_attempt_at": "2026-08-12T19:56:17.629765Z",
+      "last_success_at": "2026-08-12T19:56:17.629765Z",
       "name": "U.S. Treasury FiscalData API",
       "observation_date": "2026-08-10",
       "released_at": null,
       "rights_note": "Cite FiscalData and preserve the dataset as-of date.",
       "status": "OK",
       "tier": "OFFICIAL",
-      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "updated_at": "2026-08-12T19:56:17.629765Z",
       "url": "https://fiscaldata.treasury.gov/api-documentation/"
     }
   },
