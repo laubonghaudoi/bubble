@@ -1,6 +1,8 @@
 import json
 from copy import deepcopy
+from datetime import date
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
 import pytest
 
@@ -69,6 +71,53 @@ def test_fred_parser_scales_and_deduplicates_and_requires_api_key(monkeypatch):
     monkeypatch.delenv("FRED_API_KEY", raising=False)
     with pytest.raises(CollectorError, match="FRED_API_KEY is required"):
         fetch_series("WRESBAL", observation_start=__import__("datetime").date(2020, 1, 1))
+
+
+def test_fred_observation_end_excludes_future_effective_values(monkeypatch):
+    payload = fixture("fred_observations.json")
+    payload["observations"].append({"date": "2026-08-13", "value": "3100000"})
+
+    assert parse_observations(
+        payload,
+        scale=1000,
+        observation_end=date(2026, 8, 12),
+    )[-1] == {"date": "2026-08-12", "value": 3000.0}
+
+    captured: dict[str, str] = {}
+
+    def get_json(url, *, user_agent):
+        captured["url"] = url
+        captured["user_agent"] = user_agent
+        return payload
+
+    monkeypatch.setattr("pipeline.collectors.fred.get_json", get_json)
+    observations = fetch_series(
+        "IORB",
+        observation_start=date(2026, 8, 1),
+        observation_end=date(2026, 8, 12),
+        scale=1000,
+        api_key="a" * 32,
+    )
+    query = parse_qs(urlparse(captured["url"]).query)
+    assert query["observation_end"] == ["2026-08-12"]
+    assert observations[-1]["date"] == "2026-08-12"
+
+
+def test_fred_all_future_or_empty_through_cutoff_fails_closed():
+    with pytest.raises(
+        CollectorError,
+        match="no usable observations on or before 2026-08-12",
+    ):
+        parse_observations(
+            {"observations": [{"date": "2026-08-13", "value": "3.5"}]},
+            observation_end=date(2026, 8, 12),
+        )
+
+    with pytest.raises(CollectorError, match="missing non-empty observations"):
+        parse_observations(
+            {"observations": []},
+            observation_end=date(2026, 8, 12),
+        )
 
 
 def test_tga_uses_audited_closing_balance_row_mapping():

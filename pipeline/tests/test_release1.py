@@ -262,6 +262,104 @@ def test_failed_fred_fetch_preserves_last_good_and_redacts_api_key(tmp_path, mon
     )
 
 
+def test_future_effective_iorb_is_hidden_until_new_york_observation_date(tmp_path):
+    base = fixture_collectors()
+
+    def fred(series_id, **kwargs):
+        if series_id == "IORB":
+            return [
+                {"date": "2026-07-30", "value": 3.5},
+                {"date": "2026-08-13", "value": 3.75},
+            ]
+        return base.fred(series_id, **kwargs)
+
+    collectors = replace(base, fred=fred)
+    before_effective = build_release(
+        data_dir=tmp_path / "before",
+        now=datetime(2026, 8, 12, 20, tzinfo=timezone.utc),
+        collectors=collectors,
+    )
+    before_iorb = before_effective.snapshot["metrics"]["iorb"]
+    assert before_iorb["observation_date"] == "2026-07-30"
+    assert before_iorb["value"] == 3.5
+    assert before_iorb["quality"]["status"] == "OK"
+    assert before_effective.snapshot["metrics"]["sofr_iorb_spread_bp"][
+        "quality"
+    ]["status"] == "OK"
+    assert before_effective.series_by_id["iorb"]["observations"][-1]["date"] == "2026-07-30"
+
+    on_effective_date = build_release(
+        data_dir=tmp_path / "after",
+        now=datetime(2026, 8, 13, 14, tzinfo=timezone.utc),
+        collectors=collectors,
+    )
+    assert on_effective_date.snapshot["metrics"]["iorb"]["observation_date"] == "2026-08-13"
+    assert on_effective_date.snapshot["metrics"]["iorb"]["value"] == 3.75
+
+
+def test_future_only_fred_response_and_polluted_last_good_fail_closed(tmp_path):
+    base = fixture_collectors()
+
+    def all_future_iorb(series_id, **kwargs):
+        if series_id == "IORB":
+            return [{"date": "2026-08-13", "value": 3.75}]
+        return base.fred(series_id, **kwargs)
+
+    no_prior = build_release(
+        data_dir=tmp_path / "empty",
+        now=NOW,
+        collectors=replace(base, fred=all_future_iorb),
+    )
+    iorb = no_prior.snapshot["metrics"]["iorb"]
+    assert iorb["value"] is None
+    assert iorb["observation_date"] is None
+    assert iorb["quality"]["status"] == "ERROR"
+    assert "no observations effective on or before 2026-08-12" in iorb["quality"][
+        "failure_reason"
+    ]
+
+    polluted = tmp_path / "polluted"
+    (polluted / "series").mkdir(parents=True)
+    (polluted / "series" / "iorb.json").write_text(
+        json.dumps(
+            {
+                "observations": [
+                    {"date": "2026-07-30", "value": 3.5},
+                    {"date": "2026-08-13", "value": 3.75},
+                ],
+                "quality": {
+                    "status": "ERROR",
+                    "freshness": "UNKNOWN",
+                    "last_success_at": "2026-08-12T20:00:00Z",
+                    "last_attempt_at": "2026-08-12T20:00:00Z",
+                    "failure_reason": None,
+                },
+            }
+        )
+    )
+    recovered = build_release(
+        data_dir=polluted,
+        now=NOW,
+        collectors=replace(base, fred=all_future_iorb),
+    )
+    recovered_series = recovered.series_by_id["iorb"]["observations"]
+    assert recovered_series[-1] == {"date": "2026-07-30", "value": 3.5}
+    assert recovered.snapshot["metrics"]["iorb"]["quality"]["status"] == "STALE"
+    assert all(point["date"] <= "2026-08-12" for point in recovered_series)
+
+    unattempted = build_release(
+        group="monthly",
+        data_dir=polluted,
+        now=NOW,
+        collectors=base,
+    )
+    assert unattempted.series_by_id["iorb"]["observations"][-1] == {
+        "date": "2026-07-30",
+        "value": 3.5,
+    }
+    assert unattempted.snapshot["metrics"]["iorb"]["quality"]["status"] == "OK"
+
+
 @pytest.mark.parametrize(
     ("status", "quality_note"),
     (("STALE", "資料已過期"), ("NOT_RELEASED_YET", "今期尚未發布")),

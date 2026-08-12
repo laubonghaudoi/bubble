@@ -151,6 +151,38 @@ def _merge_observations(
     return [by_date[day] for day in sorted(by_date)]
 
 
+def _fred_observations_as_of(
+    observations: Sequence[Mapping[str, Any]],
+    *,
+    observation_end: date,
+    require_nonempty: bool,
+) -> list[dict[str, Any]]:
+    """Keep only FRED observations effective by the New York market date.
+
+    ``observation_end`` is also sent to FRED, but this publication-boundary
+    check protects injected collectors, schema drift, and a last-good series
+    that was written before the API bound existed.
+    """
+
+    eligible: list[dict[str, Any]] = []
+    for point in observations:
+        raw_date = point.get("date")
+        if not isinstance(raw_date, str):
+            raise ValueError("FRED observation missing date")
+        try:
+            effective_date = date.fromisoformat(raw_date)
+        except ValueError as exc:
+            raise ValueError("FRED observation has invalid date") from exc
+        if effective_date <= observation_end:
+            eligible.append(dict(point))
+    if require_nonempty and not eligible:
+        raise ValueError(
+            "FRED collector returned no observations effective on or before "
+            f"{observation_end.isoformat()}"
+        )
+    return eligible
+
+
 def _prior_series_payload(data_dir: Path, metric_id: str) -> Mapping[str, Any]:
     candidates = (metric_id, LEGACY_SERIES_IDS.get(metric_id))
     for candidate in candidates:
@@ -610,6 +642,39 @@ def build_release(
         for metric_id in CANONICAL_P0_METRIC_IDS
         if metric_id not in SPREAD_IDS
     }
+    # A non-daily schedule group can republish last-good data without calling
+    # FRED.  Apply the same market-date boundary up front so an artifact
+    # written by an older pipeline cannot keep leaking a future-effective
+    # observation on monthly, quarterly, or manual runs.
+    for metric_id in ("iorb", *H41_SERIES):
+        state = states[metric_id]
+        observations = _fred_observations_as_of(
+            state.observations,
+            observation_end=now_et.date(),
+            require_nonempty=False,
+        )
+        if len(observations) == len(state.observations):
+            continue
+        if observations:
+            freshness, health = (
+                h41_freshness_for(observations[-1]["date"], now_et=now_et)
+                if metric_id in H41_SERIES
+                else freshness_for(
+                    observations[-1]["date"],
+                    bundle.metrics_by_id[metric_id]["frequency"],
+                    now_et=now_et,
+                )
+            )
+        else:
+            freshness, health = "UNKNOWN", "ERROR"
+        states[metric_id] = replace(
+            state,
+            observations=observations,
+            # Filtering a future point can repair the earlier pipeline's
+            # date-derived ERROR, but never clears a real collector failure.
+            freshness=state.freshness if state.failure_reason else freshness,
+            health=state.health if state.failure_reason else health,
+        )
     for metric_id in CANONICAL_P1_CFTC_METRIC_IDS:
         state = _preserved_state(
             metric_id,
@@ -687,7 +752,15 @@ def build_release(
         try:
             assert_metric_network_eligible(bundle, "iorb")
             observations = collectors.fred(
-                "IORB", observation_start=fred_start, scale=1
+                "IORB",
+                observation_start=fred_start,
+                observation_end=now_et.date(),
+                scale=1,
+            )
+            observations = _fred_observations_as_of(
+                observations,
+                observation_end=now_et.date(),
+                require_nonempty=True,
             )
             states["iorb"] = _success_with_history(
                 "iorb",
@@ -773,7 +846,15 @@ def build_release(
             try:
                 assert_metric_network_eligible(bundle, metric_id)
                 observations = collectors.fred(
-                    series_id, observation_start=fred_start, scale=scale
+                    series_id,
+                    observation_start=fred_start,
+                    observation_end=now_et.date(),
+                    scale=scale,
+                )
+                observations = _fred_observations_as_of(
+                    observations,
+                    observation_end=now_et.date(),
+                    require_nonempty=True,
                 )
                 state = _success_with_history(
                     metric_id,
