@@ -43,6 +43,11 @@ Local production build was served with the real staged v2 artifact and checked a
 
 - Repository variable `SEC_USER_AGENT` is configured as `Bubble USD Liquidity Dashboard laubonghaudoi@icloud.com`.
 - Required repository secret `FRED_API_KEY` is configured. Its value is scoped only to the workflow preflight and Python fetch step.
-- Release 1 is ready to push; no live deployment claim is made until Actions and Pages QA complete.
+- Phase commit `721bef2b067be60ebef3b938065580b6c7b43e3b` triggered Actions run [`31634311768`](https://github.com/laubonghaudoi/bubble/actions/runs/31634311768). Every fetch, test, staged build, atomic promotion, generated-data push and Pages deployment step passed in 49 seconds.
+- The workflow generated and pushed data commit `7e6ce651a2e19947038c82664e246c70e9097178`; the local `main` branch was fast-forwarded to it after deployment.
+- Live `snapshot.json` and `manifest.json` are schema `2.0.0` with the same 39 canonical IDs. All declared series return HTTP 200; 11 removed v1 aliases return HTTP 404.
+- Live ON RRP is `0.725` USD bn and live SRF preserves the measured `0.0`; both are `ACTIVE_FREE / OK / FRESH` and agree with their full-series endpoints.
+- Live Pages QA passed at 1440×1000, 1024×1000, and 390×844 with no horizontal overflow or console warnings/errors. Four routes, browser history/focus, keyboard switch navigation, 8W range, overlays, drawers, rights disclosures, charts and JSON download were exercised.
+- The only Actions annotation is a non-blocking notice that Node 20-targeted third-party actions are being forced to Node 24 by the runner.
 
-final result: pending successful Actions deployment and live Pages QA
+final result: passed
