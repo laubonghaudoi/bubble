@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12T21:19:53.847121Z",
+  "generated_at": "2026-08-12T22:15:41.127292Z",
   "metrics": [
     {
       "availability": "ACTIVE_FREE",
@@ -322,17 +322,6 @@
     },
     {
       "availability": "UNAVAILABLE_FREE",
-      "frequency": "business_daily",
-      "label": "Put/call implied-volatility skew",
-      "layer": "market_ignition",
-      "metric_id": "put_call_vol_skew",
-      "phase": "P2",
-      "role": "evidence",
-      "series_path": "data/series/put_call_vol_skew.json",
-      "unit": "volatility_points"
-    },
-    {
-      "availability": "UNAVAILABLE_FREE",
       "frequency": "monthly",
       "label": "FINRA customer debit balances",
       "layer": "market_ignition",
@@ -354,7 +343,7 @@
       "unit": "percent"
     },
     {
-      "availability": "UNAVAILABLE_FREE",
+      "availability": "ACTIVE_PROXY",
       "frequency": "quarterly",
       "label": "Nonfinancial corporate equities / GDP proxy",
       "layer": "market_ignition",
@@ -376,14 +365,14 @@
       "unit": "z-score"
     },
     {
-      "availability": "UNAVAILABLE_FREE",
+      "availability": "ACTIVE_PROXY",
       "frequency": "business_daily",
-      "label": "SEC Form 4 insider buy/sell proxy",
+      "label": "SEC Form 4 reported P/S count ratio · 20D proxy",
       "layer": "market_ignition",
-      "metric_id": "insider_buy_sell_proxy",
+      "metric_id": "sec_form4_nonderivative_ps_count_ratio_20d",
       "phase": "P2",
       "role": "evidence",
-      "series_path": "data/series/insider_buy_sell_proxy.json",
+      "series_path": "data/series/sec_form4_nonderivative_ps_count_ratio_20d.json",
       "unit": "ratio"
     },
     {

@@ -1,5 +1,5 @@
 {
-  "availability": "UNAVAILABLE_FREE",
+  "availability": "ACTIVE_PROXY",
   "expected_next_update": null,
   "frequency": "quarterly",
   "label": "Nonfinancial corporate equities / GDP proxy",
@@ -7,23 +7,23 @@
   "observation_date": null,
   "observations": [],
   "quality": {
-    "failure_reason": "P2 production implementation is not released yet.",
+    "failure_reason": "FRED metadata frequency mismatch for NCBEILQ027S: expected 'Quarterly'",
     "freshness": "UNKNOWN",
-    "last_attempt_at": null,
+    "last_attempt_at": "2026-08-12T22:15:41.127292Z",
     "last_success_at": null,
-    "sample_size": null,
-    "status": "NOT_APPLICABLE"
+    "sample_size": 0,
+    "status": "ERROR"
   },
   "released_at": null,
   "schema_version": "2.0.0",
   "source": {
-    "name": null,
-    "retrieved_at": null,
-    "rights_note": "No production source is active for this metric.",
-    "source_id": null,
-    "tier": null,
-    "url": null
+    "name": "Federal Reserve Economic Data API, reviewed government-origin series",
+    "retrieved_at": "2026-08-12T22:15:41.127292Z",
+    "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
+    "source_id": "fred_government",
+    "tier": "DISTRIBUTOR",
+    "url": "https://fred.stlouisfed.org/docs/api/fred/"
   },
   "unit": "percent",
-  "updated_at": null
+  "updated_at": "2026-08-12T22:15:41.127292Z"
 }
