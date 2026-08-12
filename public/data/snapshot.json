@@ -19,7 +19,7 @@
     ],
     "headline": "美元流動性整體保持中性，暫未見廣泛資金壓力。"
   },
-  "generated_at": "2026-08-12T05:14:59.117418Z",
+  "generated_at": "2026-08-12T05:54:00.550421Z",
   "market_date": "2026-08-10",
   "metrics": {
     "bgcr": {
@@ -1412,7 +1412,7 @@
       "frequency": "weekly / policy",
       "name": "Federal Reserve Economic Data",
       "quality": "official",
-      "retrieved_at": "2026-08-12T05:14:59.117418Z",
+      "retrieved_at": "2026-08-12T05:54:00.550421Z",
       "status": "ok",
       "url": "https://fred.stlouisfed.org/"
     },
@@ -1422,7 +1422,7 @@
       "frequency": "business_daily",
       "name": "New York Fed Markets Data",
       "quality": "official",
-      "retrieved_at": "2026-08-12T05:14:59.117418Z",
+      "retrieved_at": "2026-08-12T05:54:00.550421Z",
       "status": "ok",
       "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
     },
@@ -1442,7 +1442,7 @@
       "frequency": "business_daily",
       "name": "U.S. Treasury FiscalData",
       "quality": "official",
-      "retrieved_at": "2026-08-12T05:14:59.117418Z",
+      "retrieved_at": "2026-08-12T05:54:00.550421Z",
       "status": "ok",
       "url": "https://fiscaldata.treasury.gov/api-documentation/"
     }
