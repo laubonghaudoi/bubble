@@ -20,7 +20,10 @@ SERIES_URL = "https://api.stlouisfed.org/fred/series"
 
 SERIES_SPECS: dict[str, dict[str, str]] = {
     "NCBEILQ027S": {
-        "frequency": "Quarterly",
+        # FRED changed this native-frequency label on 2026-01-09.  Keep the
+        # period qualifier in the reviewed contract: this is a quarter-end
+        # stock, not an unqualified quarterly flow.
+        "frequency": "Quarterly, End of Period",
         "frequency_short": "Q",
         "units": "Millions of U.S. Dollars",
         "units_short": "Mil. of U.S. $",
@@ -95,7 +98,7 @@ def parse_series_metadata(
         if source.get(field) != expected_value:
             raise CollectorError(
                 f"FRED metadata {field} mismatch for {series_id}: "
-                f"expected {expected_value!r}"
+                f"expected {expected_value!r}, got {source.get(field)!r}"
             )
 
     observation_start = _iso_date(

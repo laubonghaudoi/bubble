@@ -146,6 +146,57 @@ def test_master_index_keeps_exact_4_and_4a_and_deduplicates_accessions():
         ("0000789019-26-000002", "4/A"),
     ]
     assert rows[0].submission_url.endswith("/edgar/data/320193/0000320193-26-000001.txt")
+    assert rows[0].filing_date == "2026-08-11"
+
+
+def test_master_index_multi_entity_dedup_is_order_independent():
+    issuer = index_entry()
+    owner = FilingIndexEntry(
+        accession=issuer.accession,
+        cik="1000001",
+        form_type=issuer.form_type,
+        filing_date=issuer.filing_date,
+        index_date=issuer.index_date,
+        archive_path=f"edgar/data/1000001/{issuer.accession}.txt",
+    )
+    assert deduplicate_accessions([issuer, owner]) == [issuer]
+    assert deduplicate_accessions([owner, issuer]) == [issuer]
+
+
+def test_master_index_archive_directory_must_match_row_cik():
+    body = fixture_bytes("sec_master_20260811.idx").replace(
+        b"1000001|Example Reporting Owner|4|20260811|edgar/data/1000001/",
+        b"1000001|Example Reporting Owner|4|20260811|edgar/data/320193/",
+    )
+    with pytest.raises(CollectorError, match="invalid archive path"):
+        parse_master_index(body, index_date="2026-08-11")
+
+
+@pytest.mark.parametrize(
+    "header",
+    [
+        "CIK|Company Name|Form Type|Date Filed|Filename",
+        "CIK|Company Name|Form Type|Date Filed|FileName",
+        "CIK|Company Name|Date Filed|Form Type|File Name",
+        "CIK|Company Name|Form Type|Date Filed|File Name|Extra",
+    ],
+)
+def test_master_index_near_miss_header_schema_fails_closed(header):
+    body = fixture_bytes("sec_master_20260811.idx").replace(
+        b"CIK|Company Name|Form Type|Date Filed|File Name", header.encode()
+    )
+    with pytest.raises(CollectorError, match="header schema"):
+        parse_master_index(body, index_date="2026-08-11")
+
+
+@pytest.mark.parametrize("filing_date", ["2026-08-11", "2026081", "20261301"])
+def test_master_index_nonofficial_or_invalid_filing_date_fails_closed(filing_date):
+    body = fixture_bytes("sec_master_20260811.idx").replace(
+        b"320193|Example Issuer One|4|20260811|",
+        f"320193|Example Issuer One|4|{filing_date}|".encode(),
+    )
+    with pytest.raises(CollectorError, match="invalid filing date"):
+        parse_master_index(body, index_date="2026-08-11")
 
 
 def test_master_index_wrong_schema_html_and_conflicting_duplicate_fail_closed():
@@ -472,7 +523,7 @@ def test_committed_privacy_ledger_mismatch_leaves_day_incomplete():
 
 def test_completed_master_day_explicitly_reports_deletion_against_prior_ledger():
     quarter = b'{"directory":{"item":[{"name":"master.20260811.idx"}]}}'
-    master = b"""Description: Master Index\nCIK|Company Name|Form Type|Date Filed|Filename\n--------------------------------------------------------------------------------\n"""
+    master = b"""Description: Daily Index\nCIK|Company Name|Form Type|Date Filed|File Name\n--------------------------------------------------------------------------------\n"""
     prior_accession = "0000320193-26-000001"
     collection = collect_form4_window(
         start_date=date(2026, 8, 11),

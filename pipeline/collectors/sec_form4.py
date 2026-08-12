@@ -41,8 +41,12 @@ SEC_ARCHIVES = "https://www.sec.gov/Archives"
 DAILY_INDEX_ROOT = f"{SEC_ARCHIVES}/edgar/daily-index"
 FORM_TYPES = frozenset({"4", "4/A"})
 RETRYABLE_STATUS = frozenset({429, 502, 503, 504})
-ACCESSION_RE = re.compile(r"(?P<accession>\d{10}-\d{2}-\d{6})\.txt$")
+ARCHIVE_PATH_RE = re.compile(
+    r"^edgar/data/(?P<cik>\d+)/(?P<accession>\d{10}-\d{2}-\d{6})\.txt$"
+)
 MASTER_NAME_RE = re.compile(r"^master\.(?P<day>\d{8})\.idx$")
+MASTER_INDEX_HEADER = "CIK|Company Name|Form Type|Date Filed|File Name"
+MASTER_FILING_DATE_RE = re.compile(r"^\d{8}$")
 MAX_BODY_BYTES = 40 * 1024 * 1024
 DEFAULT_TIMEOUT = 30.0
 DEFAULT_ATTEMPTS = 4
@@ -537,7 +541,7 @@ def parse_master_index(body: bytes | str, *, index_date: str) -> list[FilingInde
         (
             offset
             for offset, line in enumerate(lines)
-            if line.strip() == "CIK|Company Name|Form Type|Date Filed|Filename"
+            if line.strip() == MASTER_INDEX_HEADER
         ),
         None,
     )
@@ -561,14 +565,16 @@ def parse_master_index(body: bytes | str, *, index_date: str) -> list[FilingInde
             continue
         if not cik.isdigit() or int(cik) <= 0:
             raise CollectorError("SEC Form 4 master row has invalid CIK")
+        if MASTER_FILING_DATE_RE.fullmatch(filing_date) is None:
+            raise CollectorError("SEC Form 4 master row has invalid filing date")
         try:
-            filed = date.fromisoformat(filing_date)
+            filed = datetime.strptime(filing_date, "%Y%m%d").date()
         except ValueError as exc:
             raise CollectorError("SEC Form 4 master row has invalid filing date") from exc
         if filed > expected_index_date:
             raise CollectorError("SEC filing date is later than its master index date")
-        match = ACCESSION_RE.search(archive_path)
-        if match is None or not archive_path.startswith("edgar/data/"):
+        match = ARCHIVE_PATH_RE.fullmatch(archive_path)
+        if match is None or str(int(match.group("cik"))) != str(int(cik)):
             raise CollectorError("SEC Form 4 master row has invalid archive path")
         entries.append(
             FilingIndexEntry(
@@ -586,12 +592,38 @@ def parse_master_index(body: bytes | str, *, index_date: str) -> list[FilingInde
 def deduplicate_accessions(
     entries: Sequence[FilingIndexEntry],
 ) -> list[FilingIndexEntry]:
+    """Collapse the SEC master index's legitimate multi-entity Form 4 rows.
+
+    A single ownership filing is indexed once for the issuer and again for
+    each reporting owner, so those rows share an accession while their CIK and
+    archive-directory aliases differ.  SEC serves identical submission bytes
+    through those aliases.  All filing metadata must still agree; only the
+    entity-specific CIK/path may differ.  Prefer the accession-filer alias when
+    present and otherwise select a stable numeric-CIK ordering.
+    """
+
     by_accession: dict[str, FilingIndexEntry] = {}
     for entry in entries:
         prior = by_accession.get(entry.accession)
-        if prior is not None and prior != entry:
+        if prior is None:
+            by_accession[entry.accession] = entry
+            continue
+        if (
+            prior.form_type != entry.form_type
+            or prior.filing_date != entry.filing_date
+            or prior.index_date != entry.index_date
+        ):
             raise CollectorError(f"conflicting duplicate SEC accession {entry.accession}")
-        by_accession[entry.accession] = entry
+        accession_filer_cik = str(int(entry.accession[:10]))
+
+        def canonical_key(candidate: FilingIndexEntry) -> tuple[bool, int, str]:
+            return (
+                candidate.cik != accession_filer_cik,
+                int(candidate.cik),
+                candidate.archive_path,
+            )
+
+        by_accession[entry.accession] = min(prior, entry, key=canonical_key)
     return [by_accession[key] for key in sorted(by_accession)]
 
 

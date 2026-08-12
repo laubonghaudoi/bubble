@@ -8,7 +8,7 @@
         "title": "Nonfinancial Corporate Business; Corporate Equities; Liability, Level",
         "observation_start": "2024-01-01",
         "observation_end": "2025-10-01",
-        "frequency": "Quarterly",
+        "frequency": "Quarterly, End of Period",
         "frequency_short": "Q",
         "units": "Millions of U.S. Dollars",
         "units_short": "Mil. of U.S. $",

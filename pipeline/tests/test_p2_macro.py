@@ -45,6 +45,8 @@ def test_collector_preserves_unscaled_values_metadata_and_revision_dates():
     equities, gdp = bundles()
 
     assert equities["series_id"] == "NCBEILQ027S"
+    assert equities["frequency"] == "Quarterly, End of Period"
+    assert equities["frequency_short"] == "Q"
     assert equities["units"] == "Millions of U.S. Dollars"
     assert equities["seasonal_adjustment_short"] == "NSA"
     assert equities["period_position"] == "END_OF_PERIOD"
@@ -56,7 +58,27 @@ def test_collector_preserves_unscaled_values_metadata_and_revision_dates():
         "realtime_end": "2026-08-12",
     }
     assert gdp["units"] == "Billions of Dollars"
+    assert gdp["frequency"] == "Quarterly"
+    assert gdp["frequency_short"] == "Q"
     assert gdp["seasonal_adjustment_short"] == "SAAR"
+
+
+def test_current_ncbeil_metadata_shape_requires_end_of_period_qualifier():
+    """Regress the exact native-frequency shape returned by FRED in 2026."""
+
+    payload = fixture("fred_p2_nonfinancial_equities.json")["metadata"]
+    assert payload["seriess"][0]["frequency"] == "Quarterly, End of Period"
+
+    parsed = parse_series_metadata(payload, series_id="NCBEILQ027S")
+    assert parsed["frequency"] == "Quarterly, End of Period"
+    assert parsed["period_position"] == "END_OF_PERIOD"
+
+    payload["seriess"][0]["frequency"] = "Quarterly"
+    with pytest.raises(
+        CollectorError,
+        match=r"expected 'Quarterly, End of Period', got 'Quarterly'",
+    ):
+        parse_series_metadata(payload, series_id="NCBEILQ027S")
 
 
 @pytest.mark.parametrize(

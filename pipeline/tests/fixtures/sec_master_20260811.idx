@@ -1,11 +1,11 @@
-Description:           Master Index of EDGAR Dissemination Feed
-Last Data Received:    August 11, 2026
+Description:           Daily Index of EDGAR Dissemination Feed
+Last Data Received:    Aug 11, 2026
 Comments:              webmaster@sec.gov
 Anonymous FTP:         ftp://ftp.sec.gov/edgar/
 
-CIK|Company Name|Form Type|Date Filed|Filename
+CIK|Company Name|Form Type|Date Filed|File Name
 --------------------------------------------------------------------------------
-320193|Example Issuer One|4|2026-08-11|edgar/data/320193/0000320193-26-000001.txt
-320193|Example Issuer One|4|2026-08-11|edgar/data/320193/0000320193-26-000001.txt
-789019|Example Issuer Two|4/A|2026-08-11|edgar/data/789019/0000789019-26-000002.txt
-1652044|Example Issuer Three|10-Q|2026-08-11|edgar/data/1652044/0001652044-26-000003.txt
+320193|Example Issuer One|4|20260811|edgar/data/320193/0000320193-26-000001.txt
+1000001|Example Reporting Owner|4|20260811|edgar/data/1000001/0000320193-26-000001.txt
+789019|Example Issuer Two|4/A|20260811|edgar/data/789019/0000789019-26-000002.txt
+1652044|Example Issuer Three|10-Q|20260811|edgar/data/1652044/0001652044-26-000003.txt
