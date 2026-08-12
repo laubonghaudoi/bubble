@@ -46,6 +46,16 @@ export interface MetricContext {
   is_proxy: boolean;
   confidence: string;
   direction?: string;
+  equity_observation_date?: string | null;
+  gdp_observation_date?: string | null;
+  common_quarter?: string | null;
+  window_start_5d?: string | null;
+  window_end_5d?: string | null;
+  window_start_20d?: string | null;
+  window_end_20d?: string | null;
+  dollar_status_5d?: string | null;
+  dollar_status_20d?: string | null;
+  ex_10b5_scope?: string | null;
 }
 
 export interface MetricSource {
@@ -130,6 +140,7 @@ export interface ExplanationBullet {
 }
 
 export interface CollectorSource {
+  collector_id?: string;
   name: string;
   url: string | null;
   tier: string | null;

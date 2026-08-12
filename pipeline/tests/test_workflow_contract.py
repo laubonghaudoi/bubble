@@ -23,7 +23,7 @@ def test_production_workflow_has_all_locked_triggers_and_dispatch_groups():
     assert set(triggers) == {"push", "schedule", "workflow_dispatch"}
     assert triggers["push"]["branches"] == ["main"]
     assert {entry["cron"] for entry in triggers["schedule"]} == {
-        "45 23 * * 1-5",
+        "0 7 * * 2-6",
         "45 22 * * 4",
         "30 22 * * 5",
         "15 13 2 * *",
@@ -60,6 +60,9 @@ def test_workflow_requires_source_configuration_and_stage_only_update():
     update = steps["Fetch, validate, transform, and write schema v2 stage"]
     assert update["env"]["FRED_API_KEY"] == "${{ secrets.FRED_API_KEY }}"
     assert update["env"]["SEC_USER_AGENT"] == "${{ vars.SEC_USER_AGENT }}"
+    assert update["env"]["SEC_FORM4_CACHE_DIR"] == (
+        "${{ runner.temp }}/sec-form4-cache"
+    )
     assert update["env"]["UPDATE_GROUP"] == "${{ steps.group.outputs.group }}"
     for command_part in (
         "python -m pipeline.update",
@@ -118,6 +121,23 @@ def test_workflow_orders_gates_before_atomic_promote_push_and_deploy():
     assert "git add public/data" in commit_script
     assert "git push" in commit_script
     assert "git push || true" not in commit_script
+
+
+def test_sec_form4_private_cache_is_actions_cache_only():
+    job = production_job()
+    cache_steps = [
+        step for step in job["steps"] if step.get("uses") == "actions/cache@v4"
+    ]
+    assert len(cache_steps) == 1
+    cache = cache_steps[0]["with"]
+    assert cache["path"] == "${{ runner.temp }}/sec-form4-cache"
+    assert cache["key"].startswith("sec-form4-v1-")
+    assert "sec-form4-v1-${{ runner.os }}-" in cache["restore-keys"]
+    commit_step = next(
+        step for step in job["steps"] if step.get("name") == "Commit generated schema v2 data"
+    )
+    assert "git add public/data" in commit_step["run"]
+    assert "sec-form4-cache" not in commit_step["run"]
 
 
 def test_only_one_workflow_deploys_pages_and_it_has_concurrency():

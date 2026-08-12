@@ -37,11 +37,11 @@ npm test
 npm run build
 ```
 
-可用 group：`all`、`daily`、`h41`、`weekly`、`monthly`、`quarterly`、`manual`。`weekly` 同時處理 H.4.1 同 CFTC TFF positioning；monthly、quarterly、manual 等未實作 phase group 只會安全重建 last-good schema v2 output，唔會假裝新 metric 已 active。
+可用 group：`all`、`daily`、`h41`、`weekly`、`monthly`、`quarterly`、`manual`。`daily` 會處理 P0 同最新已完成 SEC Form 4 daily indexes；`weekly` 同時處理 H.4.1、CFTC TFF positioning 同 45 日 Form 4 index reconciliation；`monthly`／`quarterly` 會重查 government-origin equities/GDP exact-quarter proxy。未推出嘅 P3 group 只會安全重建 last-good schema v2 output，唔會假裝新 metric 已 active。
 
 ## Schema 2.0.0 contract
 
-`public/data/` 係一次過發布嘅完整 artifact set，包括 `snapshot.json`、`manifest.json`、`alerts.json`、`events.json` 同 `series/*.json`。Pipeline 先喺 staging directory 完成 fetch、normalize、transform 同 contract validation，全部成功先用 directory promotion 取代 live data；任何一步失敗都保留上一版完整資料。
+`public/data/` 係一次過發布嘅完整 artifact set，包括 `snapshot.json`、`manifest.json`、`alerts.json`、`events.json`、`series/*.json`，以及 privacy-minimized `ledgers/sec_form4/`。Pipeline 先喺 staging directory 完成 fetch、normalize、transform、ledger hash/privacy allowlist 同 contract validation，全部成功先用 directory promotion 取代 live data；任何一步失敗都保留上一版完整資料。Raw SEC submissions 只可以留喺私有 Actions cache，永遠唔可以進入 public artifact。
 
 狀態分成三條獨立軸：
 
@@ -71,7 +71,7 @@ Generated-data push 使用本次 job 嘅 repository `GITHUB_TOKEN`。按 [GitHub
 
 Cron 只係喚醒時間，而且 GitHub 可能延遲；collector 會用官方 observation/release metadata 判斷 `NOT_RELEASED_YET`、freshness 同 expected next update，唔會將 job start time 當 source as-of。
 
-## Release 1–2 資料範圍
+## Release 1–3 資料範圍
 
 P0 包括：
 
@@ -90,7 +90,17 @@ P1 Market Ignition 使用 CFTC 官方 TFF Futures Only：
 - positioning 只係 evidence direction，Market Ignition `assessment` 保持 `null`，唔產生 `WATCH`／`STRESS`；
 - CFTC Tuesday observation、實際 release timestamp 同 pipeline update 分開顯示。
 
-VIX/VIX3M、Cboe SKEW、BTC／ETH funding、trend 同 cross-asset transforms 有獨立 provider interface 同 fixture tests，但 production rights gate 維持關閉；佢哋會明確顯示 `UNAVAILABLE_FREE` 同精確原因，value 保持 `null`，亦唔會發 network request。未推出嘅 P2–P3 metric 同樣 fail closed。
+VIX/VIX3M、Cboe SKEW、BTC／ETH funding、trend 同 cross-asset transforms 有獨立 provider interface 同 fixture tests，但 production rights gate 維持關閉；佢哋會明確顯示 `UNAVAILABLE_FREE` 同精確原因，value 保持 `null`，亦唔會發 network request。
+
+P2 Bubble / Fragility 係 Market Ignition 頁嘅獨立 context panel，唔會改變 P1 coverage、任何 switch severity 或 Overview overall assessment：
+
+- `nonfinancial_equities_gdp_proxy`：FRED 只分發 rights-cleared government-origin `NCBEILQ027S`（Fed Z.1）同 `GDP`（BEA）；只 join exact common quarter，唔 forward-fill，先由 million 轉 USD bn 再計 ratio、QoQ／YoY 同 trailing-40-quarter percentile；
+- `sec_form4_nonderivative_ps_count_ratio_20d`：由 SEC full-market daily master indexes 去重 accession，再讀 complete Form 4／4-A submission；只統計 Table I non-derivative `P`／`S`，即官方定義嘅 open-market **或 private** transactions，唔冒充純 open-market insider signal；
+- Form 4 主值係 20 個 completed index business days 嘅 `(P+1)/(S+1)` transaction-row count proxy；5D、price coverage、dollar ratio、filing-level 10b5-1 tri-state、amendment review 同 parse audit 分開披露；
+- Dollar coverage 低於 80% 或 sale-dollar denominator 為零時 dollar ratio 保持 `null`；真實 transaction count zero 仍保留零；
+- FINRA margin debt、SPY Top-10、SPX 0DTE、NDX forward P/E、M2/Nasdaq 同 gamma flip 仍係 `UNAVAILABLE_FREE`，zero network request。
+
+P2 畫面只顯示 `2/8 CONTEXT AVAILABLE`（兩項 active proxy、六項 rights/input hold）同各自 caveat，唔輸出 composite `WATCH`／`STRESS`。P3 Fundamental Exit 尚未推出，繼續 fail closed。
 
 ## 文件
 

@@ -26,6 +26,8 @@ import {
   OVERVIEW_MAIN_TABS,
   P1_CFTC_CONFIG,
   P1_RIGHTS_GATED_IDS,
+  P2_ACTIVE_IDS,
+  P2_HELD_IDS,
   ROUTES,
   SWITCH_CONFIG,
   TAPE_GROUPS,
@@ -415,6 +417,125 @@ function RightsGatedInterfaces({ snapshot, onMetric }: { snapshot: Snapshot; onM
   );
 }
 
+function ratioValue(value: number | null | undefined) {
+  return formatValue(value, '', 2);
+}
+
+function coverageValue(value: number | null | undefined) {
+  return value == null ? '—' : formatValue(value * 100, 'percent', 1);
+}
+
+function countValue(value: number | null | undefined) {
+  return formatValue(value, '', 0);
+}
+
+function FragilityStat({ label, value, detail, tone }: { label: string; value: string; detail?: string; tone?: string }) {
+  return <div><dt>{label}</dt><dd className={tone}>{value}</dd>{detail ? <small>{detail}</small> : null}</div>;
+}
+
+function FragilityPanel({ snapshot, series, range, onMetric }: { snapshot: Snapshot; series: SeriesMap; range: RangeKey; onMetric: (id: string) => void }) {
+  const macro = snapshot.metrics.nonfinancial_equities_gdp_proxy;
+  const form4 = snapshot.metrics.sec_form4_nonderivative_ps_count_ratio_20d;
+  const active = P2_ACTIVE_IDS.filter((id) => {
+    const metric = snapshot.metrics[id];
+    return metric?.quality.status === 'OK' && metric.value != null;
+  }).length;
+  const p2Series = Object.fromEntries(P2_ACTIVE_IDS.flatMap((id) => series[id] ? [[id, series[id]]] : []));
+  const globalLatest = getGlobalLatestDate(p2Series);
+  const macroPoints = windowPoints(series[macro.metric_id]?.observations ?? macro.short_series, range, globalLatest);
+  const form4Points = windowPoints(series[form4.metric_id]?.observations ?? form4.short_series, range, globalLatest);
+  const macroStats = macro.statistics;
+  const form4Stats = form4.statistics;
+  const macroLastGood = isLastGood(macro);
+  const form4LastGood = isLastGood(form4);
+
+  return (
+    <section className="phase-section fragility-section" aria-labelledby="fragility-title">
+      <div className="detail-section-head"><span id="fragility-title">P2 · BUBBLE / FRAGILITY CONTEXT</span><b>{active}/{P2_ACTIVE_IDS.length + P2_HELD_IDS.length} CONTEXT AVAILABLE</b></div>
+      <p className="fragility-contract"><strong>CONTEXT ONLY.</strong> 呢兩組資料獨立顯示，唔會改動 P1 Market Ignition coverage、Overview overall assessment，亦唔會產生 WATCH／STRESS。</p>
+      <div className="fragility-grid">
+        <article className={`fragility-card${macroLastGood ? ' is-last-good' : ''}`} data-metric-id={macro.metric_id} data-value-state={valueState(macro)}>
+          <div className="fragility-card-head"><div><strong>NONFINANCIAL EQUITIES / GDP</strong><span>QUARTERLY GOVERNMENT-ORIGIN PROXY</span></div><div className="cftc-badges"><Badge status={macro.availability} label={AVAILABILITY_LABELS[macro.availability]} /><Badge status={macro.quality.status} label={healthText(macro.quality.status)} /></div></div>
+          <div className="fragility-readout"><div><small>CURRENT RATIO</small><strong>{formatValue(macro.value, 'percent')}</strong>{macroLastGood ? <LastGoodTag status={macro.quality.status} /> : null}</div><span>COMMON QUARTER · {macro.context.common_quarter ?? '—'}</span></div>
+          <Sparkline points={macroPoints} selected label={`Nonfinancial equities / GDP，${range} regime window`} lastGood={macroLastGood} />
+          <dl className="fragility-stats">
+            <FragilityStat label="1Q RATIO Δ" value={macro.changes.one_quarter == null ? '—' : `${formatSignedDelta(macro.changes.one_quarter, '', 2)} pp`} tone={deltaClass(macro.changes.one_quarter)} />
+            <FragilityStat label="QOQ" value={formatSignedDelta(macroStats.qoq_percent_change, 'percent')} tone={deltaClass(macroStats.qoq_percent_change)} />
+            <FragilityStat label="YOY" value={formatSignedDelta(macroStats.yoy_percent_change, 'percent')} tone={deltaClass(macroStats.yoy_percent_change)} />
+            <FragilityStat label="10Y PERCENTILE" value={formatValue(macroStats.percentile_10y, 'percent', 1)} detail={`${countValue(macroStats.percentile_10y_sample_size)} common quarters`} />
+            <FragilityStat label="EQUITY LIABILITIES" value={formatValue(macroStats.equity_usd_bn, 'USD bn')} />
+            <FragilityStat label="NOMINAL GDP" value={formatValue(macroStats.gdp_usd_bn, 'USD bn')} />
+          </dl>
+          <dl className="fragility-dates">
+            <div><dt>EQUITY INPUT AS-OF</dt><dd>{macro.context.equity_observation_date ?? '—'}</dd></div>
+            <div><dt>GDP INPUT AS-OF</dt><dd>{macro.context.gdp_observation_date ?? '—'}</dd></div>
+            <div><dt>PIPELINE UPDATE</dt><dd>{displayTimestamp(macro.updated_at)}</dd></div>
+          </dl>
+          <p className="fragility-caveat"><b>PROXY CAVEAT</b>{macro.methodology.proxy_disclosure || macro.methodology.common_misreads}</p>
+          <button type="button" className="metric-method" aria-label={`開啟 ${macro.label} 完整方法與來源`} onClick={() => onMetric(macro.metric_id)}>完整方法、revision 風險與來源 →</button>
+        </article>
+
+        <article className={`fragility-card${form4LastGood ? ' is-last-good' : ''}`} data-metric-id={form4.metric_id} data-value-state={valueState(form4)}>
+          <div className="fragility-card-head"><div><strong>SEC FORM 4 REPORTED P/S</strong><span>NON-DERIVATIVE TRANSACTION-ROW PROXY</span></div><div className="cftc-badges"><Badge status={form4.availability} label={AVAILABILITY_LABELS[form4.availability]} /><Badge status={form4.quality.status} label={healthText(form4.quality.status)} /></div></div>
+          <div className="fragility-readout"><div><small>20D COUNT RATIO</small><strong>{ratioValue(form4.value)}</strong>{form4LastGood ? <LastGoodTag status={form4.quality.status} /> : null}</div><span>20 COMPLETED EDGAR INDEX DAYS</span></div>
+          <Sparkline points={form4Points} selected label={`SEC Form 4 P/S count ratio，${range} regime window`} lastGood={form4LastGood} />
+          <dl className="fragility-stats form4-ratios">
+            <FragilityStat label="INCLUSIVE · 20D" value={ratioValue(form4Stats.count_ratio_20d)} />
+            <FragilityStat label="INCLUSIVE · 5D" value={ratioValue(form4Stats.ratio_5d)} />
+            <FragilityStat label="EXPLICIT-FALSE · 20D" value={ratioValue(form4Stats.ex_explicit_false_count_ratio_20d)} detail={`${coverageValue(form4Stats.ex_explicit_false_coverage_20d)} eligible-row coverage`} />
+            <FragilityStat label="EXPLICIT-FALSE · 5D" value={ratioValue(form4Stats.ex_explicit_false_count_ratio_5d)} detail={`${coverageValue(form4Stats.ex_explicit_false_coverage_5d)} eligible-row coverage`} />
+          </dl>
+          <table className="form4-count-table">
+            <caption>P / S ELIGIBLE TRANSACTION-ROW COUNTS</caption>
+            <thead><tr><th scope="col">WINDOW</th><th scope="col">P ROWS</th><th scope="col">S ROWS</th><th scope="col">RATIO</th></tr></thead>
+            <tbody><tr><th scope="row">5D</th><td>{countValue(form4Stats.purchase_count_5d)}</td><td>{countValue(form4Stats.sale_count_5d)}</td><td>{ratioValue(form4Stats.ratio_5d)}</td></tr><tr><th scope="row">20D</th><td>{countValue(form4Stats.purchase_count_20d)}</td><td>{countValue(form4Stats.sale_count_20d)}</td><td>{ratioValue(form4Stats.count_ratio_20d)}</td></tr></tbody>
+          </table>
+          <div className="form4-dollar-grid" aria-label="Form 4 dollar ratio coverage">
+            {(['5d', '20d'] as const).map((window) => {
+              const ratio = form4Stats[`dollar_ratio_${window}`];
+              const coverage = form4Stats[`dollar_coverage_rate_${window}`];
+              const status = form4.context[`dollar_status_${window}`] ?? 'UNKNOWN';
+              return <div key={window}><span>DOLLAR RATIO · {window.toUpperCase()}</span><strong>{ratioValue(ratio)}</strong><small>{coverageValue(coverage)} priced-row coverage · {status.replaceAll('_', ' ')}</small></div>;
+            })}
+          </div>
+          <dl className="form4-audit-grid">
+            <FragilityStat label="ELIGIBLE / PRICED ROWS · 20D" value={`${countValue(form4Stats.eligible_transaction_count_20d)} / ${countValue(form4Stats.priced_transaction_count_20d)}`} />
+            <FragilityStat label="FILINGS / ACCESSIONS / ISSUERS" value={`${countValue(form4Stats.filings_processed_20d)} / ${countValue(form4Stats.unique_accessions_20d)} / ${countValue(form4Stats.unique_issuers_20d)}`} />
+            <FragilityStat label="FORM 4 / FORM 4-A" value={`${countValue(form4Stats.form4_count_20d)} / ${countValue(form4Stats.form4a_count_20d)}`} />
+            <FragilityStat label="AMENDMENTS LINKED / REVIEW" value={`${countValue(form4Stats.amendments_linked_20d)} / ${countValue(form4Stats.amendments_review_count_20d)}`} />
+            <FragilityStat label="PARSE FAILURES" value={countValue(form4Stats.parse_failures_20d)} tone={form4Stats.parse_failures_20d ? 'is-negative' : 'is-zero'} />
+            <FragilityStat label="10B5-1 TRUE / FALSE / UNKNOWN" value={`${countValue(form4Stats.tenb5_true_filings_20d)} / ${countValue(form4Stats.tenb5_false_filings_20d)} / ${countValue(form4Stats.tenb5_unknown_filings_20d)}`} />
+          </dl>
+          <dl className="fragility-dates form4-windows">
+            <div><dt>5D CUTOFF</dt><dd>{form4.context.window_start_5d ?? '—'} → {form4.context.window_end_5d ?? '—'}</dd></div>
+            <div><dt>20D CUTOFF</dt><dd>{form4.context.window_start_20d ?? '—'} → {form4.context.window_end_20d ?? '—'}</dd></div>
+            <div><dt>PIPELINE UPDATE</dt><dd>{displayTimestamp(form4.updated_at)}</dd></div>
+          </dl>
+          <p className="fragility-caveat"><b>DEFINITION BOUNDARY</b>P/S includes <strong>open-market OR private</strong> purchases and sales. Ratios count eligible non-derivative transaction rows, not unique insiders or trades. The 10b5-1 sensitivity is filing-level and includes only filings explicitly marked false; amendments that cannot be reliably linked are quarantined for review.</p>
+          <button type="button" className="metric-method" aria-label={`開啟 ${form4.label} 完整方法、來源與審核限制`} onClick={() => onMetric(form4.metric_id)}>完整方法、來源與審核限制 →</button>
+        </article>
+      </div>
+    </section>
+  );
+}
+
+function P2RightsHeld({ snapshot, onMetric }: { snapshot: Snapshot; onMetric: (id: string) => void }) {
+  return (
+    <section className="phase-section rights-gate-section p2-held-section" aria-labelledby="p2-held-title">
+      <div className="detail-section-head"><span id="p2-held-title">P2 · UNAVAILABLE FREE</span><b>{P2_HELD_IDS.length} LOCKED INTERFACES · FAIL CLOSED</b></div>
+      <p className="rights-gate-intro">缺少重發權利或 definition-consistent input，所以一律保持 null；以下「—」唔代表零、平穩或 neutral。</p>
+      <div className="rights-gate-grid">
+        {P2_HELD_IDS.map((id) => {
+          const metric = snapshot.metrics[id];
+          if (!metric) return null;
+          const reason = metric.quality.failure_reason || metric.source.rights_note || metric.methodology.source_and_license_note;
+          return <article className="rights-gate-card" data-metric-id={id} key={id}><div><strong>{metric.label}</strong><Badge status={metric.availability} label={AVAILABILITY_LABELS[metric.availability]} /></div><span className="rights-null">—</span><p><b>EXACT HOLD</b>{reason}</p><p><b>FUTURE INTERFACE</b>{metric.methodology.calculation}</p><button type="button" className="metric-method" aria-label={`開啟 ${metric.label} 完整方法與來源`} onClick={() => onMetric(id)}>完整方法與來源 →</button></article>;
+        })}
+      </div>
+    </section>
+  );
+}
+
 function ConfirmationGrid({ snapshot, onMain, onMetric }: { snapshot: Snapshot; onMain: (id: string) => void; onMetric: (id: string) => void }) {
   return <section className="confirmation-section"><div className="detail-section-head"><span>IORB CONFIRMATION SPREADS</span><b>BACKWARD AS-OF JOIN</b></div><div className="confirmation-grid">{CONFIRMATION_SPREAD_IDS.map((id) => { const metric = snapshot.metrics[id]; if (!metric) return null; const change = changePresentation(metric); const lastGood = isLastGood(metric); return <article className={`metric-card${lastGood ? ' is-last-good' : ''}`} data-value-state={valueState(metric)} key={id}><button type="button" className="metric-card-main" onClick={() => onMain(id)}><span>{metric.label}</span><strong>{formatValue(metric.value, metric.unit)}</strong>{lastGood ? <LastGoodTag status={metric.quality.status} /> : null}<small className={deltaClass(change.value)}>{formatSignedDelta(change.value, metric.unit)} {change.label}</small></button><button type="button" className="metric-method" onClick={() => onMetric(id)}>方法與來源 →</button></article>; })}</div></section>;
 }
@@ -432,9 +553,30 @@ function PhasePage({ route, snapshot, catalog, catalogError, series, range, onRa
   const layer = route === 'market-ignition' ? 'market_ignition' : 'fundamental_exit';
   const value = snapshot.switches[layer];
   const title = route === 'market-ignition' ? '市場引信' : '基本面逃生門';
-  const phases = route === 'market-ignition' ? ['P2'] as const : ['P3'] as const;
-  const layerCatalog = catalog.filter((item) => item.layer === layer);
-  return <main className="detail-page"><header className="detail-hero"><div><span className="detail-number">{route === 'market-ignition' ? '02' : '03'}</span><h2 className="route-heading" data-route-heading tabIndex={-1}>{title}</h2><p>{value.summary}</p></div>{route === 'market-ignition' ? <div className="detail-assessment is-evidence-only" style={statusStyle('UNKNOWN')}><span>EVIDENCE ONLY</span><strong>{value.available_blocks}/{value.total_blocks} AVAILABLE</strong><small>DIRECTION + CONFIDENCE · NO WATCH/STRESS</small></div> : <div className="detail-assessment" style={statusStyle(value.assessment ?? value.mode)}><span>{value.mode.toUpperCase()}</span><strong>{value.assessment ?? '資料未足以評估'}</strong><small>{value.available_blocks}/{value.total_blocks} BLOCKS · {value.confidence.toUpperCase()}</small></div>}</header>{catalogError ? <div className="inline-error" role="status">Manifest 暫時不可用：{catalogError}</div> : null}{route === 'market-ignition' ? <><EvidenceBlocks value={value} evidenceOnly /><CftcPositioningPanel snapshot={snapshot} series={series} range={range} onRange={onRange} onMetric={onMetric} /><RightsGatedInterfaces snapshot={snapshot} onMetric={onMetric} /></> : null}{phases.map((phase) => { const metrics = layerCatalog.filter((item) => item.phase === phase).map((item) => snapshot.metrics[item.metric_id]).filter((metric): metric is Metric => Boolean(metric)); const active = metrics.filter((metric) => ['ACTIVE_FREE', 'ACTIVE_PROXY'].includes(metric.availability) && metric.quality.status === 'OK').length; return <section className="phase-section" key={phase}><div className="detail-section-head"><span>{phase} · {phase === 'P2' ? 'BUBBLE / FRAGILITY' : 'CAPEX / INDUSTRY DEMAND'}</span><b>{active}/{metrics.length} ACTIVE</b></div>{metrics.length ? <StatusGroups metrics={metrics} onMetric={onMetric} /> : <p className="phase-empty">呢個 phase 暫時未有可驗證 metric metadata；唔會用假數字補位。</p>}</section>; })}{route === 'fundamental-exit' ? <EvidenceBlocks value={value} /> : null}</main>;
+  const p3Metrics = catalog.filter((item) => item.layer === layer && item.phase === 'P3')
+    .map((item) => snapshot.metrics[item.metric_id]).filter((metric): metric is Metric => Boolean(metric));
+  const p3Active = p3Metrics.filter((metric) => ['ACTIVE_FREE', 'ACTIVE_PROXY'].includes(metric.availability) && metric.quality.status === 'OK').length;
+  return (
+    <main className="detail-page">
+      <header className="detail-hero">
+        <div><span className="detail-number">{route === 'market-ignition' ? '02' : '03'}</span><h2 className="route-heading" data-route-heading tabIndex={-1}>{title}</h2><p>{value.summary}</p></div>
+        {route === 'market-ignition'
+          ? <div className="detail-assessment is-evidence-only" style={statusStyle('UNKNOWN')}><span>EVIDENCE ONLY</span><strong>{value.available_blocks}/{value.total_blocks} AVAILABLE</strong><small>DIRECTION + CONFIDENCE · NO WATCH/STRESS</small></div>
+          : <div className="detail-assessment" style={statusStyle(value.assessment ?? value.mode)}><span>{value.mode.toUpperCase()}</span><strong>{value.assessment ?? '資料未足以評估'}</strong><small>{value.available_blocks}/{value.total_blocks} BLOCKS · {value.confidence.toUpperCase()}</small></div>}
+      </header>
+      {catalogError ? <div className="inline-error" role="status">Manifest 暫時不可用：{catalogError}</div> : null}
+      {route === 'market-ignition' ? <>
+        <EvidenceBlocks value={value} evidenceOnly />
+        <CftcPositioningPanel snapshot={snapshot} series={series} range={range} onRange={onRange} onMetric={onMetric} />
+        <RightsGatedInterfaces snapshot={snapshot} onMetric={onMetric} />
+        <FragilityPanel snapshot={snapshot} series={series} range={range} onMetric={onMetric} />
+        <P2RightsHeld snapshot={snapshot} onMetric={onMetric} />
+      </> : <>
+        <section className="phase-section"><div className="detail-section-head"><span>P3 · CAPEX / INDUSTRY DEMAND</span><b>{p3Active}/{p3Metrics.length} ACTIVE</b></div>{p3Metrics.length ? <StatusGroups metrics={p3Metrics} onMetric={onMetric} /> : <p className="phase-empty">呢個 phase 暫時未有可驗證 metric metadata；唔會用假數字補位。</p>}</section>
+        <EvidenceBlocks value={value} />
+      </>}
+    </main>
+  );
 }
 
 function FooterTicker({ snapshotUrl, onSources }: { snapshotUrl: string; onSources: () => void }) {
@@ -443,6 +585,10 @@ function FooterTicker({ snapshotUrl, onSources }: { snapshotUrl: string; onSourc
 
 function CftcLegalNotice() {
   return <p className="cftc-legal-notice"><strong>CFTC TFF Futures Only.</strong> Source acknowledged: U.S. Commodity Futures Trading Commission, <a href="https://publicreporting.cftc.gov/Commitments-of-Traders/TFF-Futures-Only/gpe5-46if" target="_blank" rel="noreferrer">official TFF Futures Only dataset ↗</a> and <a href="https://www.cftc.gov/MarketReports/CommitmentsofTraders/ReleaseSchedule/index.htm" target="_blank" rel="noreferrer">COT release schedule ↗</a>. Positions are measured as of Tuesday and normally released Friday; holiday schedules can delay release. Asset Manager and Leveraged Funds are official reporting categories; neither is “CTA exposure”, and positioning is not a forecast. Under the <a href="https://www.cftc.gov/WebPolicy/index.htm" target="_blank" rel="noreferrer">CFTC Web Policy ↗</a>, government-produced material is generally public domain, while credited third-party material can carry separate rights. No CFTC seal or logo is used. Bubble USD Liquidity Dashboard is not affiliated with, endorsed by, or acting for the CFTC, and the CFTC is not responsible for this presentation.</p>;
+}
+
+function SecLegalNotice() {
+  return <p className="sec-legal-notice"><strong>SEC EDGAR Form 4.</strong> Filing data are obtained from the <a href="https://www.sec.gov/Archives/edgar/daily-index/" target="_blank" rel="noreferrer">official EDGAR daily indexes ↗</a>. Under the official <a href="https://www.sec.gov/files/form4.pdf" target="_blank" rel="noreferrer">Form 4 instructions ↗</a>, transaction codes P and S cover open-market <em>or private</em> purchases and sales; this dashboard therefore does not label them open-market-only. The count ratio measures eligible non-derivative transaction rows, while missing prices affect dollar coverage. Filing-level 10b5-1 flags are not exact transaction-level classifications, and unlinked amendments are quarantined for review. Public EDGAR information may be reused subject to the SEC’s <a href="https://www.sec.gov/about/privacy-information" target="_blank" rel="noreferrer">privacy and dissemination notice ↗</a>. No SEC seal or logo is used, and Bubble USD Liquidity Dashboard is not affiliated with or endorsed by the SEC.</p>;
 }
 
 function Provenance({ snapshot }: { snapshot: Snapshot }) {
@@ -461,6 +607,7 @@ function Provenance({ snapshot }: { snapshot: Snapshot }) {
         <p><strong>FRED® API.</strong> This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. By using this dashboard, users agree to be bound by the <a href="https://fred.stlouisfed.org/docs/api/terms_of_use.html" target="_blank" rel="noreferrer">FRED® API Terms of Use ↗</a>. Only reviewed government-origin series are enabled; a FRED API key does not grant third-party data rights.</p>
         <p><strong>New York Fed reference rates.</strong> The SOFR, EFFR, OBFR, TGCR and BGCR data are subject to the <a href="https://www.newyorkfed.org/privacy/termsofuse.html" target="_blank" rel="noreferrer">Terms of Use posted at newyorkfed.org ↗</a>. The New York Fed is not responsible for publication of these data by Bubble USD Liquidity Dashboard, does not sanction or endorse this republication, and has no liability for your use. Bubble USD Liquidity Dashboard is not affiliated with the New York Fed. The New York Fed does not sanction, endorse, or recommend any products or services offered by Bubble USD Liquidity Dashboard. © 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org.</p>
         <CftcLegalNotice />
+        <SecLegalNotice />
         <p><strong>Privacy.</strong> This static dashboard does not provide accounts and does not intentionally collect personal information, analytics, or cookies.</p>
       </article>
     </section>
@@ -478,10 +625,16 @@ function AttemptStatus({ attempt, success }: { attempt: string | null; success: 
 }
 
 function formatStatistic(name: string, value: number): string {
-  if (name === 'sample_size' || name.endsWith('_sample_size') ||
+  if (name === 'sample_size' || name.endsWith('_sample_size') || name.includes('_count_') ||
+    name.startsWith('unique_') || name.startsWith('filings_processed_') || name.startsWith('form4') ||
+    name.startsWith('amendments_') || name.startsWith('parse_failures_') || name.startsWith('tenb5_') ||
     ['net_position', 'open_interest', 'long_position', 'short_position', 'spread_position', 'operation_count'].includes(name)) {
     return formatValue(value, '', 0);
   }
+  if (name.includes('coverage_rate') || name.startsWith('ex_explicit_false_coverage_')) return formatValue(value * 100, 'percent', 1);
+  if (name === 'percentile_10y' || name === 'qoq_percent_change' || name === 'yoy_percent_change') return formatValue(value, 'percent', 2);
+  if (name === 'equity_usd_bn' || name === 'gdp_usd_bn') return formatValue(value, 'USD bn');
+  if (name.includes('ratio')) return formatValue(value, '', 2);
   if (name === 'net_percent_open_interest') return formatValue(value, 'percent_open_interest');
   if (name === 'change_8_weeks' || name === 'change_12_weeks') return `${formatSignedDelta(value, '', 2)} pp`;
   return formatValue(value);
@@ -501,7 +654,7 @@ function Drawer({ mode, snapshot, catalog, catalogError, restoreFocus, onClose }
   useEffect(() => { const overflow = document.body.style.overflow; document.body.style.overflow = 'hidden'; closeRef.current?.focus(); const onKeyDown = (event: KeyboardEvent) => { if (event.key === 'Escape') { event.preventDefault(); onClose(); return; } if (event.key !== 'Tab' || !drawerRef.current) return; const focusable = [...drawerRef.current.querySelectorAll<HTMLElement>('button, a[href], [tabindex]:not([tabindex="-1"])')].filter((element) => !element.hasAttribute('disabled')); if (!focusable.length) return; const first = focusable[0]; const last = focusable.at(-1)!; if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); } }; document.addEventListener('keydown', onKeyDown); return () => { document.removeEventListener('keydown', onKeyDown); document.body.style.overflow = overflow; if (restoreFocus?.isConnected) restoreFocus.focus(); window.requestAnimationFrame(() => { if (restoreFocus?.isConnected) restoreFocus.focus(); }); }; }, [onClose, restoreFocus]);
   const sourceMode = mode === 'sources'; const metric = sourceMode ? undefined : snapshot.metrics[mode]; const catalogMetric = sourceMode ? undefined : catalog.find((item) => item.metric_id === mode);
   const definitions: Array<[string, keyof Metric['methodology']]> = [['回答問題', 'question'], ['精確定義', 'definition'], ['點解要睇', 'why_it_matters'], ['方向判讀', 'direction'], ['計算方法', 'calculation'], ['頻率與滯後', 'frequency_and_lag'], ['常見誤判', 'common_misreads'], ['技術扭曲', 'technical_distortions'], ['一齊確認', 'confirm_with'], ['唔可以推論', 'cannot_infer'], ['來源／授權', 'source_and_license_note'], ['Proxy disclosure', 'proxy_disclosure']];
-  return <div className="drawer-scrim" onClick={(event: MouseEvent<HTMLDivElement>) => { if (event.target === event.currentTarget) onClose(); }}><aside className="drawer" ref={drawerRef} role="dialog" aria-modal="true" aria-labelledby="drawer-title"><button className="drawer-close" type="button" ref={closeRef} onClick={onClose} aria-label="關閉">×</button><div className="drawer-kicker">{sourceMode ? 'PROVENANCE' : 'METRIC METHODOLOGY'}</div><h2 id="drawer-title">{sourceMode ? '來源與健康狀態' : metric?.label ?? mode}</h2>{!sourceMode && catalogError ? <p className="drawer-catalog-warning" role="status">Manifest／方法目錄暫時不可用（{catalogError}）。以下 snapshot metric 資料仍可查看，但方法目錄完整性未能確認。</p> : null}{sourceMode ? <>{Object.entries(snapshot.sources).map(([id, source]) => <SourceDrawerRow key={id} source={source} />)}<section className="drawer-legal-notice" aria-label="CFTC source notice"><CftcLegalNotice /></section></> : metric ? <><div className="drawer-badges"><Badge status={metric.availability} label={AVAILABILITY_LABELS[metric.availability]} /><Badge status={metric.quality.status} label={healthText(metric.quality.status)} /><Badge status={metric.quality.freshness} label={FRESHNESS_LABELS[metric.quality.freshness]} /></div><TimestampGrid observation={metric.observation_date} released={metric.released_at} updated={metric.updated_at} /><AttemptStatus attempt={metric.quality.last_attempt_at} success={metric.quality.last_success_at} /><Statistics values={metric.statistics} /><p className="rights-note"><b>RIGHTS / USE</b>{metric.source.rights_note || metric.methodology.source_and_license_note}</p>{metric.quality.failure_reason ? <p className="drawer-error">{metric.quality.failure_reason}</p> : null}<dl className="drawer-def">{definitions.map(([term, key]) => { const content = metric.methodology[key]; const text = Array.isArray(content) ? content.join('、') : content; return text ? <div key={key}><dt>{term}</dt><dd>{text}</dd></div> : null; })}</dl></> : <p className="drawer-message">{catalogError || (catalogMetric ? 'Snapshot metric 暫時未提供。' : '方法資料暫時未提供。')}</p>}</aside></div>;
+  return <div className="drawer-scrim" onClick={(event: MouseEvent<HTMLDivElement>) => { if (event.target === event.currentTarget) onClose(); }}><aside className="drawer" ref={drawerRef} role="dialog" aria-modal="true" aria-labelledby="drawer-title"><button className="drawer-close" type="button" ref={closeRef} onClick={onClose} aria-label="關閉">×</button><div className="drawer-kicker">{sourceMode ? 'PROVENANCE' : 'METRIC METHODOLOGY'}</div><h2 id="drawer-title">{sourceMode ? '來源與健康狀態' : metric?.label ?? mode}</h2>{!sourceMode && catalogError ? <p className="drawer-catalog-warning" role="status">Manifest／方法目錄暫時不可用（{catalogError}）。以下 snapshot metric 資料仍可查看，但方法目錄完整性未能確認。</p> : null}{sourceMode ? <>{Object.entries(snapshot.sources).map(([id, source]) => <SourceDrawerRow key={id} source={source} />)}<section className="drawer-legal-notice" aria-label="CFTC and SEC source notices"><CftcLegalNotice /><SecLegalNotice /></section></> : metric ? <><div className="drawer-badges"><Badge status={metric.availability} label={AVAILABILITY_LABELS[metric.availability]} /><Badge status={metric.quality.status} label={healthText(metric.quality.status)} /><Badge status={metric.quality.freshness} label={FRESHNESS_LABELS[metric.quality.freshness]} /></div><TimestampGrid observation={metric.observation_date} released={metric.released_at} updated={metric.updated_at} /><AttemptStatus attempt={metric.quality.last_attempt_at} success={metric.quality.last_success_at} /><Statistics values={metric.statistics} /><p className="rights-note"><b>RIGHTS / USE</b>{metric.source.rights_note || metric.methodology.source_and_license_note}</p>{metric.quality.failure_reason ? <p className="drawer-error">{metric.quality.failure_reason}</p> : null}<dl className="drawer-def">{definitions.map(([term, key]) => { const content = metric.methodology[key]; const text = Array.isArray(content) ? content.join('、') : content; return text ? <div key={key}><dt>{term}</dt><dd>{text}</dd></div> : null; })}</dl></> : <p className="drawer-message">{catalogError || (catalogMetric ? 'Snapshot metric 暫時未提供。' : '方法資料暫時未提供。')}</p>}</aside></div>;
 }
 
 export interface DashboardProps {

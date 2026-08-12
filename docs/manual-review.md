@@ -8,7 +8,7 @@
 - `UNAVAILABLE_FREE`：缺少定義一致、可重現或獲准再發布嘅 input，人工亦唔可以偽造；
 - 未實作 phase：registry `implemented: false`，published output 映射為 `UNAVAILABLE_FREE / NOT_APPLICABLE / UNKNOWN`。
 
-人工資料唔會自動變成 `ACTIVE_FREE` 或 `ACTIVE_PROXY`。Availability 改動需要 code/config review、來源權利覆核同測試。
+P0–P2 人工資料唔會自動變成 `ACTIVE_FREE` 或 `ACTIVE_PROXY`。Availability 改動需要 code/config review、來源權利覆核同測試；P3 將另行提供完整 reviewed-public-filing CSV contract，只有通過嗰份 contract 嘅 record先可以動態標記為 manual-reviewed evidence。
 
 ## 每筆 manual record 必須有
 
@@ -43,6 +43,10 @@
 ### Industry signals
 
 Orders、backlog、prepayments、take-or-pay 等非標準披露只可以由公開 filing 人手整理。可以記錄 `UP / FLAT / DOWN / UNKNOWN` 同短 factual paraphrase；唔好長篇複製 issuer narrative。定義轉變時設 `comparable: false`。
+
+### SEC Form 4 amendment review
+
+P2 collector只會自動套用能唯一連結嘅 Form 4/A transaction replacement。未能唯一對應 original accession、超出 45 日 ledger或 transaction fingerprint有歧義嘅 amendment會標記 `UNLINKED_REVIEW`、排除於 proxy，並計入 review count；人手唔可以只憑姓名或相近金額強制合併。Row-level parse anomaly亦只會 quarantine相關 row並保留 audit reason，唔會將缺失當零。
 
 ### Proprietary metrics
 

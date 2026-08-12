@@ -22,11 +22,6 @@ LEGACY_SERIES_IDS: dict[str, str] = {
     "srf_accepted": "srf_usage",
     "vix_vix3m_term_structure_proxy": "vix_curve",
     "cross_asset_correlation": "cross_asset_corr",
-    "put_call_vol_skew": "put_call_skew",
-    "spy_holdings_top10_weight_proxy": "sp500_top10_weight",
-    "nonfinancial_equities_gdp_proxy": "buffett_indicator_proxy",
-    "m2_nasdaq_divergence": "m2_vs_nasdaq",
-    "insider_buy_sell_proxy": "insider_ratio_proxy",
 }
 
 FRESHNESS_ORDER = {"FRESH": 0, "LATE": 1, "STALE": 2, "UNKNOWN": 3}

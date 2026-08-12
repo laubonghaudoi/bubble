@@ -186,6 +186,22 @@ export const P1_EVIDENCE_BLOCK_IDS = [
   'crypto_cross_asset',
 ] as const;
 
+export const P2_ACTIVE_IDS = [
+  'nonfinancial_equities_gdp_proxy',
+  'sec_form4_nonderivative_ps_count_ratio_20d',
+] as const;
+
+export const P2_HELD_IDS = [
+  'finra_margin_debt',
+  'spy_holdings_top10_weight_proxy',
+  'spx_0dte_share',
+  'ndx_forward_pe',
+  'm2_nasdaq_divergence',
+  'gamma_flip',
+] as const;
+
+export const P2_SERIES_IDS = [...P2_ACTIVE_IDS, ...P2_HELD_IDS] as const;
+
 const P1_DIRECTIONS = new Set(['MORE_NET_LONG', 'MORE_NET_SHORT', 'FLAT', 'MIXED', 'UNKNOWN']);
 const EVIDENCE_CONFIDENCE = new Set(['HIGH', 'MEDIUM', 'LOW', 'UNKNOWN']);
 const HEALTH_RANK: Readonly<Record<HealthStatus, number>> = {
@@ -318,10 +334,16 @@ function isStatistics(value: unknown): value is Record<string, number | null> {
 }
 
 function isContext(value: unknown): value is MetricContext {
-  return isRecord(value) && Array.isArray(value.technical_flags) &&
-    value.technical_flags.every((flag) => typeof flag === 'string') &&
-    typeof value.is_proxy === 'boolean' && typeof value.confidence === 'string' &&
-    (value.direction === undefined || typeof value.direction === 'string');
+  if (!isRecord(value) || !Array.isArray(value.technical_flags) ||
+    !value.technical_flags.every((flag) => typeof flag === 'string') ||
+    typeof value.is_proxy !== 'boolean' || typeof value.confidence !== 'string' ||
+    (value.direction !== undefined && typeof value.direction !== 'string')) return false;
+  const nullableText = [
+    'equity_observation_date', 'gdp_observation_date', 'common_quarter',
+    'window_start_5d', 'window_end_5d', 'window_start_20d', 'window_end_20d',
+    'dollar_status_5d', 'dollar_status_20d', 'ex_10b5_scope',
+  ];
+  return nullableText.every((key) => value[key] === undefined || isNullableString(value[key]));
 }
 
 function p1Direction(change: number | null | undefined): string {
@@ -329,6 +351,120 @@ function p1Direction(change: number | null | undefined): string {
   if (change > 0) return 'MORE_NET_LONG';
   if (change < 0) return 'MORE_NET_SHORT';
   return 'FLAT';
+}
+
+const P2_MACRO_STATISTICS = [
+  'equity_usd_bn',
+  'gdp_usd_bn',
+  'qoq_percent_change',
+  'yoy_percent_change',
+  'percentile_10y',
+  'percentile_10y_sample_size',
+] as const;
+
+const P2_FORM4_STATISTICS = [
+  'ratio_5d',
+  'count_ratio_20d',
+  'purchase_count_5d',
+  'sale_count_5d',
+  'purchase_count_20d',
+  'sale_count_20d',
+  'dollar_ratio_5d',
+  'dollar_ratio_20d',
+  'dollar_coverage_rate_5d',
+  'dollar_coverage_rate_20d',
+  'ex_explicit_false_count_ratio_5d',
+  'ex_explicit_false_count_ratio_20d',
+  'ex_explicit_false_coverage_5d',
+  'ex_explicit_false_coverage_20d',
+  'eligible_transaction_count_20d',
+  'priced_transaction_count_20d',
+  'unique_accessions_20d',
+  'unique_issuers_20d',
+  'filings_processed_20d',
+  'form4_count_20d',
+  'form4a_count_20d',
+  'amendments_linked_20d',
+  'amendments_review_count_20d',
+  'parse_failures_20d',
+  'tenb5_true_filings_20d',
+  'tenb5_false_filings_20d',
+  'tenb5_unknown_filings_20d',
+] as const;
+
+const P2_FORM4_COUNT_STATISTICS = [
+  'purchase_count_5d', 'sale_count_5d', 'purchase_count_20d', 'sale_count_20d',
+  'eligible_transaction_count_20d', 'priced_transaction_count_20d',
+  'unique_accessions_20d', 'unique_issuers_20d', 'filings_processed_20d',
+  'form4_count_20d', 'form4a_count_20d', 'amendments_linked_20d',
+  'amendments_review_count_20d', 'parse_failures_20d', 'tenb5_true_filings_20d',
+  'tenb5_false_filings_20d', 'tenb5_unknown_filings_20d',
+] as const;
+
+const P2_FORM4_COVERAGE_STATISTICS = [
+  'dollar_coverage_rate_5d', 'dollar_coverage_rate_20d',
+  'ex_explicit_false_coverage_5d', 'ex_explicit_false_coverage_20d',
+] as const;
+
+function hasStatistics(metric: Metric, keys: readonly string[]): boolean {
+  return keys.every((key) => Object.hasOwn(metric.statistics, key));
+}
+
+function isP2MetricContract(metrics: Record<string, unknown>): boolean {
+  if ([...P2_ACTIVE_IDS, ...P2_HELD_IDS].some((id) => !isMetric(metrics[id], id))) return false;
+  if (['buffett_indicator_proxy', 'insider_buy_sell_proxy', 'insider_ratio_proxy']
+    .some((legacyId) => Object.hasOwn(metrics, legacyId))) return false;
+
+  const macro = metrics.nonfinancial_equities_gdp_proxy as Metric;
+  if (macro.availability !== 'ACTIVE_PROXY' || macro.unit !== 'percent' ||
+    !macro.frequency.toLowerCase().includes('quarter') ||
+    !Object.hasOwn(macro.changes, 'one_quarter') || !hasStatistics(macro, P2_MACRO_STATISTICS) ||
+    (macro.statistics.percentile_10y_sample_size !== null &&
+      !isNonnegativeInteger(macro.statistics.percentile_10y_sample_size)) ||
+    (macro.statistics.percentile_10y !== null &&
+      (macro.statistics.percentile_10y < 0 || macro.statistics.percentile_10y > 100)) ||
+    !Object.hasOwn(macro.context, 'equity_observation_date') ||
+    !Object.hasOwn(macro.context, 'gdp_observation_date') ||
+    !Object.hasOwn(macro.context, 'common_quarter') ||
+    (macro.context.equity_observation_date !== null && !isIsoDay(macro.context.equity_observation_date)) ||
+    (macro.context.gdp_observation_date !== null && !isIsoDay(macro.context.gdp_observation_date)) ||
+    (macro.value !== null && (macro.context.equity_observation_date === null ||
+      macro.context.gdp_observation_date === null || !macro.context.common_quarter))) return false;
+
+  const form4 = metrics.sec_form4_nonderivative_ps_count_ratio_20d as Metric;
+  if (form4.availability !== 'ACTIVE_PROXY' || form4.unit !== 'ratio' ||
+    !form4.frequency.toLowerCase().includes('business') ||
+    !hasStatistics(form4, P2_FORM4_STATISTICS) ||
+    form4.value !== form4.statistics.count_ratio_20d ||
+    P2_FORM4_COUNT_STATISTICS.some((key) => form4.statistics[key] !== null &&
+      !isNonnegativeInteger(form4.statistics[key])) ||
+    P2_FORM4_COVERAGE_STATISTICS.some((key) => form4.statistics[key] !== null &&
+      ((form4.statistics[key] as number) < 0 || (form4.statistics[key] as number) > 1)) ||
+    !['window_start_5d', 'window_end_5d', 'window_start_20d', 'window_end_20d',
+      'dollar_status_5d', 'dollar_status_20d', 'ex_10b5_scope']
+      .every((key) => Object.hasOwn(form4.context, key)) ||
+    form4.context.ex_10b5_scope !== 'EXPLICIT_FALSE_ONLY' ||
+    ['window_start_5d', 'window_end_5d', 'window_start_20d', 'window_end_20d']
+      .some((key) => form4.context[key as keyof MetricContext] !== null &&
+        !isIsoDay(form4.context[key as keyof MetricContext])) ||
+    (form4.value !== null && (!form4.context.window_end_20d || !form4.context.window_start_20d))) return false;
+  for (const window of ['5d', '20d'] as const) {
+    const ratio = form4.statistics[`dollar_ratio_${window}`];
+    const coverage = form4.statistics[`dollar_coverage_rate_${window}`];
+    if (ratio !== null && (coverage === null || coverage < 0.8)) return false;
+  }
+
+  return P2_HELD_IDS.every((id) => {
+    const metric = metrics[id] as Metric;
+    return metric.availability === 'UNAVAILABLE_FREE' && metric.value === null &&
+      metric.short_series.length === 0 && metric.quality.status === 'NOT_APPLICABLE' &&
+      metric.quality.freshness === 'UNKNOWN' && metric.observation_date === null &&
+      metric.released_at === null && metric.updated_at === null &&
+      metric.expected_next_update === null && metric.quality.last_attempt_at === null &&
+      metric.quality.last_success_at === null && metric.source.source_id === null &&
+      metric.source.retrieved_at === null && Boolean(metric.quality.failure_reason ||
+        metric.source.rights_note || metric.methodology.source_and_license_note);
+  });
 }
 
 function maxNullableString(values: Array<string | null>): string | null {
@@ -388,13 +524,37 @@ function isSwitch(value: unknown): value is SwitchState {
 }
 
 function isCollectorSource(value: unknown): value is CollectorSource {
-  return isRecord(value) && typeof value.name === 'string' && isNullableString(value.url) &&
+  return isRecord(value) && (value.collector_id === undefined || typeof value.collector_id === 'string') &&
+    typeof value.name === 'string' && isNullableString(value.url) &&
     isNullableString(value.tier) && typeof value.rights_note === 'string' &&
     isHealthStatus(value.status) && isFreshness(value.freshness) &&
     isNullableDay(value.observation_date) && isNullableTimestamp(value.released_at) &&
     isNullableTimestamp(value.updated_at) && isNullableUtcTimestamp(value.last_attempt_at) &&
     isNullableTimestamp(value.last_success_at) &&
     isNullableDay(value.expected_next_update) && isNullableString(value.failure_reason);
+}
+
+function p2CollectorSourceMatches(
+  source: CollectorSource | undefined,
+  metric: Metric,
+  collectorId: string,
+  sourceId: string,
+  generatedAt: string,
+): boolean {
+  if (!source) return false;
+  const expectedUpdatedAt = metric.quality.last_attempt_at === generatedAt
+    ? metric.quality.last_attempt_at
+    : metric.updated_at;
+  return source.collector_id === collectorId && metric.source.source_id === sourceId &&
+    metric.source.retrieved_at === metric.quality.last_attempt_at &&
+    source.name === metric.source.name && source.url === metric.source.url &&
+    source.tier === metric.source.tier && source.rights_note === metric.source.rights_note &&
+    source.status === metric.quality.status && source.freshness === metric.quality.freshness &&
+    source.observation_date === metric.observation_date && source.released_at === metric.released_at &&
+    source.updated_at === expectedUpdatedAt && source.last_success_at === metric.quality.last_success_at &&
+    source.last_attempt_at === metric.quality.last_attempt_at &&
+    source.expected_next_update === metric.expected_next_update &&
+    source.failure_reason === metric.quality.failure_reason;
 }
 
 function isSourceHealth(value: unknown): value is SourceHealthCounts {
@@ -414,6 +574,7 @@ export function isSnapshot(value: unknown): value is Snapshot {
   const metrics = value.metrics as Record<string, unknown>;
   if (!(['liquidity_fuel', 'market_ignition', 'fundamental_exit'] as const)
     .every((id) => isSwitch(switches[id]))) return false;
+  if (value.overall_assessment !== (switches.liquidity_fuel as SwitchState).assessment) return false;
   const marketIgnition = switches.market_ignition as SwitchState;
   if (marketIgnition.mode !== 'EVIDENCE_ONLY' || marketIgnition.assessment !== null ||
     marketIgnition.total_blocks !== P1_EVIDENCE_BLOCK_IDS.length ||
@@ -425,8 +586,9 @@ export function isSnapshot(value: unknown): value is Snapshot {
       (block.available === (block.direction === 'UNKNOWN')))) return false;
   if ((switches.fundamental_exit as SwitchState).assessment !== null) return false;
   if (!Object.entries(metrics).every(([id, metric]) => isMetric(metric, id))) return false;
-  if (![...OVERVIEW_SERIES_IDS, ...CONFIRMATION_SPREAD_IDS, ...P1_CFTC_CONFIG.map(({ id }) => id), ...P1_RIGHTS_GATED_IDS]
+  if (![...OVERVIEW_SERIES_IDS, ...CONFIRMATION_SPREAD_IDS, ...P1_CFTC_CONFIG.map(({ id }) => id), ...P1_RIGHTS_GATED_IDS, ...P2_SERIES_IDS]
     .every((id) => isMetric(metrics[id], id))) return false;
+  if (!isP2MetricContract(metrics)) return false;
   if (P1_CFTC_CONFIG.some(({ id, availability }) => {
     const metric = metrics[id] as Metric;
     const requiredStatistics = [
@@ -478,6 +640,19 @@ export function isSnapshot(value: unknown): value is Snapshot {
   const sources = value.sources as Record<string, CollectorSource>;
   const cftcSource = sources.cftc_tff_futures_only;
   if (!cftcSource) return false;
+  if (!p2CollectorSourceMatches(
+    sources.fred_nonfinancial_equities_gdp,
+    metrics.nonfinancial_equities_gdp_proxy as Metric,
+    'fred_nonfinancial_equities_gdp',
+    'fred_government',
+    value.generated_at,
+  ) || !p2CollectorSourceMatches(
+    sources.sec_form4_daily_index,
+    metrics.sec_form4_nonderivative_ps_count_ratio_20d as Metric,
+    'sec_form4_daily_index',
+    'sec_edgar',
+    value.generated_at,
+  )) return false;
   const expectedHealth = cftcMetrics.map(({ quality }) => quality.status)
     .reduce((worst, current) => HEALTH_RANK[current] > HEALTH_RANK[worst] ? current : worst);
   const expectedFreshness = cftcMetrics.map(({ quality }) => quality.freshness)
@@ -554,6 +729,7 @@ export function routeMetricIds(route: RouteId, catalog: readonly CatalogMetric[]
     ? [
         ...P1_CFTC_CONFIG.map(({ id }) => id),
         ...P1_RIGHTS_GATED_IDS,
+        ...P2_SERIES_IDS,
         ...catalog.filter(({ layer }) => layer === 'market_ignition').map(({ metric_id }) => metric_id),
       ]
     : route === 'fundamental-exit'

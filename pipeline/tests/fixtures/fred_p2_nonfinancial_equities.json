@@ -1,0 +1,47 @@
+{
+  "metadata": {
+    "realtime_start": "2026-08-12",
+    "realtime_end": "2026-08-12",
+    "seriess": [
+      {
+        "id": "NCBEILQ027S",
+        "title": "Nonfinancial Corporate Business; Corporate Equities; Liability, Level",
+        "observation_start": "2024-01-01",
+        "observation_end": "2025-10-01",
+        "frequency": "Quarterly",
+        "frequency_short": "Q",
+        "units": "Millions of U.S. Dollars",
+        "units_short": "Mil. of U.S. $",
+        "seasonal_adjustment": "Not Seasonally Adjusted",
+        "seasonal_adjustment_short": "NSA",
+        "last_updated": "2026-06-11 07:46:00-05",
+        "popularity": 8,
+        "notes": "Synthetic fixture shaped like the government-origin FRED series."
+      }
+    ]
+  },
+  "observations": {
+    "realtime_start": "2026-08-12",
+    "realtime_end": "2026-08-12",
+    "observation_start": "2024-01-01",
+    "observation_end": "2025-10-01",
+    "units": "lin",
+    "output_type": 1,
+    "file_type": "json",
+    "order_by": "observation_date",
+    "sort_order": "asc",
+    "count": 8,
+    "offset": 0,
+    "limit": 100000,
+    "observations": [
+      {"realtime_start": "2026-08-12", "realtime_end": "2026-08-12", "date": "2024-01-01", "value": "28000000"},
+      {"realtime_start": "2026-08-12", "realtime_end": "2026-08-12", "date": "2024-04-01", "value": "29400000"},
+      {"realtime_start": "2026-08-12", "realtime_end": "2026-08-12", "date": "2024-07-01", "value": "31000000"},
+      {"realtime_start": "2026-08-12", "realtime_end": "2026-08-12", "date": "2024-10-01", "value": "32000000"},
+      {"realtime_start": "2026-08-12", "realtime_end": "2026-08-12", "date": "2025-01-01", "value": "33600000"},
+      {"realtime_start": "2026-08-12", "realtime_end": "2026-08-12", "date": "2025-04-01", "value": "35000000"},
+      {"realtime_start": "2026-08-12", "realtime_end": "2026-08-12", "date": "2025-07-01", "value": "36000000"},
+      {"realtime_start": "2026-08-12", "realtime_end": "2026-08-12", "date": "2025-10-01", "value": "37800000"}
+    ]
+  }
+}

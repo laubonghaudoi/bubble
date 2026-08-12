@@ -1452,6 +1452,10 @@ a:focus-visible,
   min-width: 0;
 }
 
+.rights-gate-card .badge {
+  flex: 0 0 auto;
+}
+
 .cftc-card-head strong,
 .rights-gate-card strong {
   display: block;
@@ -1575,6 +1579,251 @@ a:focus-visible,
 
 .rights-gate-card .metric-method {
   margin-top: 9px;
+}
+
+.fragility-contract {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+.fragility-contract strong {
+  color: var(--action);
+  font: 700 10px 'DM Mono', monospace;
+  letter-spacing: 0.08em;
+}
+
+.fragility-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.fragility-card {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--action);
+  background: var(--surface);
+}
+
+.fragility-card.is-last-good {
+  border-top-color: var(--warning);
+}
+
+.fragility-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px;
+  border-bottom: 1px solid var(--rowline);
+}
+
+.fragility-card-head > div:first-child {
+  min-width: 0;
+}
+
+.fragility-card-head strong {
+  display: block;
+  color: var(--ink2);
+  font: 700 12px 'DM Mono', monospace;
+}
+
+.fragility-card-head span {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font: 10px 'DM Mono', monospace;
+}
+
+.fragility-readout {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 11px 10px 5px;
+}
+
+.fragility-readout > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.fragility-readout small {
+  color: var(--faint);
+  font: 9px 'DM Mono', monospace;
+}
+
+.fragility-readout strong {
+  color: var(--ink);
+  font: 500 25px 'DM Mono', monospace;
+}
+
+.fragility-readout > span {
+  margin: 0 0 3px auto;
+  color: var(--action);
+  font: 700 9.5px 'DM Mono', monospace;
+  text-align: right;
+}
+
+.fragility-card > .sparkline {
+  display: block;
+  width: calc(100% - 20px);
+  height: 42px;
+  margin: 0 10px 8px;
+}
+
+.fragility-stats,
+.form4-audit-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  background: var(--line);
+}
+
+.fragility-stats > div,
+.form4-audit-grid > div {
+  min-width: 0;
+  padding: 8px;
+  background: var(--white);
+}
+
+.form4-ratios {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.fragility-stats dt,
+.fragility-dates dt,
+.form4-audit-grid dt {
+  display: block;
+  color: var(--faint);
+  font: 9px 'DM Mono', monospace;
+  letter-spacing: 0.05em;
+}
+
+.fragility-stats dd,
+.form4-audit-grid dd {
+  margin: 4px 0 0;
+  color: var(--ink2);
+  font: 12px 'DM Mono', monospace;
+  overflow-wrap: anywhere;
+}
+
+.fragility-stats small,
+.form4-audit-grid small {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font: 8.5px/1.35 'DM Mono', monospace;
+}
+
+.fragility-dates {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  background: var(--line);
+}
+
+.fragility-dates > div {
+  min-width: 0;
+  padding: 7px 8px;
+  background: var(--surface);
+}
+
+.fragility-dates dd {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font: 9.5px/1.45 'DM Mono', monospace;
+  overflow-wrap: anywhere;
+}
+
+.fragility-caveat {
+  margin: 0;
+  padding: 9px 10px;
+  border-top: 1px solid var(--rowline);
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.55;
+}
+
+.fragility-caveat > b {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--warning-fg);
+  font: 700 9px 'DM Mono', monospace;
+  letter-spacing: 0.05em;
+}
+
+.fragility-caveat strong {
+  color: var(--ink2);
+}
+
+.form4-count-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+  color: var(--ink2);
+  font: 10.5px 'DM Mono', monospace;
+  table-layout: fixed;
+}
+
+.form4-count-table caption {
+  padding: 8px;
+  border-top: 1px solid var(--line);
+  color: var(--faint);
+  font: 9px 'DM Mono', monospace;
+  letter-spacing: 0.05em;
+  text-align: left;
+}
+
+.form4-count-table th,
+.form4-count-table td {
+  padding: 6px 8px;
+  border-top: 1px solid var(--rowline);
+  text-align: right;
+}
+
+.form4-count-table th:first-child {
+  text-align: left;
+}
+
+.form4-count-table thead th {
+  color: var(--faint);
+  font-size: 8.5px;
+}
+
+.form4-dollar-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+}
+
+.form4-dollar-grid > div {
+  display: flex;
+  min-width: 0;
+  padding: 8px;
+  background: var(--surface);
+  flex-direction: column;
+}
+
+.form4-dollar-grid span,
+.form4-dollar-grid small {
+  color: var(--faint);
+  font: 8.5px/1.4 'DM Mono', monospace;
+}
+
+.form4-dollar-grid strong {
+  margin: 3px 0;
+  color: var(--ink2);
+  font: 16px 'DM Mono', monospace;
+}
+
+.p2-held-section .rights-gate-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .phase-section > .status-groups {
@@ -2234,6 +2483,14 @@ a:focus-visible,
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .fragility-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .p2-held-section .rights-gate-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .tape-panel,
   .chart-panel,
   .read-rail {
@@ -2452,15 +2709,20 @@ a:focus-visible,
   }
 
   .cftc-grid,
-  .rights-gate-grid {
+  .rights-gate-grid,
+  .fragility-grid,
+  .p2-held-section .rights-gate-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .cftc-stats {
+  .cftc-stats,
+  .fragility-stats,
+  .form4-audit-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .cftc-dates {
+  .cftc-dates,
+  .fragility-dates {
     grid-template-columns: minmax(0, 1fr);
   }
 

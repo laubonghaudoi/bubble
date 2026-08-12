@@ -30,11 +30,11 @@ FIXTURE = Path(__file__).parent / "fixtures" / "snapshot_v2_minimal.json"
 
 
 def fixture_snapshot():
-    """Expand the compact JSON seed into the complete locked P1 metric roster."""
+    """Expand the compact JSON seed into the complete locked P1/P2 roster."""
 
     snapshot = json.loads(FIXTURE.read_text())
     template = snapshot["metrics"]["spx_0dte_share"]
-    held_ids = {
+    p1_held_ids = {
         "vix_vix3m_term_structure_proxy",
         "cboe_skew_tail_risk_proxy",
         "crypto_funding_btc",
@@ -42,11 +42,27 @@ def fixture_snapshot():
         "trend_following_positioning_proxy",
         "cross_asset_correlation",
     }
-    for metric_id in held_ids:
+    for metric_id in p1_held_ids:
         metric = copy.deepcopy(template)
         metric["metric_id"] = metric_id
         metric["label"] = metric_id
         metric["availability"] = "UNAVAILABLE_FREE"
+        snapshot["metrics"][metric_id] = metric
+
+    p2_held_ids = {
+        "gamma_flip",
+        "spx_0dte_share",
+        "finra_margin_debt",
+        "spy_holdings_top10_weight_proxy",
+        "m2_nasdaq_divergence",
+        "ndx_forward_pe",
+    }
+    for metric_id in p2_held_ids:
+        metric = copy.deepcopy(template)
+        metric["metric_id"] = metric_id
+        metric["label"] = metric_id
+        metric["availability"] = "UNAVAILABLE_FREE"
+        metric["source"]["source_id"] = None
         snapshot["metrics"][metric_id] = metric
 
     cftc_ids = {
@@ -118,14 +134,167 @@ def fixture_snapshot():
         "failure_reason": "Fixture has no CFTC observations.",
     }
     snapshot["source_health"]["error"] += 1
+
+    macro = copy.deepcopy(template)
+    macro.update(
+        {
+            "metric_id": "nonfinancial_equities_gdp_proxy",
+            "label": "Nonfinancial corporate equities / GDP proxy",
+            "availability": "ACTIVE_PROXY",
+            "unit": "percent",
+            "frequency": "quarterly",
+            "updated_at": snapshot["generated_at"],
+        }
+    )
+    macro["changes"]["one_quarter"] = None
+    macro["statistics"] = {
+        "equity_usd_bn": None,
+        "gdp_usd_bn": None,
+        "qoq_percent_change": None,
+        "yoy_percent_change": None,
+        "percentile_10y": None,
+        "percentile_10y_sample_size": 0,
+    }
+    macro["quality"].update(
+        {
+            "status": "ERROR",
+            "freshness": "UNKNOWN",
+            "last_attempt_at": snapshot["generated_at"],
+            "failure_reason": "Fixture has no P2 macro observations.",
+            "sample_size": 0,
+        }
+    )
+    macro["context"].update(
+        {
+            "is_proxy": True,
+            "equity_observation_date": None,
+            "gdp_observation_date": None,
+            "common_quarter": None,
+        }
+    )
+    macro["source"] = {
+        "source_id": "fred_government",
+        "name": "FRED government-origin series",
+        "url": "https://fred.stlouisfed.org/",
+        "tier": "OFFICIAL_DISTRIBUTOR",
+        "retrieved_at": snapshot["generated_at"],
+        "rights_note": "Government-origin series distributed by FRED.",
+    }
+    macro["methodology"]["proxy_disclosure"] = (
+        "This stock-to-flow ratio is context only and is not public-market capitalization."
+    )
+    snapshot["metrics"][macro["metric_id"]] = macro
+
+    form4 = copy.deepcopy(template)
+    form4.update(
+        {
+            "metric_id": "sec_form4_nonderivative_ps_count_ratio_20d",
+            "label": "SEC Form 4 reported P/S count ratio · 20D proxy",
+            "availability": "ACTIVE_PROXY",
+            "unit": "ratio",
+            "frequency": "business_daily",
+            "updated_at": snapshot["generated_at"],
+        }
+    )
+    form4["statistics"] = {
+        "ratio_5d": None,
+        "count_ratio_20d": None,
+        "purchase_count_5d": 0,
+        "sale_count_5d": 0,
+        "purchase_count_20d": 0,
+        "sale_count_20d": 0,
+        "dollar_ratio_5d": None,
+        "dollar_ratio_20d": None,
+        "dollar_coverage_rate_5d": None,
+        "dollar_coverage_rate_20d": None,
+        "ex_explicit_false_count_ratio_5d": None,
+        "ex_explicit_false_count_ratio_20d": None,
+        "ex_explicit_false_coverage_5d": None,
+        "ex_explicit_false_coverage_20d": None,
+        "eligible_transaction_count_20d": 0,
+        "priced_transaction_count_20d": 0,
+        "unique_accessions_20d": 0,
+        "unique_issuers_20d": 0,
+        "filings_processed_20d": 0,
+        "form4_count_20d": 0,
+        "form4a_count_20d": 0,
+        "amendments_linked_20d": 0,
+        "amendments_review_count_20d": 0,
+        "parse_failures_20d": 0,
+        "tenb5_true_filings_20d": 0,
+        "tenb5_false_filings_20d": 0,
+        "tenb5_unknown_filings_20d": 0,
+    }
+    form4["quality"].update(
+        {
+            "status": "ERROR",
+            "freshness": "UNKNOWN",
+            "last_attempt_at": snapshot["generated_at"],
+            "failure_reason": "Fixture has no SEC Form 4 completed index day.",
+            "sample_size": 0,
+        }
+    )
+    form4["context"].update(
+        {
+            "is_proxy": True,
+            "window_start_5d": None,
+            "window_end_5d": None,
+            "window_start_20d": None,
+            "window_end_20d": None,
+            "dollar_status_5d": "INSUFFICIENT_DAYS",
+            "dollar_status_20d": "INSUFFICIENT_DAYS",
+            "ex_10b5_scope": "EXPLICIT_FALSE_ONLY",
+        }
+    )
+    form4["source"] = {
+        "source_id": "sec_edgar",
+        "name": "SEC EDGAR daily index and Form 4 filings",
+        "url": "https://www.sec.gov/Archives/edgar/daily-index/",
+        "tier": "OFFICIAL",
+        "retrieved_at": snapshot["generated_at"],
+        "rights_note": "Official public filing records.",
+    }
+    form4["methodology"]["proxy_disclosure"] = (
+        "P/S counts include qualifying open-market or private Form 4 transactions."
+    )
+    snapshot["metrics"][form4["metric_id"]] = form4
+
+    for collector_id, metric in (
+        ("fred_nonfinancial_equities_gdp", macro),
+        ("sec_form4_daily_index", form4),
+    ):
+        snapshot["sources"][collector_id] = {
+            "collector_id": collector_id,
+            "name": metric["source"]["name"],
+            "url": metric["source"]["url"],
+            "tier": metric["source"]["tier"],
+            "rights_note": metric["source"]["rights_note"],
+            "status": metric["quality"]["status"],
+            "freshness": metric["quality"]["freshness"],
+            "observation_date": metric["observation_date"],
+            "released_at": metric["released_at"],
+            "updated_at": metric["updated_at"],
+            "last_success_at": metric["quality"]["last_success_at"],
+            "last_attempt_at": metric["quality"]["last_attempt_at"],
+            "expected_next_update": metric["expected_next_update"],
+            "failure_reason": metric["quality"]["failure_reason"],
+        }
+    snapshot["sources"].pop("manual_spx_0dte", None)
     snapshot.update(
         {
             "active_free_count": 3,
-            "active_proxy_count": 2,
-            "manual_ready_count": 1,
-            "unavailable_free_count": 6,
+            "active_proxy_count": 4,
+            "manual_ready_count": 0,
+            "unavailable_free_count": 12,
         }
     )
+    snapshot["source_health"] = {
+        "ok": 1,
+        "stale": 0,
+        "error": 3,
+        "not_released_yet": 0,
+        "not_applicable": 0,
+    }
     return snapshot
 
 
@@ -145,10 +314,10 @@ def test_every_registry_metric_has_locked_methodology_contract():
         assert methodology["proxy_disclosure"] == metric["proxy_disclosure"]
 
 
-def test_release_two_marks_p0_and_p1_interfaces_implemented():
+def test_release_three_marks_p0_p1_and_p2_interfaces_implemented():
     bundle = load_config_bundle()
-    assert all(metric["implemented"] for metric in bundle.metrics_by_id.values() if metric["phase"] in {"P0", "P1"})
-    assert all(not metric["implemented"] for metric in bundle.metrics_by_id.values() if metric["phase"] in {"P2", "P3"})
+    assert all(metric["implemented"] for metric in bundle.metrics_by_id.values() if metric["phase"] in {"P0", "P1", "P2"})
+    assert all(not metric["implemented"] for metric in bundle.metrics_by_id.values() if metric["phase"] == "P3")
 
 
 def test_snapshot_v2_contract_preserves_null_and_zero_distinction():

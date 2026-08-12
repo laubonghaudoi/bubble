@@ -86,7 +86,7 @@ sources:
 
   - source_id: sec_edgar
     name: SEC EDGAR APIs and filing data
-    homepage: https://www.sec.gov/search-filings/edgar-application-programming-interfaces
+    homepage: https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data
     tier: OFFICIAL
     enabled: true
     network_eligible: true

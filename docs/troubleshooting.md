@@ -52,9 +52,27 @@ CFTC COT/TFF 一般用星期二持倉、星期五 15:30 ET 發布，但假期同
 
 ## FRED series 被拒絕
 
-Release 1 allowlist 係 IORB、WRESBAL、WALCL、WTREGEN；registry 亦預留經覆核嘅 NCBEILQ027S/GDP。SP500、NASDAQCOM、VIXCLS、VXVCLS、CBBTCUSD 屬第三方 rights hold，唔可以因為有 FRED API key 就加入 production fetch。
+Production allowlist 係 IORB、WRESBAL、WALCL、WTREGEN、NCBEILQ027S、GDP。SP500、NASDAQCOM、VIXCLS、VXVCLS、CBBTCUSD 屬第三方 rights hold，唔可以因為有 FRED API key 就加入 production fetch。
 
 如 key 無效，FRED official API request 應失敗並沿用 last-good；唔好退回 `fredgraph.csv` scraping。
+
+## P2 equities/GDP proxy 未更新
+
+確認兩個 official FRED metadata仍然符合 contract：`NCBEILQ027S` 係 quarterly、NSA、millions USD、period-end government-origin series；`GDP` 係 quarterly、SAAR、billions USD。Transform只會 join exact calendar quarter，唔會將較新 GDP forward-fill落較舊 equities quarter。新 common quarter其中一個 component係缺失時，endpoint同 value都應顯示 `null`，唔可以倒退顯示上一個非空 ratio。
+
+## SEC Form 4 collector／ledger 失敗
+
+Daily job改喺約 07:00 UTC Tue–Sat喚醒，避開 SEC current-day index夜間生成前嘅窗口；collector仍只會處理 quarter `index.json`實際列出並完整讀取嘅 daily master indexes。檢查：
+
+- `SEC_USER_AGENT` 有可識別專案同聯絡資料；
+- `SEC_FORM4_CACHE_DIR`只係 private Actions cache，唔可以指向 `public/data`；
+- 403會立即停止，429／502／503／504按 bounded Retry-After/backoff重試；
+- index row按 accession去重，joint-owner duplicate唔可以重複計交易；
+- 任何 required day master/submission failure會保留整套 last-good metric/ledger，標記 STALE/ERROR，唔會用 partial day當成功；
+- weekly group會reconcile完整45-calendar-day retained window，daily group重查最新5日吸收 PAC/index timing；
+- public `ledgers/sec_form4/manifest.json` hash、retention、completed-day、shard allowlist同私隱欄位全部要過 gate；額外 raw file/symlink會令 stage失敗。
+
+初次啟用要做 bounded 45 日 backfill，可能需要約一小時；唔好中途用手改 stage。Form 4 `P`／`S`係 open-market或private transaction code，唔好將卡片或説明改成純 open-market。
 
 ## Generated-data commit 或 push 失敗
 

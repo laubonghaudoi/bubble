@@ -1,4 +1,4 @@
-"""Release-one orchestration for the schema 2.0.0 static publication.
+"""Phased orchestration for the schema 2.0.0 static publication.
 
 The module deliberately keeps collection, transformation, contract validation,
 staging, and promotion as separate operations.  GitHub Actions can therefore
@@ -40,14 +40,21 @@ from pipeline.build import (
     utc_string,
 )
 from pipeline.collectors.fred import fetch_series as fetch_fred_series
+from pipeline.collectors.fred_p2 import fetch_series_bundle as fetch_fred_p2_series
 from pipeline.collectors.cftc import fetch_tff_futures_only
 from pipeline.collectors.nyfed import (
     fetch_on_rrp,
     fetch_reference_rate,
     fetch_srf_operations,
 )
+from pipeline.collectors.sec_form4 import (
+    Form4Collection,
+    SecHttpClient,
+    collect_form4_window,
+)
 from pipeline.collectors.treasury import fetch_auctions, fetch_tga
 from pipeline.config import (
+    ACTIVE_P2_METRIC_IDS,
     CANONICAL_P0_METRIC_IDS,
     CANONICAL_P1_CFTC_METRIC_IDS,
     ConfigBundle,
@@ -69,6 +76,13 @@ from pipeline.io import (
     read_json,
     staged_data_directory,
 )
+from pipeline.form4_ledger import (
+    build_ledger_package,
+    load_ledger,
+    merge_last_good_entries,
+    public_ledger_entry,
+    write_ledger_atomic,
+)
 from pipeline.rules.p0 import liquidity_alert_rule
 from pipeline.transforms.p0 import (
     add_large_settlement_context,
@@ -89,6 +103,11 @@ from pipeline.transforms.p1 import (
     common_direction,
     positioning_direction,
 )
+from pipeline.transforms.p2_macro import (
+    build_nonfinancial_equities_gdp_proxy,
+    nonfinancial_equities_gdp_statistics,
+)
+from pipeline.transforms.p2_form4 import form4_metric_observation
 
 
 VALID_MODES = frozenset({"incremental", "backfill"})
@@ -108,6 +127,14 @@ CFTC_METRICS = {
     "cftc_nasdaq100_consolidated_asset_manager_net_pct_oi": ("20974+", "asset_manager"),
     "cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi": ("20974+", "leveraged_funds"),
 }
+P2_MACRO_ID = "nonfinancial_equities_gdp_proxy"
+P2_FORM4_ID = "sec_form4_nonderivative_ps_count_ratio_20d"
+
+
+def _collect_sec_form4_window(**kwargs: Any) -> Form4Collection:
+    cache_dir = os.environ.get("SEC_FORM4_CACHE_DIR")
+    client = SecHttpClient(cache_dir=cache_dir if cache_dir else None)
+    return collect_form4_window(client=client, **kwargs)
 
 
 @dataclass(frozen=True)
@@ -121,6 +148,8 @@ class CollectorFunctions:
     tga: Callable[..., list[dict[str, Any]]] = fetch_tga
     auctions: Callable[..., list[dict[str, Any]]] = fetch_auctions
     cftc: Callable[..., dict[str, list[dict[str, Any]]]] = fetch_tff_futures_only
+    fred_p2: Callable[..., dict[str, Any]] = fetch_fred_p2_series
+    sec_form4: Callable[..., Form4Collection] = _collect_sec_form4_window
 
 
 @dataclass(frozen=True)
@@ -130,6 +159,7 @@ class Publication:
     series_by_id: dict[str, dict[str, Any]]
     alerts: dict[str, Any]
     events: dict[str, Any]
+    sec_form4_ledger: dict[str, Any]
 
 
 def _failure_reason(error: BaseException) -> str:
@@ -351,6 +381,187 @@ def _cftc_freshness_for(
     if now_et > release_deadline and date.fromisoformat(observation_date) < expected_report_date:
         return "LATE", "NOT_RELEASED_YET"
     return freshness, health
+
+
+def _quarterly_proxy_freshness_for(
+    observation_date: str | None, *, now_et: datetime
+) -> tuple[str, str]:
+    """Evaluate the lagged exact-common-quarter proxy on its own cadence."""
+
+    if observation_date is None:
+        return "UNKNOWN", "ERROR"
+    observed = date.fromisoformat(observation_date)
+    today = now_et.date()
+    if observed > today:
+        return "UNKNOWN", "ERROR"
+    observed_ordinal = observed.year * 4 + (observed.month - 1) // 3
+    current_ordinal = today.year * 4 + (today.month - 1) // 3
+    quarter_lag = current_ordinal - observed_ordinal
+    # Z.1 normally arrives after GDP.  Two calendar quarters of apparent lag
+    # can therefore still be the newest exact common quarter.
+    if quarter_lag <= 2:
+        return "FRESH", "OK"
+    if quarter_lag == 3:
+        return "LATE", "OK"
+    return "STALE", "STALE"
+
+
+def _p2_macro_statistics(
+    observations: Sequence[Mapping[str, Any]],
+) -> tuple[
+    dict[str, int | float | None],
+    dict[str, str | None],
+    float | None,
+]:
+    latest = nonfinancial_equities_gdp_statistics(observations)
+    statistics: dict[str, int | float | None] = {
+        key: latest[key]
+        for key in (
+            "equity_usd_bn",
+            "gdp_usd_bn",
+            "qoq_percent_change",
+            "yoy_percent_change",
+            "percentile_10y",
+            "percentile_10y_sample_size",
+        )
+    }
+    context = {
+        "equity_observation_date": (
+            observations[-1].get("equities_source_date") if observations else None
+        ),
+        "gdp_observation_date": (
+            observations[-1].get("gdp_source_date") if observations else None
+        ),
+        "common_quarter": observations[-1].get("quarter") if observations else None,
+    }
+    return statistics, context, latest.get("change_1_quarter_pp")
+
+
+def _preserve_source_timestamps_when_not_due(
+    state: SeriesState, *, data_dir: Path, metric_id: str
+) -> SeriesState:
+    """Republish an unattempted collector without inventing a new attempt."""
+
+    prior_payload = _prior_series_payload(data_dir, metric_id)
+    prior_quality = (
+        prior_payload.get("quality")
+        if isinstance(prior_payload.get("quality"), Mapping)
+        else {}
+    )
+    return replace(
+        state,
+        last_attempt_at=(
+            prior_quality.get("last_attempt_at")
+            if isinstance(prior_quality.get("last_attempt_at"), str)
+            else None
+        ),
+        updated_at=(
+            prior_payload.get("updated_at")
+            if isinstance(prior_payload.get("updated_at"), str)
+            else None
+        ),
+    )
+
+
+def _empty_form4_ledger(*, as_of: date) -> dict[str, Any]:
+    return build_ledger_package([], completed_index_days=(), as_of=as_of)
+
+
+def _prior_form4_ledger(data_dir: Path, *, as_of: date) -> dict[str, Any]:
+    path = data_dir / "ledgers" / "sec_form4"
+    if not path.exists():
+        return _empty_form4_ledger(as_of=as_of)
+    return load_ledger(path)
+
+
+def _merge_audit_rows(
+    prior: Sequence[Mapping[str, Any]],
+    current: Sequence[Mapping[str, Any]],
+    *,
+    as_of: date,
+) -> list[dict[str, Any]]:
+    cutoff = as_of - timedelta(days=44)
+    output: dict[str, dict[str, Any]] = {}
+    for raw in (*prior, *current):
+        if not isinstance(raw, Mapping):
+            raise ValueError("SEC Form 4 audit row must be an object")
+        row = dict(raw)
+        raw_day = row.get("index_date")
+        if not isinstance(raw_day, str):
+            raise ValueError("SEC Form 4 audit row requires index_date")
+        try:
+            parsed_day = date.fromisoformat(raw_day)
+        except ValueError as exc:
+            raise ValueError("SEC Form 4 audit row has invalid index_date") from exc
+        if parsed_day < cutoff:
+            continue
+        if parsed_day > as_of:
+            raise ValueError("SEC Form 4 audit row is future-dated")
+        if not isinstance(row.get("stage"), str) or not row["stage"]:
+            raise ValueError("SEC Form 4 audit row requires stage")
+        if not isinstance(row.get("reason"), str) or not row["reason"]:
+            raise ValueError("SEC Form 4 audit row requires reason")
+        key = repr(sorted(row.items()))
+        output[key] = row
+    return [output[key] for key in sorted(output)]
+
+
+def _validate_form4_metric_against_ledger(
+    snapshot: Mapping[str, Any],
+    ledger: Mapping[str, Any],
+    series_by_id: Mapping[str, Mapping[str, Any]] | None = None,
+) -> None:
+    metric = snapshot["metrics"][P2_FORM4_ID]
+    observation = form4_metric_observation(
+        ledger,
+        as_of=(
+            date.fromisoformat(ledger["as_of"])
+            if isinstance(ledger.get("as_of"), str)
+            else None
+        ),
+    )
+    if metric.get("value") != observation["value"]:
+        raise PublicationError("SEC Form 4 snapshot value does not match ledger")
+    if metric.get("statistics") != observation["statistics"]:
+        raise PublicationError("SEC Form 4 snapshot statistics do not match ledger")
+    for key, value in observation["technical_context"].items():
+        if metric.get("context", {}).get(key) != value:
+            raise PublicationError(
+                f"SEC Form 4 snapshot context.{key} does not match ledger"
+            )
+    if metric.get("observation_date") != observation["date"]:
+        raise PublicationError(
+            "SEC Form 4 snapshot observation_date does not match ledger"
+        )
+    generated_at = snapshot.get("generated_at")
+    try:
+        generated_new_york_day = datetime.fromisoformat(
+            str(generated_at).replace("Z", "+00:00")
+        ).astimezone(NEW_YORK).date().isoformat()
+    except (ValueError, TypeError) as exc:
+        raise PublicationError("snapshot generated_at is invalid") from exc
+    try:
+        ledger_as_of = date.fromisoformat(str(ledger.get("as_of")))
+    except ValueError as exc:
+        raise PublicationError("SEC Form 4 ledger as_of is invalid") from exc
+    if ledger_as_of > date.fromisoformat(generated_new_york_day):
+        raise PublicationError("SEC Form 4 ledger must not be future-dated")
+    if series_by_id is not None:
+        series = series_by_id.get(P2_FORM4_ID)
+        if not isinstance(series, Mapping):
+            raise PublicationError("SEC Form 4 series is missing")
+        observations = series.get("observations")
+        if not isinstance(observations, list):
+            raise PublicationError("SEC Form 4 series observations are invalid")
+        endpoint = observations[-1] if observations else None
+        if endpoint is None:
+            if observation["date"] is not None:
+                raise PublicationError("SEC Form 4 series endpoint is missing")
+        elif (
+            endpoint.get("date") != observation["date"]
+            or endpoint.get("value") != observation["value"]
+        ):
+            raise PublicationError("SEC Form 4 series endpoint does not match ledger")
 
 
 def _prior_events(data_dir: Path) -> list[dict[str, Any]]:
@@ -629,7 +840,10 @@ def build_release(
     rate_years = 6 if mode == "backfill" else 2
     rate_start = now_et.date() - timedelta(days=366 * rate_years)
     fred_start = now_et.date() - timedelta(days=366 * 6)
+    p2_macro_start = now_et.date() - timedelta(days=366 * 12)
     cftc_due = group in {"all", "daily", "weekly"}
+    p2_macro_due = group in {"all", "monthly", "quarterly"}
+    p2_form4_due = group in {"all", "daily", "weekly"}
 
     states = {
         metric_id: _preserved_state(
@@ -720,6 +934,45 @@ def build_release(
                 key=HEALTH_ORDER.__getitem__,
             ),
         )
+    macro_state = _preserved_state(
+        P2_MACRO_ID,
+        data_dir=root,
+        frequency="quarterly",
+        attempted_at=attempted_at,
+        now_et=now_et,
+    )
+    if not p2_macro_due:
+        macro_state = _preserve_source_timestamps_when_not_due(
+            macro_state, data_dir=root, metric_id=P2_MACRO_ID
+        )
+    macro_freshness, macro_health = _quarterly_proxy_freshness_for(
+        macro_state.observation_date, now_et=now_et
+    )
+    states[P2_MACRO_ID] = replace(
+        macro_state,
+        freshness=max(
+            (macro_state.freshness, macro_freshness),
+            key=FRESHNESS_ORDER.__getitem__,
+        ) if macro_state.failure_reason else macro_freshness,
+        health=max(
+            (macro_state.health, macro_health),
+            key=HEALTH_ORDER.__getitem__,
+        ) if macro_state.failure_reason else macro_health,
+    )
+    form4_state = _preserved_state(
+        P2_FORM4_ID,
+        data_dir=root,
+        frequency="business_daily",
+        attempted_at=attempted_at,
+        now_et=now_et,
+    )
+    if not p2_form4_due:
+        form4_state = _preserve_source_timestamps_when_not_due(
+            form4_state, data_dir=root, metric_id=P2_FORM4_ID
+        )
+    states[P2_FORM4_ID] = form4_state
+    prior_form4_ledger = _prior_form4_ledger(root, as_of=now_et.date())
+    form4_ledger = prior_form4_ledger
     attempted_collectors: set[str] = set()
     daily = group in {"all", "daily"}
     h41 = group in {"all", "h41", "weekly"}
@@ -935,6 +1188,166 @@ def build_release(
                     error=error,
                 )
 
+    if p2_macro_due:
+        attempted_collectors.add("fred_nonfinancial_equities_gdp")
+        prior = states[P2_MACRO_ID]
+        try:
+            assert_metric_network_eligible(bundle, P2_MACRO_ID)
+            equities_bundle = collectors.fred_p2(
+                "NCBEILQ027S",
+                observation_start=p2_macro_start,
+                observation_end=now_et.date(),
+            )
+            gdp_bundle = collectors.fred_p2(
+                "GDP",
+                observation_start=p2_macro_start,
+                observation_end=now_et.date(),
+            )
+            transformed = build_nonfinancial_equities_gdp_proxy(
+                equities_bundle, gdp_bundle
+            )
+            # Preserve a newly published exact common quarter even when one
+            # component is null.  Dropping it would falsely present the prior
+            # ratio as the current endpoint rather than disclosing missing.
+            observations = list(transformed["series"])
+            state = _success_with_history(
+                P2_MACRO_ID,
+                observations,
+                prior=prior,
+                frequency="quarterly",
+                attempted_at=attempted_at,
+                now_et=now_et,
+                mode=mode,
+            )
+            freshness, health = _quarterly_proxy_freshness_for(
+                state.observation_date, now_et=now_et
+            )
+            release_candidates = [
+                value
+                for value in (
+                    equities_bundle.get("last_updated"),
+                    gdp_bundle.get("last_updated"),
+                )
+                if isinstance(value, str)
+            ]
+            states[P2_MACRO_ID] = replace(
+                state,
+                freshness=freshness,
+                health=health,
+                released_at=max(release_candidates, default=None),
+            )
+        except Exception as error:
+            states[P2_MACRO_ID] = _failed_from_prior(
+                P2_MACRO_ID,
+                prior=prior,
+                attempted_at=attempted_at,
+                error=error,
+            )
+
+    if p2_form4_due:
+        attempted_collectors.add("sec_form4_daily_index")
+        prior = states[P2_FORM4_ID]
+        try:
+            assert_metric_network_eligible(bundle, P2_FORM4_ID)
+            prior_entries = [
+                dict(entry) for entry in prior_form4_ledger.get("entries", [])
+            ]
+            known_entries = {
+                str(entry["accession"]): entry for entry in prior_entries
+            }
+            # Daily runs revalidate the newest five calendar days. Weekly/all
+            # runs reconcile the complete retained 45-day master-index window.
+            collection_start = now_et.date() - timedelta(
+                days=44 if group in {"all", "weekly"} or not prior_entries else 4
+            )
+            collection = collectors.sec_form4(
+                start_date=collection_start,
+                end_date=now_et.date(),
+                known_ledger_entries=known_entries,
+            )
+            incomplete_days = sorted(
+                set(collection.discovered_index_days)
+                - set(collection.completed_index_days)
+            )
+            if collection.failures or incomplete_days:
+                failure_details = "; ".join(
+                    str(item.get("reason", "unknown SEC collection failure"))
+                    for item in collection.failures[:3]
+                )
+                suffix = (
+                    f"; incomplete index days: {', '.join(incomplete_days)}"
+                    if incomplete_days
+                    else ""
+                )
+                raise ValueError(
+                    f"SEC Form 4 collection incomplete: {failure_details or 'required day failed'}{suffix}"
+                )
+            current_entries = [
+                public_ledger_entry(filing) for filing in collection.filings
+            ]
+            merged_entries = merge_last_good_entries(
+                prior_entries,
+                current_entries,
+                completed_index_days=collection.completed_index_days,
+                master_accessions_by_day=collection.master_accessions_by_day,
+                as_of=now_et.date(),
+            )
+            completed_days = sorted(
+                set(prior_form4_ledger.get("completed_index_days", []))
+                | set(collection.completed_index_days)
+            )
+            form4_ledger = build_ledger_package(
+                merged_entries,
+                completed_index_days=completed_days,
+                as_of=now_et.date(),
+                failures=_merge_audit_rows(
+                    prior_form4_ledger.get("failures", []),
+                    collection.failures,
+                    as_of=now_et.date(),
+                ),
+                reviews=_merge_audit_rows(
+                    prior_form4_ledger.get("reviews", []),
+                    collection.reviews,
+                    as_of=now_et.date(),
+                ),
+            )
+            observation = form4_metric_observation(
+                form4_ledger, as_of=now_et.date()
+            )
+            point = {
+                "date": observation["date"],
+                "value": observation["value"],
+            }
+            if point["date"] is None:
+                raise ValueError("SEC Form 4 has no completed index day")
+            state = _success_with_history(
+                P2_FORM4_ID,
+                [point],
+                prior=prior,
+                frequency="business_daily",
+                attempted_at=attempted_at,
+                now_et=now_et,
+                mode=mode,
+            )
+            releases = [
+                entry.get("acceptance_at")
+                for entry in merged_entries
+                if entry.get("index_date") in set(completed_days[-20:])
+                and isinstance(entry.get("acceptance_at"), str)
+            ]
+            states[P2_FORM4_ID] = replace(
+                state,
+                released_at=max(releases, default=None),
+            )
+        except Exception as error:
+            states[P2_FORM4_ID] = _failed_from_prior(
+                P2_FORM4_ID,
+                prior=prior,
+                attempted_at=attempted_at,
+                error=error,
+            )
+            form4_ledger = prior_form4_ledger
+
     spreads = build_iorb_spreads(
         {metric_id: states[metric_id].observations for metric_id in RATE_IDS},
         states["iorb"].observations,
@@ -1057,6 +1470,14 @@ def build_release(
         statistics[metric_id] = cftc_position_statistics(
             states[metric_id].observations
         )
+    macro_statistics, macro_context, macro_change_one_quarter = (
+        _p2_macro_statistics(states[P2_MACRO_ID].observations)
+    )
+    statistics[P2_MACRO_ID] = macro_statistics
+    form4_observation = form4_metric_observation(
+        form4_ledger, as_of=now_et.date()
+    )
+    statistics[P2_FORM4_ID] = dict(form4_observation["statistics"])
 
     sofr_stats = statistics["sofr_iorb_spread_bp"]
     confirmations = {
@@ -1168,6 +1589,18 @@ def build_release(
                 "change_12_weeks"
             )
             record["context"]["direction"] = positioning_direction(change_8w)
+        if metric_id == P2_MACRO_ID:
+            if not p2_macro_due:
+                record["updated_at"] = state.updated_at if state else None
+            record["changes"]["one_quarter"] = macro_change_one_quarter
+            record["context"].update(macro_context)
+            # There is no reviewed exact next-release calendar spanning both
+            # Z.1 and GDP.  Null is more accurate than fabricating a date.
+            record["expected_next_update"] = None
+        if metric_id == P2_FORM4_ID:
+            if not p2_form4_due:
+                record["updated_at"] = state.updated_at if state else None
+            record["context"].update(form4_observation["technical_context"])
         metric_records[metric_id] = record
         registry_for_manifest.append(
             {**registry_metric, "effective_availability": availability}
@@ -1385,6 +1818,20 @@ def build_release(
             [states[metric_id] for metric_id in CFTC_METRICS],
             attempted_at=attempted_at,
         ),
+        "fred_nonfinancial_equities_gdp": collector_source_record(
+            bundle,
+            "fred_nonfinancial_equities_gdp",
+            "fred_government",
+            [states[P2_MACRO_ID]],
+            attempted_at=attempted_at,
+        ),
+        "sec_form4_daily_index": collector_source_record(
+            bundle,
+            "sec_form4_daily_index",
+            "sec_edgar",
+            [states[P2_FORM4_ID]],
+            attempted_at=attempted_at,
+        ),
     }
     cftc_latest_state = states[
         "cftc_e_mini_sp500_asset_manager_net_pct_oi"
@@ -1409,6 +1856,8 @@ def build_release(
                 "cftc_tff_futures_only": [
                     states[metric_id] for metric_id in CFTC_METRICS
                 ],
+                "fred_nonfinancial_equities_gdp": [states[P2_MACRO_ID]],
+                "sec_form4_daily_index": [states[P2_FORM4_ID]],
             }[collector_id]
             source["last_attempt_at"] = max(
                 (state.last_attempt_at for state in relevant_states if state.last_attempt_at),
@@ -1481,6 +1930,7 @@ def build_release(
         for metric_id, metric in metric_records.items()
     }
     validate_publication(snapshot, manifest, series_by_id)
+    _validate_form4_metric_against_ledger(snapshot, form4_ledger, series_by_id)
     return Publication(
         snapshot=snapshot,
         manifest=manifest,
@@ -1495,6 +1945,7 @@ def build_release(
             "generated_at": attempted_at,
             "events": events,
         },
+        sec_form4_ledger=form4_ledger,
     )
 
 
@@ -1503,6 +1954,11 @@ def write_stage(publication: Publication, stage_dir: str | Path) -> Path:
 
     validate_publication(
         publication.snapshot, publication.manifest, publication.series_by_id
+    )
+    _validate_form4_metric_against_ledger(
+        publication.snapshot,
+        publication.sec_form4_ledger,
+        publication.series_by_id,
     )
     validate_alerts_file(publication.alerts)
     validate_events_file(publication.events)
@@ -1516,6 +1972,7 @@ def write_stage(publication: Publication, stage_dir: str | Path) -> Path:
     atomic_json(stage / "events.json", publication.events)
     for metric_id, series in publication.series_by_id.items():
         atomic_json(stage / "series" / f"{metric_id}.json", series)
+    write_ledger_atomic(stage / "ledgers" / "sec_form4", publication.sec_form4_ledger)
     return stage
 
 
@@ -1523,7 +1980,14 @@ def load_stage(stage_dir: str | Path) -> Publication:
     """Read and validate an on-disk candidate before final promotion."""
 
     stage = Path(stage_dir)
-    expected_entries = {"snapshot.json", "manifest.json", "alerts.json", "events.json", "series"}
+    expected_entries = {
+        "snapshot.json",
+        "manifest.json",
+        "alerts.json",
+        "events.json",
+        "series",
+        "ledgers",
+    }
     actual_entries = {path.name for path in stage.iterdir()} if stage.is_dir() else set()
     if actual_entries != expected_entries:
         raise PublicationError("stage contains missing or unexpected top-level artifacts")
@@ -1547,7 +2011,18 @@ def load_stage(stage_dir: str | Path) -> Publication:
     expected_series_entries = {f"{metric_id}.json" for metric_id in metric_ids}
     if actual_series_entries != expected_series_entries:
         raise PublicationError("stage contains missing or unexpected series files")
+    ledgers_directory = stage / "ledgers"
+    if (
+        not ledgers_directory.is_dir()
+        or {path.name for path in ledgers_directory.iterdir()} != {"sec_form4"}
+    ):
+        raise PublicationError("stage contains missing or unexpected ledger directories")
+    try:
+        sec_form4_ledger = load_ledger(ledgers_directory / "sec_form4")
+    except Exception as error:
+        raise PublicationError("SEC Form 4 ledger failed validation") from error
     validate_publication(snapshot, manifest, series_by_id)
+    _validate_form4_metric_against_ledger(snapshot, sec_form4_ledger, series_by_id)
     validate_alerts_file(alerts)
     validate_events_file(events)
     if alerts["generated_at"] != snapshot["generated_at"] or alerts["alerts"] != snapshot["alerts"]:
@@ -1560,6 +2035,7 @@ def load_stage(stage_dir: str | Path) -> Publication:
         series_by_id={key: dict(value) for key, value in series_by_id.items()},
         alerts=dict(alerts),
         events=dict(events),
+        sec_form4_ledger=sec_form4_ledger,
     )
 
 

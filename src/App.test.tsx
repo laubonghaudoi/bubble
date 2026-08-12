@@ -171,6 +171,82 @@ describe('v2 routed dashboard', () => {
     expect(container.querySelector('[data-metric-id="vix_vix3m_term_structure_proxy"] .rights-null')).toHaveTextContent('—');
   });
 
+  it('renders P2 as an independent 2/8 fragility context with exact proxy and audit boundaries', async () => {
+    window.history.replaceState(null, '', '/#/market-ignition');
+    const { container } = render(<App />);
+    await findRouteHeading('市場引信');
+
+    const p1 = screen.getByRole('region', { name: /Market Ignition evidence coverage/ });
+    expect(p1).toHaveTextContent('1/4 AVAILABLE');
+    expect(snapshot.switches.market_ignition.assessment).toBeNull();
+    expect(snapshot.overall_assessment).toBe(snapshot.switches.liquidity_fuel.assessment);
+
+    const fragility = screen.getByRole('region', { name: 'P2 · BUBBLE / FRAGILITY CONTEXT' });
+    expect(fragility).toHaveTextContent('2/8 CONTEXT AVAILABLE');
+    expect(fragility).toHaveTextContent('CONTEXT ONLY');
+    expect(fragility.querySelectorAll('.fragility-card')).toHaveLength(2);
+    expect(fragility.querySelector('.badge-watch, .badge-stress')).toBeNull();
+
+    const macro = fragility.querySelector<HTMLElement>('[data-metric-id="nonfinancial_equities_gdp_proxy"]')!;
+    expect(macro).toHaveTextContent('184.25%');
+    expect(macro).toHaveTextContent('+3.10 pp');
+    expect(macro).toHaveTextContent('+1.71%');
+    expect(macro).toHaveTextContent('+9.42%');
+    expect(macro).toHaveTextContent('88.5%');
+    expect(macro).toHaveTextContent('40 common quarters');
+    expect(macro).toHaveTextContent('56,800B');
+    expect(macro).toHaveTextContent('30,828B');
+    expect(macro).toHaveTextContent('2026-Q1');
+    expect(macro).toHaveTextContent('Nonfinancial corporate equity liabilities are not total U.S. equity market capitalization.');
+
+    const form4 = fragility.querySelector<HTMLElement>('[data-metric-id="sec_form4_nonderivative_ps_count_ratio_20d"]')!;
+    expect(form4).toHaveTextContent('0.42');
+    expect(form4).toHaveTextContent('0.55');
+    expect(form4).toHaveTextContent('EXPLICIT-FALSE · 20D');
+    expect(form4).toHaveTextContent('0.61');
+    expect(form4).toHaveTextContent('81.0% eligible-row coverage');
+    expect(form4).toHaveTextContent('76.0% priced-row coverage · INSUFFICIENT PRICE COVERAGE');
+    expect(form4).toHaveTextContent('84.0% priced-row coverage · PUBLISHED');
+    expect(form4).toHaveTextContent('138 / 116');
+    expect(form4).toHaveTextContent('107 / 104 / 88');
+    expect(form4).toHaveTextContent('103 / 4');
+    expect(form4).toHaveTextContent('2 / 2');
+    expect(form4).toHaveTextContent('44 / 51 / 12');
+    expect(form4).toHaveTextContent('2026-07-15 → 2026-08-11');
+    expect(form4).toHaveTextContent(/P\/S includes open-market OR private/);
+    expect(form4).toHaveTextContent(/filing-level and includes only filings explicitly marked false/);
+    expect(form4).toHaveTextContent(/amendments that cannot be reliably linked are quarantined for review/);
+
+    fireEvent.click(within(form4).getByRole('button', { name: /完整方法、來源與審核限制/ }));
+    const form4Drawer = await screen.findByRole('dialog', { name: 'SEC Form 4 non-derivative P/S count ratio · 20D' });
+    expect(form4Drawer).toHaveTextContent('dollar_coverage_rate_20d');
+    expect(form4Drawer).toHaveTextContent('84.0%');
+    expect(form4Drawer).toHaveTextContent('eligible_transaction_count_20d');
+    expect(form4Drawer).toHaveTextContent('138');
+    expect(form4Drawer).not.toHaveTextContent('138.00');
+    fireEvent.keyDown(document, { key: 'Escape' });
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+
+    const held = screen.getByRole('region', { name: 'P2 · UNAVAILABLE FREE' });
+    expect(held).toHaveTextContent('6 LOCKED INTERFACES · FAIL CLOSED');
+    expect(held.querySelectorAll('.rights-gate-card')).toHaveLength(6);
+    expect(held.querySelectorAll('.rights-null')).toHaveLength(6);
+    expect(held).toHaveTextContent('FINRA terms do not clear automated database construction or public redistribution.');
+    expect(held).toHaveTextContent('A consistent reproducible forward-earnings consensus is proprietary.');
+    expect(held).toHaveTextContent('Reliable dealer net-gamma and trade-direction inputs are not publicly available.');
+    expect(container.querySelector('[data-metric-id="put_call_vol_skew"]')).toBeNull();
+  });
+
+  it('keeps the P2 snapshot fallback visible when the methodology manifest fails', async () => {
+    window.history.replaceState(null, '', '/#/market-ignition');
+    vi.mocked(loadDashboardCore).mockResolvedValueOnce({ snapshot, catalog: [], catalogError: '503 manifest offline' });
+    render(<App />);
+    await findRouteHeading('市場引信');
+    expect(screen.getByText('Manifest 暫時不可用：503 manifest offline')).toHaveAttribute('role', 'status');
+    expect(screen.getByRole('region', { name: 'P2 · BUBBLE / FRAGILITY CONTEXT' })).toHaveTextContent('2/8 CONTEXT AVAILABLE');
+    expect(screen.getByRole('region', { name: 'P2 · UNAVAILABLE FREE' }).querySelectorAll('.rights-gate-card')).toHaveLength(6);
+  });
+
   it('renders the detailed P0 page and confirmation spreads', async () => {
     window.history.replaceState(null, '', '/#/liquidity-fuel');
     render(<App />);
@@ -215,6 +291,10 @@ describe('v2 routed dashboard', () => {
     expect(sourcesDialog).toHaveTextContent('LAST SUCCESS');
     expect(within(sourcesDialog).getByRole('link', { name: /official TFF Futures Only dataset/ })).toBeVisible();
     expect(within(sourcesDialog).getByRole('link', { name: /CFTC Web Policy/ })).toBeVisible();
+    expect(within(sourcesDialog).getByRole('link', { name: /official EDGAR daily indexes/ })).toHaveAttribute('href', 'https://www.sec.gov/Archives/edgar/daily-index/');
+    expect(within(sourcesDialog).getByRole('link', { name: /Form 4 instructions/ })).toHaveAttribute('href', 'https://www.sec.gov/files/form4.pdf');
+    expect(sourcesDialog).toHaveTextContent(/transaction codes P and S cover open-market or private/);
+    expect(sourcesDialog).toHaveTextContent(/not affiliated with or endorsed by the SEC/);
   });
 
   it('keeps non-OK numeric values visible but labels every dashboard surface as last-good', async () => {

@@ -441,6 +441,8 @@ zscore_3y = zscore(net_pct_open_interest over 156 weeks)
 
 ## 5. Phase P2：七個泡沫／脆弱度指標
 
+> 2026-08-12 implementation lock：production P2 hard-cut為兩項 active proxy加六項 `UNAVAILABLE_FREE`，畫面顯示 `2/8 CONTEXT AVAILABLE`，而唔係本節早期「七個」或全部 active假設。Active IDs係 `nonfinancial_equities_gdp_proxy`同`sec_form4_nonderivative_ps_count_ratio_20d`；rights/input hold係 FINRA margin、SPY Top-10、SPX 0DTE、NDX forward P/E、M2/Nasdaq同 gamma flip。`put_call_vol_skew`由P1 Cboe rights-held interface涵蓋，P2唔重複。SEC官方 code `P`／`S`代表 open-market **或 private** purchase/sale，structured XML無法分離純open-market，因此proxy名稱、methodology同驗收一律用reported non-derivative P/S count，唔作純open-market聲稱。P2只係fragility context，永遠唔改P1 switch、P0 overall或任何 severity；呢項後來鎖定決定凌駕本節舊描述。
+
 ### 5.1 免費可自動化
 
 #### A. FINRA margin debt

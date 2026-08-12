@@ -60,6 +60,26 @@ CANONICAL_P1_CFTC_METRIC_IDS = frozenset(
     }
 )
 
+CANONICAL_P2_METRIC_IDS = frozenset(
+    {
+        "nonfinancial_equities_gdp_proxy",
+        "sec_form4_nonderivative_ps_count_ratio_20d",
+        "gamma_flip",
+        "spx_0dte_share",
+        "finra_margin_debt",
+        "spy_holdings_top10_weight_proxy",
+        "m2_nasdaq_divergence",
+        "ndx_forward_pe",
+    }
+)
+
+ACTIVE_P2_METRIC_IDS = frozenset(
+    {
+        "nonfinancial_equities_gdp_proxy",
+        "sec_form4_nonderivative_ps_count_ratio_20d",
+    }
+)
+
 
 class ConfigValidationError(ContractValidationError):
     """Raised when a registry/config bundle is internally inconsistent."""
@@ -350,6 +370,39 @@ def validate_config_bundle(bundle: ConfigBundle) -> None:
     }
     if retired_p1_ids & set(metrics):
         raise ConfigValidationError("retired generic CFTC metric IDs remain in registry")
+    declared_p2 = bundle.metric_registry.get("canonical_p2_metric_ids")
+    if not isinstance(declared_p2, list) or set(declared_p2) != CANONICAL_P2_METRIC_IDS:
+        raise ConfigValidationError("canonical_p2_metric_ids does not match contract")
+    missing_p2 = sorted(CANONICAL_P2_METRIC_IDS - set(metrics))
+    if missing_p2:
+        raise ConfigValidationError(
+            "metric registry is missing canonical P2 IDs: " + ", ".join(missing_p2)
+        )
+    retired_p2_ids = {
+        "buffett_indicator_proxy",
+        "insider_buy_sell_proxy",
+        "insider_ratio_proxy",
+        "put_call_vol_skew",
+        "sp500_top10_weight",
+    }
+    if retired_p2_ids & set(metrics):
+        raise ConfigValidationError("retired P2 metric IDs remain in registry")
+    expected_p2_availability = {
+        "nonfinancial_equities_gdp_proxy": Availability.ACTIVE_PROXY,
+        "sec_form4_nonderivative_ps_count_ratio_20d": Availability.ACTIVE_PROXY,
+        **{
+            metric_id: Availability.UNAVAILABLE_FREE
+            for metric_id in CANONICAL_P2_METRIC_IDS - ACTIVE_P2_METRIC_IDS
+        },
+    }
+    for metric_id, expected_availability in expected_p2_availability.items():
+        metric = metrics[metric_id]
+        if metric.get("implemented") is not True:
+            raise ConfigValidationError(f"P2 metric {metric_id} must be implemented")
+        if metric.get("availability") != expected_availability.value:
+            raise ConfigValidationError(
+                f"P2 metric {metric_id} availability must be {expected_availability.value}"
+            )
     expected_cftc_identity = {
         "cftc_e_mini_sp500_asset_manager_net_pct_oi": ("13874A", "E-MINI S&P 500", "asset_manager"),
         "cftc_e_mini_sp500_leveraged_funds_net_pct_oi": ("13874A", "E-MINI S&P 500", "leveraged_funds"),

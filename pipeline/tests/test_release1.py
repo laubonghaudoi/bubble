@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from pipeline.config import CANONICAL_P0_METRIC_IDS, load_config_bundle
+from pipeline.collectors.sec_form4 import Form4Collection
 from pipeline.contracts import validate_publication
 from pipeline.build import NEW_YORK, h41_freshness_for
 from pipeline.release import (
@@ -138,6 +139,50 @@ def fixture_collectors(
             output[code] = rows
         return output
 
+    def fred_p2(series_id, **_kwargs):
+        if series_id == "NCBEILQ027S":
+            values = [48_000_000.0, 49_500_000.0, 51_000_000.0, 52_500_000.0, 54_000_000.0]
+        elif series_id == "GDP":
+            values = [27_000.0, 27_500.0, 28_000.0, 28_500.0, 29_000.0]
+        else:
+            raise AssertionError(series_id)
+        dates = ["2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"]
+        return {
+            "series_id": series_id,
+            "title": series_id,
+            "last_updated": "2026-06-26T12:00:00Z",
+            "units": "Millions of U.S. Dollars" if series_id == "NCBEILQ027S" else "Billions of Dollars",
+            "seasonal_adjustment": "Not Seasonally Adjusted" if series_id == "NCBEILQ027S" else "Seasonally Adjusted Annual Rate",
+            "observations": [
+                {
+                    "date": day,
+                    "value": value,
+                    "realtime_start": "2026-06-26",
+                    "realtime_end": "2026-06-26",
+                }
+                for day, value in zip(dates, values, strict=True)
+            ],
+        }
+
+    def sec_form4(**_kwargs):
+        days = tuple(
+            point["date"]
+            for point in business_points(
+                datetime(2026, 7, 16, tzinfo=timezone.utc), 28, 0
+            )
+        )
+        assert len(days) == 20
+        return Form4Collection(
+            filings=(),
+            reused_ledger_accessions=(),
+            master_accessions_by_day={day: () for day in days},
+            completed_index_days=days,
+            discovered_index_days=days,
+            failures=(),
+            reviews=(),
+            source_requests=20,
+        )
+
     return CollectorFunctions(
         rate=rate,
         fred=fred,
@@ -146,6 +191,8 @@ def fixture_collectors(
         tga=tga,
         auctions=auctions,
         cftc=cftc,
+        fred_p2=fred_p2,
+        sec_form4=sec_form4,
     )
 
 
@@ -161,8 +208,8 @@ def test_release_one_builds_complete_v2_contract_and_preserves_real_zero(tmp_pat
     )
     assert publication.snapshot["schema_version"] == "2.0.0"
     assert CANONICAL_P0_METRIC_IDS <= publication.snapshot["metrics"].keys()
-    assert len(publication.snapshot["sources"]) == 8
-    assert sum(publication.snapshot["source_health"].values()) == 8
+    assert len(publication.snapshot["sources"]) == 10
+    assert sum(publication.snapshot["source_health"].values()) == 10
     assert publication.snapshot["metrics"]["srf_accepted"]["value"] == 0
     assert publication.snapshot["metrics"]["on_rrp_accepted"]["value"] == 0
     on_rrp = publication.snapshot["metrics"]["on_rrp_accepted"]
@@ -193,11 +240,62 @@ def test_release_one_builds_complete_v2_contract_and_preserves_real_zero(tmp_pat
     assert publication.snapshot["switches"]["market_ignition"]["assessment"] is None
     assert publication.snapshot["switches"]["fundamental_exit"]["assessment"] is None
     assert publication.snapshot["overall_assessment"] == publication.snapshot["switches"]["liquidity_fuel"]["assessment"]
+    assert publication.snapshot["metrics"][
+        "sec_form4_nonderivative_ps_count_ratio_20d"
+    ]["value"] is None
 
     event_rows = publication.events["events"]
     settlement = next(row for row in event_rows if row["date"] == "2026-08-12")
     assert settlement["treasury_settlement_usd_bn"] == 50.0
     assert any("MONTH_END" in row["flags"] for row in event_rows)
+
+
+def test_incomplete_sec_form4_attempt_preserves_last_good_metric_and_ledger(tmp_path):
+    data_dir = tmp_path / "data"
+    initial = build_release(
+        data_dir=data_dir,
+        now=NOW,
+        collectors=fixture_collectors(),
+    )
+    stage = tmp_path / "initial-stage"
+    write_stage(initial, stage)
+    promote_stage(stage, data_dir=data_dir)
+
+    base = fixture_collectors()
+
+    def failed_sec_form4(**_kwargs):
+        return Form4Collection(
+            filings=(),
+            reused_ledger_accessions=(),
+            master_accessions_by_day={},
+            completed_index_days=(),
+            discovered_index_days=("2026-08-12",),
+            failures=(
+                {
+                    "index_date": "2026-08-12",
+                    "stage": "SUBMISSION",
+                    "reason": "fixture transient failure",
+                },
+            ),
+            reviews=(),
+            source_requests=1,
+        )
+
+    failed = build_release(
+        mode="incremental",
+        group="daily",
+        data_dir=data_dir,
+        now=NOW + timedelta(days=1),
+        collectors=replace(base, sec_form4=failed_sec_form4),
+    )
+    metric = failed.snapshot["metrics"][
+        "sec_form4_nonderivative_ps_count_ratio_20d"
+    ]
+    assert metric["quality"]["status"] == "STALE"
+    assert metric["quality"]["last_success_at"] == initial.snapshot["generated_at"]
+    assert metric["quality"]["last_attempt_at"] == "2026-08-13T20:00:00Z"
+    assert "fixture transient failure" in metric["quality"]["failure_reason"]
+    assert failed.sec_form4_ledger == initial.sec_form4_ledger
 
 
 def test_failed_fred_fetch_preserves_last_good_and_redacts_api_key(tmp_path, monkeypatch):

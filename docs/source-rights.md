@@ -17,8 +17,8 @@
 | --- | --- | --- |
 | New York Fed Markets Data API | 無 key | P0 rates、ON RRP、SRF 可自動化；低頻存取、保存 observation date，並遵守 attribution/disclaimer。 |
 | Treasury FiscalData | 無 key | Daily TGA 同 auction settlement 可自動化；`"null"` 字串要當缺失，並保留 dataset/as-of attribution。 |
-| FRED government-origin allowlist | `FRED_API_KEY` repository secret | 只容許 IORB、WRESBAL、WALCL、WTREGEN；registry 已預留之後覆核嘅 NCBEILQ027S/GDP。每項仍要標示 FRED 同原發布機構。 |
-| SEC EDGAR | `SEC_USER_AGENT` repository variable | 目前 P0 唔會抓 SEC，但 production workflow 要預先提供可識別 User-Agent；之後 Form 4/CompanyFacts 必須限速、cache 同引用 accession。 |
+| FRED government-origin allowlist | `FRED_API_KEY` repository secret | 只容許 IORB、WRESBAL、WALCL、WTREGEN、NCBEILQ027S、GDP；每項仍要標示 FRED 同原發布機構。 |
+| SEC EDGAR daily index / filings | `SEC_USER_AGENT` repository variable | P2 Form 4 collector 以 4 req/s serialized、cache/backoff、accession dedupe 同 complete-submission parsing運作；公開輸出只保存 privacy-minimized ledger。 |
 | CFTC PRE | 無 key | Release 2 只讀官方 TFF Futures Only dataset；E-mini S&P 500 同 Nasdaq-100 Consolidated、Asset Manager 同 Leveraged Funds 分開發布，並保留 weekly release lag。 |
 
 ## CFTC attribution and interpretation limits
@@ -36,7 +36,7 @@ Production 只會請求 TFF Futures Only dataset `gpe5-46if` 嘅兩個固定 CFT
 
 使用 FRED API 嘅頁面／文件應清楚表示資料經 FRED API 取得，並且產品未獲 Federal Reserve Bank of St. Louis 認可或認證。FRED access 只係傳輸途徑；series owner 嘅 rights 仍然適用。
 
-Release 1 禁止透過 FRED 自動抓取／公開再發布以下第三方 series：
+Production 禁止透過 FRED 自動抓取／公開再發布以下第三方 series：
 
 - S&P 500 (`SP500`)；
 - Nasdaq Composite (`NASDAQCOM`)；
@@ -56,7 +56,11 @@ Production `SEC_USER_AGENT` 固定使用：
 Bubble USD Liquidity Dashboard laubonghaudoi@icloud.com
 ```
 
-唔好提交真實 key 或個人 secret 到 Git。Collector 必須保持低於 SEC 公布 aggregate access ceiling、採用 cache/backoff，並以 filing URL／accession 引用 factual extraction。Issuer 撰寫嘅長篇 narrative 唔應原文再發布。
+唔好提交真實 key 或個人 secret 到 Git。Collector 必須保持低於 SEC 公布 aggregate access ceiling、採用 serialized cache/backoff，並以 filing URL／accession 引用 factual extraction。Issuer 撰寫嘅長篇 narrative 唔應原文再發布。
+
+P2 Form 4 collector 由每日 `master.YYYYMMDD.idx` 出發，按 accession 去重後讀 complete submission；`P`／`S` 依 SEC 官方 code table係 open-market **或 private** purchase/sale，唔可以標成純 open-market。Raw filing text、owner name/address/signature同 security-title narrative只可以留喺私有 Actions cache。Version-controlled public ledger只容許 accession、issuer CIK、日期／hash、hashed owner-CIK set、normalized transaction aggregates、10b5 tri-state、amendment/review狀態同 audit counts；loader會拒絕未喺 manifest 聲明嘅檔案、symlink、錯 schema／retention／hash。
+
+Form 4/A 唔會靠姓名、金額或 `dateOfOriginalSubmission` 猜 original accession。只有 issuer、owner-CIK set、period/date同 transaction fingerprint能唯一對應先會取代原 record；其餘保持 `UNLINKED_REVIEW` 並排除。呢個 proxy係 transaction-row evidence，唔係 unique insider count、全市場 corporate sentiment結論或投資信號。
 
 ## Rights-held sources
 

@@ -24,6 +24,15 @@ canonical_p1_metric_ids:
 - cftc_e_mini_sp500_leveraged_funds_net_pct_oi
 - cftc_nasdaq100_consolidated_asset_manager_net_pct_oi
 - cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi
+canonical_p2_metric_ids:
+- nonfinancial_equities_gdp_proxy
+- sec_form4_nonderivative_ps_count_ratio_20d
+- gamma_flip
+- spx_0dte_share
+- finra_margin_debt
+- spy_holdings_top10_weight_proxy
+- m2_nasdaq_divergence
+- ndx_forward_pe
 metrics:
 - metric_id: sofr
   legacy_ids: []
@@ -917,13 +926,13 @@ metrics:
     cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
     source_and_license_note: Reliable dealer net-gamma and trade-direction inputs are not publicly available. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
     proxy_disclosure: ''
-  implemented: false
+  implemented: true
 - metric_id: spx_0dte_share
   legacy_ids: []
   label: SPX 0DTE volume share
   layer: MARKET_IGNITION
   phase: P2
-  availability: MANUAL_READY
+  availability: UNAVAILABLE_FREE
   source_ids:
   - cboe
   network_enabled: false
@@ -937,50 +946,21 @@ metrics:
     definition: Canonical SPX 0DTE volume share metric as defined by the registry.
     why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
     direction: No direction is published while the value is null.
-    calculation: Free Cboe statistics do not expose a same-day-expiration numerator under redistribution-cleared terms. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    calculation: Free Cboe statistics do not expose a definition-consistent same-day-expiration numerator under redistribution-cleared terms. The provider interface remains disabled until written permission or a licensed feed is configured.
     frequency_and_lag: 'Expected cadence: SPX 0DTE volume share; the observation date and release lag must be shown separately.'
     common_misreads: A single observation is not a forecast or causal proof.
     technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
     confirm_with: []
     cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
-    source_and_license_note: Free Cboe statistics do not expose a same-day-expiration numerator under redistribution-cleared terms. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    source_and_license_note: Cboe redistribution rights are not cleared for this public dashboard; no network request or manual substitute is published.
     proxy_disclosure: ''
-  implemented: false
-- metric_id: put_call_vol_skew
-  legacy_ids:
-  - put_call_skew
-  label: Put/call implied-volatility skew
-  layer: MARKET_IGNITION
-  phase: P2
-  availability: UNAVAILABLE_FREE
-  source_ids:
-  - licensed_provider
-  network_enabled: false
-  is_proxy: false
-  unit: volatility_points
-  frequency: business_daily
-  reason: Consistent option-surface inputs are not available from a redistribution-cleared free source.
-  proxy_disclosure: ''
-  methodology:
-    question: What does Put/call implied-volatility skew reveal within its dashboard evidence block?
-    definition: Canonical Put/call implied-volatility skew metric as defined by the registry.
-    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
-    direction: No direction is published while the value is null.
-    calculation: Consistent option-surface inputs are not available from a redistribution-cleared free source. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
-    frequency_and_lag: 'Expected cadence: Put/call implied-volatility skew; the observation date and release lag must be shown separately.'
-    common_misreads: A single observation is not a forecast or causal proof.
-    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
-    confirm_with: []
-    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
-    source_and_license_note: Consistent option-surface inputs are not available from a redistribution-cleared free source. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
-    proxy_disclosure: ''
-  implemented: false
+  implemented: true
 - metric_id: finra_margin_debt
   legacy_ids: []
   label: FINRA customer debit balances
   layer: MARKET_IGNITION
   phase: P2
-  availability: MANUAL_READY
+  availability: UNAVAILABLE_FREE
   source_ids:
   - finra_margin
   network_enabled: false
@@ -994,22 +974,21 @@ metrics:
     definition: Canonical FINRA customer debit balances metric as defined by the registry.
     why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
     direction: No direction is published while the value is null.
-    calculation: FINRA terms do not clear automated database construction or redistribution. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    calculation: FINRA terms do not clear automated database construction or public redistribution. The provider interface remains disabled until written permission or a licensed feed is configured.
     frequency_and_lag: 'Expected cadence: FINRA customer debit balances; the observation date and release lag must be shown separately.'
     common_misreads: A single observation is not a forecast or causal proof.
     technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
     confirm_with: []
     cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
-    source_and_license_note: FINRA terms do not clear automated database construction or redistribution. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    source_and_license_note: FINRA redistribution rights are unresolved; no automated request or manual substitute is published.
     proxy_disclosure: ''
-  implemented: false
+  implemented: true
 - metric_id: spy_holdings_top10_weight_proxy
-  legacy_ids:
-  - sp500_top10_weight
+  legacy_ids: []
   label: SPY holdings Top-10 weight proxy
   layer: MARKET_IGNITION
   phase: P2
-  availability: MANUAL_READY
+  availability: UNAVAILABLE_FREE
   source_ids:
   - ssga_spy
   network_enabled: false
@@ -1023,18 +1002,17 @@ metrics:
     definition: SPY holdings can differ from official S&P 500 closing index weights.
     why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
     direction: No direction is published while the value is null.
-    calculation: State Street terms do not clear an automated public redistribution workflow. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    calculation: State Street terms do not clear an automated public redistribution workflow. The provider interface remains disabled until written permission or a licensed feed is configured.
     frequency_and_lag: 'Expected cadence: SPY holdings Top-10 weight proxy; the observation date and release lag must be shown separately.'
     common_misreads: SPY holdings can differ from official S&P 500 closing index weights.
     technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
     confirm_with: []
     cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
-    source_and_license_note: State Street terms do not clear an automated public redistribution workflow. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    source_and_license_note: State Street redistribution rights are unresolved; no automated request or manual substitute is published.
     proxy_disclosure: SPY holdings can differ from official S&P 500 closing index weights.
-  implemented: false
+  implemented: true
 - metric_id: nonfinancial_equities_gdp_proxy
-  legacy_ids:
-  - buffett_indicator_proxy
+  legacy_ids: []
   label: Nonfinancial corporate equities / GDP proxy
   layer: MARKET_IGNITION
   phase: P2
@@ -1052,22 +1030,22 @@ metrics:
   reason: null
   proxy_disclosure: Nonfinancial corporate equity liabilities are not total U.S. equity market capitalization.
   methodology:
-    question: What does Nonfinancial corporate equities / GDP proxy reveal within its dashboard evidence block?
-    definition: Nonfinancial corporate equity liabilities are not total U.S. equity market capitalization.
-    why_it_matters: It supplies an independent evidence input; it is never sufficient alone.
-    direction: Interpret direction only with the metric definition, freshness, and independent confirmations.
-    calculation: Apply the documented metric transform to validated source observations; never coerce null to zero.
-    frequency_and_lag: 'Expected cadence: Nonfinancial corporate equities / GDP proxy; the observation date and release lag must be shown separately.'
-    common_misreads: Nonfinancial corporate equity liabilities are not total U.S. equity market capitalization.
-    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
-    confirm_with: []
-    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    question: How large are U.S. nonfinancial corporate equity liabilities relative to nominal GDP?
+    definition: Federal Reserve Z.1 nonfinancial corporate equity liabilities divided by BEA nominal GDP for the exact same quarter.
+    why_it_matters: It supplies a broad valuation and balance-sheet fragility context without relying on a proprietary public-equity index.
+    direction: A higher ratio means equity liabilities are larger relative to current annualized economic output; it is context, not a timing signal.
+    calculation: Join NCBEILQ027S and GDP by exact calendar quarter with no forward fill; convert equities from USD millions to billions, then calculate equities_bn / GDP_bn × 100. QoQ and YoY are changes in the ratio; the 10-year percentile uses up to 40 exact common quarters.
+    frequency_and_lag: Quarterly. Z.1 and GDP release on different schedules and revise history, so the latest common quarter and both component observation dates are shown separately.
+    common_misreads: 'This is not the Buffett indicator: the numerator includes listed and closely held or private nonfinancial corporate equity liabilities, while GDP is an annualized flow.'
+    technical_distortions: Z.1 benchmark revisions, GDP revisions, and the stock-versus-annualized-flow denominator can materially change history.
+    confirm_with:
+    - sec_form4_nonderivative_ps_count_ratio_20d
+    cannot_infer: Cannot prove a bubble, identify a peak, or predict the direction or timing of equity returns.
     source_and_license_note: Government-origin NCBEILQ027S and GDP are restricted to the reviewed FRED allowlist; the supported API requires FRED_API_KEY and both source agencies must be attributed.
     proxy_disclosure: Nonfinancial corporate equity liabilities are not total U.S. equity market capitalization.
-  implemented: false
+  implemented: true
 - metric_id: m2_nasdaq_divergence
-  legacy_ids:
-  - m2_vs_nasdaq
+  legacy_ids: []
   label: M2 / Nasdaq divergence
   layer: MARKET_IGNITION
   phase: P2
@@ -1093,11 +1071,10 @@ metrics:
     cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
     source_and_license_note: Nasdaq series redistribution rights are not cleared by access through FRED. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
     proxy_disclosure: ''
-  implemented: false
-- metric_id: insider_buy_sell_proxy
-  legacy_ids:
-  - insider_ratio_proxy
-  label: SEC Form 4 insider buy/sell proxy
+  implemented: true
+- metric_id: sec_form4_nonderivative_ps_count_ratio_20d
+  legacy_ids: []
+  label: SEC Form 4 reported P/S count ratio · 20D proxy
   layer: MARKET_IGNITION
   phase: P2
   availability: ACTIVE_PROXY
@@ -1108,21 +1085,22 @@ metrics:
   unit: ratio
   frequency: business_daily
   reason: null
-  proxy_disclosure: Parsed open-market Form 4 transactions do not represent all insider intent or future returns.
+  proxy_disclosure: Form 4 codes P and S include open-market or private purchases and sales; the ratio counts eligible non-derivative transaction rows, not unique insiders or trades.
   methodology:
-    question: What does SEC Form 4 insider buy/sell proxy reveal within its dashboard evidence block?
-    definition: Parsed open-market Form 4 transactions do not represent all insider intent or future returns.
-    why_it_matters: It supplies an independent evidence input; it is never sufficient alone.
-    direction: Interpret direction only with the metric definition, freshness, and independent confirmations.
-    calculation: Apply the documented metric transform to validated source observations; never coerce null to zero.
-    frequency_and_lag: 'Expected cadence: SEC Form 4 insider buy/sell proxy; the observation date and release lag must be shown separately.'
-    common_misreads: Parsed open-market Form 4 transactions do not represent all insider intent or future returns.
-    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
-    confirm_with: []
-    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
-    source_and_license_note: Use only the source IDs whose automated-fetch and redistribution rights gates pass.
-    proxy_disclosure: Parsed open-market Form 4 transactions do not represent all insider intent or future returns.
-  implemented: false
+    question: How does the count of reported non-derivative Form 4 P rows compare with S rows over the latest 20 completed EDGAR index business days?
+    definition: Count eligible Table I non-derivative transaction rows coded P or S by SEC filing availability date. SEC defines P and S as open-market or private purchases and sales, so this is not open-market-only.
+    why_it_matters: It gives a broad, reproducible insider-filing fragility context while preserving coverage, amendment, pricing, and 10b5 limitations.
+    direction: A higher ratio means more reported P rows relative to S rows within the stated filing window; it is context and not a return forecast.
+    calculation: Use (P count + 1) / (S count + 1) over 20 completed EDGAR-index business days. Publish 5D separately. Dollar ratios require at least 80% priced-row coverage; 10b5 sensitivity includes only filings explicitly marked false.
+    frequency_and_lag: Business daily after the completed SEC daily master index is available. Observation uses the window end; release time uses the latest included EDGAR acceptance; pipeline update is separate.
+    common_misreads: Counts are transaction rows, not unique insiders, trades, issuers, or dollar conviction. P/S can be private transactions, and a filing-level 10b5 flag is not row-level classification.
+    technical_distortions: Joint-owner duplicate index rows, missing prices, amendments, late filings, 10b5 unknowns, and index revisions can affect the aggregates and coverage.
+    confirm_with:
+    - nonfinancial_equities_gdp_proxy
+    cannot_infer: Cannot establish insider intent, distinguish all public from private transactions, or predict market direction.
+    source_and_license_note: SEC EDGAR official filing data. Cite accessions and source URLs, do not use the SEC seal, and do not imply SEC affiliation or endorsement.
+    proxy_disclosure: Form 4 codes P and S include open-market or private purchases and sales; the ratio counts eligible non-derivative transaction rows, not unique insiders or trades.
+  implemented: true
 - metric_id: ndx_forward_pe
   legacy_ids: []
   label: Nasdaq-100 forward P/E
@@ -1150,7 +1128,7 @@ metrics:
     cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
     source_and_license_note: A consistent, reproducible forward-earnings consensus is proprietary. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
     proxy_disclosure: ''
-  implemented: false
+  implemented: true
 - metric_id: hyperscaler_capex
   legacy_ids: []
   label: Hyperscaler aggregate cash CapEx

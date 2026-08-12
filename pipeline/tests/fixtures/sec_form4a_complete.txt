@@ -1,0 +1,35 @@
+<SEC-DOCUMENT>0000789019-26-000002.txt : 20260811
+<SEC-HEADER>
+ACCESSION NUMBER: 0000789019-26-000002
+<ACCEPTANCE-DATETIME>20260811220002
+CONFORMED SUBMISSION TYPE: 4/A
+FILED AS OF DATE: 20260811
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>4/A
+<SEQUENCE>1
+<FILENAME>ownership.xml
+<XML>
+<?xml version="1.0"?>
+<ownershipDocument>
+  <documentType>4/A</documentType>
+  <periodOfReport>2026-08-10</periodOfReport>
+  <dateOfOriginalSubmission>2026-08-10</dateOfOriginalSubmission>
+  <aff10b5One>false</aff10b5One>
+  <issuer><issuerCik>0000789019</issuerCik><issuerTradingSymbol>TESTA</issuerTradingSymbol></issuer>
+  <reportingOwner><reportingOwnerId><rptOwnerCik>0001000002</rptOwnerCik></reportingOwnerId></reportingOwner>
+  <nonDerivativeTable>
+    <nonDerivativeTransaction>
+      <transactionDate><value>2026-08-10</value></transactionDate>
+      <transactionCoding><transactionCode>S</transactionCode></transactionCoding>
+      <transactionAmounts>
+        <transactionShares><value>4</value></transactionShares>
+        <transactionPricePerShare><value>10.50</value></transactionPricePerShare>
+        <transactionAcquiredDisposedCode><value>D</value></transactionAcquiredDisposedCode>
+      </transactionAmounts>
+    </nonDerivativeTransaction>
+  </nonDerivativeTable>
+</ownershipDocument>
+</XML>
+</DOCUMENT>
+</SEC-DOCUMENT>

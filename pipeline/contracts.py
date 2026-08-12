@@ -9,6 +9,7 @@ from __future__ import annotations
 from datetime import date, datetime
 from enum import StrEnum
 import math
+import re
 from typing import Any, Mapping
 
 
@@ -48,6 +49,85 @@ P1_HELD_METRICS = frozenset(
         "cross_asset_correlation",
     }
 )
+
+P2_ACTIVE_METRICS = {
+    "nonfinancial_equities_gdp_proxy": ("ACTIVE_PROXY", "percent", "quarterly"),
+    "sec_form4_nonderivative_ps_count_ratio_20d": (
+        "ACTIVE_PROXY",
+        "ratio",
+        "business_daily",
+    ),
+}
+P2_HELD_METRICS = frozenset(
+    {
+        "gamma_flip",
+        "spx_0dte_share",
+        "finra_margin_debt",
+        "spy_holdings_top10_weight_proxy",
+        "m2_nasdaq_divergence",
+        "ndx_forward_pe",
+    }
+)
+P2_RETIRED_METRICS = frozenset(
+    {
+        "buffett_indicator_proxy",
+        "insider_buy_sell_proxy",
+        "insider_ratio_proxy",
+        "put_call_vol_skew",
+        "sp500_top10_weight",
+    }
+)
+P2_MACRO_STATISTICS = frozenset(
+    {
+        "equity_usd_bn",
+        "gdp_usd_bn",
+        "qoq_percent_change",
+        "yoy_percent_change",
+        "percentile_10y",
+        "percentile_10y_sample_size",
+    }
+)
+P2_FORM4_STATISTICS = frozenset(
+    {
+        "ratio_5d",
+        "count_ratio_20d",
+        "purchase_count_5d",
+        "sale_count_5d",
+        "purchase_count_20d",
+        "sale_count_20d",
+        "dollar_ratio_5d",
+        "dollar_ratio_20d",
+        "dollar_coverage_rate_5d",
+        "dollar_coverage_rate_20d",
+        "ex_explicit_false_count_ratio_5d",
+        "ex_explicit_false_count_ratio_20d",
+        "ex_explicit_false_coverage_5d",
+        "ex_explicit_false_coverage_20d",
+        "eligible_transaction_count_20d",
+        "priced_transaction_count_20d",
+        "unique_accessions_20d",
+        "unique_issuers_20d",
+        "filings_processed_20d",
+        "form4_count_20d",
+        "form4a_count_20d",
+        "amendments_linked_20d",
+        "amendments_review_count_20d",
+        "parse_failures_20d",
+        "tenb5_true_filings_20d",
+        "tenb5_false_filings_20d",
+        "tenb5_unknown_filings_20d",
+    }
+)
+P2_COLLECTOR_SOURCES = {
+    "fred_nonfinancial_equities_gdp": (
+        "nonfinancial_equities_gdp_proxy",
+        "fred_government",
+    ),
+    "sec_form4_daily_index": (
+        "sec_form4_nonderivative_ps_count_ratio_20d",
+        "sec_edgar",
+    ),
+}
 
 
 def _p1_direction(change: Any) -> str:
@@ -112,6 +192,300 @@ def _cftc_statistics_from_points(
         "z_score_3_year": z_score,
         "z_score_3_year_sample_size": min(len(points), 156),
     }
+
+
+def _p2_macro_quarter(value: Any, *, path: str) -> tuple[int, int]:
+    if not isinstance(value, str):
+        raise ContractValidationError(f"{path} must be YYYY-Q1 through YYYY-Q4")
+    match = re.fullmatch(r"(\d{4})-Q([1-4])", value)
+    if match is None:
+        raise ContractValidationError(f"{path} must be YYYY-Q1 through YYYY-Q4")
+    return int(match.group(1)), int(match.group(2))
+
+
+def _p2_macro_quarter_ordinal(value: tuple[int, int]) -> int:
+    return value[0] * 4 + value[1] - 1
+
+
+def _p2_macro_quarter_end(value: tuple[int, int]) -> str:
+    year, quarter = value
+    return date(year, quarter * 3, (31, 30, 30, 31)[quarter - 1]).isoformat()
+
+
+def _p2_macro_source_date(value: Any, *, path: str) -> tuple[str, tuple[int, int]]:
+    _validate_optional_date(value, path)
+    if not isinstance(value, str):
+        raise ContractValidationError(f"{path} must be an ISO date")
+    parsed = date.fromisoformat(value)
+    return value, (parsed.year, (parsed.month - 1) // 3 + 1)
+
+
+def _p2_macro_percent_change(
+    current: float | None, previous: float | None
+) -> float | None:
+    if current is None or previous in (None, 0):
+        return None
+    return round((current / previous - 1) * 100, 6)
+
+
+def _p2_macro_midrank(values: list[float], current: float) -> float:
+    below = sum(value < current for value in values)
+    equal = sum(value == current for value in values)
+    return round((below + 0.5 * equal) / len(values) * 100, 6)
+
+
+def _validate_p2_macro_artifacts(
+    snapshot_metric: Mapping[str, Any], series: Mapping[str, Any]
+) -> None:
+    """Recompute every published macro statistic from the full series.
+
+    These checks deliberately use only the serialized artifact.  A matching
+    manifest hash or snapshot suffix cannot make a tampered component value,
+    rolling statistic, or source-quarter label authoritative.
+    """
+
+    points = series["observations"]
+    required_fields = {
+        "quarter",
+        "equity_usd_bn",
+        "gdp_usd_bn",
+        "change_1_quarter_pp",
+        "qoq_percent_change",
+        "yoy_percent_change",
+        "percentile_10y",
+        "percentile_10y_sample_size",
+        "equities_source_date",
+        "gdp_source_date",
+        "equities_realtime_start",
+        "equities_realtime_end",
+        "gdp_realtime_start",
+        "gdp_realtime_end",
+    }
+    by_ordinal: dict[int, float | None] = {}
+    latest: Mapping[str, Any] | None = None
+    for index, point in enumerate(points):
+        path = f"nonfinancial_equities_gdp_proxy.observations[{index}]"
+        missing = required_fields - point.keys()
+        if missing:
+            raise ContractValidationError(
+                f"{path} is missing fields: " + ", ".join(sorted(missing))
+            )
+        quarter = _p2_macro_quarter(point["quarter"], path=f"{path}.quarter")
+        ordinal = _p2_macro_quarter_ordinal(quarter)
+        if ordinal in by_ordinal:
+            raise ContractValidationError(
+                "nonfinancial equities/GDP full series has duplicate quarters"
+            )
+        if point["date"] != _p2_macro_quarter_end(quarter):
+            raise ContractValidationError(
+                f"{path}.date must be the labelled calendar-quarter end"
+            )
+        for field in ("equities_source_date", "gdp_source_date"):
+            _, source_quarter = _p2_macro_source_date(
+                point[field], path=f"{path}.{field}"
+            )
+            if source_quarter != quarter:
+                raise ContractValidationError(
+                    f"{path}.{field} must belong to the exact common quarter"
+                )
+        for prefix in ("equities", "gdp"):
+            start_field = f"{prefix}_realtime_start"
+            end_field = f"{prefix}_realtime_end"
+            start, _ = _p2_macro_source_date(
+                point[start_field], path=f"{path}.{start_field}"
+            )
+            end, _ = _p2_macro_source_date(
+                point[end_field], path=f"{path}.{end_field}"
+            )
+            if end < start:
+                raise ContractValidationError(
+                    f"{path} {prefix} realtime interval is inverted"
+                )
+
+        numeric_fields = (
+            "equity_usd_bn",
+            "gdp_usd_bn",
+            "change_1_quarter_pp",
+            "qoq_percent_change",
+            "yoy_percent_change",
+            "percentile_10y",
+        )
+        for field in numeric_fields:
+            _validate_nullable_number(point[field], f"{path}.{field}")
+        equity = point["equity_usd_bn"]
+        gdp = point["gdp_usd_bn"]
+        if equity is not None and equity < 0:
+            raise ContractValidationError(f"{path}.equity_usd_bn cannot be negative")
+        if gdp is not None and gdp < 0:
+            raise ContractValidationError(f"{path}.gdp_usd_bn cannot be negative")
+        expected_ratio = (
+            round(equity / gdp * 100, 6)
+            if equity is not None and gdp not in (None, 0)
+            else None
+        )
+        if not _same_nullable_number(point["value"], expected_ratio, tolerance=0.000001):
+            raise ContractValidationError(f"{path}.value does not reconcile to components")
+
+        previous_quarter = by_ordinal.get(ordinal - 1)
+        previous_year = by_ordinal.get(ordinal - 4)
+        current = point["value"]
+        expected_change = (
+            round(current - previous_quarter, 6)
+            if current is not None and previous_quarter is not None
+            else None
+        )
+        if not _same_nullable_number(
+            point["change_1_quarter_pp"], expected_change, tolerance=0.000002
+        ):
+            raise ContractValidationError(
+                f"{path}.change_1_quarter_pp does not match the prior exact quarter"
+            )
+        expected_qoq = _p2_macro_percent_change(current, previous_quarter)
+        expected_yoy = _p2_macro_percent_change(current, previous_year)
+        if not _same_nullable_number(
+            point["qoq_percent_change"], expected_qoq, tolerance=0.000002
+        ):
+            raise ContractValidationError(f"{path}.qoq_percent_change does not reconcile")
+        if not _same_nullable_number(
+            point["yoy_percent_change"], expected_yoy, tolerance=0.000002
+        ):
+            raise ContractValidationError(f"{path}.yoy_percent_change does not reconcile")
+
+        by_ordinal[ordinal] = current
+        trailing = [
+            value
+            for candidate, value in by_ordinal.items()
+            if ordinal - 39 <= candidate <= ordinal and value is not None
+        ]
+        sample_size = point["percentile_10y_sample_size"]
+        if (
+            isinstance(sample_size, bool)
+            or not isinstance(sample_size, int)
+            or sample_size != len(trailing)
+        ):
+            raise ContractValidationError(
+                f"{path}.percentile_10y_sample_size does not match the trailing window"
+            )
+        expected_percentile = (
+            _p2_macro_midrank(trailing, current)
+            if current is not None and trailing
+            else None
+        )
+        if not _same_nullable_number(
+            point["percentile_10y"], expected_percentile, tolerance=0.000002
+        ):
+            raise ContractValidationError(f"{path}.percentile_10y does not reconcile")
+        latest = point
+
+    expected_statistics: dict[str, int | float | None] = {
+        "equity_usd_bn": latest["equity_usd_bn"] if latest else None,
+        "gdp_usd_bn": latest["gdp_usd_bn"] if latest else None,
+        "qoq_percent_change": latest["qoq_percent_change"] if latest else None,
+        "yoy_percent_change": latest["yoy_percent_change"] if latest else None,
+        "percentile_10y": latest["percentile_10y"] if latest else None,
+        "percentile_10y_sample_size": (
+            latest["percentile_10y_sample_size"] if latest else 0
+        ),
+    }
+    for field, expected in expected_statistics.items():
+        if not _same_nullable_number(
+            snapshot_metric["statistics"].get(field), expected, tolerance=0.000002
+        ):
+            raise ContractValidationError(
+                f"nonfinancial_equities_gdp_proxy.statistics.{field} "
+                "must match the full-series endpoint"
+            )
+    expected_change = latest["change_1_quarter_pp"] if latest else None
+    if not _same_nullable_number(
+        snapshot_metric["changes"].get("one_quarter"),
+        expected_change,
+        tolerance=0.000002,
+    ):
+        raise ContractValidationError(
+            "nonfinancial_equities_gdp_proxy.changes.one_quarter must match "
+            "the full-series endpoint"
+        )
+    expected_context = {
+        "equity_observation_date": latest["equities_source_date"] if latest else None,
+        "gdp_observation_date": latest["gdp_source_date"] if latest else None,
+        "common_quarter": latest["quarter"] if latest else None,
+    }
+    if any(
+        snapshot_metric["context"].get(field) != expected
+        for field, expected in expected_context.items()
+    ):
+        raise ContractValidationError(
+            "nonfinancial_equities_gdp_proxy context must match the full-series endpoint"
+        )
+    expected_sample_size = sum(point["value"] is not None for point in points)
+    if snapshot_metric["quality"].get("sample_size") != expected_sample_size:
+        raise ContractValidationError(
+            "nonfinancial_equities_gdp_proxy quality.sample_size must match "
+            "non-null full-series observations"
+        )
+
+
+def _validate_p2_collector_sources(
+    snapshot: Mapping[str, Any],
+    metrics: Mapping[str, Any],
+    sources: Mapping[str, Any],
+) -> None:
+    for collector_id, (metric_id, expected_source_id) in P2_COLLECTOR_SOURCES.items():
+        if collector_id not in sources:
+            raise ContractValidationError(
+                f"snapshot.sources.{collector_id} is required for P2"
+            )
+        source = _require_mapping(
+            sources[collector_id], f"snapshot.sources.{collector_id}"
+        )
+        metric = _require_mapping(metrics[metric_id], f"snapshot.metrics.{metric_id}")
+        metric_source = _require_mapping(
+            metric.get("source"), f"snapshot.metrics.{metric_id}.source"
+        )
+        quality = _require_mapping(
+            metric.get("quality"), f"snapshot.metrics.{metric_id}.quality"
+        )
+        if source.get("collector_id") != collector_id:
+            raise ContractValidationError(
+                f"snapshot.sources.{collector_id}.collector_id must match its key"
+            )
+        if metric_source.get("source_id") != expected_source_id:
+            raise ContractValidationError(
+                f"{metric_id}.source.source_id must be {expected_source_id}"
+            )
+        if metric_source.get("retrieved_at") != quality.get("last_attempt_at"):
+            raise ContractValidationError(
+                f"{metric_id}.source.retrieved_at must match quality.last_attempt_at"
+            )
+        for field in ("name", "url", "tier", "rights_note"):
+            if source.get(field) != metric_source.get(field):
+                raise ContractValidationError(
+                    f"snapshot.sources.{collector_id}.{field} must match metric provenance"
+                )
+        expected_updated = (
+            quality.get("last_attempt_at")
+            if quality.get("last_attempt_at") == snapshot.get("generated_at")
+            else metric.get("updated_at")
+        )
+        expected_fields = {
+            "status": quality.get("status"),
+            "freshness": quality.get("freshness"),
+            "observation_date": metric.get("observation_date"),
+            "released_at": metric.get("released_at"),
+            "updated_at": expected_updated,
+            "last_success_at": quality.get("last_success_at"),
+            "last_attempt_at": quality.get("last_attempt_at"),
+            "expected_next_update": metric.get("expected_next_update"),
+            "failure_reason": quality.get("failure_reason"),
+        }
+        if any(
+            source.get(field) != expected
+            for field, expected in expected_fields.items()
+        ):
+            raise ContractValidationError(
+                f"snapshot.sources.{collector_id} state/provenance must match {metric_id}"
+            )
+
 
 METHODOLOGY_FIELDS = frozenset(
     {
@@ -757,6 +1131,140 @@ def validate_snapshot(snapshot: Mapping[str, Any]) -> None:
                 "cftc source state/provenance must match its four canonical metrics"
             )
 
+    missing_p2 = (P2_ACTIVE_METRICS.keys() | P2_HELD_METRICS) - metrics.keys()
+    if missing_p2:
+        raise ContractValidationError(
+            "snapshot is missing canonical P2 metrics: "
+            + ", ".join(sorted(missing_p2))
+        )
+    retired_p2 = P2_RETIRED_METRICS & metrics.keys()
+    if retired_p2:
+        raise ContractValidationError(
+            "snapshot contains retired P2 metric IDs: "
+            + ", ".join(sorted(retired_p2))
+        )
+    for metric_id in P2_HELD_METRICS:
+        metric = metrics[metric_id]
+        if (
+            metric["availability"] != "UNAVAILABLE_FREE"
+            or metric["value"] is not None
+            or metric["quality"]["status"] != "NOT_APPLICABLE"
+            or metric["short_series"]
+        ):
+            raise ContractValidationError(
+                f"rights-held P2 metric {metric_id} must fail closed"
+            )
+        for field in (
+            "observation_date",
+            "released_at",
+            "updated_at",
+            "expected_next_update",
+        ):
+            if field not in metric or metric[field] is not None:
+                raise ContractValidationError(
+                    f"rights-held P2 metric {metric_id}.{field} must be null"
+                )
+        for field in ("last_success_at", "last_attempt_at"):
+            if field not in metric["quality"] or metric["quality"][field] is not None:
+                raise ContractValidationError(
+                    f"rights-held P2 metric {metric_id}.quality.{field} must be null"
+                )
+        for field in ("source_id", "retrieved_at"):
+            if field not in metric["source"] or metric["source"][field] is not None:
+                raise ContractValidationError(
+                    f"rights-held P2 metric {metric_id}.source.{field} must be null"
+                )
+    for metric_id, (availability, unit, frequency) in P2_ACTIVE_METRICS.items():
+        metric = metrics[metric_id]
+        if (
+            metric["availability"] != availability
+            or metric["unit"] != unit
+            or metric["frequency"] != frequency
+        ):
+            raise ContractValidationError(
+                f"{metric_id} availability/unit/frequency does not match P2 contract"
+            )
+
+    macro = metrics["nonfinancial_equities_gdp_proxy"]
+    missing_macro_stats = P2_MACRO_STATISTICS - macro["statistics"].keys()
+    if missing_macro_stats:
+        raise ContractValidationError(
+            "nonfinancial equities/GDP statistics missing: "
+            + ", ".join(sorted(missing_macro_stats))
+        )
+    macro_context = macro["context"]
+    for field in (
+        "equity_observation_date",
+        "gdp_observation_date",
+        "common_quarter",
+    ):
+        _validate_optional_string(
+            macro_context.get(field),
+            f"nonfinancial_equities_gdp_proxy.context.{field}",
+        )
+    percentile = macro["statistics"]["percentile_10y"]
+    if percentile is not None and not 0 <= percentile <= 100:
+        raise ContractValidationError("P2 macro percentile_10y must be between 0 and 100")
+    percentile_sample = macro["statistics"]["percentile_10y_sample_size"]
+    if (
+        isinstance(percentile_sample, bool)
+        or not isinstance(percentile_sample, int)
+        or not 0 <= percentile_sample <= 40
+    ):
+        raise ContractValidationError(
+            "P2 macro percentile_10y_sample_size must be an integer from 0 to 40"
+        )
+    if macro["changes"].get("one_quarter") != macro["statistics"].get(
+        "change_1_quarter_pp"
+    ) and "change_1_quarter_pp" in macro["statistics"]:
+        raise ContractValidationError(
+            "P2 macro one-quarter change must match ratio percentage-point statistics"
+        )
+
+    form4 = metrics["sec_form4_nonderivative_ps_count_ratio_20d"]
+    missing_form4_stats = P2_FORM4_STATISTICS - form4["statistics"].keys()
+    if missing_form4_stats:
+        raise ContractValidationError(
+            "SEC Form 4 statistics missing: "
+            + ", ".join(sorted(missing_form4_stats))
+        )
+    if form4["value"] != form4["statistics"]["count_ratio_20d"]:
+        raise ContractValidationError(
+            "SEC Form 4 metric value must match count_ratio_20d"
+        )
+    form4_context = form4["context"]
+    for field in (
+        "window_start_5d",
+        "window_end_5d",
+        "window_start_20d",
+        "window_end_20d",
+        "dollar_status_5d",
+        "dollar_status_20d",
+        "ex_10b5_scope",
+    ):
+        _validate_optional_string(
+            form4_context.get(field),
+            f"sec_form4_nonderivative_ps_count_ratio_20d.context.{field}",
+        )
+    if form4_context.get("ex_10b5_scope") not in {
+        None,
+        "EXPLICIT_FALSE_ONLY",
+    }:
+        raise ContractValidationError(
+            "SEC Form 4 ex_10b5_scope must be EXPLICIT_FALSE_ONLY"
+        )
+    for window in ("5d", "20d"):
+        coverage = form4["statistics"][f"dollar_coverage_rate_{window}"]
+        dollar_ratio = form4["statistics"][f"dollar_ratio_{window}"]
+        if coverage is not None and not 0 <= coverage <= 1:
+            raise ContractValidationError(
+                f"SEC Form 4 dollar coverage {window} must be between 0 and 1"
+            )
+        if coverage is not None and coverage < 0.8 and dollar_ratio is not None:
+            raise ContractValidationError(
+                f"SEC Form 4 dollar ratio {window} requires at least 80% coverage"
+            )
+
     technical_context = snapshot.get("technical_context")
     if not isinstance(technical_context, list):
         raise ContractValidationError("snapshot.technical_context must be a list")
@@ -816,6 +1324,7 @@ def validate_snapshot(snapshot: Mapping[str, Any]) -> None:
     for source_id, source in sources.items():
         _require_nonempty_string(source_id, "snapshot.sources key")
         _validate_collector_source(source, f"snapshot.sources.{source_id}")
+    _validate_p2_collector_sources(snapshot, metrics, sources)
 
     source_health = _require_mapping(
         snapshot.get("source_health"), "snapshot.source_health"
@@ -1199,6 +1708,8 @@ def validate_publication(
                 raise ContractValidationError(
                     f"{metric_id}.quality.sample_size must match full series"
                 )
+        if metric_id == "nonfinancial_equities_gdp_proxy":
+            _validate_p2_macro_artifacts(snapshot_metric, series)
         normalized_observations = [
             {"date": point["date"], "value": point["value"]}
             for point in series["observations"]
@@ -1208,19 +1719,16 @@ def validate_publication(
             raise ContractValidationError(
                 f"{metric_id}.short_series must match the full-series suffix"
             )
-        latest_non_null = next(
-            (
-                point
-                for point in reversed(normalized_observations)
-                if point["value"] is not None
-            ),
-            None,
+        # The current observation can legitimately be null (for example when
+        # one exact-quarter macro component is missing).  Never skip backwards
+        # to a prior non-null value and present it as the current endpoint.
+        expected_value = (
+            normalized_observations[-1]["value"] if normalized_observations else None
         )
-        expected_value = latest_non_null["value"] if latest_non_null else None
         expected_date = normalized_observations[-1]["date"] if normalized_observations else None
         if snapshot_metric.get("value") != expected_value:
             raise ContractValidationError(
-                f"{metric_id}.value must match the latest non-null full-series value"
+                f"{metric_id}.value must match the full-series endpoint"
             )
         if snapshot_metric.get("observation_date") != expected_date:
             raise ContractValidationError(

@@ -6,7 +6,9 @@ on:
   schedule:
     # GitHub cron is UTC and can be delayed. Collectors decide whether a
     # release is due from source as-of metadata rather than the job start time.
-    - cron: '45 23 * * 1-5' # daily, 19:45/18:45 ET depending on DST
+    # SEC says the current-day daily index begins building around 22:00 ET.
+    # Run after the overnight index window and process only discovered complete days.
+    - cron: '0 7 * * 2-6'   # daily, 03:00/02:00 ET depending on DST
     - cron: '45 22 * * 4'   # H.4.1, 18:45/17:45 ET depending on DST
     - cron: '30 22 * * 5'   # weekly
     - cron: '15 13 2 * *'   # monthly
@@ -61,7 +63,7 @@ jobs:
             selected="$DISPATCH_GROUP"
           elif [[ "$EVENT_NAME" == "schedule" ]]; then
             case "$EVENT_SCHEDULE" in
-              '45 23 * * 1-5') selected='daily' ;;
+              '0 7 * * 2-6') selected='daily' ;;
               '45 22 * * 4') selected='h41' ;;
               '30 22 * * 5') selected='weekly' ;;
               '15 13 2 * *') selected='monthly' ;;
@@ -98,10 +100,19 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r pipeline/requirements.txt
 
+      - name: Restore private SEC submission cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/sec-form4-cache
+          key: sec-form4-v1-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            sec-form4-v1-${{ runner.os }}-
+
       - name: Fetch, validate, transform, and write schema v2 stage
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
           SEC_USER_AGENT: ${{ vars.SEC_USER_AGENT }}
+          SEC_FORM4_CACHE_DIR: ${{ runner.temp }}/sec-form4-cache
           UPDATE_GROUP: ${{ steps.group.outputs.group }}
           DATA_STAGE: ${{ runner.temp }}/bubble-data-stage
         run: |

@@ -1,0 +1,11 @@
+{
+  "directory": {
+    "name": "daily-index/2026/QTR3",
+    "item": [
+      {"name": "company.20260810.idx", "type": "file"},
+      {"name": "master.20260810.idx", "type": "file"},
+      {"name": "master.20260811.idx", "type": "file"},
+      {"name": "master.20260812.idx", "type": "file"}
+    ]
+  }
+}

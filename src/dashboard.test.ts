@@ -4,6 +4,9 @@ import {
   OVERVIEW_SERIES_IDS,
   P1_CFTC_CONFIG,
   P1_RIGHTS_GATED_IDS,
+  P2_ACTIVE_IDS,
+  P2_HELD_IDS,
+  P2_SERIES_IDS,
   RANGE_DAYS,
   SCHEMA_VERSION,
   SWITCH_CONFIG,
@@ -250,13 +253,85 @@ describe('v2 contract and configuration', () => {
     expect(routeMetricIds('market-ignition', catalog, snapshot)).toEqual([
       ...P1_CFTC_CONFIG.map(({ id }) => id),
       ...P1_RIGHTS_GATED_IDS,
-      'finra_margin_debt',
+      ...P2_SERIES_IDS,
     ]);
     expect(routeMetricIds('fundamental-exit', catalog, snapshot)).toEqual(['hyperscaler_capex']);
     expect(routeMetricIds('market-ignition', [], snapshot)).toEqual([
       ...P1_CFTC_CONFIG.map(({ id }) => id),
       ...P1_RIGHTS_GATED_IDS,
+      ...P2_SERIES_IDS,
     ]);
+  });
+
+  it('strictly validates the two-active/six-held P2 context contract without changing P1 severity', () => {
+    const valid = makeSnapshot();
+    expect(P2_ACTIVE_IDS).toHaveLength(2);
+    expect(P2_HELD_IDS).toHaveLength(6);
+    expect(valid.switches.market_ignition.assessment).toBeNull();
+    expect(valid.overall_assessment).toBe(valid.switches.liquidity_fuel.assessment);
+    expect(isSnapshot(valid)).toBe(true);
+
+    const p2CannotRewriteOverall = structuredClone(valid);
+    p2CannotRewriteOverall.overall_assessment = 'STRESS';
+    expect(isSnapshot(p2CannotRewriteOverall)).toBe(false);
+
+    const missingActive = structuredClone(valid);
+    delete missingActive.metrics.nonfinancial_equities_gdp_proxy;
+    expect(isSnapshot(missingActive)).toBe(false);
+
+    const legacyAlias = structuredClone(valid);
+    legacyAlias.metrics.buffett_indicator_proxy = structuredClone(valid.metrics.nonfinancial_equities_gdp_proxy);
+    legacyAlias.metrics.buffett_indicator_proxy.metric_id = 'buffett_indicator_proxy';
+    expect(isSnapshot(legacyAlias)).toBe(false);
+
+    const missingMacroCore = structuredClone(valid);
+    delete missingMacroCore.metrics.nonfinancial_equities_gdp_proxy.statistics.percentile_10y_sample_size;
+    expect(isSnapshot(missingMacroCore)).toBe(false);
+
+    const missingMacroComponentDate = structuredClone(valid);
+    delete missingMacroComponentDate.metrics.nonfinancial_equities_gdp_proxy.context.gdp_observation_date;
+    expect(isSnapshot(missingMacroComponentDate)).toBe(false);
+
+    const valueMismatch = structuredClone(valid);
+    valueMismatch.metrics.sec_form4_nonderivative_ps_count_ratio_20d.value = 9;
+    expect(isSnapshot(valueMismatch)).toBe(false);
+
+    const missingAuditStat = structuredClone(valid);
+    delete missingAuditStat.metrics.sec_form4_nonderivative_ps_count_ratio_20d.statistics.amendments_review_count_20d;
+    expect(isSnapshot(missingAuditStat)).toBe(false);
+
+    const invalidCoverage = structuredClone(valid);
+    invalidCoverage.metrics.sec_form4_nonderivative_ps_count_ratio_20d.statistics.dollar_coverage_rate_20d = 1.01;
+    expect(isSnapshot(invalidCoverage)).toBe(false);
+
+    const lowCoverageDollarPublication = structuredClone(valid);
+    lowCoverageDollarPublication.metrics.sec_form4_nonderivative_ps_count_ratio_20d.statistics.dollar_ratio_5d = 0.01;
+    expect(isSnapshot(lowCoverageDollarPublication)).toBe(false);
+
+    const wrongSensitivity = structuredClone(valid);
+    wrongSensitivity.metrics.sec_form4_nonderivative_ps_count_ratio_20d.context.ex_10b5_scope = 'ALL_UNKNOWN_EXCLUDED';
+    expect(isSnapshot(wrongSensitivity)).toBe(false);
+
+    const heldPublishesValue = structuredClone(valid);
+    heldPublishesValue.metrics[P2_HELD_IDS[0]].value = 0;
+    expect(isSnapshot(heldPublishesValue)).toBe(false);
+
+    const heldClaimsAttempt = structuredClone(valid);
+    heldClaimsAttempt.metrics[P2_HELD_IDS[0]].quality.last_attempt_at = '2026-08-12T12:00:00Z';
+    expect(isSnapshot(heldClaimsAttempt)).toBe(false);
+
+    const heldClaimsSource = structuredClone(valid);
+    heldClaimsSource.metrics[P2_HELD_IDS[0]].source.source_id = 'permission_hold';
+    expect(isSnapshot(heldClaimsSource)).toBe(false);
+
+    const missingMacroSource = structuredClone(valid);
+    delete missingMacroSource.sources.fred_nonfinancial_equities_gdp;
+    missingMacroSource.source_health.ok -= 1;
+    expect(isSnapshot(missingMacroSource)).toBe(false);
+
+    const mismatchedSecSource = structuredClone(valid);
+    mismatchedSecSource.sources.sec_form4_daily_index.observation_date = '2026-08-10';
+    expect(isSnapshot(mismatchedSecSource)).toBe(false);
   });
 });
 
@@ -323,14 +398,14 @@ describe('route-lazy loading', () => {
     expect(requested).toEqual([
       ...P1_CFTC_CONFIG.map(({ id }) => `/bubble/data/series/${id}.json`),
       ...P1_RIGHTS_GATED_IDS.map((id) => `/bubble/data/series/${id}.json`),
-      '/bubble/data/series/finra_margin_debt.json',
+      ...P2_SERIES_IDS.map((id) => `/bubble/data/series/${id}.json`),
     ]);
     expect(result.errors).toHaveProperty('finra_margin_debt');
     expect(result.series.finra_margin_debt.observations).toEqual(snapshot.metrics.finra_margin_debt.short_series);
     expect(snapshotSeriesFallback(snapshot, 'sofr').schema_version).toBe(SCHEMA_VERSION);
   });
 
-  it('uses canonical P1 paths when the manifest is unavailable', async () => {
+  it('uses canonical P1 and P2 paths when the manifest is unavailable', async () => {
     const snapshot = makeSnapshot();
     const requested: string[] = [];
     const fetcher = vi.fn(async (input: RequestInfo | URL) => {
@@ -342,6 +417,7 @@ describe('route-lazy loading', () => {
     expect(requested).toEqual([
       ...P1_CFTC_CONFIG.map(({ id }) => `/bubble/data/series/${id}.json`),
       ...P1_RIGHTS_GATED_IDS.map((id) => `/bubble/data/series/${id}.json`),
+      ...P2_SERIES_IDS.map((id) => `/bubble/data/series/${id}.json`),
     ]);
     expect(getGlobalLatestDate(result.series)).toBe('2026-08-11');
   });
