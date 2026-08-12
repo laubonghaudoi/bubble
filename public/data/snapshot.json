@@ -14,27 +14,23 @@
         "confidence": "high",
         "meaning": "相對 IORB 上升通常代表 secured overnight funding 變貴。",
         "metric_id": "sofr_iorb_spread",
-        "observation": "SOFR−IORB 最新為 -2.0 bp。"
+        "observation": "SOFR−IORB 最新為 -1.0 bp。"
       }
     ],
     "headline": "美元流動性整體保持中性，暫未見廣泛資金壓力。"
   },
-  "generated_at": "2026-08-12T05:54:00.550421Z",
-  "market_date": "2026-08-10",
+  "generated_at": "2026-08-12T16:46:12.397667Z",
+  "market_date": "2026-08-11",
   "metrics": {
     "bgcr": {
-      "as_of": "2026-08-10",
-      "change_5d": -0.02,
-      "delta_1d": 0.01,
+      "as_of": "2026-08-11",
+      "change_5d": -0.01,
+      "delta_1d": 0.02,
       "flags": [],
       "label": "BGCR",
-      "previous": 3.6,
+      "previous": 3.61,
       "quality": "official",
       "short_series": [
-        {
-          "date": "2026-07-10",
-          "value": 3.52
-        },
         {
           "date": "2026-07-13",
           "value": 3.58
@@ -118,6 +114,10 @@
         {
           "date": "2026-08-10",
           "value": 3.61
+        },
+        {
+          "date": "2026-08-11",
+          "value": 3.63
         }
       ],
       "source_ids": [
@@ -126,7 +126,7 @@
       "status": "ok",
       "trend_5d": "falling",
       "unit": "percent",
-      "value": 3.61
+      "value": 3.63
     },
     "buffett_indicator_proxy": {
       "as_of": null,
@@ -179,7 +179,7 @@
       "value": null
     },
     "effr": {
-      "as_of": "2026-08-10",
+      "as_of": "2026-08-11",
       "change_5d": 0.0,
       "delta_1d": 0.0,
       "flags": [],
@@ -187,10 +187,6 @@
       "previous": 3.63,
       "quality": "official",
       "short_series": [
-        {
-          "date": "2026-07-10",
-          "value": 3.62
-        },
         {
           "date": "2026-07-13",
           "value": 3.62
@@ -273,6 +269,10 @@
         },
         {
           "date": "2026-08-10",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-11",
           "value": 3.63
         }
       ],
@@ -549,7 +549,7 @@
       "value": null
     },
     "obfr": {
-      "as_of": "2026-08-10",
+      "as_of": "2026-08-11",
       "change_5d": 0.0,
       "delta_1d": 0.0,
       "flags": [],
@@ -557,10 +557,6 @@
       "previous": 3.63,
       "quality": "official",
       "short_series": [
-        {
-          "date": "2026-07-10",
-          "value": 3.62
-        },
         {
           "date": "2026-07-13",
           "value": 3.62
@@ -643,6 +639,10 @@
         },
         {
           "date": "2026-08-10",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-11",
           "value": 3.63
         }
       ],
@@ -783,18 +783,14 @@
       "value": 2993.349
     },
     "sofr": {
-      "as_of": "2026-08-10",
+      "as_of": "2026-08-11",
       "change_5d": -0.02,
       "delta_1d": 0.01,
       "flags": [],
       "label": "SOFR",
-      "previous": 3.62,
+      "previous": 3.63,
       "quality": "official",
       "short_series": [
-        {
-          "date": "2026-07-10",
-          "value": 3.55
-        },
         {
           "date": "2026-07-13",
           "value": 3.6
@@ -878,6 +874,10 @@
         {
           "date": "2026-08-10",
           "value": 3.63
+        },
+        {
+          "date": "2026-08-11",
+          "value": 3.64
         }
       ],
       "source_ids": [
@@ -886,22 +886,18 @@
       "status": "ok",
       "trend_5d": "falling",
       "unit": "percent",
-      "value": 3.63
+      "value": 3.64
     },
     "sofr_iorb_spread": {
-      "as_of": "2026-08-10",
+      "as_of": "2026-08-11",
       "change_5d": -2.0,
       "consecutive_positive": 0,
       "delta_1d": 1.0,
       "flags": [],
       "label": "SOFR−IORB 利差",
-      "previous": -3.0,
+      "previous": -2.0,
       "quality": "derived_official",
       "short_series": [
-        {
-          "date": "2026-07-10",
-          "value": -10.0
-        },
         {
           "date": "2026-07-13",
           "value": -5.0
@@ -985,6 +981,10 @@
         {
           "date": "2026-08-10",
           "value": -2.0
+        },
+        {
+          "date": "2026-08-11",
+          "value": -1.0
         }
       ],
       "source_ids": [
@@ -994,7 +994,7 @@
       "status": "ok",
       "trend_5d": "falling",
       "unit": "bp",
-      "value": -2.0
+      "value": -1.0
     },
     "sp500_top10_weight": {
       "as_of": null,
@@ -1241,18 +1241,14 @@
       "value": 907.324
     },
     "tgcr": {
-      "as_of": "2026-08-10",
-      "change_5d": -0.02,
-      "delta_1d": 0.01,
+      "as_of": "2026-08-11",
+      "change_5d": -0.01,
+      "delta_1d": 0.02,
       "flags": [],
       "label": "TGCR",
-      "previous": 3.6,
+      "previous": 3.61,
       "quality": "official",
       "short_series": [
-        {
-          "date": "2026-07-10",
-          "value": 3.52
-        },
         {
           "date": "2026-07-13",
           "value": 3.58
@@ -1336,6 +1332,10 @@
         {
           "date": "2026-08-10",
           "value": 3.61
+        },
+        {
+          "date": "2026-08-11",
+          "value": 3.63
         }
       ],
       "source_ids": [
@@ -1344,7 +1344,7 @@
       "status": "ok",
       "trend_5d": "falling",
       "unit": "percent",
-      "value": 3.61
+      "value": 3.63
     },
     "upstream_backlog": {
       "as_of": null,
@@ -1412,17 +1412,17 @@
       "frequency": "weekly / policy",
       "name": "Federal Reserve Economic Data",
       "quality": "official",
-      "retrieved_at": "2026-08-12T05:54:00.550421Z",
+      "retrieved_at": "2026-08-12T16:46:12.397667Z",
       "status": "ok",
       "url": "https://fred.stlouisfed.org/"
     },
     "nyfed": {
-      "as_of": "2026-08-10",
+      "as_of": "2026-08-11",
       "error": null,
       "frequency": "business_daily",
       "name": "New York Fed Markets Data",
       "quality": "official",
-      "retrieved_at": "2026-08-12T05:54:00.550421Z",
+      "retrieved_at": "2026-08-12T16:46:12.397667Z",
       "status": "ok",
       "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
     },
@@ -1442,7 +1442,7 @@
       "frequency": "business_daily",
       "name": "U.S. Treasury FiscalData",
       "quality": "official",
-      "retrieved_at": "2026-08-12T05:54:00.550421Z",
+      "retrieved_at": "2026-08-12T16:46:12.397667Z",
       "status": "ok",
       "url": "https://fiscaldata.treasury.gov/api-documentation/"
     }
