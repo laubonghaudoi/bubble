@@ -1,5 +1,6 @@
 {
   "availability": "UNAVAILABLE_FREE",
+  "expected_next_update": null,
   "frequency": "business_daily",
   "label": "SPY holdings Top-10 weight proxy",
   "metric_id": "spy_holdings_top10_weight_proxy",

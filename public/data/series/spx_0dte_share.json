@@ -1,5 +1,6 @@
 {
   "availability": "UNAVAILABLE_FREE",
+  "expected_next_update": null,
   "frequency": "business_daily",
   "label": "SPX 0DTE volume share",
   "metric_id": "spx_0dte_share",

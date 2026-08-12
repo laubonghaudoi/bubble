@@ -1,5 +1,6 @@
 {
   "availability": "UNAVAILABLE_FREE",
+  "expected_next_update": null,
   "frequency": "business_daily",
   "label": "VIX/VIX3M term-structure proxy",
   "metric_id": "vix_vix3m_term_structure_proxy",

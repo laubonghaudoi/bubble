@@ -1,5 +1,6 @@
 {
   "availability": "UNAVAILABLE_FREE",
+  "expected_next_update": null,
   "frequency": "quarterly",
   "label": "Hyperscaler aggregate cash CapEx",
   "metric_id": "hyperscaler_capex",

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12T19:56:17.629765Z",
+  "generated_at": "2026-08-12T21:07:14.656087Z",
   "metrics": [
     {
       "availability": "ACTIVE_FREE",
@@ -233,25 +233,47 @@
       "unit": "percent"
     },
     {
-      "availability": "UNAVAILABLE_FREE",
+      "availability": "ACTIVE_PROXY",
       "frequency": "weekly",
-      "label": "CFTC leveraged-funds positioning proxy",
+      "label": "CFTC E-mini S&P 500 leveraged-funds net % OI",
       "layer": "market_ignition",
-      "metric_id": "cftc_leveraged_funds_positioning_proxy",
+      "metric_id": "cftc_e_mini_sp500_leveraged_funds_net_pct_oi",
       "phase": "P1",
       "role": "evidence",
-      "series_path": "data/series/cftc_leveraged_funds_positioning_proxy.json",
-      "unit": "z-score"
+      "series_path": "data/series/cftc_e_mini_sp500_leveraged_funds_net_pct_oi.json",
+      "unit": "percent_open_interest"
     },
     {
-      "availability": "UNAVAILABLE_FREE",
+      "availability": "ACTIVE_FREE",
       "frequency": "weekly",
-      "label": "CFTC asset-manager positioning",
+      "label": "CFTC E-mini S&P 500 asset-manager net % OI",
       "layer": "market_ignition",
-      "metric_id": "cftc_asset_manager_positioning",
+      "metric_id": "cftc_e_mini_sp500_asset_manager_net_pct_oi",
       "phase": "P1",
       "role": "evidence",
-      "series_path": "data/series/cftc_asset_manager_positioning.json",
+      "series_path": "data/series/cftc_e_mini_sp500_asset_manager_net_pct_oi.json",
+      "unit": "percent_open_interest"
+    },
+    {
+      "availability": "ACTIVE_PROXY",
+      "frequency": "weekly",
+      "label": "CFTC Nasdaq-100 consolidated leveraged-funds net % OI",
+      "layer": "market_ignition",
+      "metric_id": "cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi",
+      "phase": "P1",
+      "role": "evidence",
+      "series_path": "data/series/cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi.json",
+      "unit": "percent_open_interest"
+    },
+    {
+      "availability": "ACTIVE_FREE",
+      "frequency": "weekly",
+      "label": "CFTC Nasdaq-100 consolidated asset-manager net % OI",
+      "layer": "market_ignition",
+      "metric_id": "cftc_nasdaq100_consolidated_asset_manager_net_pct_oi",
+      "phase": "P1",
+      "role": "evidence",
+      "series_path": "data/series/cftc_nasdaq100_consolidated_asset_manager_net_pct_oi.json",
       "unit": "percent_open_interest"
     },
     {

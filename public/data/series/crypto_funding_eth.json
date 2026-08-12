@@ -1,5 +1,6 @@
 {
   "availability": "UNAVAILABLE_FREE",
+  "expected_next_update": null,
   "frequency": "intraday",
   "label": "ETH perpetual funding",
   "metric_id": "crypto_funding_eth",

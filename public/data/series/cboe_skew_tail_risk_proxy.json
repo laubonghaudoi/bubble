@@ -1,5 +1,6 @@
 {
   "availability": "UNAVAILABLE_FREE",
+  "expected_next_update": null,
   "frequency": "business_daily",
   "label": "Cboe SKEW tail-risk proxy",
   "metric_id": "cboe_skew_tail_risk_proxy",

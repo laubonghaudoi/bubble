@@ -1,5 +1,6 @@
 {
   "availability": "UNAVAILABLE_FREE",
+  "expected_next_update": null,
   "frequency": "business_daily",
   "label": "SEC Form 4 insider buy/sell proxy",
   "metric_id": "insider_buy_sell_proxy",

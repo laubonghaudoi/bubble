@@ -1,5 +1,6 @@
 {
   "availability": "UNAVAILABLE_FREE",
+  "expected_next_update": null,
   "frequency": "monthly",
   "label": "M2 / Nasdaq divergence",
   "metric_id": "m2_nasdaq_divergence",

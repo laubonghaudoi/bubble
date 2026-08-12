@@ -1,5 +1,6 @@
 {
   "availability": "UNAVAILABLE_FREE",
+  "expected_next_update": null,
   "frequency": "quarterly",
   "label": "Customer prepayments and contract commitments",
   "metric_id": "prepayments",

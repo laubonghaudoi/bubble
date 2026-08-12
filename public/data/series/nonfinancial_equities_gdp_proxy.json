@@ -1,5 +1,6 @@
 {
   "availability": "UNAVAILABLE_FREE",
+  "expected_next_update": null,
   "frequency": "quarterly",
   "label": "Nonfinancial corporate equities / GDP proxy",
   "metric_id": "nonfinancial_equities_gdp_proxy",

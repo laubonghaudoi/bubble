@@ -1,5 +1,6 @@
 {
   "availability": "UNAVAILABLE_FREE",
+  "expected_next_update": null,
   "frequency": "quarterly",
   "label": "Hyperscaler CapEx acceleration",
   "metric_id": "capex_acceleration",

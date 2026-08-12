@@ -1,5 +1,6 @@
 {
   "availability": "UNAVAILABLE_FREE",
+  "expected_next_update": null,
   "frequency": "monthly",
   "label": "FINRA customer debit balances",
   "metric_id": "finra_margin_debt",
