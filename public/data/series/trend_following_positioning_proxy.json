@@ -1,12 +1,12 @@
 {
   "availability": "UNAVAILABLE_FREE",
   "frequency": "business_daily",
-  "label": "Nasdaq-100 forward P/E",
-  "metric_id": "ndx_forward_pe",
+  "label": "Rule-based trend-following positioning proxy",
+  "metric_id": "trend_following_positioning_proxy",
   "observation_date": null,
   "observations": [],
   "quality": {
-    "failure_reason": "A consistent, reproducible forward-earnings consensus is proprietary.",
+    "failure_reason": "Redistribution-cleared equity and cross-asset price inputs are not configured.",
     "freshness": "UNKNOWN",
     "last_attempt_at": null,
     "last_success_at": null,
@@ -23,6 +23,6 @@
     "tier": null,
     "url": null
   },
-  "unit": "multiple",
+  "unit": "score",
   "updated_at": null
 }

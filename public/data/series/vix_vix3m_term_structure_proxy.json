@@ -1,12 +1,12 @@
 {
   "availability": "UNAVAILABLE_FREE",
   "frequency": "business_daily",
-  "label": "Nasdaq-100 forward P/E",
-  "metric_id": "ndx_forward_pe",
+  "label": "VIX/VIX3M term-structure proxy",
+  "metric_id": "vix_vix3m_term_structure_proxy",
   "observation_date": null,
   "observations": [],
   "quality": {
-    "failure_reason": "A consistent, reproducible forward-earnings consensus is proprietary.",
+    "failure_reason": "No redistribution-cleared Cboe feed is configured.",
     "freshness": "UNKNOWN",
     "last_attempt_at": null,
     "last_success_at": null,
@@ -23,6 +23,6 @@
     "tier": null,
     "url": null
   },
-  "unit": "multiple",
+  "unit": "ratio",
   "updated_at": null
 }

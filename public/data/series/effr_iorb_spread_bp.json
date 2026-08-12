@@ -1,0 +1,3536 @@
+{
+  "availability": "ACTIVE_FREE",
+  "frequency": "business_daily",
+  "label": "EFFR−IORB spread",
+  "metric_id": "effr_iorb_spread_bp",
+  "observation_date": "2026-08-11",
+  "observations": [
+    {
+      "date": "2024-08-12",
+      "iorb_observation_date": "2024-08-12",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-08-13",
+      "iorb_observation_date": "2024-08-13",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-08-14",
+      "iorb_observation_date": "2024-08-14",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-08-15",
+      "iorb_observation_date": "2024-08-15",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-08-16",
+      "iorb_observation_date": "2024-08-16",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-08-19",
+      "iorb_observation_date": "2024-08-19",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-08-20",
+      "iorb_observation_date": "2024-08-20",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-08-21",
+      "iorb_observation_date": "2024-08-21",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-08-22",
+      "iorb_observation_date": "2024-08-22",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-08-23",
+      "iorb_observation_date": "2024-08-23",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-08-26",
+      "iorb_observation_date": "2024-08-26",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-08-27",
+      "iorb_observation_date": "2024-08-27",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-08-28",
+      "iorb_observation_date": "2024-08-28",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-08-29",
+      "iorb_observation_date": "2024-08-29",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-08-30",
+      "iorb_observation_date": "2024-08-30",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-03",
+      "iorb_observation_date": "2024-09-03",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-04",
+      "iorb_observation_date": "2024-09-04",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-05",
+      "iorb_observation_date": "2024-09-05",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-06",
+      "iorb_observation_date": "2024-09-06",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-09",
+      "iorb_observation_date": "2024-09-09",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-10",
+      "iorb_observation_date": "2024-09-10",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-11",
+      "iorb_observation_date": "2024-09-11",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-12",
+      "iorb_observation_date": "2024-09-12",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-13",
+      "iorb_observation_date": "2024-09-13",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-16",
+      "iorb_observation_date": "2024-09-16",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-17",
+      "iorb_observation_date": "2024-09-17",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-18",
+      "iorb_observation_date": "2024-09-18",
+      "iorb_pct": 5.4,
+      "market_rate_pct": 5.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-19",
+      "iorb_observation_date": "2024-09-19",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-20",
+      "iorb_observation_date": "2024-09-20",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-23",
+      "iorb_observation_date": "2024-09-23",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-24",
+      "iorb_observation_date": "2024-09-24",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-25",
+      "iorb_observation_date": "2024-09-25",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-26",
+      "iorb_observation_date": "2024-09-26",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-27",
+      "iorb_observation_date": "2024-09-27",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-09-30",
+      "iorb_observation_date": "2024-09-30",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-01",
+      "iorb_observation_date": "2024-10-01",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-02",
+      "iorb_observation_date": "2024-10-02",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-03",
+      "iorb_observation_date": "2024-10-03",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-04",
+      "iorb_observation_date": "2024-10-04",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-07",
+      "iorb_observation_date": "2024-10-07",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-08",
+      "iorb_observation_date": "2024-10-08",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-09",
+      "iorb_observation_date": "2024-10-09",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-10",
+      "iorb_observation_date": "2024-10-10",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-11",
+      "iorb_observation_date": "2024-10-11",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-15",
+      "iorb_observation_date": "2024-10-15",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-16",
+      "iorb_observation_date": "2024-10-16",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-17",
+      "iorb_observation_date": "2024-10-17",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-18",
+      "iorb_observation_date": "2024-10-18",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-21",
+      "iorb_observation_date": "2024-10-21",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-22",
+      "iorb_observation_date": "2024-10-22",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-23",
+      "iorb_observation_date": "2024-10-23",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-24",
+      "iorb_observation_date": "2024-10-24",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-25",
+      "iorb_observation_date": "2024-10-25",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-28",
+      "iorb_observation_date": "2024-10-28",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-29",
+      "iorb_observation_date": "2024-10-29",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-30",
+      "iorb_observation_date": "2024-10-30",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-10-31",
+      "iorb_observation_date": "2024-10-31",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-11-01",
+      "iorb_observation_date": "2024-11-01",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-11-04",
+      "iorb_observation_date": "2024-11-04",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-11-05",
+      "iorb_observation_date": "2024-11-05",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-11-06",
+      "iorb_observation_date": "2024-11-06",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-11-07",
+      "iorb_observation_date": "2024-11-07",
+      "iorb_pct": 4.9,
+      "market_rate_pct": 4.83,
+      "value": -7.0
+    },
+    {
+      "date": "2024-11-08",
+      "iorb_observation_date": "2024-11-08",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-11-12",
+      "iorb_observation_date": "2024-11-12",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-11-13",
+      "iorb_observation_date": "2024-11-13",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-11-14",
+      "iorb_observation_date": "2024-11-14",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-11-15",
+      "iorb_observation_date": "2024-11-15",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-11-18",
+      "iorb_observation_date": "2024-11-18",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-11-19",
+      "iorb_observation_date": "2024-11-19",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-11-20",
+      "iorb_observation_date": "2024-11-20",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-11-21",
+      "iorb_observation_date": "2024-11-21",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-11-22",
+      "iorb_observation_date": "2024-11-22",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-11-25",
+      "iorb_observation_date": "2024-11-25",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-11-26",
+      "iorb_observation_date": "2024-11-26",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-11-27",
+      "iorb_observation_date": "2024-11-27",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-11-29",
+      "iorb_observation_date": "2024-11-29",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-02",
+      "iorb_observation_date": "2024-12-02",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-03",
+      "iorb_observation_date": "2024-12-03",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-04",
+      "iorb_observation_date": "2024-12-04",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-05",
+      "iorb_observation_date": "2024-12-05",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-06",
+      "iorb_observation_date": "2024-12-06",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-09",
+      "iorb_observation_date": "2024-12-09",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-10",
+      "iorb_observation_date": "2024-12-10",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-11",
+      "iorb_observation_date": "2024-12-11",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-12",
+      "iorb_observation_date": "2024-12-12",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-13",
+      "iorb_observation_date": "2024-12-13",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-16",
+      "iorb_observation_date": "2024-12-16",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-17",
+      "iorb_observation_date": "2024-12-17",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-18",
+      "iorb_observation_date": "2024-12-18",
+      "iorb_pct": 4.65,
+      "market_rate_pct": 4.58,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-19",
+      "iorb_observation_date": "2024-12-19",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-20",
+      "iorb_observation_date": "2024-12-20",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-23",
+      "iorb_observation_date": "2024-12-23",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-24",
+      "iorb_observation_date": "2024-12-24",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-26",
+      "iorb_observation_date": "2024-12-26",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-27",
+      "iorb_observation_date": "2024-12-27",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-30",
+      "iorb_observation_date": "2024-12-30",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2024-12-31",
+      "iorb_observation_date": "2024-12-31",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-02",
+      "iorb_observation_date": "2025-01-02",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-03",
+      "iorb_observation_date": "2025-01-03",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-06",
+      "iorb_observation_date": "2025-01-06",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-07",
+      "iorb_observation_date": "2025-01-07",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-08",
+      "iorb_observation_date": "2025-01-08",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-09",
+      "iorb_observation_date": "2025-01-09",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-10",
+      "iorb_observation_date": "2025-01-10",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-13",
+      "iorb_observation_date": "2025-01-13",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-14",
+      "iorb_observation_date": "2025-01-14",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-15",
+      "iorb_observation_date": "2025-01-15",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-16",
+      "iorb_observation_date": "2025-01-16",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-17",
+      "iorb_observation_date": "2025-01-17",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-21",
+      "iorb_observation_date": "2025-01-21",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-22",
+      "iorb_observation_date": "2025-01-22",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-23",
+      "iorb_observation_date": "2025-01-23",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-24",
+      "iorb_observation_date": "2025-01-24",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-27",
+      "iorb_observation_date": "2025-01-27",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-28",
+      "iorb_observation_date": "2025-01-28",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-29",
+      "iorb_observation_date": "2025-01-29",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-30",
+      "iorb_observation_date": "2025-01-30",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-01-31",
+      "iorb_observation_date": "2025-01-31",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-02-03",
+      "iorb_observation_date": "2025-02-03",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-02-04",
+      "iorb_observation_date": "2025-02-04",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-02-05",
+      "iorb_observation_date": "2025-02-05",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-02-06",
+      "iorb_observation_date": "2025-02-06",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-02-07",
+      "iorb_observation_date": "2025-02-07",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-02-10",
+      "iorb_observation_date": "2025-02-10",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-02-11",
+      "iorb_observation_date": "2025-02-11",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-02-12",
+      "iorb_observation_date": "2025-02-12",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-02-13",
+      "iorb_observation_date": "2025-02-13",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-02-14",
+      "iorb_observation_date": "2025-02-14",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-02-18",
+      "iorb_observation_date": "2025-02-18",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-02-19",
+      "iorb_observation_date": "2025-02-19",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-02-20",
+      "iorb_observation_date": "2025-02-20",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-02-21",
+      "iorb_observation_date": "2025-02-21",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-02-24",
+      "iorb_observation_date": "2025-02-24",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-02-25",
+      "iorb_observation_date": "2025-02-25",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-02-26",
+      "iorb_observation_date": "2025-02-26",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-02-27",
+      "iorb_observation_date": "2025-02-27",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-02-28",
+      "iorb_observation_date": "2025-02-28",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-03",
+      "iorb_observation_date": "2025-03-03",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-04",
+      "iorb_observation_date": "2025-03-04",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-05",
+      "iorb_observation_date": "2025-03-05",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-06",
+      "iorb_observation_date": "2025-03-06",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-07",
+      "iorb_observation_date": "2025-03-07",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-10",
+      "iorb_observation_date": "2025-03-10",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-11",
+      "iorb_observation_date": "2025-03-11",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-12",
+      "iorb_observation_date": "2025-03-12",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-13",
+      "iorb_observation_date": "2025-03-13",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-14",
+      "iorb_observation_date": "2025-03-14",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-17",
+      "iorb_observation_date": "2025-03-17",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-18",
+      "iorb_observation_date": "2025-03-18",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-19",
+      "iorb_observation_date": "2025-03-19",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-20",
+      "iorb_observation_date": "2025-03-20",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-21",
+      "iorb_observation_date": "2025-03-21",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-24",
+      "iorb_observation_date": "2025-03-24",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-25",
+      "iorb_observation_date": "2025-03-25",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-26",
+      "iorb_observation_date": "2025-03-26",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-27",
+      "iorb_observation_date": "2025-03-27",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-28",
+      "iorb_observation_date": "2025-03-28",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-03-31",
+      "iorb_observation_date": "2025-03-31",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-01",
+      "iorb_observation_date": "2025-04-01",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-02",
+      "iorb_observation_date": "2025-04-02",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-03",
+      "iorb_observation_date": "2025-04-03",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-04",
+      "iorb_observation_date": "2025-04-04",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-07",
+      "iorb_observation_date": "2025-04-07",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-08",
+      "iorb_observation_date": "2025-04-08",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-09",
+      "iorb_observation_date": "2025-04-09",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-10",
+      "iorb_observation_date": "2025-04-10",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-11",
+      "iorb_observation_date": "2025-04-11",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-14",
+      "iorb_observation_date": "2025-04-14",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-15",
+      "iorb_observation_date": "2025-04-15",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-16",
+      "iorb_observation_date": "2025-04-16",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-17",
+      "iorb_observation_date": "2025-04-17",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-18",
+      "iorb_observation_date": "2025-04-18",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-21",
+      "iorb_observation_date": "2025-04-21",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-22",
+      "iorb_observation_date": "2025-04-22",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-23",
+      "iorb_observation_date": "2025-04-23",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-24",
+      "iorb_observation_date": "2025-04-24",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-25",
+      "iorb_observation_date": "2025-04-25",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-28",
+      "iorb_observation_date": "2025-04-28",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-29",
+      "iorb_observation_date": "2025-04-29",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-04-30",
+      "iorb_observation_date": "2025-04-30",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-01",
+      "iorb_observation_date": "2025-05-01",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-02",
+      "iorb_observation_date": "2025-05-02",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-05",
+      "iorb_observation_date": "2025-05-05",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-06",
+      "iorb_observation_date": "2025-05-06",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-07",
+      "iorb_observation_date": "2025-05-07",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-08",
+      "iorb_observation_date": "2025-05-08",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-09",
+      "iorb_observation_date": "2025-05-09",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-12",
+      "iorb_observation_date": "2025-05-12",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-13",
+      "iorb_observation_date": "2025-05-13",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-14",
+      "iorb_observation_date": "2025-05-14",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-15",
+      "iorb_observation_date": "2025-05-15",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-16",
+      "iorb_observation_date": "2025-05-16",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-19",
+      "iorb_observation_date": "2025-05-19",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-20",
+      "iorb_observation_date": "2025-05-20",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-21",
+      "iorb_observation_date": "2025-05-21",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-22",
+      "iorb_observation_date": "2025-05-22",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-23",
+      "iorb_observation_date": "2025-05-23",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-27",
+      "iorb_observation_date": "2025-05-27",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-28",
+      "iorb_observation_date": "2025-05-28",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-29",
+      "iorb_observation_date": "2025-05-29",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-05-30",
+      "iorb_observation_date": "2025-05-30",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-02",
+      "iorb_observation_date": "2025-06-02",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-03",
+      "iorb_observation_date": "2025-06-03",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-04",
+      "iorb_observation_date": "2025-06-04",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-05",
+      "iorb_observation_date": "2025-06-05",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-06",
+      "iorb_observation_date": "2025-06-06",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-09",
+      "iorb_observation_date": "2025-06-09",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-10",
+      "iorb_observation_date": "2025-06-10",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-11",
+      "iorb_observation_date": "2025-06-11",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-12",
+      "iorb_observation_date": "2025-06-12",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-13",
+      "iorb_observation_date": "2025-06-13",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-16",
+      "iorb_observation_date": "2025-06-16",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-17",
+      "iorb_observation_date": "2025-06-17",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-18",
+      "iorb_observation_date": "2025-06-18",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-20",
+      "iorb_observation_date": "2025-06-20",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-23",
+      "iorb_observation_date": "2025-06-23",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-24",
+      "iorb_observation_date": "2025-06-24",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-25",
+      "iorb_observation_date": "2025-06-25",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-26",
+      "iorb_observation_date": "2025-06-26",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-27",
+      "iorb_observation_date": "2025-06-27",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-06-30",
+      "iorb_observation_date": "2025-06-30",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-01",
+      "iorb_observation_date": "2025-07-01",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-02",
+      "iorb_observation_date": "2025-07-02",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-03",
+      "iorb_observation_date": "2025-07-03",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-07",
+      "iorb_observation_date": "2025-07-07",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-08",
+      "iorb_observation_date": "2025-07-08",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-09",
+      "iorb_observation_date": "2025-07-09",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-10",
+      "iorb_observation_date": "2025-07-10",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-11",
+      "iorb_observation_date": "2025-07-11",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-14",
+      "iorb_observation_date": "2025-07-14",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-15",
+      "iorb_observation_date": "2025-07-15",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-16",
+      "iorb_observation_date": "2025-07-16",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-17",
+      "iorb_observation_date": "2025-07-17",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-18",
+      "iorb_observation_date": "2025-07-18",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-21",
+      "iorb_observation_date": "2025-07-21",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-22",
+      "iorb_observation_date": "2025-07-22",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-23",
+      "iorb_observation_date": "2025-07-23",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-24",
+      "iorb_observation_date": "2025-07-24",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-25",
+      "iorb_observation_date": "2025-07-25",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-28",
+      "iorb_observation_date": "2025-07-28",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-29",
+      "iorb_observation_date": "2025-07-29",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-30",
+      "iorb_observation_date": "2025-07-30",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-07-31",
+      "iorb_observation_date": "2025-07-31",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-01",
+      "iorb_observation_date": "2025-08-01",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-04",
+      "iorb_observation_date": "2025-08-04",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-05",
+      "iorb_observation_date": "2025-08-05",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-06",
+      "iorb_observation_date": "2025-08-06",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-07",
+      "iorb_observation_date": "2025-08-07",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-08",
+      "iorb_observation_date": "2025-08-08",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-11",
+      "iorb_observation_date": "2025-08-11",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-12",
+      "iorb_observation_date": "2025-08-12",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-13",
+      "iorb_observation_date": "2025-08-13",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-14",
+      "iorb_observation_date": "2025-08-14",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-15",
+      "iorb_observation_date": "2025-08-15",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-18",
+      "iorb_observation_date": "2025-08-18",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-19",
+      "iorb_observation_date": "2025-08-19",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-20",
+      "iorb_observation_date": "2025-08-20",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-21",
+      "iorb_observation_date": "2025-08-21",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-22",
+      "iorb_observation_date": "2025-08-22",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-25",
+      "iorb_observation_date": "2025-08-25",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-26",
+      "iorb_observation_date": "2025-08-26",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-27",
+      "iorb_observation_date": "2025-08-27",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-28",
+      "iorb_observation_date": "2025-08-28",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-08-29",
+      "iorb_observation_date": "2025-08-29",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-09-02",
+      "iorb_observation_date": "2025-09-02",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-09-03",
+      "iorb_observation_date": "2025-09-03",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-09-04",
+      "iorb_observation_date": "2025-09-04",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-09-05",
+      "iorb_observation_date": "2025-09-05",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-09-08",
+      "iorb_observation_date": "2025-09-08",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-09-09",
+      "iorb_observation_date": "2025-09-09",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-09-10",
+      "iorb_observation_date": "2025-09-10",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-09-11",
+      "iorb_observation_date": "2025-09-11",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-09-12",
+      "iorb_observation_date": "2025-09-12",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-09-15",
+      "iorb_observation_date": "2025-09-15",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-09-16",
+      "iorb_observation_date": "2025-09-16",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-09-17",
+      "iorb_observation_date": "2025-09-17",
+      "iorb_pct": 4.4,
+      "market_rate_pct": 4.33,
+      "value": -7.0
+    },
+    {
+      "date": "2025-09-18",
+      "iorb_observation_date": "2025-09-18",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.08,
+      "value": -7.0
+    },
+    {
+      "date": "2025-09-19",
+      "iorb_observation_date": "2025-09-19",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.08,
+      "value": -7.0
+    },
+    {
+      "date": "2025-09-22",
+      "iorb_observation_date": "2025-09-22",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.09,
+      "value": -6.0
+    },
+    {
+      "date": "2025-09-23",
+      "iorb_observation_date": "2025-09-23",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.09,
+      "value": -6.0
+    },
+    {
+      "date": "2025-09-24",
+      "iorb_observation_date": "2025-09-24",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.09,
+      "value": -6.0
+    },
+    {
+      "date": "2025-09-25",
+      "iorb_observation_date": "2025-09-25",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.09,
+      "value": -6.0
+    },
+    {
+      "date": "2025-09-26",
+      "iorb_observation_date": "2025-09-26",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.09,
+      "value": -6.0
+    },
+    {
+      "date": "2025-09-29",
+      "iorb_observation_date": "2025-09-29",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.09,
+      "value": -6.0
+    },
+    {
+      "date": "2025-09-30",
+      "iorb_observation_date": "2025-09-30",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.09,
+      "value": -6.0
+    },
+    {
+      "date": "2025-10-01",
+      "iorb_observation_date": "2025-10-01",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.09,
+      "value": -6.0
+    },
+    {
+      "date": "2025-10-02",
+      "iorb_observation_date": "2025-10-02",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.09,
+      "value": -6.0
+    },
+    {
+      "date": "2025-10-03",
+      "iorb_observation_date": "2025-10-03",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.09,
+      "value": -6.0
+    },
+    {
+      "date": "2025-10-06",
+      "iorb_observation_date": "2025-10-06",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.09,
+      "value": -6.0
+    },
+    {
+      "date": "2025-10-07",
+      "iorb_observation_date": "2025-10-07",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.09,
+      "value": -6.0
+    },
+    {
+      "date": "2025-10-08",
+      "iorb_observation_date": "2025-10-08",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.1,
+      "value": -5.0
+    },
+    {
+      "date": "2025-10-09",
+      "iorb_observation_date": "2025-10-09",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.1,
+      "value": -5.0
+    },
+    {
+      "date": "2025-10-10",
+      "iorb_observation_date": "2025-10-10",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.1,
+      "value": -5.0
+    },
+    {
+      "date": "2025-10-14",
+      "iorb_observation_date": "2025-10-14",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.1,
+      "value": -5.0
+    },
+    {
+      "date": "2025-10-15",
+      "iorb_observation_date": "2025-10-15",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.1,
+      "value": -5.0
+    },
+    {
+      "date": "2025-10-16",
+      "iorb_observation_date": "2025-10-16",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.11,
+      "value": -4.0
+    },
+    {
+      "date": "2025-10-17",
+      "iorb_observation_date": "2025-10-17",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.11,
+      "value": -4.0
+    },
+    {
+      "date": "2025-10-20",
+      "iorb_observation_date": "2025-10-20",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.11,
+      "value": -4.0
+    },
+    {
+      "date": "2025-10-21",
+      "iorb_observation_date": "2025-10-21",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.11,
+      "value": -4.0
+    },
+    {
+      "date": "2025-10-22",
+      "iorb_observation_date": "2025-10-22",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.11,
+      "value": -4.0
+    },
+    {
+      "date": "2025-10-23",
+      "iorb_observation_date": "2025-10-23",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.11,
+      "value": -4.0
+    },
+    {
+      "date": "2025-10-24",
+      "iorb_observation_date": "2025-10-24",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.11,
+      "value": -4.0
+    },
+    {
+      "date": "2025-10-27",
+      "iorb_observation_date": "2025-10-27",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.12,
+      "value": -3.0
+    },
+    {
+      "date": "2025-10-28",
+      "iorb_observation_date": "2025-10-28",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.12,
+      "value": -3.0
+    },
+    {
+      "date": "2025-10-29",
+      "iorb_observation_date": "2025-10-29",
+      "iorb_pct": 4.15,
+      "market_rate_pct": 4.12,
+      "value": -3.0
+    },
+    {
+      "date": "2025-10-30",
+      "iorb_observation_date": "2025-10-30",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.87,
+      "value": -3.0
+    },
+    {
+      "date": "2025-10-31",
+      "iorb_observation_date": "2025-10-31",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.86,
+      "value": -4.0
+    },
+    {
+      "date": "2025-11-03",
+      "iorb_observation_date": "2025-11-03",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.87,
+      "value": -3.0
+    },
+    {
+      "date": "2025-11-04",
+      "iorb_observation_date": "2025-11-04",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.87,
+      "value": -3.0
+    },
+    {
+      "date": "2025-11-05",
+      "iorb_observation_date": "2025-11-05",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.87,
+      "value": -3.0
+    },
+    {
+      "date": "2025-11-06",
+      "iorb_observation_date": "2025-11-06",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.87,
+      "value": -3.0
+    },
+    {
+      "date": "2025-11-07",
+      "iorb_observation_date": "2025-11-07",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.87,
+      "value": -3.0
+    },
+    {
+      "date": "2025-11-10",
+      "iorb_observation_date": "2025-11-10",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.87,
+      "value": -3.0
+    },
+    {
+      "date": "2025-11-12",
+      "iorb_observation_date": "2025-11-12",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.87,
+      "value": -3.0
+    },
+    {
+      "date": "2025-11-13",
+      "iorb_observation_date": "2025-11-13",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.88,
+      "value": -2.0
+    },
+    {
+      "date": "2025-11-14",
+      "iorb_observation_date": "2025-11-14",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.88,
+      "value": -2.0
+    },
+    {
+      "date": "2025-11-17",
+      "iorb_observation_date": "2025-11-17",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.88,
+      "value": -2.0
+    },
+    {
+      "date": "2025-11-18",
+      "iorb_observation_date": "2025-11-18",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.88,
+      "value": -2.0
+    },
+    {
+      "date": "2025-11-19",
+      "iorb_observation_date": "2025-11-19",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.88,
+      "value": -2.0
+    },
+    {
+      "date": "2025-11-20",
+      "iorb_observation_date": "2025-11-20",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.88,
+      "value": -2.0
+    },
+    {
+      "date": "2025-11-21",
+      "iorb_observation_date": "2025-11-21",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.88,
+      "value": -2.0
+    },
+    {
+      "date": "2025-11-24",
+      "iorb_observation_date": "2025-11-24",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.88,
+      "value": -2.0
+    },
+    {
+      "date": "2025-11-25",
+      "iorb_observation_date": "2025-11-25",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.88,
+      "value": -2.0
+    },
+    {
+      "date": "2025-11-26",
+      "iorb_observation_date": "2025-11-26",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.88,
+      "value": -2.0
+    },
+    {
+      "date": "2025-11-28",
+      "iorb_observation_date": "2025-11-28",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.89,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-01",
+      "iorb_observation_date": "2025-12-01",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.89,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-02",
+      "iorb_observation_date": "2025-12-02",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.89,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-03",
+      "iorb_observation_date": "2025-12-03",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.89,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-04",
+      "iorb_observation_date": "2025-12-04",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.89,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-05",
+      "iorb_observation_date": "2025-12-05",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.89,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-08",
+      "iorb_observation_date": "2025-12-08",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.89,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-09",
+      "iorb_observation_date": "2025-12-09",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.89,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-10",
+      "iorb_observation_date": "2025-12-10",
+      "iorb_pct": 3.9,
+      "market_rate_pct": 3.89,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-11",
+      "iorb_observation_date": "2025-12-11",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-12",
+      "iorb_observation_date": "2025-12-12",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-15",
+      "iorb_observation_date": "2025-12-15",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-16",
+      "iorb_observation_date": "2025-12-16",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-17",
+      "iorb_observation_date": "2025-12-17",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-18",
+      "iorb_observation_date": "2025-12-18",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-19",
+      "iorb_observation_date": "2025-12-19",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-22",
+      "iorb_observation_date": "2025-12-22",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-23",
+      "iorb_observation_date": "2025-12-23",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-24",
+      "iorb_observation_date": "2025-12-24",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-26",
+      "iorb_observation_date": "2025-12-26",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-29",
+      "iorb_observation_date": "2025-12-29",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-30",
+      "iorb_observation_date": "2025-12-30",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2025-12-31",
+      "iorb_observation_date": "2025-12-31",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-02",
+      "iorb_observation_date": "2026-01-02",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-05",
+      "iorb_observation_date": "2026-01-05",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-06",
+      "iorb_observation_date": "2026-01-06",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-07",
+      "iorb_observation_date": "2026-01-07",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-08",
+      "iorb_observation_date": "2026-01-08",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-09",
+      "iorb_observation_date": "2026-01-09",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-12",
+      "iorb_observation_date": "2026-01-12",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-13",
+      "iorb_observation_date": "2026-01-13",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-14",
+      "iorb_observation_date": "2026-01-14",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-15",
+      "iorb_observation_date": "2026-01-15",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-16",
+      "iorb_observation_date": "2026-01-16",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-20",
+      "iorb_observation_date": "2026-01-20",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-21",
+      "iorb_observation_date": "2026-01-21",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-22",
+      "iorb_observation_date": "2026-01-22",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-23",
+      "iorb_observation_date": "2026-01-23",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-26",
+      "iorb_observation_date": "2026-01-26",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-27",
+      "iorb_observation_date": "2026-01-27",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-28",
+      "iorb_observation_date": "2026-01-28",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-29",
+      "iorb_observation_date": "2026-01-29",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-01-30",
+      "iorb_observation_date": "2026-01-30",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-02-02",
+      "iorb_observation_date": "2026-02-02",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-02-03",
+      "iorb_observation_date": "2026-02-03",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-02-04",
+      "iorb_observation_date": "2026-02-04",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-02-05",
+      "iorb_observation_date": "2026-02-05",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-02-06",
+      "iorb_observation_date": "2026-02-06",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-02-09",
+      "iorb_observation_date": "2026-02-09",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-02-10",
+      "iorb_observation_date": "2026-02-10",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-02-11",
+      "iorb_observation_date": "2026-02-11",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-02-12",
+      "iorb_observation_date": "2026-02-12",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-02-13",
+      "iorb_observation_date": "2026-02-13",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-02-17",
+      "iorb_observation_date": "2026-02-17",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-02-18",
+      "iorb_observation_date": "2026-02-18",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-02-19",
+      "iorb_observation_date": "2026-02-19",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-02-20",
+      "iorb_observation_date": "2026-02-20",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-02-23",
+      "iorb_observation_date": "2026-02-23",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-02-24",
+      "iorb_observation_date": "2026-02-24",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-02-25",
+      "iorb_observation_date": "2026-02-25",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-02-26",
+      "iorb_observation_date": "2026-02-26",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-02-27",
+      "iorb_observation_date": "2026-02-27",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-02",
+      "iorb_observation_date": "2026-03-02",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-03",
+      "iorb_observation_date": "2026-03-03",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-04",
+      "iorb_observation_date": "2026-03-04",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-05",
+      "iorb_observation_date": "2026-03-05",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-06",
+      "iorb_observation_date": "2026-03-06",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-09",
+      "iorb_observation_date": "2026-03-09",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-10",
+      "iorb_observation_date": "2026-03-10",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-11",
+      "iorb_observation_date": "2026-03-11",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-12",
+      "iorb_observation_date": "2026-03-12",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-13",
+      "iorb_observation_date": "2026-03-13",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-16",
+      "iorb_observation_date": "2026-03-16",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-17",
+      "iorb_observation_date": "2026-03-17",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-18",
+      "iorb_observation_date": "2026-03-18",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-19",
+      "iorb_observation_date": "2026-03-19",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-20",
+      "iorb_observation_date": "2026-03-20",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-23",
+      "iorb_observation_date": "2026-03-23",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-24",
+      "iorb_observation_date": "2026-03-24",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-25",
+      "iorb_observation_date": "2026-03-25",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-26",
+      "iorb_observation_date": "2026-03-26",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-27",
+      "iorb_observation_date": "2026-03-27",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-30",
+      "iorb_observation_date": "2026-03-30",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-03-31",
+      "iorb_observation_date": "2026-03-31",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-01",
+      "iorb_observation_date": "2026-04-01",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-02",
+      "iorb_observation_date": "2026-04-02",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-03",
+      "iorb_observation_date": "2026-04-03",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-06",
+      "iorb_observation_date": "2026-04-06",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-07",
+      "iorb_observation_date": "2026-04-07",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-08",
+      "iorb_observation_date": "2026-04-08",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-09",
+      "iorb_observation_date": "2026-04-09",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-10",
+      "iorb_observation_date": "2026-04-10",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-13",
+      "iorb_observation_date": "2026-04-13",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-14",
+      "iorb_observation_date": "2026-04-14",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-15",
+      "iorb_observation_date": "2026-04-15",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-16",
+      "iorb_observation_date": "2026-04-16",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-17",
+      "iorb_observation_date": "2026-04-17",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-20",
+      "iorb_observation_date": "2026-04-20",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-21",
+      "iorb_observation_date": "2026-04-21",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-22",
+      "iorb_observation_date": "2026-04-22",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-23",
+      "iorb_observation_date": "2026-04-23",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-24",
+      "iorb_observation_date": "2026-04-24",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-27",
+      "iorb_observation_date": "2026-04-27",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-28",
+      "iorb_observation_date": "2026-04-28",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-29",
+      "iorb_observation_date": "2026-04-29",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-04-30",
+      "iorb_observation_date": "2026-04-30",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-05-01",
+      "iorb_observation_date": "2026-05-01",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-05-04",
+      "iorb_observation_date": "2026-05-04",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-05-05",
+      "iorb_observation_date": "2026-05-05",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-05-06",
+      "iorb_observation_date": "2026-05-06",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.64,
+      "value": -1.0
+    },
+    {
+      "date": "2026-05-07",
+      "iorb_observation_date": "2026-05-07",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-05-08",
+      "iorb_observation_date": "2026-05-08",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-05-11",
+      "iorb_observation_date": "2026-05-11",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-05-12",
+      "iorb_observation_date": "2026-05-12",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-05-13",
+      "iorb_observation_date": "2026-05-13",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-05-14",
+      "iorb_observation_date": "2026-05-14",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-05-15",
+      "iorb_observation_date": "2026-05-15",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-05-18",
+      "iorb_observation_date": "2026-05-18",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-05-19",
+      "iorb_observation_date": "2026-05-19",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-05-20",
+      "iorb_observation_date": "2026-05-20",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-05-21",
+      "iorb_observation_date": "2026-05-21",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-05-22",
+      "iorb_observation_date": "2026-05-22",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-05-26",
+      "iorb_observation_date": "2026-05-26",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-05-27",
+      "iorb_observation_date": "2026-05-27",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-05-28",
+      "iorb_observation_date": "2026-05-28",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-05-29",
+      "iorb_observation_date": "2026-05-29",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-06-01",
+      "iorb_observation_date": "2026-06-01",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-06-02",
+      "iorb_observation_date": "2026-06-02",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-06-03",
+      "iorb_observation_date": "2026-06-03",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-06-04",
+      "iorb_observation_date": "2026-06-04",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-06-05",
+      "iorb_observation_date": "2026-06-05",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-06-08",
+      "iorb_observation_date": "2026-06-08",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-06-09",
+      "iorb_observation_date": "2026-06-09",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-06-10",
+      "iorb_observation_date": "2026-06-10",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-06-11",
+      "iorb_observation_date": "2026-06-11",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-06-12",
+      "iorb_observation_date": "2026-06-12",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-06-15",
+      "iorb_observation_date": "2026-06-15",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-06-16",
+      "iorb_observation_date": "2026-06-16",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-06-17",
+      "iorb_observation_date": "2026-06-17",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-06-18",
+      "iorb_observation_date": "2026-06-18",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-06-22",
+      "iorb_observation_date": "2026-06-22",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-06-23",
+      "iorb_observation_date": "2026-06-23",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-06-24",
+      "iorb_observation_date": "2026-06-24",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-06-25",
+      "iorb_observation_date": "2026-06-25",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-06-26",
+      "iorb_observation_date": "2026-06-26",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-06-29",
+      "iorb_observation_date": "2026-06-29",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-06-30",
+      "iorb_observation_date": "2026-06-30",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-07-01",
+      "iorb_observation_date": "2026-07-01",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-07-02",
+      "iorb_observation_date": "2026-07-02",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-07-03",
+      "iorb_observation_date": "2026-07-03",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-07-06",
+      "iorb_observation_date": "2026-07-06",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-07-07",
+      "iorb_observation_date": "2026-07-07",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-07-08",
+      "iorb_observation_date": "2026-07-08",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-07-09",
+      "iorb_observation_date": "2026-07-09",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-07-10",
+      "iorb_observation_date": "2026-07-10",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-07-13",
+      "iorb_observation_date": "2026-07-13",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.62,
+      "value": -3.0
+    },
+    {
+      "date": "2026-07-14",
+      "iorb_observation_date": "2026-07-14",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-07-15",
+      "iorb_observation_date": "2026-07-15",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-07-16",
+      "iorb_observation_date": "2026-07-16",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-07-17",
+      "iorb_observation_date": "2026-07-17",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-07-20",
+      "iorb_observation_date": "2026-07-20",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-07-21",
+      "iorb_observation_date": "2026-07-21",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-07-22",
+      "iorb_observation_date": "2026-07-22",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-07-23",
+      "iorb_observation_date": "2026-07-23",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-07-24",
+      "iorb_observation_date": "2026-07-24",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-07-27",
+      "iorb_observation_date": "2026-07-27",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-07-28",
+      "iorb_observation_date": "2026-07-28",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-07-29",
+      "iorb_observation_date": "2026-07-29",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-07-30",
+      "iorb_observation_date": "2026-07-30",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-07-31",
+      "iorb_observation_date": "2026-07-31",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-08-03",
+      "iorb_observation_date": "2026-08-03",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-08-04",
+      "iorb_observation_date": "2026-08-04",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-08-05",
+      "iorb_observation_date": "2026-08-05",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-08-06",
+      "iorb_observation_date": "2026-08-06",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-08-07",
+      "iorb_observation_date": "2026-08-07",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-08-10",
+      "iorb_observation_date": "2026-08-10",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    },
+    {
+      "date": "2026-08-11",
+      "iorb_observation_date": "2026-08-11",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.63,
+      "value": -2.0
+    }
+  ],
+  "quality": {
+    "failure_reason": null,
+    "freshness": "FRESH",
+    "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+    "last_success_at": "2026-08-12T19:47:03.985141Z",
+    "sample_size": 501,
+    "status": "OK"
+  },
+  "released_at": null,
+  "schema_version": "2.0.0",
+  "source": {
+    "name": "Federal Reserve Bank of New York Markets Data API",
+    "retrieved_at": "2026-08-12T19:47:03.985141Z",
+    "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+    "source_id": "nyfed_markets",
+    "tier": "OFFICIAL",
+    "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+  },
+  "unit": "bp",
+  "updated_at": "2026-08-12T19:47:03.985141Z"
+}

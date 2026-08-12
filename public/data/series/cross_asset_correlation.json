@@ -1,12 +1,12 @@
 {
   "availability": "UNAVAILABLE_FREE",
   "frequency": "business_daily",
-  "label": "Nasdaq-100 forward P/E",
-  "metric_id": "ndx_forward_pe",
+  "label": "Cross-asset rolling correlations",
+  "metric_id": "cross_asset_correlation",
   "observation_date": null,
   "observations": [],
   "quality": {
-    "failure_reason": "A consistent, reproducible forward-earnings consensus is proprietary.",
+    "failure_reason": "Several planned FRED series carry third-party redistribution restrictions.",
     "freshness": "UNKNOWN",
     "last_attempt_at": null,
     "last_success_at": null,
@@ -23,6 +23,6 @@
     "tier": null,
     "url": null
   },
-  "unit": "multiple",
+  "unit": "coefficient",
   "updated_at": null
 }

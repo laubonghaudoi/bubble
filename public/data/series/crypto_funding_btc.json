@@ -1,23 +1,28 @@
 {
-  "as_of": null,
-  "frequency": "daily",
-  "knowledge": {
-    "cannot_conclude": "唔可以靠單一指標證明危機、泡沫爆破或資產價格方向。",
-    "confirm_with": "價格、存量／流量及 backstop 等獨立 evidence blocks。",
-    "false_positives": "發布時間、樣本組成、技術日及定義轉變都可能造成假訊號。",
-    "layer": "market_ignition",
-    "question_answered": "呢個指標所屬層面有冇出現壓力或轉折？",
-    "role": "guardrail",
-    "why_track": "同獨立訊號一齊使用，辨識流動性、放大器或基本面變化。"
-  },
+  "availability": "UNAVAILABLE_FREE",
+  "frequency": "intraday",
   "label": "BTC perpetual funding",
-  "methodology": "尚未有可合法自動重發布嘅資料；明確保留 availability state。",
   "metric_id": "crypto_funding_btc",
+  "observation_date": null,
   "observations": [],
-  "quality": "proxy",
-  "retrieved_at": "2026-08-12T17:32:49.205728Z",
-  "schema_version": "1.0.0",
-  "source_ids": [],
-  "status": "missing",
-  "unit": "percent"
+  "quality": {
+    "failure_reason": "Public endpoints do not provide redistribution rights for this public dashboard.",
+    "freshness": "UNKNOWN",
+    "last_attempt_at": null,
+    "last_success_at": null,
+    "sample_size": null,
+    "status": "NOT_APPLICABLE"
+  },
+  "released_at": null,
+  "schema_version": "2.0.0",
+  "source": {
+    "name": null,
+    "retrieved_at": null,
+    "rights_note": "No production source is active for this metric.",
+    "source_id": null,
+    "tier": null,
+    "url": null
+  },
+  "unit": "percent",
+  "updated_at": null
 }

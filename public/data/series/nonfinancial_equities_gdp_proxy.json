@@ -1,12 +1,12 @@
 {
   "availability": "UNAVAILABLE_FREE",
-  "frequency": "business_daily",
-  "label": "Nasdaq-100 forward P/E",
-  "metric_id": "ndx_forward_pe",
+  "frequency": "quarterly",
+  "label": "Nonfinancial corporate equities / GDP proxy",
+  "metric_id": "nonfinancial_equities_gdp_proxy",
   "observation_date": null,
   "observations": [],
   "quality": {
-    "failure_reason": "A consistent, reproducible forward-earnings consensus is proprietary.",
+    "failure_reason": "P2 production implementation is not released yet.",
     "freshness": "UNKNOWN",
     "last_attempt_at": null,
     "last_success_at": null,
@@ -23,6 +23,6 @@
     "tier": null,
     "url": null
   },
-  "unit": "multiple",
+  "unit": "percent",
   "updated_at": null
 }

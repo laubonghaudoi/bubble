@@ -1,35 +1,105 @@
 {
+  "active_free_count": 17,
+  "active_proxy_count": 0,
   "alerts": [],
   "composite": {
-    "confidence": "high",
-    "confirmed_score": 0,
-    "consecutive_positive": 0,
-    "level": "normal",
-    "raw_score": 0
+    "confidence": "MEDIUM",
+    "elevated_triggered": false,
+    "funding_confirmation_count": 0,
+    "funding_confirmation_ids": [],
+    "latest_above_watch_threshold": false,
+    "level": "NORMAL",
+    "positive_streak_met": false,
+    "quality_status": "OK",
+    "reserve_4w_at_or_below_trailing_5y_p10": false,
+    "srf_positive_operation_days_latest_3": 1,
+    "stress_reasons": [],
+    "stress_triggered": false,
+    "technical_flags": [
+      "TREASURY_SETTLEMENT"
+    ],
+    "thresholds": {
+      "multiple_funding_confirmations": 3,
+      "positive_streak_observations": 3,
+      "sofr_iorb_watch_bp": 3.0
+    },
+    "watch_triggered": false
   },
   "explanations": {
     "bullets": [
       {
-        "caveat": "單日變化亦可能來自月尾或 Treasury settlement，唔足以證明準備金短缺。",
-        "confidence": "high",
-        "meaning": "相對 IORB 上升通常代表 secured overnight funding 變貴。",
-        "metric_id": "sofr_iorb_spread",
+        "alternative": "今日同時有技術事件，可能造成短暫扭曲；原始數據保留但信心下調。",
+        "confidence": "MEDIUM",
+        "confirmation": "EFFR/TGCR/BGCR 當中 0 條同時向上確認。",
+        "judgment": "Deterministic P0 assessment：NEUTRAL；Overview overall 只代表 Liquidity Fuel。",
+        "meaning": "正數代表 secured overnight funding 相對 IORB 變貴。",
+        "metric_id": "sofr_iorb_spread_bp",
         "observation": "SOFR−IORB 最新為 -1.0 bp。"
       }
     ],
-    "headline": "美元流動性整體保持中性，暫未見廣泛資金壓力。"
+    "headline": "Liquidity Fuel 暫未觸發監察條件。"
   },
-  "generated_at": "2026-08-12T17:32:49.205728Z",
+  "generated_at": "2026-08-12T19:47:03.985141Z",
+  "manual_ready_count": 0,
   "market_date": "2026-08-11",
   "metrics": {
     "bgcr": {
-      "as_of": "2026-08-11",
-      "change_5d": -0.01,
-      "delta_1d": 0.02,
-      "flags": [],
+      "availability": "ACTIVE_FREE",
+      "changes": {
+        "five_observations": -0.01,
+        "one_observation": 0.02,
+        "twenty_observations": 0.01
+      },
+      "context": {
+        "confidence": "HIGH",
+        "is_proxy": false,
+        "technical_flags": [
+          "TREASURY_SETTLEMENT"
+        ]
+      },
+      "expected_next_update": "2026-08-12",
+      "frequency": "business_daily",
       "label": "BGCR",
-      "previous": 3.61,
-      "quality": "official",
+      "methodology": {
+        "calculation": "Use the official BGCR observation.",
+        "cannot_infer": "Cannot alone identify the cause or persistence of funding pressure.",
+        "common_misreads": "BGCR is not every bilateral repo transaction.",
+        "confirm_with": [
+          "iorb",
+          "bgcr_iorb_spread_bp",
+          "sofr",
+          "tgcr"
+        ],
+        "definition": "Rate combining tri-party GC repo with centrally cleared bilateral Treasury repo transactions.",
+        "direction": "A rise relative to IORB points to firmer broad GC funding costs.",
+        "frequency_and_lag": "Business daily, normally published on the next business morning.",
+        "proxy_disclosure": "",
+        "question": "What is the broad general-collateral Treasury repo rate?",
+        "source_and_license_note": "New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.",
+        "technical_distortions": "Clearing composition, reporting, and technical dates can affect it.",
+        "why_it_matters": "It broadens confirmation across secured funding venues."
+      },
+      "metric_id": "bgcr",
+      "observation_date": "2026-08-11",
+      "provenance": [
+        {
+          "name": "Federal Reserve Bank of New York Markets Data API",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+          "source_id": "nyfed_markets",
+          "tier": "OFFICIAL",
+          "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+        }
+      ],
+      "quality": {
+        "failure_reason": null,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "sample_size": 498,
+        "status": "OK"
+      },
+      "released_at": null,
       "short_series": [
         {
           "date": "2026-07-13",
@@ -120,72 +190,733 @@
           "value": 3.63
         }
       ],
-      "source_ids": [
-        "nyfed"
-      ],
-      "status": "ok",
-      "trend_5d": "falling",
+      "source": {
+        "name": "Federal Reserve Bank of New York Markets Data API",
+        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+        "source_id": "nyfed_markets",
+        "tier": "OFFICIAL",
+        "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+      },
+      "statistics": {
+        "sample_size": 498,
+        "twenty_observation_percentile": 0.675,
+        "twenty_observation_slope": 0.002564
+      },
+      "unavailability_reason": null,
       "unit": "percent",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
       "value": 3.63
     },
-    "buffett_indicator_proxy": {
-      "as_of": null,
-      "flags": [],
-      "label": "Buffett indicator proxy",
-      "quality": "proxy",
-      "short_series": [],
-      "status": "missing",
-      "unit": "percent",
-      "value": null
+    "bgcr_iorb_spread_bp": {
+      "availability": "ACTIVE_FREE",
+      "changes": {
+        "five_observations": -1.0,
+        "one_observation": 2.0,
+        "twenty_observations": 1.0
+      },
+      "context": {
+        "confidence": "HIGH",
+        "is_proxy": false,
+        "technical_flags": [
+          "TREASURY_SETTLEMENT"
+        ]
+      },
+      "expected_next_update": "2026-08-12",
+      "frequency": "business_daily",
+      "label": "BGCR−IORB spread",
+      "methodology": {
+        "calculation": "(BGCR percent - IORB percent) x 100, without interpolation.",
+        "cannot_infer": "Cannot alone prove crisis-level funding stress.",
+        "common_misreads": "A single print can reflect collateral or calendar effects.",
+        "confirm_with": [
+          "sofr_iorb_spread_bp",
+          "tgcr_iorb_spread_bp",
+          "srf_accepted"
+        ],
+        "definition": "BGCR minus backward-as-of IORB, in basis points.",
+        "direction": "A sustained rise with SOFR and TGCR strengthens a funding-tightness assessment.",
+        "frequency_and_lag": "Business daily; changes use valid observations.",
+        "proxy_disclosure": "",
+        "question": "Is broad general-collateral repo expensive relative to IORB?",
+        "source_and_license_note": "New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.",
+        "technical_distortions": "Quarter-end, settlements, and market composition can distort it.",
+        "why_it_matters": "It supplies broad secured-market confirmation for SOFR pressure."
+      },
+      "metric_id": "bgcr_iorb_spread_bp",
+      "observation_date": "2026-08-11",
+      "provenance": [
+        {
+          "name": "Federal Reserve Bank of New York Markets Data API",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+          "source_id": "nyfed_markets",
+          "tier": "OFFICIAL",
+          "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+        },
+        {
+          "name": "Federal Reserve Economic Data API, reviewed government-origin series",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
+          "source_id": "fred_government",
+          "tier": "DISTRIBUTOR",
+          "url": "https://fred.stlouisfed.org/docs/api/fred/"
+        }
+      ],
+      "quality": {
+        "failure_reason": null,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "sample_size": 498,
+        "status": "OK"
+      },
+      "released_at": null,
+      "short_series": [
+        {
+          "date": "2026-07-13",
+          "value": -7.0
+        },
+        {
+          "date": "2026-07-14",
+          "value": -3.0
+        },
+        {
+          "date": "2026-07-15",
+          "value": -3.0
+        },
+        {
+          "date": "2026-07-16",
+          "value": -6.0
+        },
+        {
+          "date": "2026-07-17",
+          "value": -9.0
+        },
+        {
+          "date": "2026-07-20",
+          "value": -11.0
+        },
+        {
+          "date": "2026-07-21",
+          "value": -7.0
+        },
+        {
+          "date": "2026-07-22",
+          "value": -5.0
+        },
+        {
+          "date": "2026-07-23",
+          "value": -3.0
+        },
+        {
+          "date": "2026-07-24",
+          "value": -3.0
+        },
+        {
+          "date": "2026-07-27",
+          "value": -3.0
+        },
+        {
+          "date": "2026-07-28",
+          "value": -1.0
+        },
+        {
+          "date": "2026-07-29",
+          "value": -1.0
+        },
+        {
+          "date": "2026-07-30",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-31",
+          "value": -1.0
+        },
+        {
+          "date": "2026-08-03",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-04",
+          "value": -1.0
+        },
+        {
+          "date": "2026-08-05",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-06",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-07",
+          "value": -5.0
+        },
+        {
+          "date": "2026-08-10",
+          "value": -4.0
+        },
+        {
+          "date": "2026-08-11",
+          "value": -2.0
+        }
+      ],
+      "source": {
+        "name": "Federal Reserve Bank of New York Markets Data API",
+        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+        "source_id": "nyfed_markets",
+        "tier": "OFFICIAL",
+        "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+      },
+      "statistics": {
+        "above_3bp_streak": 0,
+        "change_1obs": 2.0,
+        "change_5obs": -1.0,
+        "latest": -2.0,
+        "mean_5obs": -3.0,
+        "observations_used": 5,
+        "positive_streak": 0,
+        "slope_5obs_bp_per_obs": -0.2
+      },
+      "unavailability_reason": null,
+      "unit": "bp",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "value": -2.0
     },
     "capex_acceleration": {
-      "as_of": null,
-      "flags": [],
-      "label": "CapEx YoY acceleration",
-      "quality": "proxy",
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_observation": null,
+        "one_quarter": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "quarterly",
+      "label": "Hyperscaler CapEx acceleration",
+      "methodology": {
+        "calculation": "Apply the documented metric transform to validated source observations; never coerce null to zero.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "A single observation is not a forecast or causal proof.",
+        "confirm_with": [],
+        "definition": "Canonical Hyperscaler CapEx acceleration metric as defined by the registry.",
+        "direction": "Interpret direction only with the metric definition, freshness, and independent confirmations.",
+        "frequency_and_lag": "Expected cadence: Hyperscaler CapEx acceleration; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "",
+        "question": "What does Hyperscaler CapEx acceleration reveal within its dashboard evidence block?",
+        "source_and_license_note": "Use only the source IDs whose automated-fetch and redistribution rights gates pass.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "It supplies an independent evidence input; it is never sufficient alone."
+      },
+      "metric_id": "capex_acceleration",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "SEC EDGAR APIs and filing data",
+          "retrieved_at": null,
+          "rights_note": "Cite the filing and accession; do not republish long issuer-authored passages.",
+          "source_id": "sec_edgar",
+          "tier": "OFFICIAL",
+          "url": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces"
+        }
+      ],
+      "quality": {
+        "failure_reason": "P3 production implementation is not released yet.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
       "short_series": [],
-      "status": "missing",
-      "unit": "pp",
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "P3 implementation is not released.",
+      "unit": "percentage_points",
+      "updated_at": null,
       "value": null
     },
-    "cross_asset_corr": {
-      "as_of": null,
-      "flags": [],
-      "label": "Cross-asset correlation",
-      "quality": "proxy",
+    "cboe_skew_tail_risk_proxy": {
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_observation": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": true,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "business_daily",
+      "label": "Cboe SKEW tail-risk proxy",
+      "methodology": {
+        "calculation": "No redistribution-cleared Cboe feed is configured. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "SKEW is not dealer positioning or put/call implied-volatility skew.",
+        "confirm_with": [],
+        "definition": "SKEW is not dealer positioning or put/call implied-volatility skew.",
+        "direction": "No direction is published while the value is null.",
+        "frequency_and_lag": "Expected cadence: Cboe SKEW tail-risk proxy; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "SKEW is not dealer positioning or put/call implied-volatility skew.",
+        "question": "What does Cboe SKEW tail-risk proxy reveal within its dashboard evidence block?",
+        "source_and_license_note": "No redistribution-cleared Cboe feed is configured. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "The intended signal remains visible without inventing a value when the required input is unavailable."
+      },
+      "metric_id": "cboe_skew_tail_risk_proxy",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "Cboe public index and market-statistics pages",
+          "retrieved_at": null,
+          "rights_note": "Written Cboe permission or a separately licensed feed is required.",
+          "source_id": "cboe",
+          "tier": "OFFICIAL_PUBLISHER",
+          "url": "https://www.cboe.com/us/options/market_statistics/"
+        }
+      ],
+      "quality": {
+        "failure_reason": "No redistribution-cleared Cboe feed is configured.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
       "short_series": [],
-      "status": "missing",
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "No redistribution-cleared Cboe feed is configured.",
+      "unit": "index",
+      "updated_at": null,
+      "value": null
+    },
+    "cftc_asset_manager_positioning": {
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "four_weeks": null,
+        "one_observation": null,
+        "one_week": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "weekly",
+      "label": "CFTC asset-manager positioning",
+      "methodology": {
+        "calculation": "Apply the documented metric transform to validated source observations; never coerce null to zero.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "A single observation is not a forecast or causal proof.",
+        "confirm_with": [],
+        "definition": "Canonical CFTC asset-manager positioning metric as defined by the registry.",
+        "direction": "Interpret direction only with the metric definition, freshness, and independent confirmations.",
+        "frequency_and_lag": "Expected cadence: CFTC asset-manager positioning; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "",
+        "question": "What does CFTC asset-manager positioning reveal within its dashboard evidence block?",
+        "source_and_license_note": "Use only the source IDs whose automated-fetch and redistribution rights gates pass.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "It supplies an independent evidence input; it is never sufficient alone."
+      },
+      "metric_id": "cftc_asset_manager_positioning",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "CFTC Public Reporting Environment",
+          "retrieved_at": null,
+          "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
+          "source_id": "cftc_pre",
+          "tier": "OFFICIAL",
+          "url": "https://publicreporting.cftc.gov/"
+        }
+      ],
+      "quality": {
+        "failure_reason": "P1 production implementation is not released yet.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
+      "short_series": [],
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "P1 implementation is not released.",
+      "unit": "percent_open_interest",
+      "updated_at": null,
+      "value": null
+    },
+    "cftc_leveraged_funds_positioning_proxy": {
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "four_weeks": null,
+        "one_observation": null,
+        "one_week": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": true,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "weekly",
+      "label": "CFTC leveraged-funds positioning proxy",
+      "methodology": {
+        "calculation": "Apply the documented metric transform to validated source observations; never coerce null to zero.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "CFTC business categories do not measure every CTA or actual model exposure.",
+        "confirm_with": [],
+        "definition": "CFTC business categories do not measure every CTA or actual model exposure.",
+        "direction": "Interpret direction only with the metric definition, freshness, and independent confirmations.",
+        "frequency_and_lag": "Expected cadence: CFTC leveraged-funds positioning proxy; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "CFTC business categories do not measure every CTA or actual model exposure.",
+        "question": "What does CFTC leveraged-funds positioning proxy reveal within its dashboard evidence block?",
+        "source_and_license_note": "Use only the source IDs whose automated-fetch and redistribution rights gates pass.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "It supplies an independent evidence input; it is never sufficient alone."
+      },
+      "metric_id": "cftc_leveraged_funds_positioning_proxy",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "CFTC Public Reporting Environment",
+          "retrieved_at": null,
+          "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
+          "source_id": "cftc_pre",
+          "tier": "OFFICIAL",
+          "url": "https://publicreporting.cftc.gov/"
+        }
+      ],
+      "quality": {
+        "failure_reason": "P1 production implementation is not released yet.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
+      "short_series": [],
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "P1 implementation is not released.",
+      "unit": "z-score",
+      "updated_at": null,
+      "value": null
+    },
+    "cross_asset_correlation": {
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_observation": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "business_daily",
+      "label": "Cross-asset rolling correlations",
+      "methodology": {
+        "calculation": "Several planned FRED series carry third-party redistribution restrictions. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "A single observation is not a forecast or causal proof.",
+        "confirm_with": [],
+        "definition": "Canonical Cross-asset rolling correlations metric as defined by the registry.",
+        "direction": "No direction is published while the value is null.",
+        "frequency_and_lag": "Expected cadence: Cross-asset rolling correlations; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "",
+        "question": "What does Cross-asset rolling correlations reveal within its dashboard evidence block?",
+        "source_and_license_note": "Several planned FRED series carry third-party redistribution restrictions. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "The intended signal remains visible without inventing a value when the required input is unavailable."
+      },
+      "metric_id": "cross_asset_correlation",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "Federal Reserve Economic Data API, third-party series permission hold",
+          "retrieved_at": null,
+          "rights_note": "A FRED API key does not grant onward rights to third-party series.",
+          "source_id": "fred_third_party",
+          "tier": "DISTRIBUTOR",
+          "url": "https://fred.stlouisfed.org/docs/api/fred/"
+        }
+      ],
+      "quality": {
+        "failure_reason": "Several planned FRED series carry third-party redistribution restrictions.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
+      "short_series": [],
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "Several planned FRED series carry third-party redistribution restrictions.",
       "unit": "coefficient",
+      "updated_at": null,
       "value": null
     },
     "crypto_funding_btc": {
-      "as_of": null,
-      "flags": [],
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_observation": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "intraday",
       "label": "BTC perpetual funding",
-      "quality": "proxy",
+      "methodology": {
+        "calculation": "Public endpoints do not provide redistribution rights for this public dashboard. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "A single observation is not a forecast or causal proof.",
+        "confirm_with": [],
+        "definition": "Canonical BTC perpetual funding metric as defined by the registry.",
+        "direction": "No direction is published while the value is null.",
+        "frequency_and_lag": "Expected cadence: BTC perpetual funding; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "",
+        "question": "What does BTC perpetual funding reveal within its dashboard evidence block?",
+        "source_and_license_note": "Public endpoints do not provide redistribution rights for this public dashboard. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "The intended signal remains visible without inventing a value when the required input is unavailable."
+      },
+      "metric_id": "crypto_funding_btc",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "Coinbase public derivatives market data",
+          "retrieved_at": null,
+          "rights_note": "A public endpoint is not a redistribution licence.",
+          "source_id": "coinbase_market_data",
+          "tier": "OFFICIAL_PUBLISHER",
+          "url": "https://docs.cdp.coinbase.com/api-reference/market-data/public-get_funding_rate_history"
+        },
+        {
+          "name": "Bybit public funding history",
+          "retrieved_at": null,
+          "rights_note": "A public endpoint is not a redistribution licence.",
+          "source_id": "bybit_market_data",
+          "tier": "OFFICIAL_PUBLISHER",
+          "url": "https://bybit-exchange.github.io/docs/v5/market/history-fund-rate"
+        }
+      ],
+      "quality": {
+        "failure_reason": "Public endpoints do not provide redistribution rights for this public dashboard.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
       "short_series": [],
-      "status": "missing",
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "Public endpoints do not provide redistribution rights for this public dashboard.",
       "unit": "percent",
+      "updated_at": null,
       "value": null
     },
-    "cta_proxy": {
-      "as_of": null,
-      "flags": [],
-      "label": "CTA positioning proxy",
-      "quality": "proxy",
+    "crypto_funding_eth": {
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_observation": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "intraday",
+      "label": "ETH perpetual funding",
+      "methodology": {
+        "calculation": "Public endpoints do not provide redistribution rights for this public dashboard. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "A single observation is not a forecast or causal proof.",
+        "confirm_with": [],
+        "definition": "Canonical ETH perpetual funding metric as defined by the registry.",
+        "direction": "No direction is published while the value is null.",
+        "frequency_and_lag": "Expected cadence: ETH perpetual funding; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "",
+        "question": "What does ETH perpetual funding reveal within its dashboard evidence block?",
+        "source_and_license_note": "Public endpoints do not provide redistribution rights for this public dashboard. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "The intended signal remains visible without inventing a value when the required input is unavailable."
+      },
+      "metric_id": "crypto_funding_eth",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "Coinbase public derivatives market data",
+          "retrieved_at": null,
+          "rights_note": "A public endpoint is not a redistribution licence.",
+          "source_id": "coinbase_market_data",
+          "tier": "OFFICIAL_PUBLISHER",
+          "url": "https://docs.cdp.coinbase.com/api-reference/market-data/public-get_funding_rate_history"
+        },
+        {
+          "name": "Bybit public funding history",
+          "retrieved_at": null,
+          "rights_note": "A public endpoint is not a redistribution licence.",
+          "source_id": "bybit_market_data",
+          "tier": "OFFICIAL_PUBLISHER",
+          "url": "https://bybit-exchange.github.io/docs/v5/market/history-fund-rate"
+        }
+      ],
+      "quality": {
+        "failure_reason": "Public endpoints do not provide redistribution rights for this public dashboard.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
       "short_series": [],
-      "status": "missing",
-      "unit": "z-score",
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "Public endpoints do not provide redistribution rights for this public dashboard.",
+      "unit": "percent",
+      "updated_at": null,
       "value": null
     },
     "effr": {
-      "as_of": "2026-08-11",
-      "change_5d": 0.0,
-      "delta_1d": 0.0,
-      "flags": [],
+      "availability": "ACTIVE_FREE",
+      "changes": {
+        "five_observations": 0.0,
+        "one_observation": 0.0,
+        "twenty_observations": 0.0
+      },
+      "context": {
+        "confidence": "HIGH",
+        "is_proxy": false,
+        "technical_flags": [
+          "TREASURY_SETTLEMENT"
+        ]
+      },
+      "expected_next_update": "2026-08-12",
+      "frequency": "business_daily",
       "label": "EFFR",
-      "previous": 3.63,
-      "quality": "official",
+      "methodology": {
+        "calculation": "Use the official EFFR observation.",
+        "cannot_infer": "Cannot alone show repo-market or system-wide stress.",
+        "common_misreads": "EFFR level alone mainly reflects the policy corridor.",
+        "confirm_with": [
+          "iorb",
+          "effr_iorb_spread_bp",
+          "sofr"
+        ],
+        "definition": "Volume-weighted median rate on overnight federal-funds transactions reported to the New York Fed.",
+        "direction": "A rise relative to IORB can confirm broader funding pressure.",
+        "frequency_and_lag": "Business daily, normally published on the next business morning.",
+        "proxy_disclosure": "",
+        "question": "What is the effective unsecured federal-funds rate?",
+        "source_and_license_note": "New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.",
+        "technical_distortions": "Reporting composition and policy effective dates affect comparisons.",
+        "why_it_matters": "It confirms whether unsecured interbank funding is moving relative to IORB."
+      },
+      "metric_id": "effr",
+      "observation_date": "2026-08-11",
+      "provenance": [
+        {
+          "name": "Federal Reserve Bank of New York Markets Data API",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+          "source_id": "nyfed_markets",
+          "tier": "OFFICIAL",
+          "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+        }
+      ],
+      "quality": {
+        "failure_reason": null,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "sample_size": 501,
+        "status": "OK"
+      },
+      "released_at": null,
       "short_series": [
         {
           "date": "2026-07-13",
@@ -276,23 +1007,266 @@
           "value": 3.63
         }
       ],
-      "source_ids": [
-        "nyfed"
-      ],
-      "status": "ok",
-      "trend_5d": "flat",
+      "source": {
+        "name": "Federal Reserve Bank of New York Markets Data API",
+        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+        "source_id": "nyfed_markets",
+        "tier": "OFFICIAL",
+        "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+      },
+      "statistics": {
+        "sample_size": 501,
+        "twenty_observation_percentile": 0.5,
+        "twenty_observation_slope": 0.0
+      },
+      "unavailability_reason": null,
       "unit": "percent",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
       "value": 3.63
     },
-    "fed_total_assets": {
-      "as_of": "2026-08-05",
-      "change_5d": 24.003,
-      "delta_1d": 10.377,
-      "flags": [],
-      "label": "Fed Total Assets",
-      "previous": 6738.19,
-      "quality": "official",
+    "effr_iorb_spread_bp": {
+      "availability": "ACTIVE_FREE",
+      "changes": {
+        "five_observations": 0.0,
+        "one_observation": 0.0,
+        "twenty_observations": 0.0
+      },
+      "context": {
+        "confidence": "HIGH",
+        "is_proxy": false,
+        "technical_flags": [
+          "TREASURY_SETTLEMENT"
+        ]
+      },
+      "expected_next_update": "2026-08-12",
+      "frequency": "business_daily",
+      "label": "EFFR−IORB spread",
+      "methodology": {
+        "calculation": "(EFFR percent - IORB percent) x 100, without interpolation.",
+        "cannot_infer": "Cannot alone prove a shortage of aggregate reserves.",
+        "common_misreads": "Small negative spreads can be normal under the implementation framework.",
+        "confirm_with": [
+          "sofr_iorb_spread_bp",
+          "obfr_iorb_spread_bp",
+          "srf_accepted"
+        ],
+        "definition": "EFFR minus backward-as-of IORB, in basis points.",
+        "direction": "A sustained upward move confirms broader tightening more than a flat reading.",
+        "frequency_and_lag": "Business daily; changes use valid observations.",
+        "proxy_disclosure": "",
+        "question": "Is federal-funds funding expensive relative to IORB?",
+        "source_and_license_note": "New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.",
+        "technical_distortions": "Policy effective dates and transaction composition can alter the spread.",
+        "why_it_matters": "It supplies unsecured confirmation for SOFR-based funding pressure."
+      },
+      "metric_id": "effr_iorb_spread_bp",
+      "observation_date": "2026-08-11",
+      "provenance": [
+        {
+          "name": "Federal Reserve Bank of New York Markets Data API",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+          "source_id": "nyfed_markets",
+          "tier": "OFFICIAL",
+          "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+        },
+        {
+          "name": "Federal Reserve Economic Data API, reviewed government-origin series",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
+          "source_id": "fred_government",
+          "tier": "DISTRIBUTOR",
+          "url": "https://fred.stlouisfed.org/docs/api/fred/"
+        }
+      ],
+      "quality": {
+        "failure_reason": null,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "sample_size": 501,
+        "status": "OK"
+      },
+      "released_at": null,
       "short_series": [
+        {
+          "date": "2026-07-13",
+          "value": -3.0
+        },
+        {
+          "date": "2026-07-14",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-15",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-16",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-17",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-20",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-21",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-22",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-23",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-24",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-27",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-28",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-29",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-30",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-31",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-03",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-04",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-05",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-06",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-07",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-10",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-11",
+          "value": -2.0
+        }
+      ],
+      "source": {
+        "name": "Federal Reserve Bank of New York Markets Data API",
+        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+        "source_id": "nyfed_markets",
+        "tier": "OFFICIAL",
+        "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+      },
+      "statistics": {
+        "above_3bp_streak": 0,
+        "change_1obs": 0.0,
+        "change_5obs": 0.0,
+        "latest": -2.0,
+        "mean_5obs": -2.0,
+        "observations_used": 5,
+        "positive_streak": 0,
+        "slope_5obs_bp_per_obs": 0.0
+      },
+      "unavailability_reason": null,
+      "unit": "bp",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "value": -2.0
+    },
+    "fed_total_assets": {
+      "availability": "ACTIVE_FREE",
+      "changes": {
+        "five_observations": 24.003,
+        "four_weeks": 12.958,
+        "one_observation": 10.377,
+        "one_week": 10.377,
+        "twenty_observations": 92.628
+      },
+      "context": {
+        "confidence": "HIGH",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": "2026-08-06",
+      "frequency": "weekly",
+      "label": "Federal Reserve total assets",
+      "methodology": {
+        "calculation": "Use official weekly level; calculate 1w and 4w observation changes.",
+        "cannot_infer": "Cannot alone measure private-sector liquidity or predict markets.",
+        "common_misreads": "Asset decline does not map one-for-one to bank reserve decline.",
+        "confirm_with": [
+          "reserve_balances",
+          "tga_weekly_h41",
+          "on_rrp_accepted"
+        ],
+        "definition": "H.4.1 total assets, normalized to USD billions.",
+        "direction": "A decline is balance-sheet runoff; transmission depends on liabilities and market demand.",
+        "frequency_and_lag": "Weekly, normally Thursday around 4:30 p.m. ET.",
+        "proxy_disclosure": "",
+        "question": "What is the size of the Federal Reserve balance sheet?",
+        "source_and_license_note": "Government-origin series distributed by the FRED API; requires FRED_API_KEY and is restricted to the reviewed allowlist.",
+        "technical_distortions": "Settlement timing, loans, securities amortization, and other assets can move the total.",
+        "why_it_matters": "Weekly change shows the broad direction of balance-sheet runoff or expansion."
+      },
+      "metric_id": "fed_total_assets",
+      "observation_date": "2026-08-05",
+      "provenance": [
+        {
+          "name": "Federal Reserve Economic Data API, reviewed government-origin series",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
+          "source_id": "fred_government",
+          "tier": "DISTRIBUTOR",
+          "url": "https://fred.stlouisfed.org/docs/api/fred/"
+        }
+      ],
+      "quality": {
+        "failure_reason": null,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "sample_size": 313,
+        "status": "OK"
+      },
+      "released_at": null,
+      "short_series": [
+        {
+          "date": "2026-03-11",
+          "value": 6646.344
+        },
+        {
+          "date": "2026-03-18",
+          "value": 6655.939
+        },
         {
           "date": "2026-03-25",
           "value": 6657.161
@@ -374,62 +1348,343 @@
           "value": 6748.567
         }
       ],
-      "source_ids": [
-        "fred"
-      ],
-      "status": "ok",
-      "trend_5d": "rising",
+      "source": {
+        "name": "Federal Reserve Economic Data API, reviewed government-origin series",
+        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
+        "source_id": "fred_government",
+        "tier": "DISTRIBUTOR",
+        "url": "https://fred.stlouisfed.org/docs/api/fred/"
+      },
+      "statistics": {
+        "change_1w": 10.377,
+        "change_4w": 12.958,
+        "level": 6748.567,
+        "observations_used": 313
+      },
+      "unavailability_reason": null,
       "unit": "USD bn",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
       "value": 6748.567
     },
     "finra_margin_debt": {
-      "as_of": null,
-      "flags": [],
-      "label": "FINRA margin debt",
-      "quality": "proxy",
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_month": null,
+        "one_observation": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "monthly",
+      "label": "FINRA customer debit balances",
+      "methodology": {
+        "calculation": "FINRA terms do not clear automated database construction or redistribution. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "A single observation is not a forecast or causal proof.",
+        "confirm_with": [],
+        "definition": "Canonical FINRA customer debit balances metric as defined by the registry.",
+        "direction": "No direction is published while the value is null.",
+        "frequency_and_lag": "Expected cadence: FINRA customer debit balances; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "",
+        "question": "What does FINRA customer debit balances reveal within its dashboard evidence block?",
+        "source_and_license_note": "FINRA terms do not clear automated database construction or redistribution. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "The intended signal remains visible without inventing a value when the required input is unavailable."
+      },
+      "metric_id": "finra_margin_debt",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "FINRA Margin Statistics",
+          "retrieved_at": null,
+          "rights_note": "Written permission is required before automated public-dashboard use.",
+          "source_id": "finra_margin",
+          "tier": "OFFICIAL",
+          "url": "https://www.finra.org/rules-guidance/key-topics/margin-accounts/margin-statistics"
+        }
+      ],
+      "quality": {
+        "failure_reason": "FINRA terms do not clear automated database construction or redistribution.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
       "short_series": [],
-      "status": "missing",
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "FINRA terms do not clear automated database construction or redistribution.",
       "unit": "USD bn",
+      "updated_at": null,
       "value": null
     },
     "gamma_flip": {
-      "as_of": null,
-      "flags": [],
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_observation": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "business_daily",
       "label": "Gamma flip level",
-      "quality": "paid_required",
+      "methodology": {
+        "calculation": "Reliable dealer net-gamma and trade-direction inputs are not publicly available. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "A single observation is not a forecast or causal proof.",
+        "confirm_with": [],
+        "definition": "Canonical Gamma flip level metric as defined by the registry.",
+        "direction": "No direction is published while the value is null.",
+        "frequency_and_lag": "Expected cadence: Gamma flip level; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "",
+        "question": "What does Gamma flip level reveal within its dashboard evidence block?",
+        "source_and_license_note": "Reliable dealer net-gamma and trade-direction inputs are not publicly available. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "The intended signal remains visible without inventing a value when the required input is unavailable."
+      },
+      "metric_id": "gamma_flip",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "Future licensed provider interface",
+          "retrieved_at": null,
+          "rights_note": "Keep value null until a reviewed provider agreement is configured.",
+          "source_id": "licensed_provider",
+          "tier": "PROPRIETARY",
+          "url": null
+        }
+      ],
+      "quality": {
+        "failure_reason": "Reliable dealer net-gamma and trade-direction inputs are not publicly available.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
       "short_series": [],
-      "status": "paid_data_unavailable",
-      "unit": "index",
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "Reliable dealer net-gamma and trade-direction inputs are not publicly available.",
+      "unit": "SPX index points",
+      "updated_at": null,
       "value": null
     },
     "hyperscaler_capex": {
-      "as_of": null,
-      "flags": [],
-      "label": "Hyperscaler aggregate CapEx",
-      "quality": "proxy",
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_observation": null,
+        "one_quarter": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "quarterly",
+      "label": "Hyperscaler aggregate cash CapEx",
+      "methodology": {
+        "calculation": "Apply the documented metric transform to validated source observations; never coerce null to zero.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "A single observation is not a forecast or causal proof.",
+        "confirm_with": [],
+        "definition": "Canonical Hyperscaler aggregate cash CapEx metric as defined by the registry.",
+        "direction": "Interpret direction only with the metric definition, freshness, and independent confirmations.",
+        "frequency_and_lag": "Expected cadence: Hyperscaler aggregate cash CapEx; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "",
+        "question": "What does Hyperscaler aggregate cash CapEx reveal within its dashboard evidence block?",
+        "source_and_license_note": "Use only the source IDs whose automated-fetch and redistribution rights gates pass.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "It supplies an independent evidence input; it is never sufficient alone."
+      },
+      "metric_id": "hyperscaler_capex",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "SEC EDGAR APIs and filing data",
+          "retrieved_at": null,
+          "rights_note": "Cite the filing and accession; do not republish long issuer-authored passages.",
+          "source_id": "sec_edgar",
+          "tier": "OFFICIAL",
+          "url": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces"
+        }
+      ],
+      "quality": {
+        "failure_reason": "P3 production implementation is not released yet.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
       "short_series": [],
-      "status": "missing",
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "P3 implementation is not released.",
       "unit": "USD bn",
+      "updated_at": null,
       "value": null
     },
-    "insider_ratio_proxy": {
-      "as_of": null,
-      "flags": [],
-      "label": "Insider buy/sell proxy",
-      "quality": "proxy",
+    "insider_buy_sell_proxy": {
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_observation": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": true,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "business_daily",
+      "label": "SEC Form 4 insider buy/sell proxy",
+      "methodology": {
+        "calculation": "Apply the documented metric transform to validated source observations; never coerce null to zero.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "Parsed open-market Form 4 transactions do not represent all insider intent or future returns.",
+        "confirm_with": [],
+        "definition": "Parsed open-market Form 4 transactions do not represent all insider intent or future returns.",
+        "direction": "Interpret direction only with the metric definition, freshness, and independent confirmations.",
+        "frequency_and_lag": "Expected cadence: SEC Form 4 insider buy/sell proxy; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "Parsed open-market Form 4 transactions do not represent all insider intent or future returns.",
+        "question": "What does SEC Form 4 insider buy/sell proxy reveal within its dashboard evidence block?",
+        "source_and_license_note": "Use only the source IDs whose automated-fetch and redistribution rights gates pass.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "It supplies an independent evidence input; it is never sufficient alone."
+      },
+      "metric_id": "insider_buy_sell_proxy",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "SEC EDGAR APIs and filing data",
+          "retrieved_at": null,
+          "rights_note": "Cite the filing and accession; do not republish long issuer-authored passages.",
+          "source_id": "sec_edgar",
+          "tier": "OFFICIAL",
+          "url": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces"
+        }
+      ],
+      "quality": {
+        "failure_reason": "P2 production implementation is not released yet.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
       "short_series": [],
-      "status": "missing",
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "P2 implementation is not released.",
       "unit": "ratio",
+      "updated_at": null,
       "value": null
     },
     "iorb": {
-      "as_of": "2026-08-12",
-      "change_5d": 0.0,
-      "delta_1d": 0.0,
-      "flags": [],
+      "availability": "ACTIVE_FREE",
+      "changes": {
+        "five_observations": 0.0,
+        "one_observation": 0.0,
+        "twenty_observations": 0.0
+      },
+      "context": {
+        "confidence": "HIGH",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "policy_event",
       "label": "IORB",
-      "previous": 3.65,
-      "quality": "official",
+      "methodology": {
+        "calculation": "Use the official IORB percent rate effective for each observation date.",
+        "cannot_infer": "Cannot measure reserve abundance or market stress by itself.",
+        "common_misreads": "An unchanged IORB is not a fresh daily market observation.",
+        "confirm_with": [
+          "sofr",
+          "effr",
+          "obfr",
+          "tgcr",
+          "bgcr"
+        ],
+        "definition": "Interest rate paid by the Federal Reserve on reserve balances.",
+        "direction": "A higher IORB raises the administered-rate anchor; spread direction matters more than level alone.",
+        "frequency_and_lag": "Policy-event frequency; the value persists until the next effective change.",
+        "proxy_disclosure": "",
+        "question": "What can eligible banks earn on reserve balances?",
+        "source_and_license_note": "Government-origin series distributed by the FRED API; requires FRED_API_KEY and is restricted to the reviewed allowlist.",
+        "technical_distortions": "FOMC implementation changes and effective-date boundaries affect as-of joins.",
+        "why_it_matters": "It is the core policy-rate comparator for overnight funding rates."
+      },
+      "metric_id": "iorb",
+      "observation_date": "2026-08-12",
+      "provenance": [
+        {
+          "name": "Federal Reserve Economic Data API, reviewed government-origin series",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
+          "source_id": "fred_government",
+          "tier": "DISTRIBUTOR",
+          "url": "https://fred.stlouisfed.org/docs/api/fred/"
+        }
+      ],
+      "quality": {
+        "failure_reason": null,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "sample_size": 1841,
+        "status": "OK"
+      },
+      "released_at": null,
       "short_series": [
         {
           "date": "2026-07-22",
@@ -520,42 +1775,277 @@
           "value": 3.65
         }
       ],
-      "source_ids": [
-        "fred"
-      ],
-      "status": "ok",
-      "trend_5d": "flat",
+      "source": {
+        "name": "Federal Reserve Economic Data API, reviewed government-origin series",
+        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
+        "source_id": "fred_government",
+        "tier": "DISTRIBUTOR",
+        "url": "https://fred.stlouisfed.org/docs/api/fred/"
+      },
+      "statistics": {
+        "sample_size": 1841,
+        "twenty_observation_percentile": 0.5,
+        "twenty_observation_slope": 0.0
+      },
+      "unavailability_reason": null,
       "unit": "percent",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
       "value": 3.65
     },
-    "m2_vs_nasdaq": {
-      "as_of": null,
-      "flags": [],
-      "label": "M2 vs Nasdaq divergence",
-      "quality": "proxy",
+    "m2_nasdaq_divergence": {
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_month": null,
+        "one_observation": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "monthly",
+      "label": "M2 / Nasdaq divergence",
+      "methodology": {
+        "calculation": "Nasdaq series redistribution rights are not cleared by access through FRED. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "A single observation is not a forecast or causal proof.",
+        "confirm_with": [],
+        "definition": "Canonical M2 / Nasdaq divergence metric as defined by the registry.",
+        "direction": "No direction is published while the value is null.",
+        "frequency_and_lag": "Expected cadence: M2 / Nasdaq divergence; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "",
+        "question": "What does M2 / Nasdaq divergence reveal within its dashboard evidence block?",
+        "source_and_license_note": "Nasdaq series redistribution rights are not cleared by access through FRED. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "The intended signal remains visible without inventing a value when the required input is unavailable."
+      },
+      "metric_id": "m2_nasdaq_divergence",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "Federal Reserve Economic Data API, third-party series permission hold",
+          "retrieved_at": null,
+          "rights_note": "A FRED API key does not grant onward rights to third-party series.",
+          "source_id": "fred_third_party",
+          "tier": "DISTRIBUTOR",
+          "url": "https://fred.stlouisfed.org/docs/api/fred/"
+        }
+      ],
+      "quality": {
+        "failure_reason": "Nasdaq series redistribution rights are not cleared by access through FRED.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
       "short_series": [],
-      "status": "missing",
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "Nasdaq series redistribution rights are not cleared by access through FRED.",
       "unit": "z-score",
+      "updated_at": null,
       "value": null
     },
     "ndx_forward_pe": {
-      "as_of": null,
-      "flags": [],
-      "label": "NDX forward P/E",
-      "quality": "paid_required",
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_observation": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "business_daily",
+      "label": "Nasdaq-100 forward P/E",
+      "methodology": {
+        "calculation": "A consistent, reproducible forward-earnings consensus is proprietary. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "A single observation is not a forecast or causal proof.",
+        "confirm_with": [],
+        "definition": "Canonical Nasdaq-100 forward P/E metric as defined by the registry.",
+        "direction": "No direction is published while the value is null.",
+        "frequency_and_lag": "Expected cadence: Nasdaq-100 forward P/E; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "",
+        "question": "What does Nasdaq-100 forward P/E reveal within its dashboard evidence block?",
+        "source_and_license_note": "A consistent, reproducible forward-earnings consensus is proprietary. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "The intended signal remains visible without inventing a value when the required input is unavailable."
+      },
+      "metric_id": "ndx_forward_pe",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "Future licensed provider interface",
+          "retrieved_at": null,
+          "rights_note": "Keep value null until a reviewed provider agreement is configured.",
+          "source_id": "licensed_provider",
+          "tier": "PROPRIETARY",
+          "url": null
+        }
+      ],
+      "quality": {
+        "failure_reason": "A consistent, reproducible forward-earnings consensus is proprietary.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
       "short_series": [],
-      "status": "paid_data_unavailable",
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "A consistent, reproducible forward-earnings consensus is proprietary.",
       "unit": "multiple",
+      "updated_at": null,
+      "value": null
+    },
+    "nonfinancial_equities_gdp_proxy": {
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_observation": null,
+        "one_quarter": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": true,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "quarterly",
+      "label": "Nonfinancial corporate equities / GDP proxy",
+      "methodology": {
+        "calculation": "Apply the documented metric transform to validated source observations; never coerce null to zero.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "Nonfinancial corporate equity liabilities are not total U.S. equity market capitalization.",
+        "confirm_with": [],
+        "definition": "Nonfinancial corporate equity liabilities are not total U.S. equity market capitalization.",
+        "direction": "Interpret direction only with the metric definition, freshness, and independent confirmations.",
+        "frequency_and_lag": "Expected cadence: Nonfinancial corporate equities / GDP proxy; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "Nonfinancial corporate equity liabilities are not total U.S. equity market capitalization.",
+        "question": "What does Nonfinancial corporate equities / GDP proxy reveal within its dashboard evidence block?",
+        "source_and_license_note": "Government-origin NCBEILQ027S and GDP are restricted to the reviewed FRED allowlist; the supported API requires FRED_API_KEY and both source agencies must be attributed.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "It supplies an independent evidence input; it is never sufficient alone."
+      },
+      "metric_id": "nonfinancial_equities_gdp_proxy",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "Federal Reserve Economic Data API, reviewed government-origin series",
+          "retrieved_at": null,
+          "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
+          "source_id": "fred_government",
+          "tier": "DISTRIBUTOR",
+          "url": "https://fred.stlouisfed.org/docs/api/fred/"
+        }
+      ],
+      "quality": {
+        "failure_reason": "P2 production implementation is not released yet.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
+      "short_series": [],
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "P2 implementation is not released.",
+      "unit": "percent",
+      "updated_at": null,
       "value": null
     },
     "obfr": {
-      "as_of": "2026-08-11",
-      "change_5d": 0.0,
-      "delta_1d": 0.0,
-      "flags": [],
+      "availability": "ACTIVE_FREE",
+      "changes": {
+        "five_observations": 0.0,
+        "one_observation": 0.0,
+        "twenty_observations": 0.0
+      },
+      "context": {
+        "confidence": "HIGH",
+        "is_proxy": false,
+        "technical_flags": [
+          "TREASURY_SETTLEMENT"
+        ]
+      },
+      "expected_next_update": "2026-08-12",
+      "frequency": "business_daily",
       "label": "OBFR",
-      "previous": 3.63,
-      "quality": "official",
+      "methodology": {
+        "calculation": "Use the official OBFR observation.",
+        "cannot_infer": "Cannot alone identify the institution or cause behind pressure.",
+        "common_misreads": "OBFR is not a secured repo rate.",
+        "confirm_with": [
+          "iorb",
+          "obfr_iorb_spread_bp",
+          "effr"
+        ],
+        "definition": "Rate covering federal funds and Eurodollar transactions reported by U.S. banking offices.",
+        "direction": "A rise relative to IORB suggests firmer unsecured bank funding costs.",
+        "frequency_and_lag": "Business daily, normally published on the next business morning.",
+        "proxy_disclosure": "",
+        "question": "What is the broad overnight unsecured bank funding rate?",
+        "source_and_license_note": "New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.",
+        "technical_distortions": "Transaction composition and policy-date effects can move it.",
+        "why_it_matters": "Its broader unsecured scope can confirm funding pressure outside federal funds alone."
+      },
+      "metric_id": "obfr",
+      "observation_date": "2026-08-11",
+      "provenance": [
+        {
+          "name": "Federal Reserve Bank of New York Markets Data API",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+          "source_id": "nyfed_markets",
+          "tier": "OFFICIAL",
+          "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+        }
+      ],
+      "quality": {
+        "failure_reason": null,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "sample_size": 501,
+        "status": "OK"
+      },
+      "released_at": null,
       "short_series": [
         {
           "date": "2026-07-13",
@@ -646,53 +2136,580 @@
           "value": 3.63
         }
       ],
-      "source_ids": [
-        "nyfed"
-      ],
-      "status": "ok",
-      "trend_5d": "flat",
+      "source": {
+        "name": "Federal Reserve Bank of New York Markets Data API",
+        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+        "source_id": "nyfed_markets",
+        "tier": "OFFICIAL",
+        "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+      },
+      "statistics": {
+        "sample_size": 501,
+        "twenty_observation_percentile": 0.575,
+        "twenty_observation_slope": 0.000338
+      },
+      "unavailability_reason": null,
       "unit": "percent",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
       "value": 3.63
     },
-    "on_rrp": {
-      "as_of": null,
-      "flags": [],
-      "label": "ON RRP 使用量",
-      "quality": "proxy",
-      "short_series": [],
-      "status": "missing",
+    "obfr_iorb_spread_bp": {
+      "availability": "ACTIVE_FREE",
+      "changes": {
+        "five_observations": 0.0,
+        "one_observation": 0.0,
+        "twenty_observations": 0.0
+      },
+      "context": {
+        "confidence": "HIGH",
+        "is_proxy": false,
+        "technical_flags": [
+          "TREASURY_SETTLEMENT"
+        ]
+      },
+      "expected_next_update": "2026-08-12",
+      "frequency": "business_daily",
+      "label": "OBFR−IORB spread",
+      "methodology": {
+        "calculation": "(OBFR percent - IORB percent) x 100, without interpolation.",
+        "cannot_infer": "Cannot alone establish systemic funding stress.",
+        "common_misreads": "A flat spread does not invalidate repo-specific stress.",
+        "confirm_with": [
+          "sofr_iorb_spread_bp",
+          "effr_iorb_spread_bp",
+          "srf_accepted"
+        ],
+        "definition": "OBFR minus backward-as-of IORB, in basis points.",
+        "direction": "A sustained rise is confirmation; divergence from SOFR suggests market-specific pressure.",
+        "frequency_and_lag": "Business daily; changes use valid observations.",
+        "proxy_disclosure": "",
+        "question": "Is broad unsecured bank funding expensive relative to IORB?",
+        "source_and_license_note": "New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.",
+        "technical_distortions": "Policy dates and transaction mix can distort comparisons.",
+        "why_it_matters": "It tests whether SOFR pressure is shared by broader unsecured funding."
+      },
+      "metric_id": "obfr_iorb_spread_bp",
+      "observation_date": "2026-08-11",
+      "provenance": [
+        {
+          "name": "Federal Reserve Bank of New York Markets Data API",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+          "source_id": "nyfed_markets",
+          "tier": "OFFICIAL",
+          "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+        },
+        {
+          "name": "Federal Reserve Economic Data API, reviewed government-origin series",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
+          "source_id": "fred_government",
+          "tier": "DISTRIBUTOR",
+          "url": "https://fred.stlouisfed.org/docs/api/fred/"
+        }
+      ],
+      "quality": {
+        "failure_reason": null,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "sample_size": 501,
+        "status": "OK"
+      },
+      "released_at": null,
+      "short_series": [
+        {
+          "date": "2026-07-13",
+          "value": -3.0
+        },
+        {
+          "date": "2026-07-14",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-15",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-16",
+          "value": -3.0
+        },
+        {
+          "date": "2026-07-17",
+          "value": -3.0
+        },
+        {
+          "date": "2026-07-20",
+          "value": -3.0
+        },
+        {
+          "date": "2026-07-21",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-22",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-23",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-24",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-27",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-28",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-29",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-30",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-31",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-03",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-04",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-05",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-06",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-07",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-10",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-11",
+          "value": -2.0
+        }
+      ],
+      "source": {
+        "name": "Federal Reserve Bank of New York Markets Data API",
+        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+        "source_id": "nyfed_markets",
+        "tier": "OFFICIAL",
+        "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+      },
+      "statistics": {
+        "above_3bp_streak": 0,
+        "change_1obs": 0.0,
+        "change_5obs": 0.0,
+        "latest": -2.0,
+        "mean_5obs": -2.0,
+        "observations_used": 5,
+        "positive_streak": 0,
+        "slope_5obs_bp_per_obs": 0.0
+      },
+      "unavailability_reason": null,
+      "unit": "bp",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "value": -2.0
+    },
+    "on_rrp_accepted": {
+      "availability": "ACTIVE_FREE",
+      "changes": {
+        "five_observations": -0.925,
+        "one_observation": -0.525,
+        "twenty_observations": 0.574
+      },
+      "context": {
+        "confidence": "HIGH",
+        "is_proxy": false,
+        "near_floor_context": {
+          "interpretation": "History-relative context only, not a danger signal. Falling ON RRP may cushion QT or TGA growth, or simply reflect more attractive bill and repo returns.",
+          "method": "TRAILING_20_OBSERVATION_PERCENTILE",
+          "near_floor": false,
+          "percentile_rank": 0.325,
+          "sample_size": 20,
+          "threshold_rule": "BOTTOM_DECILE_WHEN_SAMPLE_SUFFICIENT"
+        },
+        "technical_flags": []
+      },
+      "details": {
+        "operation_count": 1,
+        "released_at": "2026-08-12T17:15:30Z",
+        "source_amount_unit": "USD",
+        "source_total_amt_accepted": 725000000.0,
+        "source_total_amt_submitted": 725000000.0,
+        "submitted_usd_bn": 0.725
+      },
+      "expected_next_update": "2026-08-13",
+      "frequency": "business_daily",
+      "label": "ON RRP accepted amount",
+      "methodology": {
+        "calculation": "Aggregate accepted amounts, retain source raw values, and normalize to USD billions.",
+        "cannot_infer": "Cannot alone forecast equities or prove reserve scarcity.",
+        "common_misreads": "Falling ON RRP is not automatically a risk-on liquidity injection.",
+        "confirm_with": [
+          "tga_daily",
+          "reserve_balances",
+          "sofr_iorb_spread_bp"
+        ],
+        "definition": "Accepted amount across eligible ON RRP operations on the operation date.",
+        "direction": "A decline can release a buffer, but may simply reflect better bill or repo returns.",
+        "frequency_and_lag": "Business daily after operation results are released.",
+        "proxy_disclosure": "",
+        "question": "How much eligible cash is parked at the Fed overnight?",
+        "source_and_license_note": "New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.",
+        "technical_distortions": "Operational-readiness exercises and money-market relative-value shifts can distort interpretation.",
+        "why_it_matters": "Declines can cushion TGA growth or QT on the Fed liability side."
+      },
+      "metric_id": "on_rrp_accepted",
+      "observation_date": "2026-08-12",
+      "provenance": [
+        {
+          "name": "Federal Reserve Bank of New York Markets Data API",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+          "source_id": "nyfed_markets",
+          "tier": "OFFICIAL",
+          "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+        }
+      ],
+      "quality": {
+        "failure_reason": null,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "sample_size": 396,
+        "status": "OK"
+      },
+      "released_at": "2026-08-12T17:15:30Z",
+      "short_series": [
+        {
+          "date": "2026-07-14",
+          "value": 0.278
+        },
+        {
+          "date": "2026-07-15",
+          "value": 0.151
+        },
+        {
+          "date": "2026-07-16",
+          "value": 0.125
+        },
+        {
+          "date": "2026-07-17",
+          "value": 0.1
+        },
+        {
+          "date": "2026-07-20",
+          "value": 0.03
+        },
+        {
+          "date": "2026-07-21",
+          "value": 0.275
+        },
+        {
+          "date": "2026-07-22",
+          "value": 0.376
+        },
+        {
+          "date": "2026-07-23",
+          "value": 0.904
+        },
+        {
+          "date": "2026-07-24",
+          "value": 0.675
+        },
+        {
+          "date": "2026-07-27",
+          "value": 1.38
+        },
+        {
+          "date": "2026-07-28",
+          "value": 1.126
+        },
+        {
+          "date": "2026-07-29",
+          "value": 2.576
+        },
+        {
+          "date": "2026-07-30",
+          "value": 1.076
+        },
+        {
+          "date": "2026-07-31",
+          "value": 2.151
+        },
+        {
+          "date": "2026-08-03",
+          "value": 2.127
+        },
+        {
+          "date": "2026-08-04",
+          "value": 2.251
+        },
+        {
+          "date": "2026-08-05",
+          "value": 1.65
+        },
+        {
+          "date": "2026-08-06",
+          "value": 1.429
+        },
+        {
+          "date": "2026-08-07",
+          "value": 1.45
+        },
+        {
+          "date": "2026-08-10",
+          "value": 0.975
+        },
+        {
+          "date": "2026-08-11",
+          "value": 1.25
+        },
+        {
+          "date": "2026-08-12",
+          "value": 0.725
+        }
+      ],
+      "source": {
+        "name": "Federal Reserve Bank of New York Markets Data API",
+        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+        "source_id": "nyfed_markets",
+        "tier": "OFFICIAL",
+        "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+      },
+      "statistics": {
+        "near_floor_minimum_samples": 20,
+        "near_floor_percentile_rank": 0.325,
+        "near_floor_sample_size": 20,
+        "near_floor_threshold_percentile": 0.1,
+        "sample_size": 396,
+        "twenty_observation_percentile": 0.325,
+        "twenty_observation_slope": 0.071458
+      },
+      "unavailability_reason": null,
       "unit": "USD bn",
-      "value": null
+      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "value": 0.725
     },
     "prepayments": {
-      "as_of": null,
-      "flags": [],
-      "label": "Customer prepayments",
-      "quality": "proxy",
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_observation": null,
+        "one_quarter": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "quarterly",
+      "label": "Customer prepayments and contract commitments",
+      "methodology": {
+        "calculation": "Disclosure definitions are non-standard and require filing-by-filing human review. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "A single observation is not a forecast or causal proof.",
+        "confirm_with": [],
+        "definition": "Canonical Customer prepayments and contract commitments metric as defined by the registry.",
+        "direction": "No direction is published while the value is null.",
+        "frequency_and_lag": "Expected cadence: Customer prepayments and contract commitments; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "",
+        "question": "What does Customer prepayments and contract commitments reveal within its dashboard evidence block?",
+        "source_and_license_note": "Disclosure definitions are non-standard and require filing-by-filing human review. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "The intended signal remains visible without inventing a value when the required input is unavailable."
+      },
+      "metric_id": "prepayments",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "Human-reviewed public filings",
+          "retrieved_at": null,
+          "rights_note": "Publish short factual paraphrases with filing URLs and accessions.",
+          "source_id": "manual_public_filings",
+          "tier": "OFFICIAL",
+          "url": "https://www.sec.gov/search-filings"
+        }
+      ],
+      "quality": {
+        "failure_reason": "Disclosure definitions are non-standard and require filing-by-filing human review.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
       "short_series": [],
-      "status": "manual_update_due",
-      "unit": "USD bn",
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "Disclosure definitions are non-standard and require filing-by-filing human review.",
+      "unit": "mixed",
+      "updated_at": null,
       "value": null
     },
-    "put_call_skew": {
-      "as_of": null,
-      "flags": [],
-      "label": "Put/call skew",
-      "quality": "paid_required",
+    "put_call_vol_skew": {
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_observation": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "business_daily",
+      "label": "Put/call implied-volatility skew",
+      "methodology": {
+        "calculation": "Consistent option-surface inputs are not available from a redistribution-cleared free source. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "A single observation is not a forecast or causal proof.",
+        "confirm_with": [],
+        "definition": "Canonical Put/call implied-volatility skew metric as defined by the registry.",
+        "direction": "No direction is published while the value is null.",
+        "frequency_and_lag": "Expected cadence: Put/call implied-volatility skew; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "",
+        "question": "What does Put/call implied-volatility skew reveal within its dashboard evidence block?",
+        "source_and_license_note": "Consistent option-surface inputs are not available from a redistribution-cleared free source. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "The intended signal remains visible without inventing a value when the required input is unavailable."
+      },
+      "metric_id": "put_call_vol_skew",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "Future licensed provider interface",
+          "retrieved_at": null,
+          "rights_note": "Keep value null until a reviewed provider agreement is configured.",
+          "source_id": "licensed_provider",
+          "tier": "PROPRIETARY",
+          "url": null
+        }
+      ],
+      "quality": {
+        "failure_reason": "Consistent option-surface inputs are not available from a redistribution-cleared free source.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
       "short_series": [],
-      "status": "paid_data_unavailable",
-      "unit": "index",
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "Consistent option-surface inputs are not available from a redistribution-cleared free source.",
+      "unit": "volatility_points",
+      "updated_at": null,
       "value": null
     },
     "reserve_balances": {
-      "as_of": "2026-08-05",
-      "change_5d": 26.452,
-      "delta_1d": 8.779,
-      "flags": [],
-      "label": "Reserve Balances",
-      "previous": 2984.57,
-      "quality": "official",
+      "availability": "ACTIVE_FREE",
+      "changes": {
+        "five_observations": 26.452,
+        "four_weeks": -105.562,
+        "one_observation": 8.779,
+        "one_week": 8.779,
+        "twenty_observations": -26.646
+      },
+      "context": {
+        "confidence": "HIGH",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": "2026-08-06",
+      "frequency": "weekly",
+      "label": "Reserve balances with Federal Reserve Banks",
+      "methodology": {
+        "calculation": "Use official weekly level; calculate 1w and 4w changes from observations.",
+        "cannot_infer": "Cannot identify an invariant minimum reserve level.",
+        "common_misreads": "Reference zones are context, not fixed crisis thresholds.",
+        "confirm_with": [
+          "sofr_iorb_spread_bp",
+          "tga_daily",
+          "on_rrp_accepted",
+          "srf_accepted"
+        ],
+        "definition": "H.4.1 reserve balances with Federal Reserve Banks, normalized to USD billions.",
+        "direction": "A persistent decline can tighten the buffer, but reserve demand changes over time.",
+        "frequency_and_lag": "Weekly, normally Thursday around 4:30 p.m. ET; retain last value as NOT_RELEASED_YET before release.",
+        "proxy_disclosure": "",
+        "question": "How many reserve balances are held at Federal Reserve Banks?",
+        "source_and_license_note": "Government-origin series distributed by the FRED API; requires FRED_API_KEY and is restricted to the reviewed allowlist.",
+        "technical_distortions": "Bank-system size, regulation, payment flows, and statement-date effects change reserve demand.",
+        "why_it_matters": "The level and four-week change provide balance-sheet context for funding spreads."
+      },
+      "metric_id": "reserve_balances",
+      "observation_date": "2026-08-05",
+      "provenance": [
+        {
+          "name": "Federal Reserve Economic Data API, reviewed government-origin series",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
+          "source_id": "fred_government",
+          "tier": "DISTRIBUTOR",
+          "url": "https://fred.stlouisfed.org/docs/api/fred/"
+        }
+      ],
+      "quality": {
+        "failure_reason": null,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "sample_size": 313,
+        "status": "OK"
+      },
+      "released_at": null,
       "short_series": [
+        {
+          "date": "2026-03-11",
+          "value": 3037.665
+        },
+        {
+          "date": "2026-03-18",
+          "value": 3019.995
+        },
         {
           "date": "2026-03-25",
           "value": 2993.955
@@ -774,22 +2791,84 @@
           "value": 2993.349
         }
       ],
-      "source_ids": [
-        "fred"
-      ],
-      "status": "ok",
-      "trend_5d": "rising",
+      "source": {
+        "name": "Federal Reserve Economic Data API, reviewed government-origin series",
+        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
+        "source_id": "fred_government",
+        "tier": "DISTRIBUTOR",
+        "url": "https://fred.stlouisfed.org/docs/api/fred/"
+      },
+      "statistics": {
+        "change_1w": 8.779,
+        "change_4w": -105.562,
+        "level": 2993.349,
+        "observations_used": 313,
+        "trailing_5y_p10": -194.943,
+        "trailing_sample_size": 260
+      },
+      "unavailability_reason": null,
       "unit": "USD bn",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
       "value": 2993.349
     },
     "sofr": {
-      "as_of": "2026-08-11",
-      "change_5d": -0.02,
-      "delta_1d": 0.01,
-      "flags": [],
+      "availability": "ACTIVE_FREE",
+      "changes": {
+        "five_observations": -0.02,
+        "one_observation": 0.01,
+        "twenty_observations": 0.01
+      },
+      "context": {
+        "confidence": "HIGH",
+        "is_proxy": false,
+        "technical_flags": [
+          "TREASURY_SETTLEMENT"
+        ]
+      },
+      "expected_next_update": "2026-08-12",
+      "frequency": "business_daily",
       "label": "SOFR",
-      "previous": 3.63,
-      "quality": "official",
+      "methodology": {
+        "calculation": "Use the official SOFR observation; spreads are calculated separately.",
+        "cannot_infer": "Cannot alone prove a liquidity crisis or predict asset prices.",
+        "common_misreads": "A single move does not prove reserve scarcity.",
+        "confirm_with": [
+          "iorb",
+          "sofr_iorb_spread_bp",
+          "tgcr",
+          "bgcr"
+        ],
+        "definition": "Volume-weighted overnight Treasury repo rate published by the New York Fed.",
+        "direction": "Rising relative to IORB usually means tighter marginal secured funding.",
+        "frequency_and_lag": "Business daily, normally published on the next business morning.",
+        "proxy_disclosure": "",
+        "question": "How expensive is broad Treasury repo funding?",
+        "source_and_license_note": "New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.",
+        "technical_distortions": "Month-end, quarter-end, settlements, collateral specials, and dealer balance-sheet effects can distort it.",
+        "why_it_matters": "A move relative to IORB can reveal secured-funding pressure."
+      },
+      "metric_id": "sofr",
+      "observation_date": "2026-08-11",
+      "provenance": [
+        {
+          "name": "Federal Reserve Bank of New York Markets Data API",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+          "source_id": "nyfed_markets",
+          "tier": "OFFICIAL",
+          "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+        }
+      ],
+      "quality": {
+        "failure_reason": null,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "sample_size": 498,
+        "status": "OK"
+      },
+      "released_at": null,
       "short_series": [
         {
           "date": "2026-07-13",
@@ -880,23 +2959,90 @@
           "value": 3.64
         }
       ],
-      "source_ids": [
-        "nyfed"
-      ],
-      "status": "ok",
-      "trend_5d": "falling",
+      "source": {
+        "name": "Federal Reserve Bank of New York Markets Data API",
+        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+        "source_id": "nyfed_markets",
+        "tier": "OFFICIAL",
+        "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+      },
+      "statistics": {
+        "sample_size": 498,
+        "twenty_observation_percentile": 0.5,
+        "twenty_observation_slope": 0.001917
+      },
+      "unavailability_reason": null,
       "unit": "percent",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
       "value": 3.64
     },
-    "sofr_iorb_spread": {
-      "as_of": "2026-08-11",
-      "change_5d": -2.0,
-      "consecutive_positive": 0,
-      "delta_1d": 1.0,
-      "flags": [],
-      "label": "SOFR−IORB 利差",
-      "previous": -2.0,
-      "quality": "derived_official",
+    "sofr_iorb_spread_bp": {
+      "availability": "ACTIVE_FREE",
+      "changes": {
+        "five_observations": -2.0,
+        "one_observation": 1.0,
+        "twenty_observations": 1.0
+      },
+      "context": {
+        "confidence": "HIGH",
+        "is_proxy": false,
+        "technical_flags": [
+          "TREASURY_SETTLEMENT"
+        ]
+      },
+      "expected_next_update": "2026-08-12",
+      "frequency": "business_daily",
+      "label": "SOFR−IORB spread",
+      "methodology": {
+        "calculation": "(SOFR percent - IORB percent) x 100, without linear interpolation.",
+        "cannot_infer": "Cannot alone prove systemic reserve scarcity or forecast market direction.",
+        "common_misreads": "A single +3 bp print is a watch threshold, not a crisis signal.",
+        "confirm_with": [
+          "effr_iorb_spread_bp",
+          "tgcr_iorb_spread_bp",
+          "bgcr_iorb_spread_bp",
+          "srf_accepted",
+          "reserve_balances"
+        ],
+        "definition": "SOFR minus backward-as-of IORB for the same effective observation date, in basis points.",
+        "direction": "A sustained rise above zero is tighter; one-day spikes require confirmation.",
+        "frequency_and_lag": "Business daily; changes use valid observations rather than calendar days.",
+        "proxy_disclosure": "",
+        "question": "Is Treasury repo funding expensive relative to IORB?",
+        "source_and_license_note": "New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.",
+        "technical_distortions": "Quarter-end, settlements, collateral specials, and operational events can lower confidence.",
+        "why_it_matters": "It is the primary secured-funding pressure signal."
+      },
+      "metric_id": "sofr_iorb_spread_bp",
+      "observation_date": "2026-08-11",
+      "provenance": [
+        {
+          "name": "Federal Reserve Bank of New York Markets Data API",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+          "source_id": "nyfed_markets",
+          "tier": "OFFICIAL",
+          "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+        },
+        {
+          "name": "Federal Reserve Economic Data API, reviewed government-origin series",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
+          "source_id": "fred_government",
+          "tier": "DISTRIBUTOR",
+          "url": "https://fred.stlouisfed.org/docs/api/fred/"
+        }
+      ],
+      "quality": {
+        "failure_reason": null,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "sample_size": 498,
+        "status": "OK"
+      },
+      "released_at": null,
       "short_series": [
         {
           "date": "2026-07-13",
@@ -987,63 +3133,473 @@
           "value": -1.0
         }
       ],
-      "source_ids": [
-        "nyfed",
-        "fred"
-      ],
-      "status": "ok",
-      "trend_5d": "falling",
+      "source": {
+        "name": "Federal Reserve Bank of New York Markets Data API",
+        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+        "source_id": "nyfed_markets",
+        "tier": "OFFICIAL",
+        "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+      },
+      "statistics": {
+        "above_3bp_streak": 0,
+        "change_1obs": 1.0,
+        "change_5obs": -2.0,
+        "latest": -1.0,
+        "mean_5obs": -1.4,
+        "observations_used": 5,
+        "positive_streak": 0,
+        "slope_5obs_bp_per_obs": -0.2
+      },
+      "unavailability_reason": null,
       "unit": "bp",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
       "value": -1.0
     },
-    "sp500_top10_weight": {
-      "as_of": null,
-      "flags": [],
-      "label": "S&P 500 Top-10 weight",
-      "quality": "proxy",
-      "short_series": [],
-      "status": "manual_update_due",
-      "unit": "percent",
-      "value": null
-    },
     "spx_0dte_share": {
-      "as_of": null,
-      "flags": [],
-      "label": "SPX 0DTE share",
-      "quality": "paid_required",
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_observation": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "business_daily",
+      "label": "SPX 0DTE volume share",
+      "methodology": {
+        "calculation": "Free Cboe statistics do not expose a same-day-expiration numerator under redistribution-cleared terms. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "A single observation is not a forecast or causal proof.",
+        "confirm_with": [],
+        "definition": "Canonical SPX 0DTE volume share metric as defined by the registry.",
+        "direction": "No direction is published while the value is null.",
+        "frequency_and_lag": "Expected cadence: SPX 0DTE volume share; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "",
+        "question": "What does SPX 0DTE volume share reveal within its dashboard evidence block?",
+        "source_and_license_note": "Free Cboe statistics do not expose a same-day-expiration numerator under redistribution-cleared terms. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "The intended signal remains visible without inventing a value when the required input is unavailable."
+      },
+      "metric_id": "spx_0dte_share",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "Cboe public index and market-statistics pages",
+          "retrieved_at": null,
+          "rights_note": "Written Cboe permission or a separately licensed feed is required.",
+          "source_id": "cboe",
+          "tier": "OFFICIAL_PUBLISHER",
+          "url": "https://www.cboe.com/us/options/market_statistics/"
+        }
+      ],
+      "quality": {
+        "failure_reason": "Free Cboe statistics do not expose a same-day-expiration numerator under redistribution-cleared terms.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
       "short_series": [],
-      "status": "paid_data_unavailable",
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "Free Cboe statistics do not expose a same-day-expiration numerator under redistribution-cleared terms.",
       "unit": "percent",
+      "updated_at": null,
       "value": null
     },
-    "srf_usage": {
-      "as_of": null,
-      "flags": [],
-      "label": "SRF 使用量",
-      "quality": "proxy",
+    "spy_holdings_top10_weight_proxy": {
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_observation": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": true,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "business_daily",
+      "label": "SPY holdings Top-10 weight proxy",
+      "methodology": {
+        "calculation": "State Street terms do not clear an automated public redistribution workflow. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "SPY holdings can differ from official S&P 500 closing index weights.",
+        "confirm_with": [],
+        "definition": "SPY holdings can differ from official S&P 500 closing index weights.",
+        "direction": "No direction is published while the value is null.",
+        "frequency_and_lag": "Expected cadence: SPY holdings Top-10 weight proxy; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "SPY holdings can differ from official S&P 500 closing index weights.",
+        "question": "What does SPY holdings Top-10 weight proxy reveal within its dashboard evidence block?",
+        "source_and_license_note": "State Street terms do not clear an automated public redistribution workflow. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "The intended signal remains visible without inventing a value when the required input is unavailable."
+      },
+      "metric_id": "spy_holdings_top10_weight_proxy",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "State Street SPY holdings download",
+          "retrieved_at": null,
+          "rights_note": "Written State Street permission is required for an automated public Top-10 proxy.",
+          "source_id": "ssga_spy",
+          "tier": "OFFICIAL_PUBLISHER",
+          "url": "https://www.ssga.com/us/en/intermediary/etfs/state-street-spdr-sp-500-etf-trust-spy"
+        }
+      ],
+      "quality": {
+        "failure_reason": "State Street terms do not clear an automated public redistribution workflow.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
       "short_series": [],
-      "status": "missing",
-      "unit": "USD bn",
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "State Street terms do not clear an automated public redistribution workflow.",
+      "unit": "percent",
+      "updated_at": null,
       "value": null
+    },
+    "srf_accepted": {
+      "availability": "ACTIVE_FREE",
+      "changes": {
+        "five_observations": -0.001,
+        "one_observation": -0.1,
+        "twenty_observations": -0.102
+      },
+      "context": {
+        "confidence": "HIGH",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "details": {
+        "accepted_amount_usd_bn": 0.0,
+        "alert_eligible_accepted_amount_usd_bn": 0.0,
+        "breakdown": {
+          "agency_debt": {
+            "accepted_amount_usd_bn": 0.0,
+            "alert_eligible_accepted_amount_usd_bn": 0.0,
+            "submitted_amount_usd_bn": 0.0
+          },
+          "agency_mbs": {
+            "accepted_amount_usd_bn": 0.0,
+            "alert_eligible_accepted_amount_usd_bn": 0.0,
+            "submitted_amount_usd_bn": 0.0
+          },
+          "treasury": {
+            "accepted_amount_usd_bn": 0.0,
+            "alert_eligible_accepted_amount_usd_bn": 0.0,
+            "submitted_amount_usd_bn": 0.0
+          }
+        },
+        "exercise_accepted_amount_usd_bn": 0.0,
+        "exercise_operation_count": 0,
+        "has_technical_exercise": false,
+        "operation_count": 2,
+        "rate_pct": 3.75,
+        "rates_pct": [
+          3.75
+        ],
+        "released_at": "2026-08-12T17:45:22Z",
+        "submitted_amount_usd_bn": 0.0,
+        "technical_exercise": false
+      },
+      "expected_next_update": "2026-08-13",
+      "frequency": "business_daily",
+      "label": "Standing Repo Facility accepted amount",
+      "methodology": {
+        "calculation": "Sum accepted amounts by operation date; preserve submitted, accepted, rate, and collateral breakdown.",
+        "cannot_infer": "Cannot alone prove systemic stress or identify user motivation.",
+        "common_misreads": "Facility rate or a small-value exercise is not genuine stress usage.",
+        "confirm_with": [
+          "sofr_iorb_spread_bp",
+          "tgcr_iorb_spread_bp",
+          "reserve_balances"
+        ],
+        "definition": "Accepted amount across same-day SRF operations, with security-type breakdown and technical-exercise flag.",
+        "direction": "Persistent nontechnical use is more concerning than a technical exercise or next-day return to zero.",
+        "frequency_and_lag": "Business daily after repo operation results are released.",
+        "proxy_disclosure": "",
+        "question": "Are counterparties drawing the Standing Repo Facility?",
+        "source_and_license_note": "New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.",
+        "technical_distortions": "Official operational-readiness exercises must be matched by reviewed calendar, never inferred from size.",
+        "why_it_matters": "Nontechnical persistent use can confirm marginal Treasury financing pressure."
+      },
+      "metric_id": "srf_accepted",
+      "observation_date": "2026-08-12",
+      "provenance": [
+        {
+          "name": "Federal Reserve Bank of New York Markets Data API",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+          "source_id": "nyfed_markets",
+          "tier": "OFFICIAL",
+          "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+        }
+      ],
+      "quality": {
+        "failure_reason": null,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "sample_size": 167,
+        "status": "OK"
+      },
+      "released_at": "2026-08-12T17:45:22Z",
+      "short_series": [
+        {
+          "date": "2026-07-14",
+          "value": 0.101
+        },
+        {
+          "date": "2026-07-15",
+          "value": 0.102
+        },
+        {
+          "date": "2026-07-16",
+          "value": 0.0
+        },
+        {
+          "date": "2026-07-17",
+          "value": 0.0
+        },
+        {
+          "date": "2026-07-20",
+          "value": 0.0
+        },
+        {
+          "date": "2026-07-21",
+          "value": 0.0
+        },
+        {
+          "date": "2026-07-22",
+          "value": 0.0
+        },
+        {
+          "date": "2026-07-23",
+          "value": 0.007
+        },
+        {
+          "date": "2026-07-24",
+          "value": 0.001
+        },
+        {
+          "date": "2026-07-27",
+          "value": 0.02
+        },
+        {
+          "date": "2026-07-28",
+          "value": 0.009
+        },
+        {
+          "date": "2026-07-29",
+          "value": 0.003
+        },
+        {
+          "date": "2026-07-30",
+          "value": 0.008
+        },
+        {
+          "date": "2026-07-31",
+          "value": 0.0
+        },
+        {
+          "date": "2026-08-03",
+          "value": 0.0
+        },
+        {
+          "date": "2026-08-04",
+          "value": 0.001
+        },
+        {
+          "date": "2026-08-05",
+          "value": 0.001
+        },
+        {
+          "date": "2026-08-06",
+          "value": 0.0
+        },
+        {
+          "date": "2026-08-07",
+          "value": 0.0
+        },
+        {
+          "date": "2026-08-10",
+          "value": 0.0
+        },
+        {
+          "date": "2026-08-11",
+          "value": 0.1
+        },
+        {
+          "date": "2026-08-12",
+          "value": 0.0
+        }
+      ],
+      "source": {
+        "name": "Federal Reserve Bank of New York Markets Data API",
+        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+        "source_id": "nyfed_markets",
+        "tier": "OFFICIAL",
+        "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+      },
+      "statistics": {
+        "nontechnical_positive_use_streak": 0,
+        "positive_nontechnical_latest_3": 1,
+        "sample_size": 167
+      },
+      "unavailability_reason": null,
+      "unit": "USD bn",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "value": 0.0
     },
     "take_or_pay": {
-      "as_of": null,
-      "flags": [],
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_observation": null,
+        "one_quarter": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "quarterly",
       "label": "Take-or-pay commitments",
-      "quality": "proxy",
+      "methodology": {
+        "calculation": "Disclosure definitions are non-standard and require filing-by-filing human review. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "A single observation is not a forecast or causal proof.",
+        "confirm_with": [],
+        "definition": "Canonical Take-or-pay commitments metric as defined by the registry.",
+        "direction": "No direction is published while the value is null.",
+        "frequency_and_lag": "Expected cadence: Take-or-pay commitments; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "",
+        "question": "What does Take-or-pay commitments reveal within its dashboard evidence block?",
+        "source_and_license_note": "Disclosure definitions are non-standard and require filing-by-filing human review. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "The intended signal remains visible without inventing a value when the required input is unavailable."
+      },
+      "metric_id": "take_or_pay",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "Human-reviewed public filings",
+          "retrieved_at": null,
+          "rights_note": "Publish short factual paraphrases with filing URLs and accessions.",
+          "source_id": "manual_public_filings",
+          "tier": "OFFICIAL",
+          "url": "https://www.sec.gov/search-filings"
+        }
+      ],
+      "quality": {
+        "failure_reason": "Disclosure definitions are non-standard and require filing-by-filing human review.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
       "short_series": [],
-      "status": "manual_update_due",
-      "unit": "USD bn",
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "Disclosure definitions are non-standard and require filing-by-filing human review.",
+      "unit": "mixed",
+      "updated_at": null,
       "value": null
     },
     "tga_daily": {
-      "as_of": "2026-08-10",
-      "change_5d": 96.768,
-      "delta_1d": 12.738,
-      "flags": [],
-      "label": "TGA closing balance",
-      "previous": 954.113,
-      "quality": "official",
+      "availability": "ACTIVE_FREE",
+      "changes": {
+        "five_observations": 96.768,
+        "one_observation": 12.738,
+        "twenty_observations": 216.569
+      },
+      "context": {
+        "confidence": "HIGH",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": "2026-08-11",
+      "frequency": "business_daily",
+      "label": "Treasury General Account daily balance",
+      "methodology": {
+        "calculation": "Normalize the FiscalData closing balance to USD billions.",
+        "cannot_infer": "Cannot alone determine net dollar liquidity or asset prices.",
+        "common_misreads": "A TGA rise is not automatically bearish or a one-for-one market liquidity drain.",
+        "confirm_with": [
+          "reserve_balances",
+          "on_rrp_accepted",
+          "tga_weekly_h41"
+        ],
+        "definition": "Daily closing balance of the Treasury General Account, normalized to USD billions.",
+        "direction": "A rise often drains bank reserves; a fall often adds them, but offsets matter.",
+        "frequency_and_lag": "Business daily with Treasury publication lag.",
+        "proxy_disclosure": "",
+        "question": "How much cash does Treasury hold at the Federal Reserve?",
+        "source_and_license_note": "U.S. Treasury FiscalData official API; preserve dataset attribution and as-of date.",
+        "technical_distortions": "Tax dates, debt issuance, settlements, and extraordinary measures can dominate.",
+        "why_it_matters": "TGA changes alter Federal Reserve liabilities and can drain or add reserve balances, all else equal."
+      },
+      "metric_id": "tga_daily",
+      "observation_date": "2026-08-10",
+      "provenance": [
+        {
+          "name": "U.S. Treasury FiscalData API",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "Cite FiscalData and preserve the dataset as-of date.",
+          "source_id": "treasury_fiscaldata",
+          "tier": "OFFICIAL",
+          "url": "https://fiscaldata.treasury.gov/api-documentation/"
+        }
+      ],
+      "quality": {
+        "failure_reason": null,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "sample_size": 400,
+        "status": "OK"
+      },
+      "released_at": null,
       "short_series": [
         {
           "date": "2026-07-10",
@@ -1134,23 +3690,89 @@
           "value": 966.851
         }
       ],
-      "source_ids": [
-        "treasury"
-      ],
-      "status": "ok",
-      "trend_5d": "rising",
+      "source": {
+        "name": "U.S. Treasury FiscalData API",
+        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "rights_note": "Cite FiscalData and preserve the dataset as-of date.",
+        "source_id": "treasury_fiscaldata",
+        "tier": "OFFICIAL",
+        "url": "https://fiscaldata.treasury.gov/api-documentation/"
+      },
+      "statistics": {
+        "sample_size": 400,
+        "twenty_observation_percentile": 0.875,
+        "twenty_observation_slope": 8.931437
+      },
+      "unavailability_reason": null,
       "unit": "USD bn",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
       "value": 966.851
     },
     "tga_weekly_h41": {
-      "as_of": "2026-08-05",
-      "change_5d": 27.087,
-      "delta_1d": -3.452,
-      "flags": [],
-      "label": "TGA weekly cross-check",
-      "previous": 910.776,
-      "quality": "official",
+      "availability": "ACTIVE_FREE",
+      "changes": {
+        "five_observations": 27.087,
+        "four_weeks": 133.262,
+        "one_observation": -3.452,
+        "one_week": -3.452,
+        "twenty_observations": 54.272
+      },
+      "context": {
+        "confidence": "HIGH",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": "2026-08-06",
+      "frequency": "weekly",
+      "label": "Treasury General Account H.4.1 cross-check",
+      "methodology": {
+        "calculation": "Use official weekly level and calculate 1w and 4w observation changes.",
+        "cannot_infer": "Cannot alone establish net liquidity conditions.",
+        "common_misreads": "Weekly and daily TGA observations need not have identical as-of timing.",
+        "confirm_with": [
+          "tga_daily",
+          "reserve_balances",
+          "on_rrp_accepted"
+        ],
+        "definition": "H.4.1 Treasury General Account balance, normalized to USD billions.",
+        "direction": "A rise tends to drain other Fed liabilities, all else equal.",
+        "frequency_and_lag": "Weekly, normally Thursday around 4:30 p.m. ET.",
+        "proxy_disclosure": "",
+        "question": "What TGA balance appears in the Federal Reserve weekly balance sheet?",
+        "source_and_license_note": "Government-origin series distributed by the FRED API; requires FRED_API_KEY and is restricted to the reviewed allowlist.",
+        "technical_distortions": "Tax dates, settlements, and release-date alignment can create differences.",
+        "why_it_matters": "It cross-checks the higher-frequency Treasury daily balance within a weekly release."
+      },
+      "metric_id": "tga_weekly_h41",
+      "observation_date": "2026-08-05",
+      "provenance": [
+        {
+          "name": "Federal Reserve Economic Data API, reviewed government-origin series",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
+          "source_id": "fred_government",
+          "tier": "DISTRIBUTOR",
+          "url": "https://fred.stlouisfed.org/docs/api/fred/"
+        }
+      ],
+      "quality": {
+        "failure_reason": null,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "sample_size": 313,
+        "status": "OK"
+      },
+      "released_at": null,
       "short_series": [
+        {
+          "date": "2026-03-11",
+          "value": 838.186
+        },
+        {
+          "date": "2026-03-18",
+          "value": 853.052
+        },
         {
           "date": "2026-03-25",
           "value": 874.077
@@ -1232,22 +3854,82 @@
           "value": 907.324
         }
       ],
-      "source_ids": [
-        "fred"
-      ],
-      "status": "ok",
-      "trend_5d": "rising",
+      "source": {
+        "name": "Federal Reserve Economic Data API, reviewed government-origin series",
+        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
+        "source_id": "fred_government",
+        "tier": "DISTRIBUTOR",
+        "url": "https://fred.stlouisfed.org/docs/api/fred/"
+      },
+      "statistics": {
+        "change_1w": -3.452,
+        "change_4w": 133.262,
+        "level": 907.324,
+        "observations_used": 313
+      },
+      "unavailability_reason": null,
       "unit": "USD bn",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
       "value": 907.324
     },
     "tgcr": {
-      "as_of": "2026-08-11",
-      "change_5d": -0.01,
-      "delta_1d": 0.02,
-      "flags": [],
+      "availability": "ACTIVE_FREE",
+      "changes": {
+        "five_observations": -0.01,
+        "one_observation": 0.02,
+        "twenty_observations": 0.01
+      },
+      "context": {
+        "confidence": "HIGH",
+        "is_proxy": false,
+        "technical_flags": [
+          "TREASURY_SETTLEMENT"
+        ]
+      },
+      "expected_next_update": "2026-08-12",
+      "frequency": "business_daily",
       "label": "TGCR",
-      "previous": 3.61,
-      "quality": "official",
+      "methodology": {
+        "calculation": "Use the official TGCR observation.",
+        "cannot_infer": "Cannot alone measure all Treasury financing conditions.",
+        "common_misreads": "TGCR does not cover every repo venue.",
+        "confirm_with": [
+          "iorb",
+          "tgcr_iorb_spread_bp",
+          "sofr",
+          "bgcr"
+        ],
+        "definition": "Transaction-based overnight tri-party general collateral repo rate published by the New York Fed.",
+        "direction": "A rise relative to IORB can confirm repo funding pressure.",
+        "frequency_and_lag": "Business daily, normally published on the next business morning.",
+        "proxy_disclosure": "",
+        "question": "What is the cost of tri-party Treasury general-collateral repo?",
+        "source_and_license_note": "New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.",
+        "technical_distortions": "Collateral mix, quarter-end, and dealer balance sheets can affect it.",
+        "why_it_matters": "It isolates an important secured-funding venue."
+      },
+      "metric_id": "tgcr",
+      "observation_date": "2026-08-11",
+      "provenance": [
+        {
+          "name": "Federal Reserve Bank of New York Markets Data API",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+          "source_id": "nyfed_markets",
+          "tier": "OFFICIAL",
+          "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+        }
+      ],
+      "quality": {
+        "failure_reason": null,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "sample_size": 498,
+        "status": "OK"
+      },
+      "released_at": null,
       "short_series": [
         {
           "date": "2026-07-13",
@@ -1338,134 +4020,659 @@
           "value": 3.63
         }
       ],
-      "source_ids": [
-        "nyfed"
-      ],
-      "status": "ok",
-      "trend_5d": "falling",
+      "source": {
+        "name": "Federal Reserve Bank of New York Markets Data API",
+        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+        "source_id": "nyfed_markets",
+        "tier": "OFFICIAL",
+        "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+      },
+      "statistics": {
+        "sample_size": 498,
+        "twenty_observation_percentile": 0.675,
+        "twenty_observation_slope": 0.002564
+      },
+      "unavailability_reason": null,
       "unit": "percent",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
       "value": 3.63
     },
-    "upstream_backlog": {
-      "as_of": null,
-      "flags": [],
-      "label": "AI upstream backlog",
-      "quality": "proxy",
+    "tgcr_iorb_spread_bp": {
+      "availability": "ACTIVE_FREE",
+      "changes": {
+        "five_observations": -1.0,
+        "one_observation": 2.0,
+        "twenty_observations": 1.0
+      },
+      "context": {
+        "confidence": "HIGH",
+        "is_proxy": false,
+        "technical_flags": [
+          "TREASURY_SETTLEMENT"
+        ]
+      },
+      "expected_next_update": "2026-08-12",
+      "frequency": "business_daily",
+      "label": "TGCR−IORB spread",
+      "methodology": {
+        "calculation": "(TGCR percent - IORB percent) x 100, without interpolation.",
+        "cannot_infer": "Cannot alone prove a generalized reserve shortage.",
+        "common_misreads": "A venue-specific move is not automatically system-wide.",
+        "confirm_with": [
+          "sofr_iorb_spread_bp",
+          "bgcr_iorb_spread_bp",
+          "srf_accepted"
+        ],
+        "definition": "TGCR minus backward-as-of IORB, in basis points.",
+        "direction": "A sustained rise alongside SOFR and BGCR strengthens the signal.",
+        "frequency_and_lag": "Business daily; changes use valid observations.",
+        "proxy_disclosure": "",
+        "question": "Is tri-party general-collateral repo expensive relative to IORB?",
+        "source_and_license_note": "New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.",
+        "technical_distortions": "Quarter-end, collateral composition, and balance-sheet window dressing can distort it.",
+        "why_it_matters": "It confirms whether secured pressure is present in tri-party GC repo."
+      },
+      "metric_id": "tgcr_iorb_spread_bp",
+      "observation_date": "2026-08-11",
+      "provenance": [
+        {
+          "name": "Federal Reserve Bank of New York Markets Data API",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+          "source_id": "nyfed_markets",
+          "tier": "OFFICIAL",
+          "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+        },
+        {
+          "name": "Federal Reserve Economic Data API, reviewed government-origin series",
+          "retrieved_at": "2026-08-12T19:47:03.985141Z",
+          "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
+          "source_id": "fred_government",
+          "tier": "DISTRIBUTOR",
+          "url": "https://fred.stlouisfed.org/docs/api/fred/"
+        }
+      ],
+      "quality": {
+        "failure_reason": null,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+        "last_success_at": "2026-08-12T19:47:03.985141Z",
+        "sample_size": 498,
+        "status": "OK"
+      },
+      "released_at": null,
+      "short_series": [
+        {
+          "date": "2026-07-13",
+          "value": -7.0
+        },
+        {
+          "date": "2026-07-14",
+          "value": -3.0
+        },
+        {
+          "date": "2026-07-15",
+          "value": -3.0
+        },
+        {
+          "date": "2026-07-16",
+          "value": -6.0
+        },
+        {
+          "date": "2026-07-17",
+          "value": -9.0
+        },
+        {
+          "date": "2026-07-20",
+          "value": -11.0
+        },
+        {
+          "date": "2026-07-21",
+          "value": -7.0
+        },
+        {
+          "date": "2026-07-22",
+          "value": -5.0
+        },
+        {
+          "date": "2026-07-23",
+          "value": -3.0
+        },
+        {
+          "date": "2026-07-24",
+          "value": -3.0
+        },
+        {
+          "date": "2026-07-27",
+          "value": -3.0
+        },
+        {
+          "date": "2026-07-28",
+          "value": -1.0
+        },
+        {
+          "date": "2026-07-29",
+          "value": -1.0
+        },
+        {
+          "date": "2026-07-30",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-31",
+          "value": -1.0
+        },
+        {
+          "date": "2026-08-03",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-04",
+          "value": -1.0
+        },
+        {
+          "date": "2026-08-05",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-06",
+          "value": -2.0
+        },
+        {
+          "date": "2026-08-07",
+          "value": -5.0
+        },
+        {
+          "date": "2026-08-10",
+          "value": -4.0
+        },
+        {
+          "date": "2026-08-11",
+          "value": -2.0
+        }
+      ],
+      "source": {
+        "name": "Federal Reserve Bank of New York Markets Data API",
+        "retrieved_at": "2026-08-12T19:47:03.985141Z",
+        "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+        "source_id": "nyfed_markets",
+        "tier": "OFFICIAL",
+        "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+      },
+      "statistics": {
+        "above_3bp_streak": 0,
+        "change_1obs": 2.0,
+        "change_5obs": -1.0,
+        "latest": -2.0,
+        "mean_5obs": -3.0,
+        "observations_used": 5,
+        "positive_streak": 0,
+        "slope_5obs_bp_per_obs": -0.2
+      },
+      "unavailability_reason": null,
+      "unit": "bp",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "value": -2.0
+    },
+    "trend_following_positioning_proxy": {
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_observation": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": true,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "business_daily",
+      "label": "Rule-based trend-following positioning proxy",
+      "methodology": {
+        "calculation": "Redistribution-cleared equity and cross-asset price inputs are not configured. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "A disclosed rules model would be a proxy, not proprietary CTA exposure.",
+        "confirm_with": [],
+        "definition": "A disclosed rules model would be a proxy, not proprietary CTA exposure.",
+        "direction": "No direction is published while the value is null.",
+        "frequency_and_lag": "Expected cadence: Rule-based trend-following positioning proxy; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "A disclosed rules model would be a proxy, not proprietary CTA exposure.",
+        "question": "What does Rule-based trend-following positioning proxy reveal within its dashboard evidence block?",
+        "source_and_license_note": "Redistribution-cleared equity and cross-asset price inputs are not configured. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "The intended signal remains visible without inventing a value when the required input is unavailable."
+      },
+      "metric_id": "trend_following_positioning_proxy",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "Federal Reserve Economic Data API, third-party series permission hold",
+          "retrieved_at": null,
+          "rights_note": "A FRED API key does not grant onward rights to third-party series.",
+          "source_id": "fred_third_party",
+          "tier": "DISTRIBUTOR",
+          "url": "https://fred.stlouisfed.org/docs/api/fred/"
+        }
+      ],
+      "quality": {
+        "failure_reason": "Redistribution-cleared equity and cross-asset price inputs are not configured.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
       "short_series": [],
-      "status": "manual_update_due",
-      "unit": "USD bn",
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "Redistribution-cleared equity and cross-asset price inputs are not configured.",
+      "unit": "score",
+      "updated_at": null,
       "value": null
     },
-    "vix_curve": {
-      "as_of": null,
-      "flags": [],
-      "label": "VIX term structure",
-      "quality": "proxy",
+    "upstream_backlog": {
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_observation": null,
+        "one_quarter": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": false,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "quarterly",
+      "label": "AI upstream backlog",
+      "methodology": {
+        "calculation": "Disclosure definitions are non-standard and require filing-by-filing human review. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "A single observation is not a forecast or causal proof.",
+        "confirm_with": [],
+        "definition": "Canonical AI upstream backlog metric as defined by the registry.",
+        "direction": "No direction is published while the value is null.",
+        "frequency_and_lag": "Expected cadence: AI upstream backlog; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "",
+        "question": "What does AI upstream backlog reveal within its dashboard evidence block?",
+        "source_and_license_note": "Disclosure definitions are non-standard and require filing-by-filing human review. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "The intended signal remains visible without inventing a value when the required input is unavailable."
+      },
+      "metric_id": "upstream_backlog",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "Human-reviewed public filings",
+          "retrieved_at": null,
+          "rights_note": "Publish short factual paraphrases with filing URLs and accessions.",
+          "source_id": "manual_public_filings",
+          "tier": "OFFICIAL",
+          "url": "https://www.sec.gov/search-filings"
+        }
+      ],
+      "quality": {
+        "failure_reason": "Disclosure definitions are non-standard and require filing-by-filing human review.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
       "short_series": [],
-      "status": "missing",
-      "unit": "index",
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "Disclosure definitions are non-standard and require filing-by-filing human review.",
+      "unit": "mixed",
+      "updated_at": null,
+      "value": null
+    },
+    "vix_vix3m_term_structure_proxy": {
+      "availability": "UNAVAILABLE_FREE",
+      "changes": {
+        "five_observations": null,
+        "one_observation": null,
+        "twenty_observations": null
+      },
+      "context": {
+        "confidence": "UNKNOWN",
+        "is_proxy": true,
+        "technical_flags": []
+      },
+      "expected_next_update": null,
+      "frequency": "business_daily",
+      "label": "VIX/VIX3M term-structure proxy",
+      "methodology": {
+        "calculation": "No redistribution-cleared Cboe feed is configured. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "cannot_infer": "Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.",
+        "common_misreads": "This two-index ratio is not the VIX futures curve.",
+        "confirm_with": [],
+        "definition": "This two-index ratio is not the VIX futures curve.",
+        "direction": "No direction is published while the value is null.",
+        "frequency_and_lag": "Expected cadence: VIX/VIX3M term-structure proxy; the observation date and release lag must be shown separately.",
+        "proxy_disclosure": "This two-index ratio is not the VIX futures curve.",
+        "question": "What does VIX/VIX3M term-structure proxy reveal within its dashboard evidence block?",
+        "source_and_license_note": "No redistribution-cleared Cboe feed is configured. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
+        "technical_distortions": "Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.",
+        "why_it_matters": "The intended signal remains visible without inventing a value when the required input is unavailable."
+      },
+      "metric_id": "vix_vix3m_term_structure_proxy",
+      "observation_date": null,
+      "provenance": [
+        {
+          "name": "Cboe public index and market-statistics pages",
+          "retrieved_at": null,
+          "rights_note": "Written Cboe permission or a separately licensed feed is required.",
+          "source_id": "cboe",
+          "tier": "OFFICIAL_PUBLISHER",
+          "url": "https://www.cboe.com/us/options/market_statistics/"
+        }
+      ],
+      "quality": {
+        "failure_reason": "No redistribution-cleared Cboe feed is configured.",
+        "freshness": "UNKNOWN",
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "sample_size": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "released_at": null,
+      "short_series": [],
+      "source": {
+        "name": null,
+        "retrieved_at": null,
+        "rights_note": "No production source is active for this metric.",
+        "source_id": null,
+        "tier": null,
+        "url": null
+      },
+      "statistics": {},
+      "unavailability_reason": "No redistribution-cleared Cboe feed is configured.",
+      "unit": "ratio",
+      "updated_at": null,
       "value": null
     }
   },
-  "overall_status": "neutral",
-  "schema_version": "1.0.0",
+  "overall_assessment": "NEUTRAL",
+  "pipeline_updated_at": "2026-08-12T19:47:03.985141Z",
+  "schema_version": "2.0.0",
   "source_health": {
     "error": 0,
-    "missing": 4,
-    "ok": 3,
+    "not_applicable": 0,
+    "not_released_yet": 0,
+    "ok": 7,
     "stale": 0
   },
   "sources": {
-    "cboe": {
-      "as_of": null,
-      "error": null,
-      "frequency": "daily",
-      "name": "Cboe Global Markets",
-      "quality": "public_vendor",
-      "retrieved_at": null,
-      "status": "missing",
-      "url": "https://www.cboe.com/tradable-products/vix/term-structure"
+    "fred_h41": {
+      "collector_id": "fred_h41",
+      "expected_next_update": "2026-08-06",
+      "failure_reason": null,
+      "freshness": "FRESH",
+      "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+      "last_success_at": "2026-08-12T19:47:03.985141Z",
+      "name": "Federal Reserve Economic Data API, reviewed government-origin series",
+      "observation_date": "2026-08-05",
+      "released_at": null,
+      "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
+      "status": "OK",
+      "tier": "DISTRIBUTOR",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "url": "https://fred.stlouisfed.org/docs/api/fred/"
     },
-    "cftc": {
-      "as_of": null,
-      "error": null,
-      "frequency": "weekly",
-      "name": "CFTC Commitments of Traders",
-      "quality": "official",
-      "retrieved_at": null,
-      "status": "missing",
-      "url": "https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm"
+    "fred_iorb": {
+      "collector_id": "fred_iorb",
+      "expected_next_update": null,
+      "failure_reason": null,
+      "freshness": "FRESH",
+      "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+      "last_success_at": "2026-08-12T19:47:03.985141Z",
+      "name": "Federal Reserve Economic Data API, reviewed government-origin series",
+      "observation_date": "2026-08-12",
+      "released_at": null,
+      "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
+      "status": "OK",
+      "tier": "DISTRIBUTOR",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "url": "https://fred.stlouisfed.org/docs/api/fred/"
     },
-    "finra": {
-      "as_of": null,
-      "error": null,
-      "frequency": "monthly",
-      "name": "FINRA Margin Statistics",
-      "quality": "official",
-      "retrieved_at": null,
-      "status": "missing",
-      "url": "https://www.finra.org/rules-guidance/key-topics/margin-accounts/margin-statistics"
-    },
-    "fred": {
-      "as_of": "2026-08-12",
-      "error": null,
-      "frequency": "weekly / policy",
-      "name": "Federal Reserve Economic Data",
-      "quality": "official",
-      "retrieved_at": "2026-08-12T17:32:49.205728Z",
-      "status": "ok",
-      "url": "https://fred.stlouisfed.org/"
-    },
-    "nyfed": {
-      "as_of": "2026-08-11",
-      "error": null,
-      "frequency": "business_daily",
-      "name": "New York Fed Markets Data",
-      "quality": "official",
-      "retrieved_at": "2026-08-12T17:32:49.205728Z",
-      "status": "ok",
+    "nyfed_on_rrp": {
+      "collector_id": "nyfed_on_rrp",
+      "expected_next_update": "2026-08-13",
+      "failure_reason": null,
+      "freshness": "FRESH",
+      "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+      "last_success_at": "2026-08-12T19:47:03.985141Z",
+      "name": "Federal Reserve Bank of New York Markets Data API",
+      "observation_date": "2026-08-12",
+      "released_at": "2026-08-12T17:15:30Z",
+      "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+      "status": "OK",
+      "tier": "OFFICIAL",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
       "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
     },
-    "sec": {
-      "as_of": null,
-      "error": null,
-      "frequency": "quarterly",
-      "name": "SEC EDGAR",
-      "quality": "official",
-      "retrieved_at": null,
-      "status": "missing",
-      "url": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces"
+    "nyfed_rates": {
+      "collector_id": "nyfed_rates",
+      "expected_next_update": "2026-08-12",
+      "failure_reason": null,
+      "freshness": "FRESH",
+      "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+      "last_success_at": "2026-08-12T19:47:03.985141Z",
+      "name": "Federal Reserve Bank of New York Markets Data API",
+      "observation_date": "2026-08-11",
+      "released_at": null,
+      "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+      "status": "OK",
+      "tier": "OFFICIAL",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
     },
-    "treasury": {
-      "as_of": "2026-08-10",
-      "error": null,
-      "frequency": "business_daily",
-      "name": "U.S. Treasury FiscalData",
-      "quality": "official",
-      "retrieved_at": "2026-08-12T17:32:49.205728Z",
-      "status": "ok",
+    "nyfed_srf": {
+      "collector_id": "nyfed_srf",
+      "expected_next_update": "2026-08-13",
+      "failure_reason": null,
+      "freshness": "FRESH",
+      "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+      "last_success_at": "2026-08-12T19:47:03.985141Z",
+      "name": "Federal Reserve Bank of New York Markets Data API",
+      "observation_date": "2026-08-12",
+      "released_at": "2026-08-12T17:45:22Z",
+      "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
+      "status": "OK",
+      "tier": "OFFICIAL",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+    },
+    "treasury_auctions": {
+      "collector_id": "treasury_auctions",
+      "expected_next_update": null,
+      "failure_reason": null,
+      "freshness": "FRESH",
+      "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+      "last_success_at": "2026-08-12T19:47:03.985141Z",
+      "name": "U.S. Treasury FiscalData API",
+      "observation_date": "2026-08-18",
+      "released_at": null,
+      "rights_note": "Cite FiscalData and preserve the dataset as-of date.",
+      "status": "OK",
+      "tier": "OFFICIAL",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
+      "url": "https://fiscaldata.treasury.gov/api-documentation/"
+    },
+    "treasury_tga": {
+      "collector_id": "treasury_tga",
+      "expected_next_update": "2026-08-11",
+      "failure_reason": null,
+      "freshness": "FRESH",
+      "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+      "last_success_at": "2026-08-12T19:47:03.985141Z",
+      "name": "U.S. Treasury FiscalData API",
+      "observation_date": "2026-08-10",
+      "released_at": null,
+      "rights_note": "Cite FiscalData and preserve the dataset as-of date.",
+      "status": "OK",
+      "tier": "OFFICIAL",
+      "updated_at": "2026-08-12T19:47:03.985141Z",
       "url": "https://fiscaldata.treasury.gov/api-documentation/"
     }
   },
+  "stale_count": 0,
   "switches": {
     "fundamental_exit": {
-      "confidence": "low",
-      "score": 0,
-      "status": "unavailable",
-      "summary": "季度 CapEx／訂單資料待發布。"
+      "assessment": null,
+      "available_blocks": 0,
+      "confidence": "UNKNOWN",
+      "evidence_blocks": [
+        {
+          "available": false,
+          "id": "capex",
+          "label": "Hyperscaler CapEx",
+          "status": "UNAVAILABLE_FREE",
+          "summary": "本階段未啟用；權利未清楚嘅來源保持 null。",
+          "triggered": null
+        },
+        {
+          "available": false,
+          "id": "orders_backlog",
+          "label": "Orders / backlog",
+          "status": "UNAVAILABLE_FREE",
+          "summary": "本階段未啟用；權利未清楚嘅來源保持 null。",
+          "triggered": null
+        },
+        {
+          "available": false,
+          "id": "prepayments",
+          "label": "Prepayments",
+          "status": "UNAVAILABLE_FREE",
+          "summary": "本階段未啟用；權利未清楚嘅來源保持 null。",
+          "triggered": null
+        },
+        {
+          "available": false,
+          "id": "take_or_pay",
+          "label": "Take-or-pay",
+          "status": "UNAVAILABLE_FREE",
+          "summary": "本階段未啟用；權利未清楚嘅來源保持 null。",
+          "triggered": null
+        }
+      ],
+      "mode": "EVIDENCE_ONLY",
+      "summary": "P3 production evidence 未上線；不產生 WATCH/STRESS。",
+      "total_blocks": 4
     },
     "liquidity_fuel": {
-      "confidence": "high",
-      "score": 0,
-      "status": "neutral",
-      "summary": "價格、準備金及 backstop 分組判讀。"
+      "assessment": "NEUTRAL",
+      "available_blocks": 4,
+      "confidence": "MEDIUM",
+      "evidence_blocks": [
+        {
+          "available": true,
+          "id": "funding_price",
+          "label": "SOFR−IORB",
+          "status": "NORMAL",
+          "summary": "+3bp 或連續三個正數 observations 觸發 WATCH。",
+          "triggered": false
+        },
+        {
+          "available": true,
+          "id": "funding_confirmations",
+          "label": "EFFR / TGCR / BGCR confirmation",
+          "status": "0/3 UP",
+          "summary": "change_5obs 與 5-observation slope 同時向上先計確認。",
+          "triggered": false
+        },
+        {
+          "available": true,
+          "id": "srf_backstop",
+          "label": "SRF accepted",
+          "status": "1/3 POSITIVE",
+          "summary": "技術演習按官方 allowlist 標記，唔按金額猜測。",
+          "triggered": false
+        },
+        {
+          "available": true,
+          "id": "reserve_quantity",
+          "label": "Reserve balances 4W",
+          "status": "NO P10 BREACH",
+          "summary": "2.9T/2.8T/2.5T 只係參考線，並非固定壓力門檻。",
+          "triggered": false
+        }
+      ],
+      "mode": "DETERMINISTIC",
+      "summary": "Overview overall assessment 只以 Liquidity Fuel P0 規則為基礎。",
+      "total_blocks": 4
     },
     "market_ignition": {
-      "confidence": "low",
-      "score": 0,
-      "status": "unavailable",
-      "summary": "公開代理指標尚未完成更新。"
+      "assessment": null,
+      "available_blocks": 0,
+      "confidence": "UNKNOWN",
+      "evidence_blocks": [
+        {
+          "available": false,
+          "id": "volatility",
+          "label": "Volatility term structure",
+          "status": "UNAVAILABLE_FREE",
+          "summary": "本階段未啟用；權利未清楚嘅來源保持 null。",
+          "triggered": null
+        },
+        {
+          "available": false,
+          "id": "positioning",
+          "label": "CFTC positioning",
+          "status": "UNAVAILABLE_FREE",
+          "summary": "本階段未啟用；權利未清楚嘅來源保持 null。",
+          "triggered": null
+        },
+        {
+          "available": false,
+          "id": "crypto_funding",
+          "label": "Crypto funding",
+          "status": "UNAVAILABLE_FREE",
+          "summary": "本階段未啟用；權利未清楚嘅來源保持 null。",
+          "triggered": null
+        },
+        {
+          "available": false,
+          "id": "trend_cross_asset",
+          "label": "Trend / cross-asset",
+          "status": "UNAVAILABLE_FREE",
+          "summary": "本階段未啟用；權利未清楚嘅來源保持 null。",
+          "triggered": null
+        }
+      ],
+      "mode": "EVIDENCE_ONLY",
+      "summary": "P1 production evidence 未上線；不產生 WATCH/STRESS。",
+      "total_blocks": 4
     }
   },
-  "technical_context": []
+  "technical_context": [
+    {
+      "date": "2026-08-11",
+      "flags": [
+        "TREASURY_SETTLEMENT"
+      ],
+      "note": "Treasury 結算可能短暫抽走銀行體系現金。"
+    }
+  ],
+  "unavailable_free_count": 22
 }

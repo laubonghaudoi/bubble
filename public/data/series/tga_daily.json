@@ -1,206 +1,2029 @@
 {
-  "as_of": "2026-08-10",
+  "availability": "ACTIVE_FREE",
   "frequency": "business_daily",
-  "knowledge": {
-    "cannot_conclude": "唔可以靠單一指標證明危機、泡沫爆破或資產價格方向。",
-    "confirm_with": "價格、存量／流量及 backstop 等獨立 evidence blocks。",
-    "false_positives": "發布時間、樣本組成、技術日及定義轉變都可能造成假訊號。",
-    "layer": "liquidity_fuel",
-    "question_answered": "呢個指標所屬層面有冇出現壓力或轉折？",
-    "role": "driver",
-    "why_track": "同獨立訊號一齊使用，辨識流動性、放大器或基本面變化。"
-  },
-  "label": "TGA closing balance",
-  "methodology": "官方來源標準化；缺失保留 null。",
+  "label": "Treasury General Account daily balance",
   "metric_id": "tga_daily",
+  "observation_date": "2026-08-10",
   "observations": [
     {
+      "date": "2025-01-07",
+      "source_field": "open_today_bal",
+      "value": 651.488
+    },
+    {
+      "date": "2025-01-08",
+      "source_field": "open_today_bal",
+      "value": 620.531
+    },
+    {
+      "date": "2025-01-09",
+      "source_field": "open_today_bal",
+      "value": 623.729
+    },
+    {
+      "date": "2025-01-10",
+      "source_field": "open_today_bal",
+      "value": 631.584
+    },
+    {
+      "date": "2025-01-13",
+      "source_field": "open_today_bal",
+      "value": 647.354
+    },
+    {
+      "date": "2025-01-14",
+      "source_field": "open_today_bal",
+      "value": 671.551
+    },
+    {
+      "date": "2025-01-15",
+      "source_field": "open_today_bal",
+      "value": 651.187
+    },
+    {
+      "date": "2025-01-16",
+      "source_field": "open_today_bal",
+      "value": 677.188
+    },
+    {
+      "date": "2025-01-17",
+      "source_field": "open_today_bal",
+      "value": 673.357
+    },
+    {
+      "date": "2025-01-21",
+      "source_field": "open_today_bal",
+      "value": 704.874
+    },
+    {
+      "date": "2025-01-22",
+      "source_field": "open_today_bal",
+      "value": 665.485
+    },
+    {
+      "date": "2025-01-23",
+      "source_field": "open_today_bal",
+      "value": 760.043
+    },
+    {
+      "date": "2025-01-24",
+      "source_field": "open_today_bal",
+      "value": 768.984
+    },
+    {
+      "date": "2025-01-27",
+      "source_field": "open_today_bal",
+      "value": 797.458
+    },
+    {
+      "date": "2025-01-28",
+      "source_field": "open_today_bal",
+      "value": 813.442
+    },
+    {
+      "date": "2025-01-29",
+      "source_field": "open_today_bal",
+      "value": 811.549
+    },
+    {
+      "date": "2025-01-30",
+      "source_field": "open_today_bal",
+      "value": 825.951
+    },
+    {
+      "date": "2025-01-31",
+      "source_field": "open_today_bal",
+      "value": 793.025
+    },
+    {
+      "date": "2025-02-03",
+      "source_field": "open_today_bal",
+      "value": 800.006
+    },
+    {
+      "date": "2025-02-04",
+      "source_field": "open_today_bal",
+      "value": 816.166
+    },
+    {
+      "date": "2025-02-05",
+      "source_field": "open_today_bal",
+      "value": 817.953
+    },
+    {
+      "date": "2025-02-06",
+      "source_field": "open_today_bal",
+      "value": 830.323
+    },
+    {
+      "date": "2025-02-07",
+      "source_field": "open_today_bal",
+      "value": 825.751
+    },
+    {
+      "date": "2025-02-10",
+      "source_field": "open_today_bal",
+      "value": 837.805
+    },
+    {
+      "date": "2025-02-11",
+      "source_field": "open_today_bal",
+      "value": 842.182
+    },
+    {
+      "date": "2025-02-12",
+      "source_field": "open_today_bal",
+      "value": 809.154
+    },
+    {
+      "date": "2025-02-13",
+      "source_field": "open_today_bal",
+      "value": 809.338
+    },
+    {
+      "date": "2025-02-14",
+      "source_field": "open_today_bal",
+      "value": 802.084
+    },
+    {
+      "date": "2025-02-18",
+      "source_field": "open_today_bal",
+      "value": 773.826
+    },
+    {
+      "date": "2025-02-19",
+      "source_field": "open_today_bal",
+      "value": 738.938
+    },
+    {
+      "date": "2025-02-20",
+      "source_field": "open_today_bal",
+      "value": 727.881
+    },
+    {
+      "date": "2025-02-21",
+      "source_field": "open_today_bal",
+      "value": 713.642
+    },
+    {
+      "date": "2025-02-24",
+      "source_field": "open_today_bal",
+      "value": 707.057
+    },
+    {
+      "date": "2025-02-25",
+      "source_field": "open_today_bal",
+      "value": 623.711
+    },
+    {
+      "date": "2025-02-26",
+      "source_field": "open_today_bal",
+      "value": 568.55
+    },
+    {
+      "date": "2025-02-27",
+      "source_field": "open_today_bal",
+      "value": 537.294
+    },
+    {
+      "date": "2025-02-28",
+      "source_field": "open_today_bal",
+      "value": 559.582
+    },
+    {
+      "date": "2025-03-03",
+      "source_field": "open_today_bal",
+      "value": 566.71
+    },
+    {
+      "date": "2025-03-04",
+      "source_field": "open_today_bal",
+      "value": 532.751
+    },
+    {
+      "date": "2025-03-05",
+      "source_field": "open_today_bal",
+      "value": 522.818
+    },
+    {
+      "date": "2025-03-06",
+      "source_field": "open_today_bal",
+      "value": 529.488
+    },
+    {
+      "date": "2025-03-07",
+      "source_field": "open_today_bal",
+      "value": 521.461
+    },
+    {
+      "date": "2025-03-10",
+      "source_field": "open_today_bal",
+      "value": 542.588
+    },
+    {
+      "date": "2025-03-11",
+      "source_field": "open_today_bal",
+      "value": 500.897
+    },
+    {
+      "date": "2025-03-12",
+      "source_field": "open_today_bal",
+      "value": 450.713
+    },
+    {
+      "date": "2025-03-13",
+      "source_field": "open_today_bal",
+      "value": 412.423
+    },
+    {
+      "date": "2025-03-14",
+      "source_field": "open_today_bal",
+      "value": 414.141
+    },
+    {
+      "date": "2025-03-17",
+      "source_field": "open_today_bal",
+      "value": 530.752
+    },
+    {
+      "date": "2025-03-18",
+      "source_field": "open_today_bal",
+      "value": 450.153
+    },
+    {
+      "date": "2025-03-19",
+      "source_field": "open_today_bal",
+      "value": 415.799
+    },
+    {
+      "date": "2025-03-20",
+      "source_field": "open_today_bal",
+      "value": 383.246
+    },
+    {
+      "date": "2025-03-21",
+      "source_field": "open_today_bal",
+      "value": 361.945
+    },
+    {
+      "date": "2025-03-24",
+      "source_field": "open_today_bal",
+      "value": 385.686
+    },
+    {
+      "date": "2025-03-25",
+      "source_field": "open_today_bal",
+      "value": 350.498
+    },
+    {
+      "date": "2025-03-26",
+      "source_field": "open_today_bal",
+      "value": 315.97
+    },
+    {
+      "date": "2025-03-27",
+      "source_field": "open_today_bal",
+      "value": 280.65
+    },
+    {
+      "date": "2025-03-28",
+      "source_field": "open_today_bal",
+      "value": 301.789
+    },
+    {
+      "date": "2025-03-31",
+      "source_field": "open_today_bal",
+      "value": 405.786
+    },
+    {
+      "date": "2025-04-01",
+      "source_field": "open_today_bal",
+      "value": 299.858
+    },
+    {
+      "date": "2025-04-02",
+      "source_field": "open_today_bal",
+      "value": 301.624
+    },
+    {
+      "date": "2025-04-03",
+      "source_field": "open_today_bal",
+      "value": 296.36
+    },
+    {
+      "date": "2025-04-04",
+      "source_field": "open_today_bal",
+      "value": 291.391
+    },
+    {
+      "date": "2025-04-07",
+      "source_field": "open_today_bal",
+      "value": 309.989
+    },
+    {
+      "date": "2025-04-08",
+      "source_field": "open_today_bal",
+      "value": 346.635
+    },
+    {
+      "date": "2025-04-09",
+      "source_field": "open_today_bal",
+      "value": 315.189
+    },
+    {
+      "date": "2025-04-10",
+      "source_field": "open_today_bal",
+      "value": 314.467
+    },
+    {
+      "date": "2025-04-11",
+      "source_field": "open_today_bal",
+      "value": 330.503
+    },
+    {
+      "date": "2025-04-14",
+      "source_field": "open_today_bal",
+      "value": 415.67
+    },
+    {
+      "date": "2025-04-15",
+      "source_field": "open_today_bal",
+      "value": 600.455
+    },
+    {
+      "date": "2025-04-16",
+      "source_field": "open_today_bal",
+      "value": 638.783
+    },
+    {
+      "date": "2025-04-17",
+      "source_field": "open_today_bal",
+      "value": 599.993
+    },
+    {
+      "date": "2025-04-18",
+      "source_field": "open_today_bal",
+      "value": 612.381
+    },
+    {
+      "date": "2025-04-21",
+      "source_field": "open_today_bal",
+      "value": 626.444
+    },
+    {
+      "date": "2025-04-22",
+      "source_field": "open_today_bal",
+      "value": 606.684
+    },
+    {
+      "date": "2025-04-23",
+      "source_field": "open_today_bal",
+      "value": 576.159
+    },
+    {
+      "date": "2025-04-24",
+      "source_field": "open_today_bal",
+      "value": 562.759
+    },
+    {
+      "date": "2025-04-25",
+      "source_field": "open_today_bal",
+      "value": 571.691
+    },
+    {
+      "date": "2025-04-28",
+      "source_field": "open_today_bal",
+      "value": 597.998
+    },
+    {
+      "date": "2025-04-29",
+      "source_field": "open_today_bal",
+      "value": 616.705
+    },
+    {
+      "date": "2025-04-30",
+      "source_field": "open_today_bal",
+      "value": 677.657
+    },
+    {
+      "date": "2025-05-01",
+      "source_field": "open_today_bal",
+      "value": 593.088
+    },
+    {
+      "date": "2025-05-02",
+      "source_field": "open_today_bal",
+      "value": 574.345
+    },
+    {
+      "date": "2025-05-05",
+      "source_field": "open_today_bal",
+      "value": 590.351
+    },
+    {
+      "date": "2025-05-06",
+      "source_field": "open_today_bal",
+      "value": 583.753
+    },
+    {
+      "date": "2025-05-07",
+      "source_field": "open_today_bal",
+      "value": 595.86
+    },
+    {
+      "date": "2025-05-08",
+      "source_field": "open_today_bal",
+      "value": 576.228
+    },
+    {
+      "date": "2025-05-09",
+      "source_field": "open_today_bal",
+      "value": 572.746
+    },
+    {
+      "date": "2025-05-12",
+      "source_field": "open_today_bal",
+      "value": 583.369
+    },
+    {
+      "date": "2025-05-13",
+      "source_field": "open_today_bal",
+      "value": 590.652
+    },
+    {
+      "date": "2025-05-14",
+      "source_field": "open_today_bal",
+      "value": 562.433
+    },
+    {
+      "date": "2025-05-15",
+      "source_field": "open_today_bal",
+      "value": 496.649
+    },
+    {
+      "date": "2025-05-16",
+      "source_field": "open_today_bal",
+      "value": 504.706
+    },
+    {
+      "date": "2025-05-19",
+      "source_field": "open_today_bal",
+      "value": 523.207
+    },
+    {
+      "date": "2025-05-20",
+      "source_field": "open_today_bal",
+      "value": 511.526
+    },
+    {
+      "date": "2025-05-21",
+      "source_field": "open_today_bal",
+      "value": 475.886
+    },
+    {
+      "date": "2025-05-22",
+      "source_field": "open_today_bal",
+      "value": 473.748
+    },
+    {
+      "date": "2025-05-23",
+      "source_field": "open_today_bal",
+      "value": 470.643
+    },
+    {
+      "date": "2025-05-27",
+      "source_field": "open_today_bal",
+      "value": 477.481
+    },
+    {
+      "date": "2025-05-28",
+      "source_field": "open_today_bal",
+      "value": 436.627
+    },
+    {
+      "date": "2025-05-29",
+      "source_field": "open_today_bal",
+      "value": 399.844
+    },
+    {
+      "date": "2025-05-30",
+      "source_field": "open_today_bal",
+      "value": 351.443
+    },
+    {
+      "date": "2025-06-02",
+      "source_field": "open_today_bal",
+      "value": 439.362
+    },
+    {
+      "date": "2025-06-03",
+      "source_field": "open_today_bal",
+      "value": 382.937
+    },
+    {
+      "date": "2025-06-04",
+      "source_field": "open_today_bal",
+      "value": 376.16
+    },
+    {
+      "date": "2025-06-05",
+      "source_field": "open_today_bal",
+      "value": 350.843
+    },
+    {
+      "date": "2025-06-06",
+      "source_field": "open_today_bal",
+      "value": 344.758
+    },
+    {
+      "date": "2025-06-09",
+      "source_field": "open_today_bal",
+      "value": 358.796
+    },
+    {
+      "date": "2025-06-10",
+      "source_field": "open_today_bal",
+      "value": 309.409
+    },
+    {
+      "date": "2025-06-11",
+      "source_field": "open_today_bal",
+      "value": 277.025
+    },
+    {
+      "date": "2025-06-12",
+      "source_field": "open_today_bal",
+      "value": 260.807
+    },
+    {
+      "date": "2025-06-13",
+      "source_field": "open_today_bal",
+      "value": 288.078
+    },
+    {
+      "date": "2025-06-16",
+      "source_field": "open_today_bal",
+      "value": 446.302
+    },
+    {
+      "date": "2025-06-17",
+      "source_field": "open_today_bal",
+      "value": 409.139
+    },
+    {
+      "date": "2025-06-18",
+      "source_field": "open_today_bal",
+      "value": 383.851
+    },
+    {
+      "date": "2025-06-20",
+      "source_field": "open_today_bal",
+      "value": 366.52
+    },
+    {
+      "date": "2025-06-23",
+      "source_field": "open_today_bal",
+      "value": 374.568
+    },
+    {
+      "date": "2025-06-24",
+      "source_field": "open_today_bal",
+      "value": 358.071
+    },
+    {
+      "date": "2025-06-25",
+      "source_field": "open_today_bal",
+      "value": 334.579
+    },
+    {
+      "date": "2025-06-26",
+      "source_field": "open_today_bal",
+      "value": 304.841
+    },
+    {
+      "date": "2025-06-27",
+      "source_field": "open_today_bal",
+      "value": 338.348
+    },
+    {
+      "date": "2025-06-30",
+      "source_field": "open_today_bal",
+      "value": 456.98
+    },
+    {
+      "date": "2025-07-01",
+      "source_field": "open_today_bal",
+      "value": 367.512
+    },
+    {
+      "date": "2025-07-02",
+      "source_field": "open_today_bal",
+      "value": 372.232
+    },
+    {
+      "date": "2025-07-03",
+      "source_field": "open_today_bal",
+      "value": 313.162
+    },
+    {
+      "date": "2025-07-07",
+      "source_field": "open_today_bal",
+      "value": 332.482
+    },
+    {
+      "date": "2025-07-08",
+      "source_field": "open_today_bal",
+      "value": 343.047
+    },
+    {
+      "date": "2025-07-09",
+      "source_field": "open_today_bal",
+      "value": 311.048
+    },
+    {
+      "date": "2025-07-10",
+      "source_field": "open_today_bal",
+      "value": 288.395
+    },
+    {
+      "date": "2025-07-11",
+      "source_field": "open_today_bal",
+      "value": 282.363
+    },
+    {
+      "date": "2025-07-14",
+      "source_field": "open_today_bal",
+      "value": 298.224
+    },
+    {
+      "date": "2025-07-15",
+      "source_field": "open_today_bal",
+      "value": 327.937
+    },
+    {
+      "date": "2025-07-16",
+      "source_field": "open_today_bal",
+      "value": 312.085
+    },
+    {
+      "date": "2025-07-17",
+      "source_field": "open_today_bal",
+      "value": 317.026
+    },
+    {
+      "date": "2025-07-18",
+      "source_field": "open_today_bal",
+      "value": 315.658
+    },
+    {
+      "date": "2025-07-21",
+      "source_field": "open_today_bal",
+      "value": 319.359
+    },
+    {
+      "date": "2025-07-22",
+      "source_field": "open_today_bal",
+      "value": 345.335
+    },
+    {
+      "date": "2025-07-23",
+      "source_field": "open_today_bal",
+      "value": 333.538
+    },
+    {
+      "date": "2025-07-24",
+      "source_field": "open_today_bal",
+      "value": 349.408
+    },
+    {
+      "date": "2025-07-25",
+      "source_field": "open_today_bal",
+      "value": 348.098
+    },
+    {
+      "date": "2025-07-28",
+      "source_field": "open_today_bal",
+      "value": 362.57
+    },
+    {
+      "date": "2025-07-29",
+      "source_field": "open_today_bal",
+      "value": 417.834
+    },
+    {
+      "date": "2025-07-30",
+      "source_field": "open_today_bal",
+      "value": 419.446
+    },
+    {
+      "date": "2025-07-31",
+      "source_field": "open_today_bal",
+      "value": 497.596
+    },
+    {
+      "date": "2025-08-01",
+      "source_field": "open_today_bal",
+      "value": 377.78
+    },
+    {
+      "date": "2025-08-04",
+      "source_field": "open_today_bal",
+      "value": 392.81
+    },
+    {
+      "date": "2025-08-05",
+      "source_field": "open_today_bal",
+      "value": 459.24
+    },
+    {
+      "date": "2025-08-06",
+      "source_field": "open_today_bal",
+      "value": 464.315
+    },
+    {
+      "date": "2025-08-07",
+      "source_field": "open_today_bal",
+      "value": 491.691
+    },
+    {
+      "date": "2025-08-08",
+      "source_field": "open_today_bal",
+      "value": 491.063
+    },
+    {
+      "date": "2025-08-11",
+      "source_field": "open_today_bal",
+      "value": 504.28
+    },
+    {
+      "date": "2025-08-12",
+      "source_field": "open_today_bal",
+      "value": 545.499
+    },
+    {
+      "date": "2025-08-13",
+      "source_field": "open_today_bal",
+      "value": 515.469
+    },
+    {
+      "date": "2025-08-14",
+      "source_field": "open_today_bal",
+      "value": 549.08
+    },
+    {
+      "date": "2025-08-15",
+      "source_field": "open_today_bal",
+      "value": 493.107
+    },
+    {
+      "date": "2025-08-18",
+      "source_field": "open_today_bal",
+      "value": 519.49
+    },
+    {
+      "date": "2025-08-19",
+      "source_field": "open_today_bal",
+      "value": 562.784
+    },
+    {
+      "date": "2025-08-20",
+      "source_field": "open_today_bal",
+      "value": 526.063
+    },
+    {
+      "date": "2025-08-21",
+      "source_field": "open_today_bal",
+      "value": 561.249
+    },
+    {
+      "date": "2025-08-22",
+      "source_field": "open_today_bal",
+      "value": 581.509
+    },
+    {
+      "date": "2025-08-25",
+      "source_field": "open_today_bal",
+      "value": 595.519
+    },
+    {
+      "date": "2025-08-26",
+      "source_field": "open_today_bal",
+      "value": 632.894
+    },
+    {
+      "date": "2025-08-27",
+      "source_field": "open_today_bal",
+      "value": 595.798
+    },
+    {
+      "date": "2025-08-28",
+      "source_field": "open_today_bal",
+      "value": 609.66
+    },
+    {
+      "date": "2025-08-29",
+      "source_field": "open_today_bal",
+      "value": 555.224
+    },
+    {
+      "date": "2025-09-02",
+      "source_field": "open_today_bal",
+      "value": 690.094
+    },
+    {
+      "date": "2025-09-03",
+      "source_field": "open_today_bal",
+      "value": 661.939
+    },
+    {
+      "date": "2025-09-04",
+      "source_field": "open_today_bal",
+      "value": 669.272
+    },
+    {
+      "date": "2025-09-05",
+      "source_field": "open_today_bal",
+      "value": 666.137
+    },
+    {
+      "date": "2025-09-08",
+      "source_field": "open_today_bal",
+      "value": 680.369
+    },
+    {
+      "date": "2025-09-09",
+      "source_field": "open_today_bal",
+      "value": 690.281
+    },
+    {
+      "date": "2025-09-10",
+      "source_field": "open_today_bal",
+      "value": 667.585
+    },
+    {
+      "date": "2025-09-11",
+      "source_field": "open_today_bal",
+      "value": 682.732
+    },
+    {
+      "date": "2025-09-12",
+      "source_field": "open_today_bal",
+      "value": 707.77
+    },
+    {
+      "date": "2025-09-15",
+      "source_field": "open_today_bal",
+      "value": 857.709
+    },
+    {
+      "date": "2025-09-16",
+      "source_field": "open_today_bal",
+      "value": 823.741
+    },
+    {
+      "date": "2025-09-17",
+      "source_field": "open_today_bal",
+      "value": 807.142
+    },
+    {
+      "date": "2025-09-18",
+      "source_field": "open_today_bal",
+      "value": 816.451
+    },
+    {
+      "date": "2025-09-19",
+      "source_field": "open_today_bal",
+      "value": 818.53
+    },
+    {
+      "date": "2025-09-22",
+      "source_field": "open_today_bal",
+      "value": 822.471
+    },
+    {
+      "date": "2025-09-23",
+      "source_field": "open_today_bal",
+      "value": 781.512
+    },
+    {
+      "date": "2025-09-24",
+      "source_field": "open_today_bal",
+      "value": 757.97
+    },
+    {
+      "date": "2025-09-25",
+      "source_field": "open_today_bal",
+      "value": 761.087
+    },
+    {
+      "date": "2025-09-26",
+      "source_field": "open_today_bal",
+      "value": 786.337
+    },
+    {
+      "date": "2025-09-29",
+      "source_field": "open_today_bal",
+      "value": 805.674
+    },
+    {
+      "date": "2025-09-30",
+      "source_field": "open_today_bal",
+      "value": 890.825
+    },
+    {
+      "date": "2025-10-01",
+      "source_field": "open_today_bal",
+      "value": 819.378
+    },
+    {
+      "date": "2025-10-02",
+      "source_field": "open_today_bal",
+      "value": 823.845
+    },
+    {
+      "date": "2025-10-03",
+      "source_field": "open_today_bal",
+      "value": 798.367
+    },
+    {
+      "date": "2025-10-06",
+      "source_field": "open_today_bal",
+      "value": 815.262
+    },
+    {
+      "date": "2025-10-07",
+      "source_field": "open_today_bal",
+      "value": 823.736
+    },
+    {
+      "date": "2025-10-08",
+      "source_field": "open_today_bal",
+      "value": 794.054
+    },
+    {
+      "date": "2025-10-09",
+      "source_field": "open_today_bal",
+      "value": 796.023
+    },
+    {
+      "date": "2025-10-10",
+      "source_field": "open_today_bal",
+      "value": 794.452
+    },
+    {
+      "date": "2025-10-14",
+      "source_field": "open_today_bal",
+      "value": 841.366
+    },
+    {
+      "date": "2025-10-15",
+      "source_field": "open_today_bal",
+      "value": 851.952
+    },
+    {
+      "date": "2025-10-16",
+      "source_field": "open_today_bal",
+      "value": 899.682
+    },
+    {
+      "date": "2025-10-17",
+      "source_field": "open_today_bal",
+      "value": 905.393
+    },
+    {
+      "date": "2025-10-20",
+      "source_field": "open_today_bal",
+      "value": 905.754
+    },
+    {
+      "date": "2025-10-21",
+      "source_field": "open_today_bal",
+      "value": 929.315
+    },
+    {
+      "date": "2025-10-22",
+      "source_field": "open_today_bal",
+      "value": 905.074
+    },
+    {
+      "date": "2025-10-23",
+      "source_field": "open_today_bal",
+      "value": 944.965
+    },
+    {
+      "date": "2025-10-24",
+      "source_field": "open_today_bal",
+      "value": 942.495
+    },
+    {
+      "date": "2025-10-27",
+      "source_field": "open_today_bal",
+      "value": 964.762
+    },
+    {
+      "date": "2025-10-28",
+      "source_field": "open_today_bal",
+      "value": 984.857
+    },
+    {
+      "date": "2025-10-29",
+      "source_field": "open_today_bal",
+      "value": 983.859
+    },
+    {
+      "date": "2025-10-30",
+      "source_field": "open_today_bal",
+      "value": 1000.632
+    },
+    {
+      "date": "2025-10-31",
+      "source_field": "open_today_bal",
+      "value": 926.328
+    },
+    {
+      "date": "2025-11-03",
+      "source_field": "open_today_bal",
+      "value": 924.957
+    },
+    {
+      "date": "2025-11-04",
+      "source_field": "open_today_bal",
+      "value": 939.584
+    },
+    {
+      "date": "2025-11-05",
+      "source_field": "open_today_bal",
+      "value": 942.7
+    },
+    {
+      "date": "2025-11-06",
+      "source_field": "open_today_bal",
+      "value": 953.555
+    },
+    {
+      "date": "2025-11-07",
+      "source_field": "open_today_bal",
+      "value": 949.804
+    },
+    {
+      "date": "2025-11-10",
+      "source_field": "open_today_bal",
+      "value": 965.301
+    },
+    {
+      "date": "2025-11-12",
+      "source_field": "open_today_bal",
+      "value": 943.145
+    },
+    {
+      "date": "2025-11-13",
+      "source_field": "open_today_bal",
+      "value": 961.929
+    },
+    {
+      "date": "2025-11-14",
+      "source_field": "open_today_bal",
+      "value": 959.113
+    },
+    {
+      "date": "2025-11-17",
+      "source_field": "open_today_bal",
+      "value": 924.961
+    },
+    {
+      "date": "2025-11-18",
+      "source_field": "open_today_bal",
+      "value": 928.422
+    },
+    {
+      "date": "2025-11-19",
+      "source_field": "open_today_bal",
+      "value": 900.832
+    },
+    {
+      "date": "2025-11-20",
+      "source_field": "open_today_bal",
+      "value": 909.575
+    },
+    {
+      "date": "2025-11-21",
+      "source_field": "open_today_bal",
+      "value": 892.074
+    },
+    {
+      "date": "2025-11-24",
+      "source_field": "open_today_bal",
+      "value": 906.547
+    },
+    {
+      "date": "2025-11-25",
+      "source_field": "open_today_bal",
+      "value": 931.736
+    },
+    {
+      "date": "2025-11-26",
+      "source_field": "open_today_bal",
+      "value": 899.678
+    },
+    {
+      "date": "2025-11-28",
+      "source_field": "open_today_bal",
+      "value": 956.014
+    },
+    {
+      "date": "2025-12-01",
+      "source_field": "open_today_bal",
+      "value": 948.079
+    },
+    {
+      "date": "2025-12-02",
+      "source_field": "open_today_bal",
+      "value": 935.847
+    },
+    {
+      "date": "2025-12-03",
+      "source_field": "open_today_bal",
+      "value": 908.523
+    },
+    {
+      "date": "2025-12-04",
+      "source_field": "open_today_bal",
+      "value": 878.666
+    },
+    {
+      "date": "2025-12-05",
+      "source_field": "open_today_bal",
+      "value": 870.232
+    },
+    {
+      "date": "2025-12-08",
+      "source_field": "open_today_bal",
+      "value": 880.125
+    },
+    {
+      "date": "2025-12-09",
+      "source_field": "open_today_bal",
+      "value": 837.306
+    },
+    {
+      "date": "2025-12-10",
+      "source_field": "open_today_bal",
+      "value": 805.827
+    },
+    {
+      "date": "2025-12-11",
+      "source_field": "open_today_bal",
+      "value": 792.667
+    },
+    {
+      "date": "2025-12-12",
+      "source_field": "open_today_bal",
+      "value": 792.465
+    },
+    {
+      "date": "2025-12-15",
+      "source_field": "open_today_bal",
+      "value": 912.994
+    },
+    {
+      "date": "2025-12-16",
+      "source_field": "open_today_bal",
+      "value": 887.18
+    },
+    {
+      "date": "2025-12-17",
+      "source_field": "open_today_bal",
+      "value": 861.417
+    },
+    {
+      "date": "2025-12-18",
+      "source_field": "open_today_bal",
+      "value": 842.422
+    },
+    {
+      "date": "2025-12-19",
+      "source_field": "open_today_bal",
+      "value": 839.799
+    },
+    {
+      "date": "2025-12-22",
+      "source_field": "open_today_bal",
+      "value": 872.048
+    },
+    {
+      "date": "2025-12-23",
+      "source_field": "open_today_bal",
+      "value": 824.439
+    },
+    {
+      "date": "2025-12-24",
+      "source_field": "open_today_bal",
+      "value": 801.537
+    },
+    {
+      "date": "2025-12-26",
+      "source_field": "open_today_bal",
+      "value": 833.784
+    },
+    {
+      "date": "2025-12-29",
+      "source_field": "open_today_bal",
+      "value": 858.993
+    },
+    {
+      "date": "2025-12-30",
+      "source_field": "open_today_bal",
+      "value": 826.406
+    },
+    {
+      "date": "2025-12-31",
+      "source_field": "open_today_bal",
+      "value": 872.853
+    },
+    {
+      "date": "2026-01-02",
+      "source_field": "open_today_bal",
+      "value": 781.204
+    },
+    {
+      "date": "2026-01-05",
+      "source_field": "open_today_bal",
+      "value": 801.062
+    },
+    {
+      "date": "2026-01-06",
+      "source_field": "open_today_bal",
+      "value": 771.936
+    },
+    {
+      "date": "2026-01-07",
+      "source_field": "open_today_bal",
+      "value": 783.571
+    },
+    {
+      "date": "2026-01-08",
+      "source_field": "open_today_bal",
+      "value": 773.709
+    },
+    {
+      "date": "2026-01-09",
+      "source_field": "open_today_bal",
+      "value": 775.114
+    },
+    {
+      "date": "2026-01-12",
+      "source_field": "open_today_bal",
+      "value": 797.322
+    },
+    {
+      "date": "2026-01-13",
+      "source_field": "open_today_bal",
+      "value": 780.79
+    },
+    {
+      "date": "2026-01-14",
+      "source_field": "open_today_bal",
+      "value": 777.061
+    },
+    {
+      "date": "2026-01-15",
+      "source_field": "open_today_bal",
+      "value": 840.883
+    },
+    {
+      "date": "2026-01-16",
+      "source_field": "open_today_bal",
+      "value": 868.226
+    },
+    {
+      "date": "2026-01-20",
+      "source_field": "open_today_bal",
+      "value": 899.869
+    },
+    {
+      "date": "2026-01-21",
+      "source_field": "open_today_bal",
+      "value": 871.169
+    },
+    {
+      "date": "2026-01-22",
+      "source_field": "open_today_bal",
+      "value": 888.45
+    },
+    {
+      "date": "2026-01-23",
+      "source_field": "open_today_bal",
+      "value": 900.542
+    },
+    {
+      "date": "2026-01-26",
+      "source_field": "open_today_bal",
+      "value": 943.665
+    },
+    {
+      "date": "2026-01-27",
+      "source_field": "open_today_bal",
+      "value": 974.848
+    },
+    {
+      "date": "2026-01-28",
+      "source_field": "open_today_bal",
+      "value": 952.705
+    },
+    {
+      "date": "2026-01-29",
+      "source_field": "open_today_bal",
+      "value": 968.066
+    },
+    {
+      "date": "2026-01-30",
+      "source_field": "open_today_bal",
+      "value": 893.245
+    },
+    {
+      "date": "2026-02-02",
+      "source_field": "open_today_bal",
+      "value": 897.983
+    },
+    {
+      "date": "2026-02-03",
+      "source_field": "open_today_bal",
+      "value": 907.892
+    },
+    {
+      "date": "2026-02-04",
+      "source_field": "open_today_bal",
+      "value": 907.737
+    },
+    {
+      "date": "2026-02-05",
+      "source_field": "open_today_bal",
+      "value": 914.563
+    },
+    {
+      "date": "2026-02-06",
+      "source_field": "open_today_bal",
+      "value": 905.282
+    },
+    {
+      "date": "2026-02-09",
+      "source_field": "open_today_bal",
+      "value": 917.568
+    },
+    {
+      "date": "2026-02-10",
+      "source_field": "open_today_bal",
+      "value": 948.634
+    },
+    {
+      "date": "2026-02-11",
+      "source_field": "open_today_bal",
+      "value": 910.533
+    },
+    {
+      "date": "2026-02-12",
+      "source_field": "open_today_bal",
+      "value": 920.999
+    },
+    {
+      "date": "2026-02-13",
+      "source_field": "open_today_bal",
+      "value": 913.645
+    },
+    {
+      "date": "2026-02-17",
+      "source_field": "open_today_bal",
+      "value": 924.659
+    },
+    {
+      "date": "2026-02-18",
+      "source_field": "open_today_bal",
+      "value": 888.854
+    },
+    {
+      "date": "2026-02-19",
+      "source_field": "open_today_bal",
+      "value": 904.858
+    },
+    {
+      "date": "2026-02-20",
+      "source_field": "open_today_bal",
+      "value": 893.37
+    },
+    {
+      "date": "2026-02-23",
+      "source_field": "open_today_bal",
+      "value": 888.165
+    },
+    {
+      "date": "2026-02-24",
+      "source_field": "open_today_bal",
+      "value": 901.173
+    },
+    {
+      "date": "2026-02-25",
+      "source_field": "open_today_bal",
+      "value": 838.975
+    },
+    {
+      "date": "2026-02-26",
+      "source_field": "open_today_bal",
+      "value": 849.449
+    },
+    {
+      "date": "2026-02-27",
+      "source_field": "open_today_bal",
+      "value": 798.943
+    },
+    {
+      "date": "2026-03-02",
+      "source_field": "open_today_bal",
+      "value": 871.377
+    },
+    {
+      "date": "2026-03-03",
+      "source_field": "open_today_bal",
+      "value": 859.738
+    },
+    {
+      "date": "2026-03-04",
+      "source_field": "open_today_bal",
+      "value": 846.979
+    },
+    {
+      "date": "2026-03-05",
+      "source_field": "open_today_bal",
+      "value": 840.85
+    },
+    {
+      "date": "2026-03-06",
+      "source_field": "open_today_bal",
+      "value": 833.086
+    },
+    {
+      "date": "2026-03-09",
+      "source_field": "open_today_bal",
+      "value": 858.548
+    },
+    {
+      "date": "2026-03-10",
+      "source_field": "open_today_bal",
+      "value": 862.841
+    },
+    {
+      "date": "2026-03-11",
+      "source_field": "open_today_bal",
+      "value": 805.806
+    },
+    {
+      "date": "2026-03-12",
+      "source_field": "open_today_bal",
+      "value": 809.284
+    },
+    {
+      "date": "2026-03-13",
+      "source_field": "open_today_bal",
+      "value": 806.335
+    },
+    {
+      "date": "2026-03-16",
+      "source_field": "open_today_bal",
+      "value": 937.577
+    },
+    {
+      "date": "2026-03-17",
+      "source_field": "open_today_bal",
+      "value": 929.668
+    },
+    {
+      "date": "2026-03-18",
+      "source_field": "open_today_bal",
+      "value": 875.833
+    },
+    {
+      "date": "2026-03-19",
+      "source_field": "open_today_bal",
+      "value": 882.822
+    },
+    {
+      "date": "2026-03-20",
+      "source_field": "open_today_bal",
+      "value": 870.864
+    },
+    {
+      "date": "2026-03-23",
+      "source_field": "open_today_bal",
+      "value": 909.509
+    },
+    {
+      "date": "2026-03-24",
+      "source_field": "open_today_bal",
+      "value": 876.206
+    },
+    {
+      "date": "2026-03-25",
+      "source_field": "open_today_bal",
+      "value": 837.412
+    },
+    {
+      "date": "2026-03-26",
+      "source_field": "open_today_bal",
+      "value": 823.031
+    },
+    {
+      "date": "2026-03-27",
+      "source_field": "open_today_bal",
+      "value": 848.655
+    },
+    {
+      "date": "2026-03-30",
+      "source_field": "open_today_bal",
+      "value": 868.478
+    },
+    {
+      "date": "2026-03-31",
+      "source_field": "open_today_bal",
+      "value": 893.0
+    },
+    {
+      "date": "2026-04-01",
+      "source_field": "open_today_bal",
+      "value": 803.553
+    },
+    {
+      "date": "2026-04-02",
+      "source_field": "open_today_bal",
+      "value": 776.076
+    },
+    {
+      "date": "2026-04-03",
+      "source_field": "open_today_bal",
+      "value": 753.938
+    },
+    {
+      "date": "2026-04-06",
+      "source_field": "open_today_bal",
+      "value": 775.433
+    },
+    {
+      "date": "2026-04-07",
+      "source_field": "open_today_bal",
+      "value": 728.227
+    },
+    {
+      "date": "2026-04-08",
+      "source_field": "open_today_bal",
+      "value": 697.079
+    },
+    {
+      "date": "2026-04-09",
+      "source_field": "open_today_bal",
+      "value": 686.969
+    },
+    {
+      "date": "2026-04-10",
+      "source_field": "open_today_bal",
+      "value": 703.218
+    },
+    {
+      "date": "2026-04-13",
+      "source_field": "open_today_bal",
+      "value": 758.91
+    },
+    {
+      "date": "2026-04-14",
+      "source_field": "open_today_bal",
+      "value": 779.506
+    },
+    {
+      "date": "2026-04-15",
+      "source_field": "open_today_bal",
+      "value": 924.435
+    },
+    {
+      "date": "2026-04-16",
+      "source_field": "open_today_bal",
+      "value": 971.155
+    },
+    {
+      "date": "2026-04-17",
+      "source_field": "open_today_bal",
+      "value": 998.636
+    },
+    {
+      "date": "2026-04-20",
+      "source_field": "open_today_bal",
+      "value": 1038.035
+    },
+    {
+      "date": "2026-04-21",
+      "source_field": "open_today_bal",
+      "value": 1029.51
+    },
+    {
+      "date": "2026-04-22",
+      "source_field": "open_today_bal",
+      "value": 1007.172
+    },
+    {
+      "date": "2026-04-23",
+      "source_field": "open_today_bal",
+      "value": 969.844
+    },
+    {
+      "date": "2026-04-24",
+      "source_field": "open_today_bal",
+      "value": 974.251
+    },
+    {
+      "date": "2026-04-27",
+      "source_field": "open_today_bal",
+      "value": 1002.382
+    },
+    {
+      "date": "2026-04-28",
+      "source_field": "open_today_bal",
+      "value": 990.422
+    },
+    {
+      "date": "2026-04-29",
+      "source_field": "open_today_bal",
+      "value": 988.102
+    },
+    {
+      "date": "2026-04-30",
+      "source_field": "open_today_bal",
+      "value": 969.383
+    },
+    {
+      "date": "2026-05-01",
+      "source_field": "open_today_bal",
+      "value": 857.311
+    },
+    {
+      "date": "2026-05-04",
+      "source_field": "open_today_bal",
+      "value": 879.968
+    },
+    {
+      "date": "2026-05-05",
+      "source_field": "open_today_bal",
+      "value": 860.287
+    },
+    {
+      "date": "2026-05-06",
+      "source_field": "open_today_bal",
+      "value": 862.757
+    },
+    {
+      "date": "2026-05-07",
+      "source_field": "open_today_bal",
+      "value": 846.562
+    },
+    {
+      "date": "2026-05-08",
+      "source_field": "open_today_bal",
+      "value": 839.161
+    },
+    {
+      "date": "2026-05-11",
+      "source_field": "open_today_bal",
+      "value": 854.589
+    },
+    {
+      "date": "2026-05-12",
+      "source_field": "open_today_bal",
+      "value": 844.036
+    },
+    {
+      "date": "2026-05-13",
+      "source_field": "open_today_bal",
+      "value": 807.42
+    },
+    {
+      "date": "2026-05-14",
+      "source_field": "open_today_bal",
+      "value": 802.412
+    },
+    {
+      "date": "2026-05-15",
+      "source_field": "open_today_bal",
+      "value": 758.819
+    },
+    {
+      "date": "2026-05-18",
+      "source_field": "open_today_bal",
+      "value": 785.925
+    },
+    {
+      "date": "2026-05-19",
+      "source_field": "open_today_bal",
+      "value": 822.275
+    },
+    {
+      "date": "2026-05-20",
+      "source_field": "open_today_bal",
+      "value": 781.979
+    },
+    {
+      "date": "2026-05-21",
+      "source_field": "open_today_bal",
+      "value": 785.882
+    },
+    {
+      "date": "2026-05-22",
+      "source_field": "open_today_bal",
+      "value": 825.55
+    },
+    {
+      "date": "2026-05-26",
+      "source_field": "open_today_bal",
+      "value": 881.329
+    },
+    {
+      "date": "2026-05-27",
+      "source_field": "open_today_bal",
+      "value": 842.66
+    },
+    {
+      "date": "2026-05-28",
+      "source_field": "open_today_bal",
+      "value": 849.71
+    },
+    {
+      "date": "2026-05-29",
+      "source_field": "open_today_bal",
+      "value": 903.881
+    },
+    {
+      "date": "2026-06-01",
+      "source_field": "open_today_bal",
+      "value": 856.842
+    },
+    {
+      "date": "2026-06-02",
+      "source_field": "open_today_bal",
+      "value": 866.075
+    },
+    {
+      "date": "2026-06-03",
+      "source_field": "open_today_bal",
+      "value": 845.722
+    },
+    {
+      "date": "2026-06-04",
+      "source_field": "open_today_bal",
+      "value": 844.521
+    },
+    {
+      "date": "2026-06-05",
+      "source_field": "open_today_bal",
+      "value": 825.54
+    },
+    {
       "date": "2026-06-08",
+      "source_field": "open_today_bal",
       "value": 844.229
     },
     {
       "date": "2026-06-09",
+      "source_field": "open_today_bal",
       "value": 830.399
     },
     {
       "date": "2026-06-10",
+      "source_field": "open_today_bal",
       "value": 801.084
     },
     {
       "date": "2026-06-11",
+      "source_field": "open_today_bal",
       "value": 799.517
     },
     {
       "date": "2026-06-12",
+      "source_field": "open_today_bal",
       "value": 816.023
     },
     {
       "date": "2026-06-15",
+      "source_field": "open_today_bal",
       "value": 979.791
     },
     {
       "date": "2026-06-16",
+      "source_field": "open_today_bal",
       "value": 981.113
     },
     {
       "date": "2026-06-17",
+      "source_field": "open_today_bal",
       "value": 956.502
     },
     {
       "date": "2026-06-18",
+      "source_field": "open_today_bal",
       "value": 915.085
     },
     {
       "date": "2026-06-22",
+      "source_field": "open_today_bal",
       "value": 942.815
     },
     {
       "date": "2026-06-23",
+      "source_field": "open_today_bal",
       "value": 925.876
     },
     {
       "date": "2026-06-24",
+      "source_field": "open_today_bal",
       "value": 901.845
     },
     {
       "date": "2026-06-25",
+      "source_field": "open_today_bal",
       "value": 871.469
     },
     {
       "date": "2026-06-26",
+      "source_field": "open_today_bal",
       "value": 895.576
     },
     {
       "date": "2026-06-29",
+      "source_field": "open_today_bal",
       "value": 876.961
     },
     {
       "date": "2026-06-30",
+      "source_field": "open_today_bal",
       "value": 919.145
     },
     {
       "date": "2026-07-01",
+      "source_field": "open_today_bal",
       "value": 807.359
     },
     {
       "date": "2026-07-02",
+      "source_field": "open_today_bal",
       "value": 770.587
     },
     {
       "date": "2026-07-03",
+      "source_field": "open_today_bal",
       "value": 776.843
     },
     {
       "date": "2026-07-06",
+      "source_field": "open_today_bal",
       "value": 783.107
     },
     {
       "date": "2026-07-07",
+      "source_field": "open_today_bal",
       "value": 784.964
     },
     {
       "date": "2026-07-08",
+      "source_field": "open_today_bal",
       "value": 749.244
     },
     {
       "date": "2026-07-09",
+      "source_field": "open_today_bal",
       "value": 744.637
     },
     {
       "date": "2026-07-10",
+      "source_field": "open_today_bal",
       "value": 738.273
     },
     {
       "date": "2026-07-13",
+      "source_field": "open_today_bal",
       "value": 750.282
     },
     {
       "date": "2026-07-14",
+      "source_field": "open_today_bal",
       "value": 787.814
     },
     {
       "date": "2026-07-15",
+      "source_field": "open_today_bal",
       "value": 795.976
     },
     {
       "date": "2026-07-16",
+      "source_field": "open_today_bal",
       "value": 822.51
     },
     {
       "date": "2026-07-17",
+      "source_field": "open_today_bal",
       "value": 815.418
     },
     {
       "date": "2026-07-20",
+      "source_field": "open_today_bal",
       "value": 828.197
     },
     {
       "date": "2026-07-21",
+      "source_field": "open_today_bal",
       "value": 874.98
     },
     {
       "date": "2026-07-22",
+      "source_field": "open_today_bal",
       "value": 835.417
     },
     {
       "date": "2026-07-23",
+      "source_field": "open_today_bal",
       "value": 877.201
     },
     {
       "date": "2026-07-24",
+      "source_field": "open_today_bal",
       "value": 886.3
     },
     {
       "date": "2026-07-27",
+      "source_field": "open_today_bal",
       "value": 902.751
     },
     {
       "date": "2026-07-28",
+      "source_field": "open_today_bal",
       "value": 966.136
     },
     {
       "date": "2026-07-29",
+      "source_field": "open_today_bal",
       "value": 970.442
     },
     {
       "date": "2026-07-30",
+      "source_field": "open_today_bal",
       "value": 997.946
     },
     {
       "date": "2026-07-31",
+      "source_field": "open_today_bal",
       "value": 876.566
     },
     {
       "date": "2026-08-03",
+      "source_field": "open_today_bal",
       "value": 870.083
     },
     {
       "date": "2026-08-04",
+      "source_field": "open_today_bal",
       "value": 924.219
     },
     {
       "date": "2026-08-05",
+      "source_field": "open_today_bal",
       "value": 929.325
     },
     {
       "date": "2026-08-06",
+      "source_field": "open_today_bal",
       "value": 961.726
     },
     {
       "date": "2026-08-07",
+      "source_field": "open_today_bal",
       "value": 954.113
     },
     {
       "date": "2026-08-10",
+      "source_field": "open_today_bal",
       "value": 966.851
     }
   ],
-  "quality": "official",
-  "retrieved_at": "2026-08-12T17:32:49.205728Z",
-  "schema_version": "1.0.0",
-  "source_ids": [
-    "treasury"
-  ],
-  "status": "ok",
-  "unit": "USD bn"
+  "quality": {
+    "failure_reason": null,
+    "freshness": "FRESH",
+    "last_attempt_at": "2026-08-12T19:47:03.985141Z",
+    "last_success_at": "2026-08-12T19:47:03.985141Z",
+    "sample_size": 400,
+    "status": "OK"
+  },
+  "released_at": null,
+  "schema_version": "2.0.0",
+  "source": {
+    "name": "U.S. Treasury FiscalData API",
+    "retrieved_at": "2026-08-12T19:47:03.985141Z",
+    "rights_note": "Cite FiscalData and preserve the dataset as-of date.",
+    "source_id": "treasury_fiscaldata",
+    "tier": "OFFICIAL",
+    "url": "https://fiscaldata.treasury.gov/api-documentation/"
+  },
+  "unit": "USD bn",
+  "updated_at": "2026-08-12T19:47:03.985141Z"
 }
