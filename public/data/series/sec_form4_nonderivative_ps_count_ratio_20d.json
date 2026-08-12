@@ -7,9 +7,9 @@
   "observation_date": null,
   "observations": [],
   "quality": {
-    "failure_reason": "SEC Form 4 collection incomplete: SEC master index header schema is missing; SEC master index header schema is missing; SEC master index header schema is missing; incomplete index days: 2026-06-29, 2026-06-30, 2026-07-01, 2026-07-02, 2026-07-06, 2026-07-07, 2026-07-08, 2026-07-09, 2026-07-10, 2026-07-13, 2026-07-14, 2026-07-15, 2026-07-16, 2026-07-17, 2026-07-20, 2026-07-21, 2026-07-22, 2026-07-23, 2026-07-24, 2026-07-27, 2026-07-28, 2026-07-29, 2026-07-30, 2026-07-31, 2026-08-03, 2026-08-04, 2026-08-05, 2026-08-06, 2026-08-07, 2026-08-10, 2026-08-11",
+    "failure_reason": "SEC Form 4 collection incomplete: periodOfReport is invalid; periodOfReport is invalid; periodOfReport is invalid; incomplete index days: 2026-07-01, 2026-07-02, 2026-07-06, 2026-07-14, 2026-07-20, 2026-07-21, 2026-07-23, 2026-07-24, 2026-07-29, 2026-07-30, 2026-07-31, 2026-08-03, 2026-08-04, 2026-08-06",
     "freshness": "UNKNOWN",
-    "last_attempt_at": "2026-08-12T22:15:41.127292Z",
+    "last_attempt_at": "2026-08-12T22:25:34.415259Z",
     "last_success_at": null,
     "sample_size": 0,
     "status": "ERROR"
@@ -18,12 +18,12 @@
   "schema_version": "2.0.0",
   "source": {
     "name": "SEC EDGAR APIs and filing data",
-    "retrieved_at": "2026-08-12T22:15:41.127292Z",
+    "retrieved_at": "2026-08-12T22:25:34.415259Z",
     "rights_note": "Cite the filing and accession; do not republish long issuer-authored passages.",
     "source_id": "sec_edgar",
     "tier": "OFFICIAL",
     "url": "https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data"
   },
   "unit": "ratio",
-  "updated_at": "2026-08-12T22:15:41.127292Z"
+  "updated_at": "2026-08-12T22:25:34.415259Z"
 }
