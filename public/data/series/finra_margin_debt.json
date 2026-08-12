@@ -1,0 +1,23 @@
+{
+  "as_of": null,
+  "frequency": "monthly",
+  "knowledge": {
+    "cannot_conclude": "唔可以靠單一指標證明危機、泡沫爆破或資產價格方向。",
+    "confirm_with": "價格、存量／流量及 backstop 等獨立 evidence blocks。",
+    "false_positives": "發布時間、樣本組成、技術日及定義轉變都可能造成假訊號。",
+    "layer": "fundamental_exit",
+    "question_answered": "呢個指標所屬層面有冇出現壓力或轉折？",
+    "role": "guardrail",
+    "why_track": "同獨立訊號一齊使用，辨識流動性、放大器或基本面變化。"
+  },
+  "label": "FINRA margin debt",
+  "methodology": "尚未有可合法自動重發布嘅資料；明確保留 availability state。",
+  "metric_id": "finra_margin_debt",
+  "observations": [],
+  "quality": "proxy",
+  "retrieved_at": "2026-08-12T05:14:59.117418Z",
+  "schema_version": "1.0.0",
+  "source_ids": [],
+  "status": "missing",
+  "unit": "USD bn"
+}
