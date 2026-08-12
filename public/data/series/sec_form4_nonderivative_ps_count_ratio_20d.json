@@ -1,29 +1,34 @@
 {
   "availability": "ACTIVE_PROXY",
-  "expected_next_update": null,
+  "expected_next_update": "2026-08-12",
   "frequency": "business_daily",
   "label": "SEC Form 4 reported P/S count ratio · 20D proxy",
   "metric_id": "sec_form4_nonderivative_ps_count_ratio_20d",
-  "observation_date": null,
-  "observations": [],
+  "observation_date": "2026-08-11",
+  "observations": [
+    {
+      "date": "2026-08-11",
+      "value": 0.162588
+    }
+  ],
   "quality": {
-    "failure_reason": "SEC Form 4 collection incomplete: periodOfReport is invalid; periodOfReport is invalid; periodOfReport is invalid; incomplete index days: 2026-07-01, 2026-07-02, 2026-07-06, 2026-07-14, 2026-07-20, 2026-07-21, 2026-07-23, 2026-07-24, 2026-07-29, 2026-07-30, 2026-07-31, 2026-08-03, 2026-08-04, 2026-08-06",
-    "freshness": "UNKNOWN",
-    "last_attempt_at": "2026-08-12T22:25:34.415259Z",
-    "last_success_at": null,
-    "sample_size": 0,
-    "status": "ERROR"
+    "failure_reason": null,
+    "freshness": "FRESH",
+    "last_attempt_at": "2026-08-12T23:52:08.627700Z",
+    "last_success_at": "2026-08-12T23:52:08.627700Z",
+    "sample_size": 1,
+    "status": "OK"
   },
-  "released_at": null,
+  "released_at": "2026-08-12T01:52:15Z",
   "schema_version": "2.0.0",
   "source": {
     "name": "SEC EDGAR APIs and filing data",
-    "retrieved_at": "2026-08-12T22:25:34.415259Z",
+    "retrieved_at": "2026-08-12T23:52:08.627700Z",
     "rights_note": "Cite the filing and accession; do not republish long issuer-authored passages.",
     "source_id": "sec_edgar",
     "tier": "OFFICIAL",
     "url": "https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data"
   },
   "unit": "ratio",
-  "updated_at": "2026-08-12T22:25:34.415259Z"
+  "updated_at": "2026-08-12T23:52:08.627700Z"
 }
