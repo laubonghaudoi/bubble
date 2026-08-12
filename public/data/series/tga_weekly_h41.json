@@ -1,0 +1,106 @@
+{
+  "as_of": "2026-08-05",
+  "frequency": "weekly / policy",
+  "knowledge": {
+    "cannot_conclude": "唔可以靠單一指標證明危機、泡沫爆破或資產價格方向。",
+    "confirm_with": "價格、存量／流量及 backstop 等獨立 evidence blocks。",
+    "false_positives": "發布時間、樣本組成、技術日及定義轉變都可能造成假訊號。",
+    "layer": "liquidity_fuel",
+    "question_answered": "呢個指標所屬層面有冇出現壓力或轉折？",
+    "role": "driver",
+    "why_track": "同獨立訊號一齊使用，辨識流動性、放大器或基本面變化。"
+  },
+  "label": "TGA weekly cross-check",
+  "methodology": "官方來源標準化；缺失保留 null。",
+  "metric_id": "tga_weekly_h41",
+  "observations": [
+    {
+      "date": "2026-03-25",
+      "value": 874.077
+    },
+    {
+      "date": "2026-04-01",
+      "value": 847.718
+    },
+    {
+      "date": "2026-04-08",
+      "value": 748.376
+    },
+    {
+      "date": "2026-04-15",
+      "value": 751.354
+    },
+    {
+      "date": "2026-04-22",
+      "value": 1005.968
+    },
+    {
+      "date": "2026-04-29",
+      "value": 981.929
+    },
+    {
+      "date": "2026-05-06",
+      "value": 877.761
+    },
+    {
+      "date": "2026-05-13",
+      "value": 838.584
+    },
+    {
+      "date": "2026-05-20",
+      "value": 781.293
+    },
+    {
+      "date": "2026-05-27",
+      "value": 830.296
+    },
+    {
+      "date": "2026-06-03",
+      "value": 875.713
+    },
+    {
+      "date": "2026-06-10",
+      "value": 828.122
+    },
+    {
+      "date": "2026-06-17",
+      "value": 880.713
+    },
+    {
+      "date": "2026-06-24",
+      "value": 918.696
+    },
+    {
+      "date": "2026-07-01",
+      "value": 880.237
+    },
+    {
+      "date": "2026-07-08",
+      "value": 774.062
+    },
+    {
+      "date": "2026-07-15",
+      "value": 756.218
+    },
+    {
+      "date": "2026-07-22",
+      "value": 829.623
+    },
+    {
+      "date": "2026-07-29",
+      "value": 910.776
+    },
+    {
+      "date": "2026-08-05",
+      "value": 907.324
+    }
+  ],
+  "quality": "official",
+  "retrieved_at": "2026-08-12T05:14:59.117418Z",
+  "schema_version": "1.0.0",
+  "source_ids": [
+    "fred"
+  ],
+  "status": "ok",
+  "unit": "USD bn"
+}

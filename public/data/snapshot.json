@@ -1,0 +1,1471 @@
+{
+  "alerts": [],
+  "composite": {
+    "confidence": "high",
+    "confirmed_score": 0,
+    "consecutive_positive": 0,
+    "level": "normal",
+    "raw_score": 0
+  },
+  "explanations": {
+    "bullets": [
+      {
+        "caveat": "單日變化亦可能來自月尾或 Treasury settlement，唔足以證明準備金短缺。",
+        "confidence": "high",
+        "meaning": "相對 IORB 上升通常代表 secured overnight funding 變貴。",
+        "metric_id": "sofr_iorb_spread",
+        "observation": "SOFR−IORB 最新為 -2.0 bp。"
+      }
+    ],
+    "headline": "美元流動性整體保持中性，暫未見廣泛資金壓力。"
+  },
+  "generated_at": "2026-08-12T05:14:59.117418Z",
+  "market_date": "2026-08-10",
+  "metrics": {
+    "bgcr": {
+      "as_of": "2026-08-10",
+      "change_5d": -0.02,
+      "delta_1d": 0.01,
+      "flags": [],
+      "label": "BGCR",
+      "previous": 3.6,
+      "quality": "official",
+      "short_series": [
+        {
+          "date": "2026-07-10",
+          "value": 3.52
+        },
+        {
+          "date": "2026-07-13",
+          "value": 3.58
+        },
+        {
+          "date": "2026-07-14",
+          "value": 3.62
+        },
+        {
+          "date": "2026-07-15",
+          "value": 3.62
+        },
+        {
+          "date": "2026-07-16",
+          "value": 3.59
+        },
+        {
+          "date": "2026-07-17",
+          "value": 3.56
+        },
+        {
+          "date": "2026-07-20",
+          "value": 3.54
+        },
+        {
+          "date": "2026-07-21",
+          "value": 3.58
+        },
+        {
+          "date": "2026-07-22",
+          "value": 3.6
+        },
+        {
+          "date": "2026-07-23",
+          "value": 3.62
+        },
+        {
+          "date": "2026-07-24",
+          "value": 3.62
+        },
+        {
+          "date": "2026-07-27",
+          "value": 3.62
+        },
+        {
+          "date": "2026-07-28",
+          "value": 3.64
+        },
+        {
+          "date": "2026-07-29",
+          "value": 3.64
+        },
+        {
+          "date": "2026-07-30",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-31",
+          "value": 3.64
+        },
+        {
+          "date": "2026-08-03",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-04",
+          "value": 3.64
+        },
+        {
+          "date": "2026-08-05",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-06",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-07",
+          "value": 3.6
+        },
+        {
+          "date": "2026-08-10",
+          "value": 3.61
+        }
+      ],
+      "source_ids": [
+        "nyfed"
+      ],
+      "status": "ok",
+      "trend_5d": "falling",
+      "unit": "percent",
+      "value": 3.61
+    },
+    "buffett_indicator_proxy": {
+      "as_of": null,
+      "flags": [],
+      "label": "Buffett indicator proxy",
+      "quality": "proxy",
+      "short_series": [],
+      "status": "missing",
+      "unit": "percent",
+      "value": null
+    },
+    "capex_acceleration": {
+      "as_of": null,
+      "flags": [],
+      "label": "CapEx YoY acceleration",
+      "quality": "proxy",
+      "short_series": [],
+      "status": "missing",
+      "unit": "pp",
+      "value": null
+    },
+    "cross_asset_corr": {
+      "as_of": null,
+      "flags": [],
+      "label": "Cross-asset correlation",
+      "quality": "proxy",
+      "short_series": [],
+      "status": "missing",
+      "unit": "coefficient",
+      "value": null
+    },
+    "crypto_funding_btc": {
+      "as_of": null,
+      "flags": [],
+      "label": "BTC perpetual funding",
+      "quality": "proxy",
+      "short_series": [],
+      "status": "missing",
+      "unit": "percent",
+      "value": null
+    },
+    "cta_proxy": {
+      "as_of": null,
+      "flags": [],
+      "label": "CTA positioning proxy",
+      "quality": "proxy",
+      "short_series": [],
+      "status": "missing",
+      "unit": "z-score",
+      "value": null
+    },
+    "effr": {
+      "as_of": "2026-08-10",
+      "change_5d": 0.0,
+      "delta_1d": 0.0,
+      "flags": [],
+      "label": "EFFR",
+      "previous": 3.63,
+      "quality": "official",
+      "short_series": [
+        {
+          "date": "2026-07-10",
+          "value": 3.62
+        },
+        {
+          "date": "2026-07-13",
+          "value": 3.62
+        },
+        {
+          "date": "2026-07-14",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-15",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-16",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-17",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-20",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-21",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-22",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-23",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-24",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-27",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-28",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-29",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-30",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-31",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-03",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-04",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-05",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-06",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-07",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-10",
+          "value": 3.63
+        }
+      ],
+      "source_ids": [
+        "nyfed"
+      ],
+      "status": "ok",
+      "trend_5d": "flat",
+      "unit": "percent",
+      "value": 3.63
+    },
+    "fed_total_assets": {
+      "as_of": "2026-08-05",
+      "change_5d": 24.003,
+      "delta_1d": 10.377,
+      "flags": [],
+      "label": "Fed Total Assets",
+      "previous": 6738.19,
+      "quality": "official",
+      "short_series": [
+        {
+          "date": "2026-03-25",
+          "value": 6657.161
+        },
+        {
+          "date": "2026-04-01",
+          "value": 6675.344
+        },
+        {
+          "date": "2026-04-08",
+          "value": 6693.871
+        },
+        {
+          "date": "2026-04-15",
+          "value": 6705.696
+        },
+        {
+          "date": "2026-04-22",
+          "value": 6707.419
+        },
+        {
+          "date": "2026-04-29",
+          "value": 6699.95
+        },
+        {
+          "date": "2026-05-06",
+          "value": 6709.505
+        },
+        {
+          "date": "2026-05-13",
+          "value": 6728.502
+        },
+        {
+          "date": "2026-05-20",
+          "value": 6713.643
+        },
+        {
+          "date": "2026-05-27",
+          "value": 6704.383
+        },
+        {
+          "date": "2026-06-03",
+          "value": 6711.495
+        },
+        {
+          "date": "2026-06-10",
+          "value": 6725.397
+        },
+        {
+          "date": "2026-06-17",
+          "value": 6736.424
+        },
+        {
+          "date": "2026-06-24",
+          "value": 6735.645
+        },
+        {
+          "date": "2026-07-01",
+          "value": 6724.564
+        },
+        {
+          "date": "2026-07-08",
+          "value": 6735.609
+        },
+        {
+          "date": "2026-07-15",
+          "value": 6743.028
+        },
+        {
+          "date": "2026-07-22",
+          "value": 6747.378
+        },
+        {
+          "date": "2026-07-29",
+          "value": 6738.19
+        },
+        {
+          "date": "2026-08-05",
+          "value": 6748.567
+        }
+      ],
+      "source_ids": [
+        "fred"
+      ],
+      "status": "ok",
+      "trend_5d": "rising",
+      "unit": "USD bn",
+      "value": 6748.567
+    },
+    "finra_margin_debt": {
+      "as_of": null,
+      "flags": [],
+      "label": "FINRA margin debt",
+      "quality": "proxy",
+      "short_series": [],
+      "status": "missing",
+      "unit": "USD bn",
+      "value": null
+    },
+    "gamma_flip": {
+      "as_of": null,
+      "flags": [],
+      "label": "Gamma flip level",
+      "quality": "paid_required",
+      "short_series": [],
+      "status": "paid_data_unavailable",
+      "unit": "index",
+      "value": null
+    },
+    "hyperscaler_capex": {
+      "as_of": null,
+      "flags": [],
+      "label": "Hyperscaler aggregate CapEx",
+      "quality": "proxy",
+      "short_series": [],
+      "status": "missing",
+      "unit": "USD bn",
+      "value": null
+    },
+    "insider_ratio_proxy": {
+      "as_of": null,
+      "flags": [],
+      "label": "Insider buy/sell proxy",
+      "quality": "proxy",
+      "short_series": [],
+      "status": "missing",
+      "unit": "ratio",
+      "value": null
+    },
+    "iorb": {
+      "as_of": "2026-08-12",
+      "change_5d": 0.0,
+      "delta_1d": 0.0,
+      "flags": [],
+      "label": "IORB",
+      "previous": 3.65,
+      "quality": "official",
+      "short_series": [
+        {
+          "date": "2026-07-22",
+          "value": 3.65
+        },
+        {
+          "date": "2026-07-23",
+          "value": 3.65
+        },
+        {
+          "date": "2026-07-24",
+          "value": 3.65
+        },
+        {
+          "date": "2026-07-25",
+          "value": 3.65
+        },
+        {
+          "date": "2026-07-26",
+          "value": 3.65
+        },
+        {
+          "date": "2026-07-27",
+          "value": 3.65
+        },
+        {
+          "date": "2026-07-28",
+          "value": 3.65
+        },
+        {
+          "date": "2026-07-29",
+          "value": 3.65
+        },
+        {
+          "date": "2026-07-30",
+          "value": 3.65
+        },
+        {
+          "date": "2026-07-31",
+          "value": 3.65
+        },
+        {
+          "date": "2026-08-01",
+          "value": 3.65
+        },
+        {
+          "date": "2026-08-02",
+          "value": 3.65
+        },
+        {
+          "date": "2026-08-03",
+          "value": 3.65
+        },
+        {
+          "date": "2026-08-04",
+          "value": 3.65
+        },
+        {
+          "date": "2026-08-05",
+          "value": 3.65
+        },
+        {
+          "date": "2026-08-06",
+          "value": 3.65
+        },
+        {
+          "date": "2026-08-07",
+          "value": 3.65
+        },
+        {
+          "date": "2026-08-08",
+          "value": 3.65
+        },
+        {
+          "date": "2026-08-09",
+          "value": 3.65
+        },
+        {
+          "date": "2026-08-10",
+          "value": 3.65
+        },
+        {
+          "date": "2026-08-11",
+          "value": 3.65
+        },
+        {
+          "date": "2026-08-12",
+          "value": 3.65
+        }
+      ],
+      "source_ids": [
+        "fred"
+      ],
+      "status": "ok",
+      "trend_5d": "flat",
+      "unit": "percent",
+      "value": 3.65
+    },
+    "m2_vs_nasdaq": {
+      "as_of": null,
+      "flags": [],
+      "label": "M2 vs Nasdaq divergence",
+      "quality": "proxy",
+      "short_series": [],
+      "status": "missing",
+      "unit": "z-score",
+      "value": null
+    },
+    "ndx_forward_pe": {
+      "as_of": null,
+      "flags": [],
+      "label": "NDX forward P/E",
+      "quality": "paid_required",
+      "short_series": [],
+      "status": "paid_data_unavailable",
+      "unit": "multiple",
+      "value": null
+    },
+    "obfr": {
+      "as_of": "2026-08-10",
+      "change_5d": 0.0,
+      "delta_1d": 0.0,
+      "flags": [],
+      "label": "OBFR",
+      "previous": 3.63,
+      "quality": "official",
+      "short_series": [
+        {
+          "date": "2026-07-10",
+          "value": 3.62
+        },
+        {
+          "date": "2026-07-13",
+          "value": 3.62
+        },
+        {
+          "date": "2026-07-14",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-15",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-16",
+          "value": 3.62
+        },
+        {
+          "date": "2026-07-17",
+          "value": 3.62
+        },
+        {
+          "date": "2026-07-20",
+          "value": 3.62
+        },
+        {
+          "date": "2026-07-21",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-22",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-23",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-24",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-27",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-28",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-29",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-30",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-31",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-03",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-04",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-05",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-06",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-07",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-10",
+          "value": 3.63
+        }
+      ],
+      "source_ids": [
+        "nyfed"
+      ],
+      "status": "ok",
+      "trend_5d": "flat",
+      "unit": "percent",
+      "value": 3.63
+    },
+    "on_rrp": {
+      "as_of": null,
+      "flags": [],
+      "label": "ON RRP 使用量",
+      "quality": "proxy",
+      "short_series": [],
+      "status": "missing",
+      "unit": "USD bn",
+      "value": null
+    },
+    "prepayments": {
+      "as_of": null,
+      "flags": [],
+      "label": "Customer prepayments",
+      "quality": "proxy",
+      "short_series": [],
+      "status": "manual_update_due",
+      "unit": "USD bn",
+      "value": null
+    },
+    "put_call_skew": {
+      "as_of": null,
+      "flags": [],
+      "label": "Put/call skew",
+      "quality": "paid_required",
+      "short_series": [],
+      "status": "paid_data_unavailable",
+      "unit": "index",
+      "value": null
+    },
+    "reserve_balances": {
+      "as_of": "2026-08-05",
+      "change_5d": 26.452,
+      "delta_1d": 8.779,
+      "flags": [],
+      "label": "Reserve Balances",
+      "previous": 2984.57,
+      "quality": "official",
+      "short_series": [
+        {
+          "date": "2026-03-25",
+          "value": 2993.955
+        },
+        {
+          "date": "2026-04-01",
+          "value": 3026.708
+        },
+        {
+          "date": "2026-04-08",
+          "value": 3116.247
+        },
+        {
+          "date": "2026-04-15",
+          "value": 3129.588
+        },
+        {
+          "date": "2026-04-22",
+          "value": 2901.825
+        },
+        {
+          "date": "2026-04-29",
+          "value": 2918.599
+        },
+        {
+          "date": "2026-05-06",
+          "value": 3032.588
+        },
+        {
+          "date": "2026-05-13",
+          "value": 3102.81
+        },
+        {
+          "date": "2026-05-20",
+          "value": 3129.562
+        },
+        {
+          "date": "2026-05-27",
+          "value": 3066.56
+        },
+        {
+          "date": "2026-06-03",
+          "value": 3013.902
+        },
+        {
+          "date": "2026-06-10",
+          "value": 3080.723
+        },
+        {
+          "date": "2026-06-17",
+          "value": 3033.444
+        },
+        {
+          "date": "2026-06-24",
+          "value": 2951.416
+        },
+        {
+          "date": "2026-07-01",
+          "value": 2966.897
+        },
+        {
+          "date": "2026-07-08",
+          "value": 3098.911
+        },
+        {
+          "date": "2026-07-15",
+          "value": 3142.721
+        },
+        {
+          "date": "2026-07-22",
+          "value": 3062.149
+        },
+        {
+          "date": "2026-07-29",
+          "value": 2984.57
+        },
+        {
+          "date": "2026-08-05",
+          "value": 2993.349
+        }
+      ],
+      "source_ids": [
+        "fred"
+      ],
+      "status": "ok",
+      "trend_5d": "rising",
+      "unit": "USD bn",
+      "value": 2993.349
+    },
+    "sofr": {
+      "as_of": "2026-08-10",
+      "change_5d": -0.02,
+      "delta_1d": 0.01,
+      "flags": [],
+      "label": "SOFR",
+      "previous": 3.62,
+      "quality": "official",
+      "short_series": [
+        {
+          "date": "2026-07-10",
+          "value": 3.55
+        },
+        {
+          "date": "2026-07-13",
+          "value": 3.6
+        },
+        {
+          "date": "2026-07-14",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-15",
+          "value": 3.64
+        },
+        {
+          "date": "2026-07-16",
+          "value": 3.62
+        },
+        {
+          "date": "2026-07-17",
+          "value": 3.59
+        },
+        {
+          "date": "2026-07-20",
+          "value": 3.57
+        },
+        {
+          "date": "2026-07-21",
+          "value": 3.61
+        },
+        {
+          "date": "2026-07-22",
+          "value": 3.62
+        },
+        {
+          "date": "2026-07-23",
+          "value": 3.64
+        },
+        {
+          "date": "2026-07-24",
+          "value": 3.64
+        },
+        {
+          "date": "2026-07-27",
+          "value": 3.64
+        },
+        {
+          "date": "2026-07-28",
+          "value": 3.65
+        },
+        {
+          "date": "2026-07-29",
+          "value": 3.65
+        },
+        {
+          "date": "2026-07-30",
+          "value": 3.65
+        },
+        {
+          "date": "2026-07-31",
+          "value": 3.66
+        },
+        {
+          "date": "2026-08-03",
+          "value": 3.65
+        },
+        {
+          "date": "2026-08-04",
+          "value": 3.66
+        },
+        {
+          "date": "2026-08-05",
+          "value": 3.64
+        },
+        {
+          "date": "2026-08-06",
+          "value": 3.65
+        },
+        {
+          "date": "2026-08-07",
+          "value": 3.62
+        },
+        {
+          "date": "2026-08-10",
+          "value": 3.63
+        }
+      ],
+      "source_ids": [
+        "nyfed"
+      ],
+      "status": "ok",
+      "trend_5d": "falling",
+      "unit": "percent",
+      "value": 3.63
+    },
+    "sofr_iorb_spread": {
+      "as_of": "2026-08-10",
+      "change_5d": -2.0,
+      "consecutive_positive": 0,
+      "delta_1d": 1.0,
+      "flags": [],
+      "label": "SOFR−IORB 利差",
+      "previous": -3.0,
+      "quality": "derived_official",
+      "short_series": [
+        {
+          "date": "2026-07-10",
+          "value": -10.0
+        },
+        {
+          "date": "2026-07-13",
+          "value": -5.0
+        },
+        {
+          "date": "2026-07-14",
+          "value": -2.0
+        },
+        {
+          "date": "2026-07-15",
+          "value": -1.0
+        },
+        {
+          "date": "2026-07-16",
+          "value": -3.0
+        },
+        {
+          "date": "2026-07-17",
+          "value": -6.0
+        },
+        {
+          "date": "2026-07-20",
+          "value": -8.0
+        },
+        {
+          "date": "2026-07-21",
+          "value": -4.0
+        },
+        {
+          "date": "2026-07-22",
+          "value": -3.0
+        },
+        {
+          "date": "2026-07-23",
+          "value": -1.0
+        },
+        {
+          "date": "2026-07-24",
+          "value": -1.0
+        },
+        {
+          "date": "2026-07-27",
+          "value": -1.0
+        },
+        {
+          "date": "2026-07-28",
+          "value": 0.0
+        },
+        {
+          "date": "2026-07-29",
+          "value": 0.0
+        },
+        {
+          "date": "2026-07-30",
+          "value": 0.0
+        },
+        {
+          "date": "2026-07-31",
+          "value": 1.0
+        },
+        {
+          "date": "2026-08-03",
+          "value": 0.0
+        },
+        {
+          "date": "2026-08-04",
+          "value": 1.0
+        },
+        {
+          "date": "2026-08-05",
+          "value": -1.0
+        },
+        {
+          "date": "2026-08-06",
+          "value": 0.0
+        },
+        {
+          "date": "2026-08-07",
+          "value": -3.0
+        },
+        {
+          "date": "2026-08-10",
+          "value": -2.0
+        }
+      ],
+      "source_ids": [
+        "nyfed",
+        "fred"
+      ],
+      "status": "ok",
+      "trend_5d": "falling",
+      "unit": "bp",
+      "value": -2.0
+    },
+    "sp500_top10_weight": {
+      "as_of": null,
+      "flags": [],
+      "label": "S&P 500 Top-10 weight",
+      "quality": "proxy",
+      "short_series": [],
+      "status": "manual_update_due",
+      "unit": "percent",
+      "value": null
+    },
+    "spx_0dte_share": {
+      "as_of": null,
+      "flags": [],
+      "label": "SPX 0DTE share",
+      "quality": "paid_required",
+      "short_series": [],
+      "status": "paid_data_unavailable",
+      "unit": "percent",
+      "value": null
+    },
+    "srf_usage": {
+      "as_of": null,
+      "flags": [],
+      "label": "SRF 使用量",
+      "quality": "proxy",
+      "short_series": [],
+      "status": "missing",
+      "unit": "USD bn",
+      "value": null
+    },
+    "take_or_pay": {
+      "as_of": null,
+      "flags": [],
+      "label": "Take-or-pay commitments",
+      "quality": "proxy",
+      "short_series": [],
+      "status": "manual_update_due",
+      "unit": "USD bn",
+      "value": null
+    },
+    "tga_daily": {
+      "as_of": "2026-08-10",
+      "change_5d": 96.768,
+      "delta_1d": 12.738,
+      "flags": [],
+      "label": "TGA closing balance",
+      "previous": 954.113,
+      "quality": "official",
+      "short_series": [
+        {
+          "date": "2026-07-10",
+          "value": 738.273
+        },
+        {
+          "date": "2026-07-13",
+          "value": 750.282
+        },
+        {
+          "date": "2026-07-14",
+          "value": 787.814
+        },
+        {
+          "date": "2026-07-15",
+          "value": 795.976
+        },
+        {
+          "date": "2026-07-16",
+          "value": 822.51
+        },
+        {
+          "date": "2026-07-17",
+          "value": 815.418
+        },
+        {
+          "date": "2026-07-20",
+          "value": 828.197
+        },
+        {
+          "date": "2026-07-21",
+          "value": 874.98
+        },
+        {
+          "date": "2026-07-22",
+          "value": 835.417
+        },
+        {
+          "date": "2026-07-23",
+          "value": 877.201
+        },
+        {
+          "date": "2026-07-24",
+          "value": 886.3
+        },
+        {
+          "date": "2026-07-27",
+          "value": 902.751
+        },
+        {
+          "date": "2026-07-28",
+          "value": 966.136
+        },
+        {
+          "date": "2026-07-29",
+          "value": 970.442
+        },
+        {
+          "date": "2026-07-30",
+          "value": 997.946
+        },
+        {
+          "date": "2026-07-31",
+          "value": 876.566
+        },
+        {
+          "date": "2026-08-03",
+          "value": 870.083
+        },
+        {
+          "date": "2026-08-04",
+          "value": 924.219
+        },
+        {
+          "date": "2026-08-05",
+          "value": 929.325
+        },
+        {
+          "date": "2026-08-06",
+          "value": 961.726
+        },
+        {
+          "date": "2026-08-07",
+          "value": 954.113
+        },
+        {
+          "date": "2026-08-10",
+          "value": 966.851
+        }
+      ],
+      "source_ids": [
+        "treasury"
+      ],
+      "status": "ok",
+      "trend_5d": "rising",
+      "unit": "USD bn",
+      "value": 966.851
+    },
+    "tga_weekly_h41": {
+      "as_of": "2026-08-05",
+      "change_5d": 27.087,
+      "delta_1d": -3.452,
+      "flags": [],
+      "label": "TGA weekly cross-check",
+      "previous": 910.776,
+      "quality": "official",
+      "short_series": [
+        {
+          "date": "2026-03-25",
+          "value": 874.077
+        },
+        {
+          "date": "2026-04-01",
+          "value": 847.718
+        },
+        {
+          "date": "2026-04-08",
+          "value": 748.376
+        },
+        {
+          "date": "2026-04-15",
+          "value": 751.354
+        },
+        {
+          "date": "2026-04-22",
+          "value": 1005.968
+        },
+        {
+          "date": "2026-04-29",
+          "value": 981.929
+        },
+        {
+          "date": "2026-05-06",
+          "value": 877.761
+        },
+        {
+          "date": "2026-05-13",
+          "value": 838.584
+        },
+        {
+          "date": "2026-05-20",
+          "value": 781.293
+        },
+        {
+          "date": "2026-05-27",
+          "value": 830.296
+        },
+        {
+          "date": "2026-06-03",
+          "value": 875.713
+        },
+        {
+          "date": "2026-06-10",
+          "value": 828.122
+        },
+        {
+          "date": "2026-06-17",
+          "value": 880.713
+        },
+        {
+          "date": "2026-06-24",
+          "value": 918.696
+        },
+        {
+          "date": "2026-07-01",
+          "value": 880.237
+        },
+        {
+          "date": "2026-07-08",
+          "value": 774.062
+        },
+        {
+          "date": "2026-07-15",
+          "value": 756.218
+        },
+        {
+          "date": "2026-07-22",
+          "value": 829.623
+        },
+        {
+          "date": "2026-07-29",
+          "value": 910.776
+        },
+        {
+          "date": "2026-08-05",
+          "value": 907.324
+        }
+      ],
+      "source_ids": [
+        "fred"
+      ],
+      "status": "ok",
+      "trend_5d": "rising",
+      "unit": "USD bn",
+      "value": 907.324
+    },
+    "tgcr": {
+      "as_of": "2026-08-10",
+      "change_5d": -0.02,
+      "delta_1d": 0.01,
+      "flags": [],
+      "label": "TGCR",
+      "previous": 3.6,
+      "quality": "official",
+      "short_series": [
+        {
+          "date": "2026-07-10",
+          "value": 3.52
+        },
+        {
+          "date": "2026-07-13",
+          "value": 3.58
+        },
+        {
+          "date": "2026-07-14",
+          "value": 3.62
+        },
+        {
+          "date": "2026-07-15",
+          "value": 3.62
+        },
+        {
+          "date": "2026-07-16",
+          "value": 3.59
+        },
+        {
+          "date": "2026-07-17",
+          "value": 3.56
+        },
+        {
+          "date": "2026-07-20",
+          "value": 3.54
+        },
+        {
+          "date": "2026-07-21",
+          "value": 3.58
+        },
+        {
+          "date": "2026-07-22",
+          "value": 3.6
+        },
+        {
+          "date": "2026-07-23",
+          "value": 3.62
+        },
+        {
+          "date": "2026-07-24",
+          "value": 3.62
+        },
+        {
+          "date": "2026-07-27",
+          "value": 3.62
+        },
+        {
+          "date": "2026-07-28",
+          "value": 3.64
+        },
+        {
+          "date": "2026-07-29",
+          "value": 3.64
+        },
+        {
+          "date": "2026-07-30",
+          "value": 3.63
+        },
+        {
+          "date": "2026-07-31",
+          "value": 3.64
+        },
+        {
+          "date": "2026-08-03",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-04",
+          "value": 3.64
+        },
+        {
+          "date": "2026-08-05",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-06",
+          "value": 3.63
+        },
+        {
+          "date": "2026-08-07",
+          "value": 3.6
+        },
+        {
+          "date": "2026-08-10",
+          "value": 3.61
+        }
+      ],
+      "source_ids": [
+        "nyfed"
+      ],
+      "status": "ok",
+      "trend_5d": "falling",
+      "unit": "percent",
+      "value": 3.61
+    },
+    "upstream_backlog": {
+      "as_of": null,
+      "flags": [],
+      "label": "AI upstream backlog",
+      "quality": "proxy",
+      "short_series": [],
+      "status": "manual_update_due",
+      "unit": "USD bn",
+      "value": null
+    },
+    "vix_curve": {
+      "as_of": null,
+      "flags": [],
+      "label": "VIX term structure",
+      "quality": "proxy",
+      "short_series": [],
+      "status": "missing",
+      "unit": "index",
+      "value": null
+    }
+  },
+  "overall_status": "neutral",
+  "schema_version": "1.0.0",
+  "source_health": {
+    "error": 0,
+    "missing": 4,
+    "ok": 3,
+    "stale": 0
+  },
+  "sources": {
+    "cboe": {
+      "as_of": null,
+      "error": null,
+      "frequency": "daily",
+      "name": "Cboe Global Markets",
+      "quality": "public_vendor",
+      "retrieved_at": null,
+      "status": "missing",
+      "url": "https://www.cboe.com/tradable-products/vix/term-structure"
+    },
+    "cftc": {
+      "as_of": null,
+      "error": null,
+      "frequency": "weekly",
+      "name": "CFTC Commitments of Traders",
+      "quality": "official",
+      "retrieved_at": null,
+      "status": "missing",
+      "url": "https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm"
+    },
+    "finra": {
+      "as_of": null,
+      "error": null,
+      "frequency": "monthly",
+      "name": "FINRA Margin Statistics",
+      "quality": "official",
+      "retrieved_at": null,
+      "status": "missing",
+      "url": "https://www.finra.org/rules-guidance/key-topics/margin-accounts/margin-statistics"
+    },
+    "fred": {
+      "as_of": "2026-08-12",
+      "error": null,
+      "frequency": "weekly / policy",
+      "name": "Federal Reserve Economic Data",
+      "quality": "official",
+      "retrieved_at": "2026-08-12T05:14:59.117418Z",
+      "status": "ok",
+      "url": "https://fred.stlouisfed.org/"
+    },
+    "nyfed": {
+      "as_of": "2026-08-10",
+      "error": null,
+      "frequency": "business_daily",
+      "name": "New York Fed Markets Data",
+      "quality": "official",
+      "retrieved_at": "2026-08-12T05:14:59.117418Z",
+      "status": "ok",
+      "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
+    },
+    "sec": {
+      "as_of": null,
+      "error": null,
+      "frequency": "quarterly",
+      "name": "SEC EDGAR",
+      "quality": "official",
+      "retrieved_at": null,
+      "status": "missing",
+      "url": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces"
+    },
+    "treasury": {
+      "as_of": "2026-08-10",
+      "error": null,
+      "frequency": "business_daily",
+      "name": "U.S. Treasury FiscalData",
+      "quality": "official",
+      "retrieved_at": "2026-08-12T05:14:59.117418Z",
+      "status": "ok",
+      "url": "https://fiscaldata.treasury.gov/api-documentation/"
+    }
+  },
+  "switches": {
+    "fundamental_exit": {
+      "confidence": "low",
+      "score": 0,
+      "status": "unavailable",
+      "summary": "季度 CapEx／訂單資料待發布。"
+    },
+    "liquidity_fuel": {
+      "confidence": "high",
+      "score": 0,
+      "status": "neutral",
+      "summary": "價格、準備金及 backstop 分組判讀。"
+    },
+    "market_ignition": {
+      "confidence": "low",
+      "score": 0,
+      "status": "unavailable",
+      "summary": "公開代理指標尚未完成更新。"
+    }
+  },
+  "technical_context": []
+}

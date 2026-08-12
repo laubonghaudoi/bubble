@@ -1,0 +1,13 @@
+node_modules/
+dist/
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+.pytest_cache/
+__pycache__/
+*.pyc
+.env*
+!.env.example
+
+# Local visual regression artefacts
+docs/screenshots/
