@@ -13,6 +13,8 @@ export const OVERLAY_CONFIG=[
 ] as const satisfies ReadonlyArray<{id:string;label:string;colour:string;cssVariable:string}>;
 
 type OverlayId=(typeof OVERLAY_CONFIG)[number]['id'];
+const EMPTY_LAST_GOOD_IDS:readonly string[]=[];
+const LAST_GOOD_A11Y='最後成功值，並非今日新值';
 
 export interface ChartPalette{
   main:string;
@@ -162,7 +164,9 @@ function numericValue(value:number|string):number|null{
 export function formatMetricValue(value:number|null|undefined,unit:string):string{
   if(!isFiniteNumber(value))return '—';
   const kind=unitKind(unit);
-  const digits=kind==='percent'?2:kind==='bp'?1:kind==='usd-bn'?0:2;
+  const digits=kind==='percent'?2:kind==='bp'?1:kind==='usd-bn'
+    ?value===0?0:Math.abs(value)<1?3:Math.abs(value)<100?1:0
+    :2;
   const formatted=new Intl.NumberFormat('en-US',{
     minimumFractionDigits:digits,
     maximumFractionDigits:digits,
@@ -258,11 +262,13 @@ export interface MainChartOptionInput{
   unit:string;
   points:ChartPoints;
   thresholdBp?:number;
+  referenceLines?:ReadonlyArray<{value:number;label:string}>;
+  lastGood?:boolean;
   palette?:ChartPalette;
 }
 
 export function buildMainChartOption({
-  metricId,label,unit,points,thresholdBp=3,palette=FALLBACK_PALETTE,
+  metricId,label,unit,points,thresholdBp=3,referenceLines=[],lastGood=false,palette=FALLBACK_PALETTE,
 }:MainChartOptionInput):EChartsOption{
   const ordered=orderedPoints(pointsFrom(points));
   const dates=ordered.map(point=>point.date);
@@ -284,7 +290,7 @@ export function buildMainChartOption({
       lineStyle:{color:palette.zero,width:1,type:'solid'},
     });
   }
-  if(metricId==='sofr_iorb_spread'&&isFiniteNumber(thresholdBp)&&bounds&&
+  if(metricId==='sofr_iorb_spread_bp'&&isFiniteNumber(thresholdBp)&&bounds&&
     thresholdBp>=bounds.min&&thresholdBp<=bounds.max){
     markLines.push({
       yAxis:thresholdBp,
@@ -292,9 +298,22 @@ export function buildMainChartOption({
       lineStyle:{color:palette.threshold,width:1,type:'dashed'},
     });
   }
+  if(bounds){
+    for(const line of referenceLines){
+      if(!isFiniteNumber(line.value)||line.value<bounds.min||line.value>bounds.max)continue;
+      markLines.push({
+        yAxis:line.value,
+        label:{show:true,formatter:line.label,position:'insideEndTop',color:palette.muted,fontSize:11},
+        lineStyle:{color:palette.muted,width:1,type:'dashed'},
+      });
+    }
+  }
 
+  const displayedValue=lastGood
+    ?`最後成功觀察值為 ${formatMetricValue(values[lastIndex],unit)}；並非今日新值。`
+    :`最新為 ${formatMetricValue(values[lastIndex],unit)}。`;
   const description=finiteValues.length
-    ?`${label}，${dates[0]} 至 ${dates[dates.length-1]}，${finiteValues.length} 個觀察值，最新為 ${formatMetricValue(values[lastIndex],unit)}。`
+    ?`${label}，${dates[0]} 至 ${dates[dates.length-1]}，${finiteValues.length} 個觀察值，${displayedValue}`
     :`${label}暫無可用觀察值。`;
 
   return {
@@ -362,11 +381,12 @@ function selectedSet(selected:SelectedSeries):Set<string>{
 export interface OverlayChartOptionInput{
   series:OverlayData;
   selected:SelectedSeries;
+  lastGoodIds?:readonly string[];
   palette?:ChartPalette;
 }
 
 export function buildOverlayChartOption({
-  series,selected,palette=FALLBACK_PALETTE,
+  series,selected,lastGoodIds=EMPTY_LAST_GOOD_IDS,palette=FALLBACK_PALETTE,
 }:OverlayChartOptionInput):EChartsOption{
   const union=normaliseOverlayData(series);
   const enabled=selectedSet(selected);
@@ -376,6 +396,7 @@ export function buildOverlayChartOption({
   const knownIds=OVERLAY_CONFIG.map(item=>item.id).filter(id=>id in union.series);
   const unknownIds=Object.keys(union.series).filter(id=>!configById.has(id)).sort();
   const ids=[...knownIds,...unknownIds].filter(id=>enabled.has(id));
+  const lastGood=new Set(lastGoodIds);
   const fallbackColours=[palette.faint,palette.orange,palette.button];
 
   const lineSeries=ids.map((id,index)=>{
@@ -392,7 +413,10 @@ export function buildOverlayChartOption({
     };
   });
   const description=ids.length
-    ?`隔夜利率疊加圖，${union.dates[0]??'—'} 至 ${union.dates.at(-1)??'—'}，顯示 ${ids.map(id=>configById.get(id)?.label??id.toUpperCase()).join('、')}。`
+    ?`隔夜利率疊加圖，${union.dates[0]??'—'} 至 ${union.dates.at(-1)??'—'}，顯示 ${ids.map(id=>{
+      const label=configById.get(id)?.label??id.toUpperCase();
+      return lastGood.has(id)?`${label}（${LAST_GOOD_A11Y}）`:label;
+    }).join('、')}。`
     :'隔夜利率疊加圖，目前未選擇任何序列。';
 
   return {
@@ -435,15 +459,17 @@ export interface MainMetricChartProps{
   unit:string;
   points:ChartPoints;
   thresholdBp?:number;
+  referenceLines?:ReadonlyArray<{value:number;label:string}>;
+  lastGood?:boolean;
 }
 
 export function MainMetricChart({
-  metricId,label,unit,points,thresholdBp=3,
+  metricId,label,unit,points,thresholdBp=3,referenceLines=[],lastGood=false,
 }:MainMetricChartProps){
   const palette=useMemo(()=>resolveChartPalette(),[]);
   const option=useMemo(()=>buildMainChartOption({
-    metricId,label,unit,points,thresholdBp,palette,
-  }),[metricId,label,unit,points,thresholdBp,palette]);
+    metricId,label,unit,points,thresholdBp,referenceLines,lastGood,palette,
+  }),[metricId,label,unit,points,thresholdBp,referenceLines,lastGood,palette]);
   return <div className="metric-chart metric-chart--main" style={{width:'100%',height:'100%',minHeight:0}}>
     <ReactECharts option={option} notMerge lazyUpdate style={{width:'100%',height:'100%'}}/>
   </div>;
@@ -452,12 +478,13 @@ export function MainMetricChart({
 export interface RateOverlayChartProps{
   series:OverlayData;
   selected:SelectedSeries;
+  lastGoodIds?:readonly string[];
 }
 
-export function RateOverlayChart({series,selected}:RateOverlayChartProps){
+export function RateOverlayChart({series,selected,lastGoodIds=EMPTY_LAST_GOOD_IDS}:RateOverlayChartProps){
   const palette=useMemo(()=>resolveChartPalette(),[]);
-  const option=useMemo(()=>buildOverlayChartOption({series,selected,palette}),[
-    series,selected,palette,
+  const option=useMemo(()=>buildOverlayChartOption({series,selected,lastGoodIds,palette}),[
+    series,selected,lastGoodIds,palette,
   ]);
   return <div className="metric-chart metric-chart--overlay" style={{width:'100%',height:'100%',minHeight:0}}>
     <ReactECharts option={option} notMerge lazyUpdate style={{width:'100%',height:'100%'}}/>
@@ -500,13 +527,14 @@ export interface SparklineProps{
   points:ChartPoints;
   selected:boolean;
   label:string;
+  lastGood?:boolean;
 }
 
-export function Sparkline({points,selected,label}:SparklineProps){
+export function Sparkline({points,selected,label,lastGood=false}:SparklineProps){
   const observations=useMemo(()=>pointsFrom(points),[points]);
   const segments=useMemo(()=>sparkSegments(observations),[observations]);
   const count=observations.filter(point=>isFiniteNumber(point.value)).length;
-  const summary=`${label} 走勢，${count} 個觀察值。`;
+  const summary=`${label} 走勢，${count} 個觀察值。${lastGood?`${LAST_GOOD_A11Y}。`:''}`;
   return <svg
     className={`sparkline tape-spark${selected?' is-selected':''}`}
     width="48" height="19" viewBox="0 0 48 19" preserveAspectRatio="none"

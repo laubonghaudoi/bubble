@@ -1,0 +1,6 @@
+{
+  "data": [
+    {"cusip": "912797WF0", "auction_date": "2026-08-12", "issue_date": "2026-08-18", "offering_amt": "72000000000", "security_type": "Bill", "security_term": "17-Week"},
+    {"cusip": "912797WF0", "auction_date": "2026-08-12", "issue_date": "2026-08-18", "offering_amt": "72000000000", "security_type": "Bill", "security_term": "17-Week"}
+  ]
+}

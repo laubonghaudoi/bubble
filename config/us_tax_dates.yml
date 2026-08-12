@@ -1,0 +1,54 @@
+schema_version: "2.0.0"
+registry_kind: us_tax_dates
+reviewed_at: "2026-08-12"
+
+# Dates are version controlled and human reviewed. Do not infer future dates
+# from a fixed month/day rule: weekends, holidays, and relief can change them.
+tax_dates:
+  - event_id: individual_estimated_tax_2026_q1
+    tax_year: 2026
+    tax_type: INDIVIDUAL_ESTIMATED_TAX
+    original_deadline: "2026-04-15"
+    observed_deadline: "2026-04-15"
+    source_url: https://www.irs.gov/pub/irs-pdf/f1040es.pdf
+    relief_scope: NATIONAL_BASELINE
+    reviewed: true
+    reviewer: repository_maintainer
+    reviewed_at: "2026-08-12"
+    review_note: National baseline only; disaster-area postponements require separate reviewed entries.
+
+  - event_id: individual_estimated_tax_2026_q2
+    tax_year: 2026
+    tax_type: INDIVIDUAL_ESTIMATED_TAX
+    original_deadline: "2026-06-15"
+    observed_deadline: "2026-06-15"
+    source_url: https://www.irs.gov/pub/irs-pdf/f1040es.pdf
+    relief_scope: NATIONAL_BASELINE
+    reviewed: true
+    reviewer: repository_maintainer
+    reviewed_at: "2026-08-12"
+    review_note: National baseline only; disaster-area postponements require separate reviewed entries.
+
+  - event_id: individual_estimated_tax_2026_q3
+    tax_year: 2026
+    tax_type: INDIVIDUAL_ESTIMATED_TAX
+    original_deadline: "2026-09-15"
+    observed_deadline: "2026-09-15"
+    source_url: https://www.irs.gov/pub/irs-pdf/f1040es.pdf
+    relief_scope: NATIONAL_BASELINE
+    reviewed: true
+    reviewer: repository_maintainer
+    reviewed_at: "2026-08-12"
+    review_note: National baseline only; disaster-area postponements require separate reviewed entries.
+
+  - event_id: individual_estimated_tax_2026_q4
+    tax_year: 2026
+    tax_type: INDIVIDUAL_ESTIMATED_TAX
+    original_deadline: "2027-01-15"
+    observed_deadline: "2027-01-15"
+    source_url: https://www.irs.gov/pub/irs-pdf/f1040es.pdf
+    relief_scope: NATIONAL_BASELINE
+    reviewed: true
+    reviewer: repository_maintainer
+    reviewed_at: "2026-08-12"
+    review_note: National baseline only; disaster-area postponements require separate reviewed entries.

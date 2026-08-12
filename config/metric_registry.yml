@@ -1,0 +1,1213 @@
+---
+schema_version: 2.0.0
+registry_kind: metric
+canonical_p0_metric_ids:
+- sofr
+- iorb
+- sofr_iorb_spread_bp
+- effr
+- effr_iorb_spread_bp
+- obfr
+- obfr_iorb_spread_bp
+- tgcr
+- tgcr_iorb_spread_bp
+- bgcr
+- bgcr_iorb_spread_bp
+- tga_daily
+- on_rrp_accepted
+- srf_accepted
+- reserve_balances
+- fed_total_assets
+- tga_weekly_h41
+metrics:
+- metric_id: sofr
+  legacy_ids: []
+  label: SOFR
+  layer: LIQUIDITY_FUEL
+  phase: P0
+  availability: ACTIVE_FREE
+  source_ids:
+  - nyfed_markets
+  network_enabled: true
+  is_proxy: false
+  unit: percent
+  frequency: business_daily
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: How expensive is broad Treasury repo funding?
+    definition: Volume-weighted overnight Treasury repo rate published by the New York Fed.
+    why_it_matters: A move relative to IORB can reveal secured-funding pressure.
+    direction: Rising relative to IORB usually means tighter marginal secured funding.
+    calculation: Use the official SOFR observation; spreads are calculated separately.
+    frequency_and_lag: Business daily, normally published on the next business morning.
+    common_misreads: A single move does not prove reserve scarcity.
+    technical_distortions: Month-end, quarter-end, settlements, collateral specials, and dealer balance-sheet effects can distort it.
+    confirm_with:
+    - iorb
+    - sofr_iorb_spread_bp
+    - tgcr
+    - bgcr
+    cannot_infer: Cannot alone prove a liquidity crisis or predict asset prices.
+    source_and_license_note: New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.
+    proxy_disclosure: ''
+  implemented: true
+- metric_id: iorb
+  legacy_ids: []
+  label: IORB
+  layer: LIQUIDITY_FUEL
+  phase: P0
+  availability: ACTIVE_FREE
+  source_ids:
+  - fred_government
+  source_series:
+    fred_government: IORB
+  network_enabled: true
+  is_proxy: false
+  unit: percent
+  frequency: policy_event
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: What can eligible banks earn on reserve balances?
+    definition: Interest rate paid by the Federal Reserve on reserve balances.
+    why_it_matters: It is the core policy-rate comparator for overnight funding rates.
+    direction: A higher IORB raises the administered-rate anchor; spread direction matters more than level alone.
+    calculation: Use the official IORB percent rate effective for each observation date.
+    frequency_and_lag: Policy-event frequency; the value persists until the next effective change.
+    common_misreads: An unchanged IORB is not a fresh daily market observation.
+    technical_distortions: FOMC implementation changes and effective-date boundaries affect as-of joins.
+    confirm_with:
+    - sofr
+    - effr
+    - obfr
+    - tgcr
+    - bgcr
+    cannot_infer: Cannot measure reserve abundance or market stress by itself.
+    source_and_license_note: Government-origin series distributed by the FRED API; requires FRED_API_KEY and is restricted to the reviewed allowlist.
+    proxy_disclosure: ''
+  implemented: true
+- metric_id: sofr_iorb_spread_bp
+  legacy_ids:
+  - sofr_iorb_spread
+  label: SOFR−IORB spread
+  layer: LIQUIDITY_FUEL
+  phase: P0
+  availability: ACTIVE_FREE
+  source_ids:
+  - nyfed_markets
+  - fred_government
+  source_series:
+    fred_government: IORB
+  network_enabled: true
+  is_proxy: false
+  unit: bp
+  frequency: business_daily
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: Is Treasury repo funding expensive relative to IORB?
+    definition: SOFR minus backward-as-of IORB for the same effective observation date, in basis points.
+    why_it_matters: It is the primary secured-funding pressure signal.
+    direction: A sustained rise above zero is tighter; one-day spikes require confirmation.
+    calculation: "(SOFR percent - IORB percent) x 100, without linear interpolation."
+    frequency_and_lag: Business daily; changes use valid observations rather than calendar days.
+    common_misreads: A single +3 bp print is a watch threshold, not a crisis signal.
+    technical_distortions: Quarter-end, settlements, collateral specials, and operational events can lower confidence.
+    confirm_with:
+    - effr_iorb_spread_bp
+    - tgcr_iorb_spread_bp
+    - bgcr_iorb_spread_bp
+    - srf_accepted
+    - reserve_balances
+    cannot_infer: Cannot alone prove systemic reserve scarcity or forecast market direction.
+    source_and_license_note: New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.
+    proxy_disclosure: ''
+  implemented: true
+- metric_id: effr
+  legacy_ids: []
+  label: EFFR
+  layer: LIQUIDITY_FUEL
+  phase: P0
+  availability: ACTIVE_FREE
+  source_ids:
+  - nyfed_markets
+  network_enabled: true
+  is_proxy: false
+  unit: percent
+  frequency: business_daily
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: What is the effective unsecured federal-funds rate?
+    definition: Volume-weighted median rate on overnight federal-funds transactions reported to the New York Fed.
+    why_it_matters: It confirms whether unsecured interbank funding is moving relative to IORB.
+    direction: A rise relative to IORB can confirm broader funding pressure.
+    calculation: Use the official EFFR observation.
+    frequency_and_lag: Business daily, normally published on the next business morning.
+    common_misreads: EFFR level alone mainly reflects the policy corridor.
+    technical_distortions: Reporting composition and policy effective dates affect comparisons.
+    confirm_with:
+    - iorb
+    - effr_iorb_spread_bp
+    - sofr
+    cannot_infer: Cannot alone show repo-market or system-wide stress.
+    source_and_license_note: New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.
+    proxy_disclosure: ''
+  implemented: true
+- metric_id: effr_iorb_spread_bp
+  legacy_ids: []
+  label: EFFR−IORB spread
+  layer: LIQUIDITY_FUEL
+  phase: P0
+  availability: ACTIVE_FREE
+  source_ids:
+  - nyfed_markets
+  - fred_government
+  source_series:
+    fred_government: IORB
+  network_enabled: true
+  is_proxy: false
+  unit: bp
+  frequency: business_daily
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: Is federal-funds funding expensive relative to IORB?
+    definition: EFFR minus backward-as-of IORB, in basis points.
+    why_it_matters: It supplies unsecured confirmation for SOFR-based funding pressure.
+    direction: A sustained upward move confirms broader tightening more than a flat reading.
+    calculation: "(EFFR percent - IORB percent) x 100, without interpolation."
+    frequency_and_lag: Business daily; changes use valid observations.
+    common_misreads: Small negative spreads can be normal under the implementation framework.
+    technical_distortions: Policy effective dates and transaction composition can alter the spread.
+    confirm_with:
+    - sofr_iorb_spread_bp
+    - obfr_iorb_spread_bp
+    - srf_accepted
+    cannot_infer: Cannot alone prove a shortage of aggregate reserves.
+    source_and_license_note: New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.
+    proxy_disclosure: ''
+  implemented: true
+- metric_id: obfr
+  legacy_ids: []
+  label: OBFR
+  layer: LIQUIDITY_FUEL
+  phase: P0
+  availability: ACTIVE_FREE
+  source_ids:
+  - nyfed_markets
+  network_enabled: true
+  is_proxy: false
+  unit: percent
+  frequency: business_daily
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: What is the broad overnight unsecured bank funding rate?
+    definition: Rate covering federal funds and Eurodollar transactions reported by U.S. banking offices.
+    why_it_matters: Its broader unsecured scope can confirm funding pressure outside federal funds alone.
+    direction: A rise relative to IORB suggests firmer unsecured bank funding costs.
+    calculation: Use the official OBFR observation.
+    frequency_and_lag: Business daily, normally published on the next business morning.
+    common_misreads: OBFR is not a secured repo rate.
+    technical_distortions: Transaction composition and policy-date effects can move it.
+    confirm_with:
+    - iorb
+    - obfr_iorb_spread_bp
+    - effr
+    cannot_infer: Cannot alone identify the institution or cause behind pressure.
+    source_and_license_note: New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.
+    proxy_disclosure: ''
+  implemented: true
+- metric_id: obfr_iorb_spread_bp
+  legacy_ids: []
+  label: OBFR−IORB spread
+  layer: LIQUIDITY_FUEL
+  phase: P0
+  availability: ACTIVE_FREE
+  source_ids:
+  - nyfed_markets
+  - fred_government
+  source_series:
+    fred_government: IORB
+  network_enabled: true
+  is_proxy: false
+  unit: bp
+  frequency: business_daily
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: Is broad unsecured bank funding expensive relative to IORB?
+    definition: OBFR minus backward-as-of IORB, in basis points.
+    why_it_matters: It tests whether SOFR pressure is shared by broader unsecured funding.
+    direction: A sustained rise is confirmation; divergence from SOFR suggests market-specific pressure.
+    calculation: "(OBFR percent - IORB percent) x 100, without interpolation."
+    frequency_and_lag: Business daily; changes use valid observations.
+    common_misreads: A flat spread does not invalidate repo-specific stress.
+    technical_distortions: Policy dates and transaction mix can distort comparisons.
+    confirm_with:
+    - sofr_iorb_spread_bp
+    - effr_iorb_spread_bp
+    - srf_accepted
+    cannot_infer: Cannot alone establish systemic funding stress.
+    source_and_license_note: New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.
+    proxy_disclosure: ''
+  implemented: true
+- metric_id: tgcr
+  legacy_ids: []
+  label: TGCR
+  layer: LIQUIDITY_FUEL
+  phase: P0
+  availability: ACTIVE_FREE
+  source_ids:
+  - nyfed_markets
+  network_enabled: true
+  is_proxy: false
+  unit: percent
+  frequency: business_daily
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: What is the cost of tri-party Treasury general-collateral repo?
+    definition: Transaction-based overnight tri-party general collateral repo rate published by the New York Fed.
+    why_it_matters: It isolates an important secured-funding venue.
+    direction: A rise relative to IORB can confirm repo funding pressure.
+    calculation: Use the official TGCR observation.
+    frequency_and_lag: Business daily, normally published on the next business morning.
+    common_misreads: TGCR does not cover every repo venue.
+    technical_distortions: Collateral mix, quarter-end, and dealer balance sheets can affect it.
+    confirm_with:
+    - iorb
+    - tgcr_iorb_spread_bp
+    - sofr
+    - bgcr
+    cannot_infer: Cannot alone measure all Treasury financing conditions.
+    source_and_license_note: New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.
+    proxy_disclosure: ''
+  implemented: true
+- metric_id: tgcr_iorb_spread_bp
+  legacy_ids: []
+  label: TGCR−IORB spread
+  layer: LIQUIDITY_FUEL
+  phase: P0
+  availability: ACTIVE_FREE
+  source_ids:
+  - nyfed_markets
+  - fred_government
+  source_series:
+    fred_government: IORB
+  network_enabled: true
+  is_proxy: false
+  unit: bp
+  frequency: business_daily
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: Is tri-party general-collateral repo expensive relative to IORB?
+    definition: TGCR minus backward-as-of IORB, in basis points.
+    why_it_matters: It confirms whether secured pressure is present in tri-party GC repo.
+    direction: A sustained rise alongside SOFR and BGCR strengthens the signal.
+    calculation: "(TGCR percent - IORB percent) x 100, without interpolation."
+    frequency_and_lag: Business daily; changes use valid observations.
+    common_misreads: A venue-specific move is not automatically system-wide.
+    technical_distortions: Quarter-end, collateral composition, and balance-sheet window dressing can distort it.
+    confirm_with:
+    - sofr_iorb_spread_bp
+    - bgcr_iorb_spread_bp
+    - srf_accepted
+    cannot_infer: Cannot alone prove a generalized reserve shortage.
+    source_and_license_note: New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.
+    proxy_disclosure: ''
+  implemented: true
+- metric_id: bgcr
+  legacy_ids: []
+  label: BGCR
+  layer: LIQUIDITY_FUEL
+  phase: P0
+  availability: ACTIVE_FREE
+  source_ids:
+  - nyfed_markets
+  network_enabled: true
+  is_proxy: false
+  unit: percent
+  frequency: business_daily
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: What is the broad general-collateral Treasury repo rate?
+    definition: Rate combining tri-party GC repo with centrally cleared bilateral Treasury repo transactions.
+    why_it_matters: It broadens confirmation across secured funding venues.
+    direction: A rise relative to IORB points to firmer broad GC funding costs.
+    calculation: Use the official BGCR observation.
+    frequency_and_lag: Business daily, normally published on the next business morning.
+    common_misreads: BGCR is not every bilateral repo transaction.
+    technical_distortions: Clearing composition, reporting, and technical dates can affect it.
+    confirm_with:
+    - iorb
+    - bgcr_iorb_spread_bp
+    - sofr
+    - tgcr
+    cannot_infer: Cannot alone identify the cause or persistence of funding pressure.
+    source_and_license_note: New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.
+    proxy_disclosure: ''
+  implemented: true
+- metric_id: bgcr_iorb_spread_bp
+  legacy_ids: []
+  label: BGCR−IORB spread
+  layer: LIQUIDITY_FUEL
+  phase: P0
+  availability: ACTIVE_FREE
+  source_ids:
+  - nyfed_markets
+  - fred_government
+  source_series:
+    fred_government: IORB
+  network_enabled: true
+  is_proxy: false
+  unit: bp
+  frequency: business_daily
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: Is broad general-collateral repo expensive relative to IORB?
+    definition: BGCR minus backward-as-of IORB, in basis points.
+    why_it_matters: It supplies broad secured-market confirmation for SOFR pressure.
+    direction: A sustained rise with SOFR and TGCR strengthens a funding-tightness assessment.
+    calculation: "(BGCR percent - IORB percent) x 100, without interpolation."
+    frequency_and_lag: Business daily; changes use valid observations.
+    common_misreads: A single print can reflect collateral or calendar effects.
+    technical_distortions: Quarter-end, settlements, and market composition can distort it.
+    confirm_with:
+    - sofr_iorb_spread_bp
+    - tgcr_iorb_spread_bp
+    - srf_accepted
+    cannot_infer: Cannot alone prove crisis-level funding stress.
+    source_and_license_note: New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.
+    proxy_disclosure: ''
+  implemented: true
+- metric_id: tga_daily
+  legacy_ids: []
+  label: Treasury General Account daily balance
+  layer: LIQUIDITY_FUEL
+  phase: P0
+  availability: ACTIVE_FREE
+  source_ids:
+  - treasury_fiscaldata
+  network_enabled: true
+  is_proxy: false
+  unit: USD bn
+  frequency: business_daily
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: How much cash does Treasury hold at the Federal Reserve?
+    definition: Daily closing balance of the Treasury General Account, normalized to USD billions.
+    why_it_matters: TGA changes alter Federal Reserve liabilities and can drain or add reserve balances, all else equal.
+    direction: A rise often drains bank reserves; a fall often adds them, but offsets matter.
+    calculation: Normalize the FiscalData closing balance to USD billions.
+    frequency_and_lag: Business daily with Treasury publication lag.
+    common_misreads: A TGA rise is not automatically bearish or a one-for-one market liquidity drain.
+    technical_distortions: Tax dates, debt issuance, settlements, and extraordinary measures can dominate.
+    confirm_with:
+    - reserve_balances
+    - on_rrp_accepted
+    - tga_weekly_h41
+    cannot_infer: Cannot alone determine net dollar liquidity or asset prices.
+    source_and_license_note: U.S. Treasury FiscalData official API; preserve dataset attribution and as-of date.
+    proxy_disclosure: ''
+  implemented: true
+- metric_id: on_rrp_accepted
+  legacy_ids:
+  - on_rrp
+  label: ON RRP accepted amount
+  layer: LIQUIDITY_FUEL
+  phase: P0
+  availability: ACTIVE_FREE
+  source_ids:
+  - nyfed_markets
+  network_enabled: true
+  is_proxy: false
+  unit: USD bn
+  frequency: business_daily
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: How much eligible cash is parked at the Fed overnight?
+    definition: Accepted amount across eligible ON RRP operations on the operation date.
+    why_it_matters: Declines can cushion TGA growth or QT on the Fed liability side.
+    direction: A decline can release a buffer, but may simply reflect better bill or repo returns.
+    calculation: Aggregate accepted amounts, retain source raw values, and normalize to USD billions.
+    frequency_and_lag: Business daily after operation results are released.
+    common_misreads: Falling ON RRP is not automatically a risk-on liquidity injection.
+    technical_distortions: Operational-readiness exercises and money-market relative-value shifts can distort interpretation.
+    confirm_with:
+    - tga_daily
+    - reserve_balances
+    - sofr_iorb_spread_bp
+    cannot_infer: Cannot alone forecast equities or prove reserve scarcity.
+    source_and_license_note: New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.
+    proxy_disclosure: ''
+  implemented: true
+- metric_id: srf_accepted
+  legacy_ids:
+  - srf_usage
+  label: Standing Repo Facility accepted amount
+  layer: LIQUIDITY_FUEL
+  phase: P0
+  availability: ACTIVE_FREE
+  source_ids:
+  - nyfed_markets
+  network_enabled: true
+  is_proxy: false
+  unit: USD bn
+  frequency: business_daily
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: Are counterparties drawing the Standing Repo Facility?
+    definition: Accepted amount across same-day SRF operations, with security-type breakdown and technical-exercise flag.
+    why_it_matters: Nontechnical persistent use can confirm marginal Treasury financing pressure.
+    direction: Persistent nontechnical use is more concerning than a technical exercise or next-day return to zero.
+    calculation: Sum accepted amounts by operation date; preserve submitted, accepted, rate, and collateral breakdown.
+    frequency_and_lag: Business daily after repo operation results are released.
+    common_misreads: Facility rate or a small-value exercise is not genuine stress usage.
+    technical_distortions: Official operational-readiness exercises must be matched by reviewed calendar, never inferred from size.
+    confirm_with:
+    - sofr_iorb_spread_bp
+    - tgcr_iorb_spread_bp
+    - reserve_balances
+    cannot_infer: Cannot alone prove systemic stress or identify user motivation.
+    source_and_license_note: New York Fed official data; preserve required source attribution and reference-rate disclaimer where applicable.
+    proxy_disclosure: ''
+  implemented: true
+- metric_id: reserve_balances
+  legacy_ids: []
+  label: Reserve balances with Federal Reserve Banks
+  layer: LIQUIDITY_FUEL
+  phase: P0
+  availability: ACTIVE_FREE
+  source_ids:
+  - fred_government
+  source_series:
+    fred_government: WRESBAL
+  network_enabled: true
+  is_proxy: false
+  unit: USD bn
+  frequency: weekly
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: How many reserve balances are held at Federal Reserve Banks?
+    definition: H.4.1 reserve balances with Federal Reserve Banks, normalized to USD billions.
+    why_it_matters: The level and four-week change provide balance-sheet context for funding spreads.
+    direction: A persistent decline can tighten the buffer, but reserve demand changes over time.
+    calculation: Use official weekly level; calculate 1w and 4w changes from observations.
+    frequency_and_lag: Weekly, normally Thursday around 4:30 p.m. ET; retain last value as NOT_RELEASED_YET before release.
+    common_misreads: Reference zones are context, not fixed crisis thresholds.
+    technical_distortions: Bank-system size, regulation, payment flows, and statement-date effects change reserve demand.
+    confirm_with:
+    - sofr_iorb_spread_bp
+    - tga_daily
+    - on_rrp_accepted
+    - srf_accepted
+    cannot_infer: Cannot identify an invariant minimum reserve level.
+    source_and_license_note: Government-origin series distributed by the FRED API; requires FRED_API_KEY and is restricted to the reviewed allowlist.
+    proxy_disclosure: ''
+  implemented: true
+- metric_id: fed_total_assets
+  legacy_ids: []
+  label: Federal Reserve total assets
+  layer: LIQUIDITY_FUEL
+  phase: P0
+  availability: ACTIVE_FREE
+  source_ids:
+  - fred_government
+  source_series:
+    fred_government: WALCL
+  network_enabled: true
+  is_proxy: false
+  unit: USD bn
+  frequency: weekly
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: What is the size of the Federal Reserve balance sheet?
+    definition: H.4.1 total assets, normalized to USD billions.
+    why_it_matters: Weekly change shows the broad direction of balance-sheet runoff or expansion.
+    direction: A decline is balance-sheet runoff; transmission depends on liabilities and market demand.
+    calculation: Use official weekly level; calculate 1w and 4w observation changes.
+    frequency_and_lag: Weekly, normally Thursday around 4:30 p.m. ET.
+    common_misreads: Asset decline does not map one-for-one to bank reserve decline.
+    technical_distortions: Settlement timing, loans, securities amortization, and other assets can move the total.
+    confirm_with:
+    - reserve_balances
+    - tga_weekly_h41
+    - on_rrp_accepted
+    cannot_infer: Cannot alone measure private-sector liquidity or predict markets.
+    source_and_license_note: Government-origin series distributed by the FRED API; requires FRED_API_KEY and is restricted to the reviewed allowlist.
+    proxy_disclosure: ''
+  implemented: true
+- metric_id: tga_weekly_h41
+  legacy_ids: []
+  label: Treasury General Account H.4.1 cross-check
+  layer: LIQUIDITY_FUEL
+  phase: P0
+  availability: ACTIVE_FREE
+  source_ids:
+  - fred_government
+  source_series:
+    fred_government: WTREGEN
+  network_enabled: true
+  is_proxy: false
+  unit: USD bn
+  frequency: weekly
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: What TGA balance appears in the Federal Reserve weekly balance sheet?
+    definition: H.4.1 Treasury General Account balance, normalized to USD billions.
+    why_it_matters: It cross-checks the higher-frequency Treasury daily balance within a weekly release.
+    direction: A rise tends to drain other Fed liabilities, all else equal.
+    calculation: Use official weekly level and calculate 1w and 4w observation changes.
+    frequency_and_lag: Weekly, normally Thursday around 4:30 p.m. ET.
+    common_misreads: Weekly and daily TGA observations need not have identical as-of timing.
+    technical_distortions: Tax dates, settlements, and release-date alignment can create differences.
+    confirm_with:
+    - tga_daily
+    - reserve_balances
+    - on_rrp_accepted
+    cannot_infer: Cannot alone establish net liquidity conditions.
+    source_and_license_note: Government-origin series distributed by the FRED API; requires FRED_API_KEY and is restricted to the reviewed allowlist.
+    proxy_disclosure: ''
+  implemented: true
+- metric_id: vix_vix3m_term_structure_proxy
+  legacy_ids:
+  - vix_curve
+  label: VIX/VIX3M term-structure proxy
+  layer: MARKET_IGNITION
+  phase: P1
+  availability: UNAVAILABLE_FREE
+  source_ids:
+  - cboe
+  network_enabled: false
+  is_proxy: true
+  unit: ratio
+  frequency: business_daily
+  reason: No redistribution-cleared Cboe feed is configured.
+  proxy_disclosure: This two-index ratio is not the VIX futures curve.
+  methodology:
+    question: What does VIX/VIX3M term-structure proxy reveal within its dashboard evidence block?
+    definition: This two-index ratio is not the VIX futures curve.
+    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
+    direction: No direction is published while the value is null.
+    calculation: No redistribution-cleared Cboe feed is configured. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    frequency_and_lag: 'Expected cadence: VIX/VIX3M term-structure proxy; the observation date and release lag must be shown separately.'
+    common_misreads: This two-index ratio is not the VIX futures curve.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: No redistribution-cleared Cboe feed is configured. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    proxy_disclosure: This two-index ratio is not the VIX futures curve.
+  implemented: false
+- metric_id: cboe_skew_tail_risk_proxy
+  legacy_ids: []
+  label: Cboe SKEW tail-risk proxy
+  layer: MARKET_IGNITION
+  phase: P1
+  availability: UNAVAILABLE_FREE
+  source_ids:
+  - cboe
+  network_enabled: false
+  is_proxy: true
+  unit: index
+  frequency: business_daily
+  reason: No redistribution-cleared Cboe feed is configured.
+  proxy_disclosure: SKEW is not dealer positioning or put/call implied-volatility skew.
+  methodology:
+    question: What does Cboe SKEW tail-risk proxy reveal within its dashboard evidence block?
+    definition: SKEW is not dealer positioning or put/call implied-volatility skew.
+    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
+    direction: No direction is published while the value is null.
+    calculation: No redistribution-cleared Cboe feed is configured. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    frequency_and_lag: 'Expected cadence: Cboe SKEW tail-risk proxy; the observation date and release lag must be shown separately.'
+    common_misreads: SKEW is not dealer positioning or put/call implied-volatility skew.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: No redistribution-cleared Cboe feed is configured. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    proxy_disclosure: SKEW is not dealer positioning or put/call implied-volatility skew.
+  implemented: false
+- metric_id: crypto_funding_btc
+  legacy_ids: []
+  label: BTC perpetual funding
+  layer: MARKET_IGNITION
+  phase: P1
+  availability: UNAVAILABLE_FREE
+  source_ids:
+  - coinbase_market_data
+  - bybit_market_data
+  network_enabled: false
+  is_proxy: false
+  unit: percent
+  frequency: intraday
+  reason: Public endpoints do not provide redistribution rights for this public dashboard.
+  proxy_disclosure: ''
+  methodology:
+    question: What does BTC perpetual funding reveal within its dashboard evidence block?
+    definition: Canonical BTC perpetual funding metric as defined by the registry.
+    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
+    direction: No direction is published while the value is null.
+    calculation: Public endpoints do not provide redistribution rights for this public dashboard. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    frequency_and_lag: 'Expected cadence: BTC perpetual funding; the observation date and release lag must be shown separately.'
+    common_misreads: A single observation is not a forecast or causal proof.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: Public endpoints do not provide redistribution rights for this public dashboard. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    proxy_disclosure: ''
+  implemented: false
+- metric_id: crypto_funding_eth
+  legacy_ids: []
+  label: ETH perpetual funding
+  layer: MARKET_IGNITION
+  phase: P1
+  availability: UNAVAILABLE_FREE
+  source_ids:
+  - coinbase_market_data
+  - bybit_market_data
+  network_enabled: false
+  is_proxy: false
+  unit: percent
+  frequency: intraday
+  reason: Public endpoints do not provide redistribution rights for this public dashboard.
+  proxy_disclosure: ''
+  methodology:
+    question: What does ETH perpetual funding reveal within its dashboard evidence block?
+    definition: Canonical ETH perpetual funding metric as defined by the registry.
+    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
+    direction: No direction is published while the value is null.
+    calculation: Public endpoints do not provide redistribution rights for this public dashboard. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    frequency_and_lag: 'Expected cadence: ETH perpetual funding; the observation date and release lag must be shown separately.'
+    common_misreads: A single observation is not a forecast or causal proof.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: Public endpoints do not provide redistribution rights for this public dashboard. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    proxy_disclosure: ''
+  implemented: false
+- metric_id: cftc_leveraged_funds_positioning_proxy
+  legacy_ids:
+  - cta_proxy
+  label: CFTC leveraged-funds positioning proxy
+  layer: MARKET_IGNITION
+  phase: P1
+  availability: ACTIVE_PROXY
+  source_ids:
+  - cftc_pre
+  network_enabled: true
+  is_proxy: true
+  unit: z-score
+  frequency: weekly
+  reason: null
+  proxy_disclosure: CFTC business categories do not measure every CTA or actual model exposure.
+  methodology:
+    question: What does CFTC leveraged-funds positioning proxy reveal within its dashboard evidence block?
+    definition: CFTC business categories do not measure every CTA or actual model exposure.
+    why_it_matters: It supplies an independent evidence input; it is never sufficient alone.
+    direction: Interpret direction only with the metric definition, freshness, and independent confirmations.
+    calculation: Apply the documented metric transform to validated source observations; never coerce null to zero.
+    frequency_and_lag: 'Expected cadence: CFTC leveraged-funds positioning proxy; the observation date and release lag must be shown separately.'
+    common_misreads: CFTC business categories do not measure every CTA or actual model exposure.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: Use only the source IDs whose automated-fetch and redistribution rights gates pass.
+    proxy_disclosure: CFTC business categories do not measure every CTA or actual model exposure.
+  implemented: false
+- metric_id: cftc_asset_manager_positioning
+  legacy_ids: []
+  label: CFTC asset-manager positioning
+  layer: MARKET_IGNITION
+  phase: P1
+  availability: ACTIVE_FREE
+  source_ids:
+  - cftc_pre
+  network_enabled: true
+  is_proxy: false
+  unit: percent_open_interest
+  frequency: weekly
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: What does CFTC asset-manager positioning reveal within its dashboard evidence block?
+    definition: Canonical CFTC asset-manager positioning metric as defined by the registry.
+    why_it_matters: It supplies an independent evidence input; it is never sufficient alone.
+    direction: Interpret direction only with the metric definition, freshness, and independent confirmations.
+    calculation: Apply the documented metric transform to validated source observations; never coerce null to zero.
+    frequency_and_lag: 'Expected cadence: CFTC asset-manager positioning; the observation date and release lag must be shown separately.'
+    common_misreads: A single observation is not a forecast or causal proof.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: Use only the source IDs whose automated-fetch and redistribution rights gates pass.
+    proxy_disclosure: ''
+  implemented: false
+- metric_id: trend_following_positioning_proxy
+  legacy_ids: []
+  label: Rule-based trend-following positioning proxy
+  layer: MARKET_IGNITION
+  phase: P1
+  availability: UNAVAILABLE_FREE
+  source_ids:
+  - fred_third_party
+  network_enabled: false
+  is_proxy: true
+  unit: score
+  frequency: business_daily
+  reason: Redistribution-cleared equity and cross-asset price inputs are not configured.
+  proxy_disclosure: A disclosed rules model would be a proxy, not proprietary CTA exposure.
+  methodology:
+    question: What does Rule-based trend-following positioning proxy reveal within its dashboard evidence block?
+    definition: A disclosed rules model would be a proxy, not proprietary CTA exposure.
+    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
+    direction: No direction is published while the value is null.
+    calculation: Redistribution-cleared equity and cross-asset price inputs are not configured. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    frequency_and_lag: 'Expected cadence: Rule-based trend-following positioning proxy; the observation date and release lag must be shown separately.'
+    common_misreads: A disclosed rules model would be a proxy, not proprietary CTA exposure.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: Redistribution-cleared equity and cross-asset price inputs are not configured. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    proxy_disclosure: A disclosed rules model would be a proxy, not proprietary CTA exposure.
+  implemented: false
+- metric_id: cross_asset_correlation
+  legacy_ids:
+  - cross_asset_corr
+  label: Cross-asset rolling correlations
+  layer: MARKET_IGNITION
+  phase: P1
+  availability: UNAVAILABLE_FREE
+  source_ids:
+  - fred_third_party
+  network_enabled: false
+  is_proxy: false
+  unit: coefficient
+  frequency: business_daily
+  reason: Several planned FRED series carry third-party redistribution restrictions.
+  proxy_disclosure: ''
+  methodology:
+    question: What does Cross-asset rolling correlations reveal within its dashboard evidence block?
+    definition: Canonical Cross-asset rolling correlations metric as defined by the registry.
+    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
+    direction: No direction is published while the value is null.
+    calculation: Several planned FRED series carry third-party redistribution restrictions. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    frequency_and_lag: 'Expected cadence: Cross-asset rolling correlations; the observation date and release lag must be shown separately.'
+    common_misreads: A single observation is not a forecast or causal proof.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: Several planned FRED series carry third-party redistribution restrictions. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    proxy_disclosure: ''
+  implemented: false
+- metric_id: gamma_flip
+  legacy_ids: []
+  label: Gamma flip level
+  layer: MARKET_IGNITION
+  phase: P2
+  availability: UNAVAILABLE_FREE
+  source_ids:
+  - licensed_provider
+  network_enabled: false
+  is_proxy: false
+  unit: SPX index points
+  frequency: business_daily
+  reason: Reliable dealer net-gamma and trade-direction inputs are not publicly available.
+  proxy_disclosure: ''
+  methodology:
+    question: What does Gamma flip level reveal within its dashboard evidence block?
+    definition: Canonical Gamma flip level metric as defined by the registry.
+    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
+    direction: No direction is published while the value is null.
+    calculation: Reliable dealer net-gamma and trade-direction inputs are not publicly available. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    frequency_and_lag: 'Expected cadence: Gamma flip level; the observation date and release lag must be shown separately.'
+    common_misreads: A single observation is not a forecast or causal proof.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: Reliable dealer net-gamma and trade-direction inputs are not publicly available. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    proxy_disclosure: ''
+  implemented: false
+- metric_id: spx_0dte_share
+  legacy_ids: []
+  label: SPX 0DTE volume share
+  layer: MARKET_IGNITION
+  phase: P2
+  availability: MANUAL_READY
+  source_ids:
+  - cboe
+  network_enabled: false
+  is_proxy: false
+  unit: percent
+  frequency: business_daily
+  reason: Free Cboe statistics do not expose a same-day-expiration numerator under redistribution-cleared terms.
+  proxy_disclosure: ''
+  methodology:
+    question: What does SPX 0DTE volume share reveal within its dashboard evidence block?
+    definition: Canonical SPX 0DTE volume share metric as defined by the registry.
+    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
+    direction: No direction is published while the value is null.
+    calculation: Free Cboe statistics do not expose a same-day-expiration numerator under redistribution-cleared terms. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    frequency_and_lag: 'Expected cadence: SPX 0DTE volume share; the observation date and release lag must be shown separately.'
+    common_misreads: A single observation is not a forecast or causal proof.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: Free Cboe statistics do not expose a same-day-expiration numerator under redistribution-cleared terms. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    proxy_disclosure: ''
+  implemented: false
+- metric_id: put_call_vol_skew
+  legacy_ids:
+  - put_call_skew
+  label: Put/call implied-volatility skew
+  layer: MARKET_IGNITION
+  phase: P2
+  availability: UNAVAILABLE_FREE
+  source_ids:
+  - licensed_provider
+  network_enabled: false
+  is_proxy: false
+  unit: volatility_points
+  frequency: business_daily
+  reason: Consistent option-surface inputs are not available from a redistribution-cleared free source.
+  proxy_disclosure: ''
+  methodology:
+    question: What does Put/call implied-volatility skew reveal within its dashboard evidence block?
+    definition: Canonical Put/call implied-volatility skew metric as defined by the registry.
+    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
+    direction: No direction is published while the value is null.
+    calculation: Consistent option-surface inputs are not available from a redistribution-cleared free source. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    frequency_and_lag: 'Expected cadence: Put/call implied-volatility skew; the observation date and release lag must be shown separately.'
+    common_misreads: A single observation is not a forecast or causal proof.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: Consistent option-surface inputs are not available from a redistribution-cleared free source. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    proxy_disclosure: ''
+  implemented: false
+- metric_id: finra_margin_debt
+  legacy_ids: []
+  label: FINRA customer debit balances
+  layer: MARKET_IGNITION
+  phase: P2
+  availability: MANUAL_READY
+  source_ids:
+  - finra_margin
+  network_enabled: false
+  is_proxy: false
+  unit: USD bn
+  frequency: monthly
+  reason: FINRA terms do not clear automated database construction or redistribution.
+  proxy_disclosure: ''
+  methodology:
+    question: What does FINRA customer debit balances reveal within its dashboard evidence block?
+    definition: Canonical FINRA customer debit balances metric as defined by the registry.
+    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
+    direction: No direction is published while the value is null.
+    calculation: FINRA terms do not clear automated database construction or redistribution. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    frequency_and_lag: 'Expected cadence: FINRA customer debit balances; the observation date and release lag must be shown separately.'
+    common_misreads: A single observation is not a forecast or causal proof.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: FINRA terms do not clear automated database construction or redistribution. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    proxy_disclosure: ''
+  implemented: false
+- metric_id: spy_holdings_top10_weight_proxy
+  legacy_ids:
+  - sp500_top10_weight
+  label: SPY holdings Top-10 weight proxy
+  layer: MARKET_IGNITION
+  phase: P2
+  availability: MANUAL_READY
+  source_ids:
+  - ssga_spy
+  network_enabled: false
+  is_proxy: true
+  unit: percent
+  frequency: business_daily
+  reason: State Street terms do not clear an automated public redistribution workflow.
+  proxy_disclosure: SPY holdings can differ from official S&P 500 closing index weights.
+  methodology:
+    question: What does SPY holdings Top-10 weight proxy reveal within its dashboard evidence block?
+    definition: SPY holdings can differ from official S&P 500 closing index weights.
+    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
+    direction: No direction is published while the value is null.
+    calculation: State Street terms do not clear an automated public redistribution workflow. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    frequency_and_lag: 'Expected cadence: SPY holdings Top-10 weight proxy; the observation date and release lag must be shown separately.'
+    common_misreads: SPY holdings can differ from official S&P 500 closing index weights.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: State Street terms do not clear an automated public redistribution workflow. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    proxy_disclosure: SPY holdings can differ from official S&P 500 closing index weights.
+  implemented: false
+- metric_id: nonfinancial_equities_gdp_proxy
+  legacy_ids:
+  - buffett_indicator_proxy
+  label: Nonfinancial corporate equities / GDP proxy
+  layer: MARKET_IGNITION
+  phase: P2
+  availability: ACTIVE_PROXY
+  source_ids:
+  - fred_government
+  source_series:
+    fred_government:
+    - NCBEILQ027S
+    - GDP
+  network_enabled: true
+  is_proxy: true
+  unit: percent
+  frequency: quarterly
+  reason: null
+  proxy_disclosure: Nonfinancial corporate equity liabilities are not total U.S. equity market capitalization.
+  methodology:
+    question: What does Nonfinancial corporate equities / GDP proxy reveal within its dashboard evidence block?
+    definition: Nonfinancial corporate equity liabilities are not total U.S. equity market capitalization.
+    why_it_matters: It supplies an independent evidence input; it is never sufficient alone.
+    direction: Interpret direction only with the metric definition, freshness, and independent confirmations.
+    calculation: Apply the documented metric transform to validated source observations; never coerce null to zero.
+    frequency_and_lag: 'Expected cadence: Nonfinancial corporate equities / GDP proxy; the observation date and release lag must be shown separately.'
+    common_misreads: Nonfinancial corporate equity liabilities are not total U.S. equity market capitalization.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: Government-origin NCBEILQ027S and GDP are restricted to the reviewed FRED allowlist; the supported API requires FRED_API_KEY and both source agencies must be attributed.
+    proxy_disclosure: Nonfinancial corporate equity liabilities are not total U.S. equity market capitalization.
+  implemented: false
+- metric_id: m2_nasdaq_divergence
+  legacy_ids:
+  - m2_vs_nasdaq
+  label: M2 / Nasdaq divergence
+  layer: MARKET_IGNITION
+  phase: P2
+  availability: UNAVAILABLE_FREE
+  source_ids:
+  - fred_third_party
+  network_enabled: false
+  is_proxy: false
+  unit: z-score
+  frequency: monthly
+  reason: Nasdaq series redistribution rights are not cleared by access through FRED.
+  proxy_disclosure: ''
+  methodology:
+    question: What does M2 / Nasdaq divergence reveal within its dashboard evidence block?
+    definition: Canonical M2 / Nasdaq divergence metric as defined by the registry.
+    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
+    direction: No direction is published while the value is null.
+    calculation: Nasdaq series redistribution rights are not cleared by access through FRED. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    frequency_and_lag: 'Expected cadence: M2 / Nasdaq divergence; the observation date and release lag must be shown separately.'
+    common_misreads: A single observation is not a forecast or causal proof.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: Nasdaq series redistribution rights are not cleared by access through FRED. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    proxy_disclosure: ''
+  implemented: false
+- metric_id: insider_buy_sell_proxy
+  legacy_ids:
+  - insider_ratio_proxy
+  label: SEC Form 4 insider buy/sell proxy
+  layer: MARKET_IGNITION
+  phase: P2
+  availability: ACTIVE_PROXY
+  source_ids:
+  - sec_edgar
+  network_enabled: true
+  is_proxy: true
+  unit: ratio
+  frequency: business_daily
+  reason: null
+  proxy_disclosure: Parsed open-market Form 4 transactions do not represent all insider intent or future returns.
+  methodology:
+    question: What does SEC Form 4 insider buy/sell proxy reveal within its dashboard evidence block?
+    definition: Parsed open-market Form 4 transactions do not represent all insider intent or future returns.
+    why_it_matters: It supplies an independent evidence input; it is never sufficient alone.
+    direction: Interpret direction only with the metric definition, freshness, and independent confirmations.
+    calculation: Apply the documented metric transform to validated source observations; never coerce null to zero.
+    frequency_and_lag: 'Expected cadence: SEC Form 4 insider buy/sell proxy; the observation date and release lag must be shown separately.'
+    common_misreads: Parsed open-market Form 4 transactions do not represent all insider intent or future returns.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: Use only the source IDs whose automated-fetch and redistribution rights gates pass.
+    proxy_disclosure: Parsed open-market Form 4 transactions do not represent all insider intent or future returns.
+  implemented: false
+- metric_id: ndx_forward_pe
+  legacy_ids: []
+  label: Nasdaq-100 forward P/E
+  layer: MARKET_IGNITION
+  phase: P2
+  availability: UNAVAILABLE_FREE
+  source_ids:
+  - licensed_provider
+  network_enabled: false
+  is_proxy: false
+  unit: multiple
+  frequency: business_daily
+  reason: A consistent, reproducible forward-earnings consensus is proprietary.
+  proxy_disclosure: ''
+  methodology:
+    question: What does Nasdaq-100 forward P/E reveal within its dashboard evidence block?
+    definition: Canonical Nasdaq-100 forward P/E metric as defined by the registry.
+    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
+    direction: No direction is published while the value is null.
+    calculation: A consistent, reproducible forward-earnings consensus is proprietary. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    frequency_and_lag: 'Expected cadence: Nasdaq-100 forward P/E; the observation date and release lag must be shown separately.'
+    common_misreads: A single observation is not a forecast or causal proof.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: A consistent, reproducible forward-earnings consensus is proprietary. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
+    proxy_disclosure: ''
+  implemented: false
+- metric_id: hyperscaler_capex
+  legacy_ids: []
+  label: Hyperscaler aggregate cash CapEx
+  layer: FUNDAMENTAL_EXIT
+  phase: P3
+  availability: ACTIVE_FREE
+  source_ids:
+  - sec_edgar
+  network_enabled: true
+  is_proxy: false
+  unit: USD bn
+  frequency: quarterly
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: What does Hyperscaler aggregate cash CapEx reveal within its dashboard evidence block?
+    definition: Canonical Hyperscaler aggregate cash CapEx metric as defined by the registry.
+    why_it_matters: It supplies an independent evidence input; it is never sufficient alone.
+    direction: Interpret direction only with the metric definition, freshness, and independent confirmations.
+    calculation: Apply the documented metric transform to validated source observations; never coerce null to zero.
+    frequency_and_lag: 'Expected cadence: Hyperscaler aggregate cash CapEx; the observation date and release lag must be shown separately.'
+    common_misreads: A single observation is not a forecast or causal proof.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: Use only the source IDs whose automated-fetch and redistribution rights gates pass.
+    proxy_disclosure: ''
+  implemented: false
+- metric_id: capex_acceleration
+  legacy_ids: []
+  label: Hyperscaler CapEx acceleration
+  layer: FUNDAMENTAL_EXIT
+  phase: P3
+  availability: ACTIVE_FREE
+  source_ids:
+  - sec_edgar
+  network_enabled: true
+  is_proxy: false
+  unit: percentage_points
+  frequency: quarterly
+  reason: null
+  proxy_disclosure: ''
+  methodology:
+    question: What does Hyperscaler CapEx acceleration reveal within its dashboard evidence block?
+    definition: Canonical Hyperscaler CapEx acceleration metric as defined by the registry.
+    why_it_matters: It supplies an independent evidence input; it is never sufficient alone.
+    direction: Interpret direction only with the metric definition, freshness, and independent confirmations.
+    calculation: Apply the documented metric transform to validated source observations; never coerce null to zero.
+    frequency_and_lag: 'Expected cadence: Hyperscaler CapEx acceleration; the observation date and release lag must be shown separately.'
+    common_misreads: A single observation is not a forecast or causal proof.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: Use only the source IDs whose automated-fetch and redistribution rights gates pass.
+    proxy_disclosure: ''
+  implemented: false
+- metric_id: upstream_backlog
+  legacy_ids: []
+  label: AI upstream backlog
+  layer: FUNDAMENTAL_EXIT
+  phase: P3
+  availability: MANUAL_READY
+  source_ids:
+  - manual_public_filings
+  network_enabled: false
+  is_proxy: false
+  unit: mixed
+  frequency: quarterly
+  reason: Disclosure definitions are non-standard and require filing-by-filing human review.
+  proxy_disclosure: ''
+  methodology:
+    question: What does AI upstream backlog reveal within its dashboard evidence block?
+    definition: Canonical AI upstream backlog metric as defined by the registry.
+    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
+    direction: No direction is published while the value is null.
+    calculation: Disclosure definitions are non-standard and require filing-by-filing human review. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    frequency_and_lag: 'Expected cadence: AI upstream backlog; the observation date and release lag must be shown separately.'
+    common_misreads: A single observation is not a forecast or causal proof.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: Disclosure definitions are non-standard and require filing-by-filing human review. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    proxy_disclosure: ''
+  implemented: false
+- metric_id: prepayments
+  legacy_ids: []
+  label: Customer prepayments and contract commitments
+  layer: FUNDAMENTAL_EXIT
+  phase: P3
+  availability: MANUAL_READY
+  source_ids:
+  - manual_public_filings
+  network_enabled: false
+  is_proxy: false
+  unit: mixed
+  frequency: quarterly
+  reason: Disclosure definitions are non-standard and require filing-by-filing human review.
+  proxy_disclosure: ''
+  methodology:
+    question: What does Customer prepayments and contract commitments reveal within its dashboard evidence block?
+    definition: Canonical Customer prepayments and contract commitments metric as defined by the registry.
+    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
+    direction: No direction is published while the value is null.
+    calculation: Disclosure definitions are non-standard and require filing-by-filing human review. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    frequency_and_lag: 'Expected cadence: Customer prepayments and contract commitments; the observation date and release lag must be shown separately.'
+    common_misreads: A single observation is not a forecast or causal proof.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: Disclosure definitions are non-standard and require filing-by-filing human review. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    proxy_disclosure: ''
+  implemented: false
+- metric_id: take_or_pay
+  legacy_ids: []
+  label: Take-or-pay commitments
+  layer: FUNDAMENTAL_EXIT
+  phase: P3
+  availability: MANUAL_READY
+  source_ids:
+  - manual_public_filings
+  network_enabled: false
+  is_proxy: false
+  unit: mixed
+  frequency: quarterly
+  reason: Disclosure definitions are non-standard and require filing-by-filing human review.
+  proxy_disclosure: ''
+  methodology:
+    question: What does Take-or-pay commitments reveal within its dashboard evidence block?
+    definition: Canonical Take-or-pay commitments metric as defined by the registry.
+    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
+    direction: No direction is published while the value is null.
+    calculation: Disclosure definitions are non-standard and require filing-by-filing human review. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    frequency_and_lag: 'Expected cadence: Take-or-pay commitments; the observation date and release lag must be shown separately.'
+    common_misreads: A single observation is not a forecast or causal proof.
+    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
+    confirm_with: []
+    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
+    source_and_license_note: Disclosure definitions are non-standard and require filing-by-filing human review. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    proxy_disclosure: ''
+  implemented: false

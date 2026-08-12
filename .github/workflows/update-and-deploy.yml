@@ -1,52 +1,191 @@
 name: Update data and deploy Pages
+
 on:
   push:
     branches: [main]
   schedule:
-    - cron: '15 22 * * 1-5'
-    - cron: '45 23 * * 1-5'
+    # GitHub cron is UTC and can be delayed. Collectors decide whether a
+    # release is due from source as-of metadata rather than the job start time.
+    - cron: '45 23 * * 1-5' # daily, 19:45/18:45 ET depending on DST
+    - cron: '45 22 * * 4'   # H.4.1, 18:45/17:45 ET depending on DST
+    - cron: '30 22 * * 5'   # weekly
+    - cron: '15 13 2 * *'   # monthly
+    - cron: '45 14 3 1,4,7,10 *' # quarterly
   workflow_dispatch:
+    inputs:
+      group:
+        description: Collector schedule group
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - daily
+          - h41
+          - weekly
+          - monthly
+          - quarterly
+          - manual
+
 permissions:
   contents: write
   pages: write
   id-token: write
+
 concurrency:
-  group: pages
+  group: bubble-production-pages
   cancel-in-progress: false
+
 jobs:
-  build:
+  update-test-build-deploy:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - uses: actions/checkout@v4
-        with: {fetch-depth: 0}
-      - uses: actions/setup-python@v5
-        with: {python-version: '3.12', cache: pip, cache-dependency-path: pipeline/requirements.txt}
-      - run: pip install -r pipeline/requirements.txt
-      - name: Update official data
+        with:
+          fetch-depth: 0
+
+      - name: Select collector group
+        id: group
+        shell: bash
         env:
-          SEC_USER_AGENT: ${{ vars.SEC_USER_AGENT }}
-        run: python -m pipeline.update --mode incremental 2>&1 | tee pipeline-update.log
-      - run: python -m pytest pipeline/tests
-      - uses: actions/setup-node@v4
-        with: {node-version: 22, cache: npm}
-      - run: npm ci
-      - run: npm test
-      - run: npm run build
-      - name: Commit changed generated data
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_GROUP: ${{ inputs.group }}
+          EVENT_SCHEDULE: ${{ github.event.schedule }}
         run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            selected="$DISPATCH_GROUP"
+          elif [[ "$EVENT_NAME" == "schedule" ]]; then
+            case "$EVENT_SCHEDULE" in
+              '45 23 * * 1-5') selected='daily' ;;
+              '45 22 * * 4') selected='h41' ;;
+              '30 22 * * 5') selected='weekly' ;;
+              '15 13 2 * *') selected='monthly' ;;
+              '45 14 3 1,4,7,10 *') selected='quarterly' ;;
+              *) echo "Unknown production schedule: $EVENT_SCHEDULE" >&2; exit 1 ;;
+            esac
+          else
+            selected='all'
+          fi
+          echo "group=$selected" >> "$GITHUB_OUTPUT"
+
+      - name: Require production source configuration
+        shell: bash
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          SEC_USER_AGENT: ${{ vars.SEC_USER_AGENT }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$FRED_API_KEY" ]]; then
+            echo 'Repository secret FRED_API_KEY is required.' >&2
+            exit 1
+          fi
+          if [[ -z "$SEC_USER_AGENT" ]]; then
+            echo 'Repository variable SEC_USER_AGENT is required.' >&2
+            exit 1
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: pipeline/requirements.txt
+
+      - name: Install Python dependencies
+        run: pip install -r pipeline/requirements.txt
+
+      - name: Fetch, validate, transform, and write schema v2 stage
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          SEC_USER_AGENT: ${{ vars.SEC_USER_AGENT }}
+          UPDATE_GROUP: ${{ steps.group.outputs.group }}
+          DATA_STAGE: ${{ runner.temp }}/bubble-data-stage
+        run: |
+          set -euo pipefail
+          python -m pipeline.update \
+            --mode incremental \
+            --group "$UPDATE_GROUP" \
+            --stage-only \
+            --stage-dir "$DATA_STAGE" \
+            2>&1 | tee pipeline-update.log
+
+      - name: Run Python tests
+        env:
+          BUBBLE_DATA_DIR: ${{ runner.temp }}/bubble-data-stage
+        run: python -m pytest pipeline/tests
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Test and build against staged schema v2 data
+        env:
+          DATA_STAGE: ${{ runner.temp }}/bubble-data-stage
+          FRONTEND_CHECKOUT: ${{ runner.temp }}/bubble-frontend-checkout
+        run: |
+          set -euo pipefail
+          mkdir -p "$FRONTEND_CHECKOUT"
+          tar \
+            --exclude='./.git' \
+            --exclude='./node_modules' \
+            --exclude='./dist' \
+            --exclude='./public/data' \
+            --exclude='./public/.data-stage-*' \
+            --exclude='./public/.data-backup-*' \
+            -cf - . | tar -xf - -C "$FRONTEND_CHECKOUT"
+          rm -rf "$FRONTEND_CHECKOUT/public/data"
+          mkdir -p "$FRONTEND_CHECKOUT/public"
+          cp -R "$DATA_STAGE" "$FRONTEND_CHECKOUT/public/data"
+          cd "$FRONTEND_CHECKOUT"
+          npm ci
+          npm test
+          npm run build
+
+      - name: Atomically promote verified schema v2 stage
+        env:
+          DATA_STAGE: ${{ runner.temp }}/bubble-data-stage
+        run: |
+          set -euo pipefail
+          python -m pipeline.update --promote-stage "$DATA_STAGE" --output public/data
+          rm -rf dist
+          cp -R "${{ runner.temp }}/bubble-frontend-checkout/dist" dist
+
+      - name: Commit generated schema v2 data
+        id: generated-data
+        shell: bash
+        run: |
+          set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add public/data
-          git diff --cached --quiet || git commit -m 'chore(data): refresh liquidity snapshot'
-          git push || true
-      - uses: actions/upload-artifact@v4
-        with: {name: pipeline-health, path: pipeline-update.log, retention-days: 14}
+          if git diff --cached --quiet; then
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+          else
+            git commit -m 'chore(data): refresh liquidity snapshot'
+            git push
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload pipeline health log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-health-${{ github.run_id }}
+          path: pipeline-update.log
+          if-no-files-found: warn
+          retention-days: 14
+
       - uses: actions/configure-pages@v5
+
       - uses: actions/upload-pages-artifact@v3
-        with: {path: dist}
+        with:
+          path: dist
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

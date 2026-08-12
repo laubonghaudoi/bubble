@@ -9,6 +9,10 @@ __pycache__/
 .env*
 !.env.example
 
+# Atomic publication scratch directories
+public/.data-stage-*/
+public/.data-backup-*/
+
 # Local visual regression artefacts
 docs/screenshots/
 

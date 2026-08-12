@@ -5,14 +5,20 @@ import {
   buildOverlayUnion,
   OVERLAY_CONFIG,
   resolveChartPalette,
+  formatMetricValue,
 } from './Charts';
 
 type LooseOption=Record<string,any>;
 
 describe('chart option builders',()=>{
+  it('keeps meaningful precision for sub-billion operation data',()=>{
+    expect(formatMetricValue(0.725,'USD bn')).toBe('0.725B');
+    expect(formatMetricValue(12.738,'USD bn')).toBe('12.7B');
+    expect(formatMetricValue(0,'USD bn')).toBe('0B');
+  });
   it('adds only the in-domain spread threshold and disables animation',()=>{
     const option=buildMainChartOption({
-      metricId:'sofr_iorb_spread',label:'SOFR−IORB',unit:'bp',thresholdBp:3,
+      metricId:'sofr_iorb_spread_bp',label:'SOFR−IORB',unit:'bp',thresholdBp:3,
       points:[
         {date:'2026-08-08',value:-12},
         {date:'2026-08-09',value:1},
@@ -34,6 +40,19 @@ describe('chart option builders',()=>{
         label:expect.objectContaining({color:'#E51503',formatter:expect.stringContaining('+3 bp')}),
       }),
     ]));
+  });
+
+  it('adds only in-domain weekly reserve reference lines',()=>{
+    const option=buildMainChartOption({
+      metricId:'reserve_balances',label:'Reserve balances',unit:'USD bn',
+      points:[{date:'2026-08-05',value:2700},{date:'2026-08-12',value:3000}],
+      referenceLines:[
+        {value:2900,label:'參考區 2.9T'},
+        {value:2800,label:'參考區 2.8T'},
+        {value:2500,label:'參考區 2.5T'},
+      ],
+    }) as LooseOption;
+    expect(option.series[0].markLine.data.map((line:LooseOption)=>line.yAxis)).toEqual([2900,2800]);
   });
 
   it('formats percentage axes and tooltips with one percent suffix',()=>{
@@ -58,6 +77,18 @@ describe('chart option builders',()=>{
     expect(option.yAxis.min).toBeLessThan(3.65);
     expect(option.yAxis.max).toBeGreaterThan(3.65);
     expect(option.yAxis.max-option.yAxis.min).toBeLessThan(0.5);
+  });
+
+  it('describes a non-OK main series as last-good rather than latest',()=>{
+    const option=buildMainChartOption({
+      metricId:'sofr_iorb_spread_bp',label:'SOFR−IORB',unit:'bp',lastGood:true,
+      points:[{date:'2026-08-10',value:1.2}],
+    }) as LooseOption;
+    const description=option.aria.label.description as string;
+
+    expect(description).toContain('最後成功觀察值為 1.2 bp');
+    expect(description).toContain('並非今日新值');
+    expect(description).not.toContain('最新為');
   });
 
   it('sorts the overlay union and aligns absent observations to null',()=>{
@@ -94,6 +125,22 @@ describe('chart option builders',()=>{
     expect(option.series[0]).toMatchObject({name:'SOFR',data:[3.61,null,3.63],connectNulls:true});
     expect(option.series[1]).toMatchObject({name:'IORB',data:[null,3.65,null],connectNulls:true});
     expect(option.yAxis.axisLabel.formatter(3.65)).toBe('3.65%');
+  });
+
+  it('identifies only non-OK overlay series as last-good in the accessible summary',()=>{
+    const option=buildOverlayChartOption({
+      series:{
+        sofr:[{date:'2026-08-10',value:3.63}],
+        iorb:[{date:'2026-08-10',value:3.65}],
+      },
+      selected:{sofr:true,iorb:true},
+      lastGoodIds:['sofr'],
+    }) as LooseOption;
+    const description=option.aria.label.description as string;
+
+    expect(description).toContain('SOFR（最後成功值，並非今日新值）');
+    expect(description).toContain('IORB');
+    expect(description).not.toContain('IORB（最後成功值');
   });
 
   it('keeps the ordered overlay config and fallback canvas colours in one source of truth',()=>{

@@ -1,0 +1,313 @@
+schema_version: "2.0.0"
+registry_kind: source
+
+# A collector may make a request only when enabled, network_eligible, and both
+# rights booleans are true.  The Python rights gate enforces that conjunction.
+sources:
+  - source_id: nyfed_markets
+    name: Federal Reserve Bank of New York Markets Data API
+    homepage: https://markets.newyorkfed.org/static/docs/markets-api.html
+    tier: OFFICIAL
+    enabled: true
+    network_eligible: true
+    auth:
+      mode: NONE
+      required_env: null
+    rate_limit:
+      published_requests_per_second: null
+      recommended_requests_per_second: 2
+    rights:
+      status: CLEARED
+      automated_fetch: true
+      public_redistribution: true
+      terms_url: https://www.newyorkfed.org/privacy/termsofuse.html
+      hold_reason: null
+      attribution_note: © 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.
+
+  - source_id: treasury_fiscaldata
+    name: U.S. Treasury FiscalData API
+    homepage: https://fiscaldata.treasury.gov/api-documentation/
+    tier: OFFICIAL
+    enabled: true
+    network_eligible: true
+    auth:
+      mode: NONE
+      required_env: null
+    rate_limit:
+      published_requests_per_second: null
+      recommended_requests_per_second: 2
+    rights:
+      status: CLEARED
+      automated_fetch: true
+      public_redistribution: true
+      terms_url: https://fiscaldata.treasury.gov/about-us/
+      hold_reason: null
+      attribution_note: Cite FiscalData and preserve the dataset as-of date.
+
+  - source_id: federal_reserve_board
+    name: Federal Reserve Board statistical releases
+    homepage: https://www.federalreserve.gov/data.htm
+    tier: OFFICIAL
+    enabled: true
+    network_eligible: true
+    auth:
+      mode: NONE
+      required_env: null
+    rate_limit:
+      published_requests_per_second: null
+      recommended_requests_per_second: 1
+    rights:
+      status: CLEARED
+      automated_fetch: true
+      public_redistribution: true
+      terms_url: https://www.federalreserve.gov/website-linking-policies.htm
+      hold_reason: null
+      attribution_note: Cite the Board release and observation date; do not imply Board endorsement.
+
+  - source_id: cftc_pre
+    name: CFTC Public Reporting Environment
+    homepage: https://publicreporting.cftc.gov/
+    tier: OFFICIAL
+    enabled: true
+    network_eligible: true
+    auth:
+      mode: NONE
+      required_env: null
+    rate_limit:
+      published_requests_per_second: null
+      recommended_requests_per_second: 1
+    rights:
+      status: CLEARED
+      automated_fetch: true
+      public_redistribution: true
+      terms_url: https://www.cftc.gov/WebPolicy/index.htm
+      hold_reason: null
+      attribution_note: Attribute CFTC; third-party material remains subject to its own rights.
+
+  - source_id: sec_edgar
+    name: SEC EDGAR APIs and filing data
+    homepage: https://www.sec.gov/search-filings/edgar-application-programming-interfaces
+    tier: OFFICIAL
+    enabled: true
+    network_eligible: true
+    auth:
+      mode: IDENTIFYING_USER_AGENT
+      required_env: SEC_USER_AGENT
+    rate_limit:
+      published_requests_per_second: 10
+      recommended_requests_per_second: 4
+    rights:
+      status: CLEARED
+      automated_fetch: true
+      public_redistribution: true
+      terms_url: https://www.sec.gov/about/webmaster-frequently-asked-questions
+      hold_reason: null
+      attribution_note: Cite the filing and accession; do not republish long issuer-authored passages.
+
+  - source_id: irs_reviewed_calendar
+    name: IRS reviewed tax-date publications
+    homepage: https://www.irs.gov/businesses/small-businesses-self-employed/tax-calendar
+    tier: OFFICIAL
+    enabled: false
+    network_eligible: false
+    auth:
+      mode: MANUAL
+      required_env: null
+    rate_limit:
+      published_requests_per_second: null
+      recommended_requests_per_second: null
+    rights:
+      status: CLEARED
+      automated_fetch: false
+      public_redistribution: true
+      terms_url: https://www.irs.gov/privacy-disclosure/irs-privacy-policy
+      hold_reason: Dates require human review for weekends, holidays, and disaster relief.
+      attribution_note: Store the exact IRS publication URL used for each reviewed deadline.
+
+  - source_id: manual_public_filings
+    name: Human-reviewed public filings
+    homepage: https://www.sec.gov/search-filings
+    tier: OFFICIAL
+    enabled: false
+    network_eligible: false
+    auth:
+      mode: MANUAL
+      required_env: null
+    rate_limit:
+      published_requests_per_second: null
+      recommended_requests_per_second: null
+    rights:
+      status: CLEARED
+      automated_fetch: false
+      public_redistribution: true
+      terms_url: https://www.sec.gov/about/webmaster-frequently-asked-questions
+      hold_reason: Narrative signals require review and are not eligible for automatic numeric extraction.
+      attribution_note: Publish short factual paraphrases with filing URLs and accessions.
+
+  - source_id: fred_government
+    name: Federal Reserve Economic Data API, reviewed government-origin series
+    homepage: https://fred.stlouisfed.org/docs/api/fred/
+    tier: DISTRIBUTOR
+    enabled: true
+    network_eligible: true
+    auth:
+      mode: API_KEY
+      required_env: FRED_API_KEY
+    rate_limit:
+      published_requests_per_second: null
+      recommended_requests_per_second: 1
+    rights:
+      status: CLEARED
+      automated_fetch: true
+      public_redistribution: true
+      terms_url: https://fred.stlouisfed.org/docs/api/terms_of_use.html
+      hold_reason: null
+      attribution_note: This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.
+    series_allowlist:
+      - IORB
+      - WRESBAL
+      - WALCL
+      - WTREGEN
+      - NCBEILQ027S
+      - GDP
+
+  - source_id: fred_third_party
+    name: Federal Reserve Economic Data API, third-party series permission hold
+    homepage: https://fred.stlouisfed.org/docs/api/fred/
+    tier: DISTRIBUTOR
+    enabled: false
+    network_eligible: false
+    auth:
+      mode: API_KEY
+      required_env: FRED_API_KEY
+    rate_limit:
+      published_requests_per_second: null
+      recommended_requests_per_second: null
+    rights:
+      status: HOLD
+      automated_fetch: false
+      public_redistribution: false
+      terms_url: https://fred.stlouisfed.org/docs/api/terms_of_use.html
+      hold_reason: Access through FRED does not grant onward rights to third-party series such as SP500, NASDAQCOM, VIXCLS, VXVCLS, or CBBTCUSD.
+      attribution_note: A FRED API key does not grant onward rights to third-party series.
+    series_allowlist: []
+
+  - source_id: finra_margin
+    name: FINRA Margin Statistics
+    homepage: https://www.finra.org/rules-guidance/key-topics/margin-accounts/margin-statistics
+    tier: OFFICIAL
+    enabled: false
+    network_eligible: false
+    auth:
+      mode: NONE
+      required_env: null
+    rate_limit:
+      published_requests_per_second: null
+      recommended_requests_per_second: null
+    rights:
+      status: HOLD
+      automated_fetch: false
+      public_redistribution: false
+      terms_url: https://www.finra.org/terms-of-use
+      hold_reason: Published terms restrict bulk monitoring, database construction, scraping, and redistribution without consent.
+      attribution_note: Written permission is required before automated public-dashboard use.
+
+  - source_id: cboe
+    name: Cboe public index and market-statistics pages
+    homepage: https://www.cboe.com/us/options/market_statistics/
+    tier: OFFICIAL_PUBLISHER
+    enabled: false
+    network_eligible: false
+    auth:
+      mode: NONE
+      required_env: null
+    rate_limit:
+      published_requests_per_second: null
+      recommended_requests_per_second: null
+    rights:
+      status: HOLD
+      automated_fetch: false
+      public_redistribution: false
+      terms_url: https://www.cboe.com/terms/
+      hold_reason: Published terms do not grant automated storage, derived publication, or redistribution rights for this dashboard.
+      attribution_note: Written Cboe permission or a separately licensed feed is required.
+
+  - source_id: ssga_spy
+    name: State Street SPY holdings download
+    homepage: https://www.ssga.com/us/en/intermediary/etfs/state-street-spdr-sp-500-etf-trust-spy
+    tier: OFFICIAL_PUBLISHER
+    enabled: false
+    network_eligible: false
+    auth:
+      mode: NONE
+      required_env: null
+    rate_limit:
+      published_requests_per_second: null
+      recommended_requests_per_second: null
+    rights:
+      status: HOLD
+      automated_fetch: false
+      public_redistribution: false
+      terms_url: https://www.ssga.com/us/en/intermediary/etfs/state-street-spdr-sp-500-etf-trust-spy
+      hold_reason: The product-page terms restrict reproduction, transmission, and third-party disclosure without consent.
+      attribution_note: Written State Street permission is required for an automated public Top-10 proxy.
+
+  - source_id: coinbase_market_data
+    name: Coinbase public derivatives market data
+    homepage: https://docs.cdp.coinbase.com/api-reference/market-data/public-get_funding_rate_history
+    tier: OFFICIAL_PUBLISHER
+    enabled: false
+    network_eligible: false
+    auth:
+      mode: NONE
+      required_env: null
+    rate_limit:
+      published_requests_per_second: null
+      recommended_requests_per_second: null
+    rights:
+      status: HOLD
+      automated_fetch: false
+      public_redistribution: false
+      terms_url: https://www.coinbase.com/legal/market_data
+      hold_reason: Market Data Terms restrict third-party display, dissemination, redistribution, and derived-data publication.
+      attribution_note: A public endpoint is not a redistribution licence.
+
+  - source_id: bybit_market_data
+    name: Bybit public funding history
+    homepage: https://bybit-exchange.github.io/docs/v5/market/history-fund-rate
+    tier: OFFICIAL_PUBLISHER
+    enabled: false
+    network_eligible: false
+    auth:
+      mode: NONE
+      required_env: null
+    rate_limit:
+      published_requests_per_second: null
+      recommended_requests_per_second: null
+    rights:
+      status: HOLD
+      automated_fetch: false
+      public_redistribution: false
+      terms_url: https://www.bybit.com/common-static/compliance/legal/BYBIT/df1923006718fbba8ba70d7d762b9866.pdf
+      hold_reason: Published terms and service-region restrictions do not clear automated public-dashboard redistribution.
+      attribution_note: A public endpoint is not a redistribution licence.
+
+  - source_id: licensed_provider
+    name: Future licensed provider interface
+    homepage: null
+    tier: PROPRIETARY
+    enabled: false
+    network_eligible: false
+    auth:
+      mode: MANUAL
+      required_env: null
+    rate_limit:
+      published_requests_per_second: null
+      recommended_requests_per_second: null
+    rights:
+      status: HOLD
+      automated_fetch: false
+      public_redistribution: false
+      terms_url: null
+      hold_reason: No provider contract or redistribution licence is configured.
+      attribution_note: Keep value null until a reviewed provider agreement is configured.

@@ -1,0 +1,50 @@
+schema_version: "2.0.0"
+registry_kind: alert_rules
+
+alerts:
+  liquidity_fuel:
+    sofr_iorb_watch_bp: 3
+    positive_streak_observations: 3
+    confirmation_required_for_elevated: true
+    confirmation_spread_metric_ids:
+      - effr_iorb_spread_bp
+      - tgcr_iorb_spread_bp
+      - bgcr_iorb_spread_bp
+    stress_confirmations:
+      - srf_accepted_nontechnical
+      - reserve_balances_4w_decline
+      - multiple_funding_spreads_worsening
+    single_observation_can_trigger_stress: false
+
+  srf:
+    amount_field: accepted_amount
+    exclude_technical_exercises_from_alerts: true
+    aggregate_same_day_operations: true
+    positive_use_streak_observations: 2
+
+  technical_context:
+    confidence_adjustment_levels: -1
+    suppress_alerts: false
+    large_treasury_settlement_percentile: 0.9
+    large_treasury_settlement_min_nonzero_samples: 60
+    tax_window_business_days_before: 1
+    tax_window_business_days_after: 1
+
+  reserve_balances:
+    reference_zones_usd_tn: [2.9, 2.8, 2.5]
+    reference_only: true
+    stale_after_calendar_days: 10
+    expected_release_weekday: THURSDAY
+    expected_release_time_et: "16:30"
+
+  market_ignition:
+    total_blocks: 4
+    minimum_fresh_blocks_for_directional_status: 3
+    insufficient_data_status: UNAVAILABLE
+
+  fundamental_exit:
+    total_blocks: 4
+    minimum_current_blocks_for_directional_status: 3
+    minimum_confirming_companies: 2
+    aggregate_negative_acceleration_quarters: 2
+    insufficient_data_status: UNAVAILABLE

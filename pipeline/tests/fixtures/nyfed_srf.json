@@ -1,0 +1,30 @@
+{
+  "repo": {
+    "operations": [
+      {
+        "operationId": "SRF AM",
+        "operationDate": "2026-08-11",
+        "operationType": "Repo",
+        "lastUpdated": "2026-08-11 08:30:00",
+        "totalAmtSubmitted": 3000000000,
+        "totalAmtAccepted": 2000000000,
+        "details": [
+          {"securityType": "Treasury", "amtSubmitted": 2000000000, "amtAccepted": 1500000000, "percentOfferingRate": 3.75},
+          {"securityType": "Agency", "amtSubmitted": 500000000, "amtAccepted": 250000000, "percentOfferingRate": 3.75},
+          {"securityType": "Mortgage-Backed", "amtSubmitted": 500000000, "amtAccepted": 250000000, "percentOfferingRate": 3.75}
+        ]
+      },
+      {
+        "operationId": "SRF PM",
+        "operationDate": "2026-08-11",
+        "operationType": "Repo",
+        "lastUpdated": "2026-08-11 13:45:00",
+        "totalAmtSubmitted": 1000000000,
+        "totalAmtAccepted": 500000000,
+        "details": [
+          {"securityType": "Treasury", "amtSubmitted": 1000000000, "amtAccepted": 500000000, "percentOfferingRate": 3.75}
+        ]
+      }
+    ]
+  }
+}

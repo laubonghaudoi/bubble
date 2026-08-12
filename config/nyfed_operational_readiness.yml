@@ -1,0 +1,32 @@
+schema_version: "2.0.0"
+registry_kind: nyfed_operational_readiness
+reviewed_at: "2026-08-12"
+calendar_source_url: https://www.newyorkfed.org/markets/operational-readiness
+
+# The Markets API does not expose a reliable technical-exercise flag. Entries
+# therefore come from human-reviewed official announcements. SRF exclusions
+# are matched to an exact operation ID, never an entire date and never inferred
+# from amount/time.
+exercises:
+  - exercise_id: nyfed_2026_05_13_on_rrp
+    operation_date: "2026-05-13"
+    operation_type: ON_RRP
+    technical_exercise: true
+    source_url: https://www.newyorkfed.org/markets/opolicy/operating_policy_260506
+    announcement_date: "2026-05-06"
+    reviewed: true
+    reviewer: repository_maintainer
+    reviewed_at: "2026-08-12"
+    review_note: Overnight reverse repo small-value operational-readiness exercise.
+
+  - exercise_id: nyfed_2026_05_27_srf
+    operation_date: "2026-05-27"
+    operation_type: SRF
+    operation_id: RP 052726 99
+    technical_exercise: true
+    source_url: https://www.newyorkfed.org/markets/opolicy/operating_policy_260506
+    announcement_date: "2026-05-06"
+    reviewed: true
+    reviewer: repository_maintainer
+    reviewed_at: "2026-08-12"
+    review_note: Overnight repo small-value operational-readiness exercise across Treasury, agency debt, and agency MBS.
