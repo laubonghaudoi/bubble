@@ -11,3 +11,7 @@ __pycache__/
 
 # Local visual regression artefacts
 docs/screenshots/
+
+# Local design handoffs and macOS metadata
+design_handoff_liquidity_dashboard/
+.DS_Store
