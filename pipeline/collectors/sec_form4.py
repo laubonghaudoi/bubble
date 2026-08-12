@@ -47,6 +47,11 @@ ARCHIVE_PATH_RE = re.compile(
 MASTER_NAME_RE = re.compile(r"^master\.(?P<day>\d{8})\.idx$")
 MASTER_INDEX_HEADER = "CIK|Company Name|Form Type|Date Filed|File Name"
 MASTER_FILING_DATE_RE = re.compile(r"^\d{8}$")
+XML_SCHEMA_DATE_RE = re.compile(
+    r"^(?P<calendar_date>\d{4}-\d{2}-\d{2})"
+    r"(?P<timezone>Z|(?P<timezone_sign>[+-])"
+    r"(?P<timezone_hour>\d{2}):(?P<timezone_minute>\d{2}))?$"
+)
 MAX_BODY_BYTES = 40 * 1024 * 1024
 DEFAULT_TIMEOUT = 30.0
 DEFAULT_ATTEMPTS = 4
@@ -725,10 +730,42 @@ def _decimal(value: str | None, *, field_name: str, allow_zero: bool = True) -> 
 def _date_value(value: str | None, *, field_name: str) -> str:
     if value is None:
         raise CollectorError(f"{field_name} is missing")
+    match = XML_SCHEMA_DATE_RE.fullmatch(value)
+    if match is None:
+        raise CollectorError(f"{field_name} is invalid")
+    timezone_hour = match.group("timezone_hour")
+    timezone_minute = match.group("timezone_minute")
+    if timezone_hour is not None and timezone_minute is not None:
+        hour = int(timezone_hour)
+        minute = int(timezone_minute)
+        if hour > 14 or minute > 59 or (hour == 14 and minute != 0):
+            raise CollectorError(f"{field_name} is invalid")
     try:
-        return date.fromisoformat(value).isoformat()
+        # XML Schema ``xs:date`` permits an optional timezone suffix.  Its
+        # calendar component is the reported date, so normalise that lexical
+        # component without shifting it through UTC (which could change day).
+        return date.fromisoformat(match.group("calendar_date")).isoformat()
     except ValueError as exc:
         raise CollectorError(f"{field_name} is invalid") from exc
+
+
+def _optional_date_value(
+    value: str | None, *, field_name: str, anomaly_code: str
+) -> tuple[str | None, tuple[str, ...]]:
+    """Normalise an optional xs:date without making metadata fatal.
+
+    ``periodOfReport`` and ``dateOfOriginalSubmission`` are not inputs to the
+    P/S transaction window.  A malformed supplied value is therefore retained
+    as an explicit, privacy-safe anomaly while the public value remains null.
+    In particular, a malformed amendment date can never be guessed or linked.
+    """
+
+    if value is None:
+        return None, ()
+    try:
+        return _date_value(value, field_name=field_name), ()
+    except CollectorError:
+        return None, (anomaly_code,)
 
 
 def _plan_flag(value: str | None) -> str:
@@ -878,15 +915,15 @@ def parse_complete_submission(
     issuer_cik = _value(root, "issuer", "issuerCik", required=True)
     if issuer_cik is None or not issuer_cik.isdigit():
         raise CollectorError("ownership XML issuer CIK is invalid")
-    period = _value(root, "periodOfReport")
-    period_of_report = (
-        _date_value(period, field_name="periodOfReport") if period is not None else None
+    period_of_report, period_anomalies = _optional_date_value(
+        _value(root, "periodOfReport"),
+        field_name="periodOfReport",
+        anomaly_code="PERIOD_OF_REPORT_INVALID",
     )
-    original = _value(root, "dateOfOriginalSubmission")
-    original_submission_date = (
-        _date_value(original, field_name="dateOfOriginalSubmission")
-        if original is not None
-        else None
+    original_submission_date, original_date_anomalies = _optional_date_value(
+        _value(root, "dateOfOriginalSubmission"),
+        field_name="dateOfOriginalSubmission",
+        anomaly_code="DATE_OF_ORIGINAL_SUBMISSION_INVALID",
     )
     reporting_owner_ciks: set[str] = set()
     for owner in _children(root, "reportingOwner"):
@@ -901,8 +938,13 @@ def parse_complete_submission(
         "\n".join(normalized_owner_ciks).encode("utf-8")
     ).hexdigest()
     filing_plan_10b5 = _plan_flag(_value(root, "aff10b5One"))
-    transactions, excluded, missing_price, anomalies = _parse_transactions(
+    transactions, excluded, missing_price, transaction_anomalies = _parse_transactions(
         root, filing_plan_10b5=filing_plan_10b5
+    )
+    anomalies = (
+        *period_anomalies,
+        *original_date_anomalies,
+        *transaction_anomalies,
     )
     fingerprints = tuple(sorted(transaction.fingerprint for transaction in transactions))
     transactions_hash = hashlib.sha256("\n".join(fingerprints).encode("ascii")).hexdigest()
@@ -926,7 +968,11 @@ def parse_complete_submission(
         excluded_transaction_count=excluded,
         missing_price_count=missing_price,
         anomaly_codes=anomalies,
-        parse_status="PARSED_WITH_QUARANTINED_ROWS" if anomalies else "PARSED",
+        parse_status=(
+            "PARSED_WITH_QUARANTINED_ROWS"
+            if transaction_anomalies
+            else "PARSED"
+        ),
     )
 
 
@@ -1049,13 +1095,32 @@ def collect_form4_window(
                 response.body, entry=entry, expected_sha256=response.sha256
             )
             filings.append(filing)
-            if filing.anomaly_codes:
+            metadata_anomalies = tuple(
+                code
+                for code in filing.anomaly_codes
+                if not code.startswith("NONDERIVATIVE_ROW_")
+            )
+            transaction_anomalies = tuple(
+                code
+                for code in filing.anomaly_codes
+                if code.startswith("NONDERIVATIVE_ROW_")
+            )
+            if metadata_anomalies:
+                reviews.append(
+                    {
+                        "accession": accession,
+                        "index_date": entry.index_date,
+                        "stage": "METADATA_DATE_ANOMALY",
+                        "reason": ",".join(metadata_anomalies),
+                    }
+                )
+            if transaction_anomalies:
                 reviews.append(
                     {
                         "accession": accession,
                         "index_date": entry.index_date,
                         "stage": "TRANSACTION_QUARANTINE",
-                        "reason": ",".join(filing.anomaly_codes),
+                        "reason": ",".join(transaction_anomalies),
                     }
                 )
         except CollectorError as exc:

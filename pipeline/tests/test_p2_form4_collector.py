@@ -25,6 +25,7 @@ from pipeline.collectors.sec_form4 import (
     parse_master_index,
     parse_quarter_index,
 )
+from pipeline.form4_ledger import public_ledger_entry, resolve_amendments
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -53,6 +54,22 @@ def index_entry(
         filing_date=filing_date,
         index_date=index_date,
         archive_path=f"edgar/data/{cik}/{accession}.txt",
+    )
+
+
+def xs_date_entry(
+    *,
+    accession: str = "0000000001-26-000001",
+    form_type: str = "4",
+    filing_date: str = "2026-07-01",
+    index_date: str = "2026-07-01",
+) -> FilingIndexEntry:
+    return index_entry(
+        accession=accession,
+        form_type=form_type,
+        filing_date=filing_date,
+        index_date=index_date,
+        cik="1",
     )
 
 
@@ -231,6 +248,102 @@ def test_complete_submission_parses_only_table_i_p_and_s_with_required_mapping()
     assert filing.excluded_transaction_count == 1
     assert filing.missing_price_count == 1
     assert filing.parse_status == "PARSED"
+
+
+@pytest.mark.parametrize(
+    "timezone_suffix",
+    ["", "Z", "+00:00", "-00:00", "+13:59", "-13:59", "+14:00", "-14:00"],
+)
+def test_xs_date_timezone_is_validated_and_normalized_without_utc_shift(
+    timezone_suffix,
+):
+    body = fixture_bytes("sec_form4_xs_date_timezone.txt").replace(
+        b"2026-06-30-05:00", f"2026-06-30{timezone_suffix}".encode()
+    )
+    filing = parse_complete_submission(body, entry=xs_date_entry())
+    assert filing.period_of_report == "2026-06-30"
+    assert filing.transactions[0].transaction_date == "2026-06-30"
+    assert filing.anomaly_codes == ()
+
+
+@pytest.mark.parametrize(
+    "invalid_value",
+    [
+        "20260630-05:00",
+        "2026-06-30z",
+        "2026-06-30-0500",
+        "2026-06-30+14:01",
+        "2026-06-30-14:01",
+        "2026-06-30+15:00",
+        "2026-06-30-05:60",
+        "2026-02-30Z",
+        "2026-06-30T00:00:00Z",
+    ],
+)
+def test_malformed_optional_period_is_null_with_explicit_anomaly(invalid_value):
+    body = fixture_bytes("sec_form4_xs_date_timezone.txt").replace(
+        b"<periodOfReport>2026-06-30-05:00</periodOfReport>",
+        f"<periodOfReport>{invalid_value}</periodOfReport>".encode(),
+    )
+    filing = parse_complete_submission(body, entry=xs_date_entry())
+    assert filing.period_of_report is None
+    assert filing.anomaly_codes == ("PERIOD_OF_REPORT_INVALID",)
+    assert filing.parse_status == "PARSED"
+    assert len(filing.transactions) == 1
+
+
+def test_missing_optional_period_remains_null_without_guessing():
+    body = fixture_bytes("sec_form4_xs_date_timezone.txt").replace(
+        b"  <periodOfReport>2026-06-30-05:00</periodOfReport>\n", b""
+    )
+    filing = parse_complete_submission(body, entry=xs_date_entry())
+    assert filing.period_of_report is None
+    assert filing.anomaly_codes == ()
+
+
+def test_malformed_original_submission_date_cannot_link_an_amendment():
+    original_body = fixture_bytes("sec_form4_xs_date_timezone.txt")
+    original = parse_complete_submission(original_body, entry=xs_date_entry())
+    amendment_body = (
+        original_body.replace(
+            b"0000000001-26-000001", b"0000000001-26-000002"
+        )
+        .replace(b"CONFORMED SUBMISSION TYPE: 4", b"CONFORMED SUBMISSION TYPE: 4/A")
+        .replace(b"<TYPE>4\n", b"<TYPE>4/A\n")
+        .replace(
+            b"<documentType>4</documentType>",
+            b"<documentType>4/A</documentType>\n"
+            b"  <dateOfOriginalSubmission>not-a-date</dateOfOriginalSubmission>",
+        )
+    )
+    amendment = parse_complete_submission(
+        amendment_body,
+        entry=xs_date_entry(
+            accession="0000000001-26-000002",
+            form_type="4/A",
+            filing_date="2026-07-02",
+            index_date="2026-07-02",
+        ),
+    )
+    assert amendment.original_submission_date is None
+    assert amendment.anomaly_codes == ("DATE_OF_ORIGINAL_SUBMISSION_INVALID",)
+    resolved = resolve_amendments(
+        [public_ledger_entry(original), public_ledger_entry(amendment)]
+    )
+    amendment_record = next(row for row in resolved if row["form_type"] == "4/A")
+    assert amendment_record["amendment_status"] == "UNLINKED_REVIEW"
+    assert amendment_record["linked_original_accession"] is None
+
+
+def test_malformed_transaction_date_quarantines_only_that_ps_row():
+    body = fixture_bytes("sec_form4_xs_date_timezone.txt").replace(
+        b"<transactionDate><value>2026-06-30-05:00</value></transactionDate>",
+        b"<transactionDate><value>2026-06-30+14:01</value></transactionDate>",
+    )
+    filing = parse_complete_submission(body, entry=xs_date_entry())
+    assert filing.transactions == ()
+    assert filing.anomaly_codes == ("NONDERIVATIVE_ROW_1_QUARANTINED",)
+    assert filing.parse_status == "PARSED_WITH_QUARANTINED_ROWS"
 
 
 def test_bad_p_s_mapping_is_quarantined_while_derivatives_and_other_codes_stay_excluded():
@@ -433,6 +546,43 @@ def test_window_collection_fetches_duplicate_accession_once_and_marks_completed_
     assert requested_urls.count(
         "https://www.sec.gov/Archives/edgar/data/320193/0000320193-26-000001.txt"
     ) == 1
+
+
+def test_malformed_optional_period_is_reviewed_without_failing_completed_day():
+    quarter = b'{"directory":{"item":[{"name":"master.20260701.idx"}]}}'
+    master = b"""Description: Daily Index
+CIK|Company Name|Form Type|Date Filed|File Name
+--------------------------------------------------------------------------------
+1|Synthetic Fixture|4|20260701|edgar/data/1/0000000001-26-000001.txt
+"""
+    submission = fixture_bytes("sec_form4_xs_date_timezone.txt").replace(
+        b"<periodOfReport>2026-06-30-05:00</periodOfReport>",
+        b"<periodOfReport>ambiguous</periodOfReport>",
+    )
+    collection = collect_form4_window(
+        start_date=date(2026, 7, 1),
+        end_date=date(2026, 7, 1),
+        client=make_client(
+            QueueOpener(
+                [
+                    FakeResponse(quarter, content_type="application/json"),
+                    FakeResponse(master, content_type="text/plain"),
+                    FakeResponse(submission, content_type="text/plain"),
+                ]
+            )
+        ),
+    )
+    assert collection.completed_index_days == ("2026-07-01",)
+    assert collection.failures == ()
+    assert collection.filings[0].period_of_report is None
+    assert collection.reviews == (
+        {
+            "accession": "0000000001-26-000001",
+            "index_date": "2026-07-01",
+            "stage": "METADATA_DATE_ANOMALY",
+            "reason": "PERIOD_OF_REPORT_INVALID",
+        },
+    )
 
 
 def test_window_collection_skips_known_accession_even_when_private_cache_is_cold():
