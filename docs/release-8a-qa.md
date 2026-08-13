@@ -6,11 +6,11 @@ Scope: upgrade the Overview read rail from a mostly static summary into a pipeli
 
 Implementation parent: `a8cb7cdf1f987e1e493b6c3b1023b93e88ad2475`
 
-Implementation commit: **PENDING — changes are not committed**
+Implementation commit: `035fb05b89e569c8c3a0b083e5c2b52ba1fdad04`
 
-Production data commit: **PENDING — deployment has not run**
+Production data commit: `2990e565b233d5ecb3cbd1bb8bd21336e6d3291c`
 
-> Status: **LOCAL CONTRACT, AUTOMATED AND BROWSER GATES PASSED. DEPLOYMENT AND LIVE QA PENDING.** No earlier release result certifies this schema or interpretation layer.
+> Status: **RELEASED. LOCAL, WORKFLOW, GENERATED-DATA, PAGES AND LIVE BROWSER GATES PASSED.** No earlier release result certifies this schema or interpretation layer.
 
 ## Locked scope and publication contract
 
@@ -89,15 +89,15 @@ QA artifact directory: `/var/folders/8c/37f47zk10552270psw18r9300000gn/T/bubble-
 
 ## Deployment and live close-out
 
-- Push-to-main workflow run URL/id, status and duration: **PENDING**.
-- Workflow collector/stage, Python, frontend, build, promote and Pages jobs: **PENDING**.
-- Implementation SHA deployed to Pages: **PENDING**.
-- Generated-data SHA, schema and generated timestamp: **PENDING**.
-- Pages deployment id and commit: **PENDING**.
-- Live snapshot/manifest/alerts/events and full-series parity with generated `public/data`: **PENDING**.
-- Live hashed JS/CSS identity and HTTP/content-type checks: **PENDING**.
-- Live five-route plus responsive Overview/interpreter browser matrix: **PENDING**.
-- Live 13-row/tab selection, focus, overflow, contrast, console and source-link checks: **PENDING**.
+- Push-to-main workflow run: [31746304414](https://github.com/laubonghaudoi/bubble/actions/runs/31746304414), **success**, 2026-08-13 21:35:08Z–21:40:16Z.
+- Workflow collector/stage, Python, staged-data frontend test/build, revalidation, atomic promote, generated-data commit, artifact upload and Pages deployment: **all steps passed**.
+- Implementation SHA deployed to Pages: `035fb05b89e569c8c3a0b083e5c2b52ba1fdad04`.
+- Generated-data SHA: `2990e565b233d5ecb3cbd1bb8bd21336e6d3291c`; schema `2.3.0`; generated `2026-08-13T21:35:27.822558Z`.
+- Pages deployment: `5896469142`, state `success`, bound to implementation SHA.
+- Cache-busted live snapshot／manifest／alerts／events and all 40 full-series files are byte-identical to generated `public/data`; snapshot has 40 metrics and exactly 17 interpretations.
+- Live `index-17ICY1kD.css`, `index-C5qmfnv1.js`, lazy `katex-CUAWePv0.css`, `katex-CiJ_n4H9.js` and KaTeX main font return HTTP 200 with the expected content type.
+- Live five-route focus matrix and responsive Overview／interpreter checks passed at 1440×1000 and 390×844; document horizontal overflow is zero and chart canvases match their containers.
+- Live 13/13 row／tab selection, six typed views, drawer focus restore, 11px font floor, semantic contrast, source links and console checks passed. Fresh Overview loads no KaTeX DOM; Provenance renders 3 display formulas, 24 notation items and 27 MathML nodes with zero render errors.
 
 ## Known risks and release boundary
 
@@ -107,4 +107,4 @@ QA artifact directory: `/var/folders/8c/37f47zk10552270psw18r9300000gn/T/bubble-
 - Earlier Release 8 live QA remains evidence for the Provenance layout only; it does not certify schema `2.3.0`, new interpreter output or unchanged alerts under the new pipeline.
 - Until all local gates, credentialed workflow gates, generated-data parity and live browser checks pass, Release 8A/8C remains unreleased.
 
-Final result: **PASSED LOCALLY — deployment and live close-out pending**
+Final result: **PASSED**
