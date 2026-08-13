@@ -7378,8 +7378,8 @@
   "quality": {
     "failure_reason": null,
     "freshness": "FRESH",
-    "last_attempt_at": "2026-08-13T08:14:48.557860Z",
-    "last_success_at": "2026-08-13T08:14:48.557860Z",
+    "last_attempt_at": "2026-08-13T14:29:22.922601Z",
+    "last_success_at": "2026-08-13T14:29:22.922601Z",
     "sample_size": 1842,
     "status": "OK"
   },
@@ -7387,12 +7387,12 @@
   "schema_version": "2.1.0",
   "source": {
     "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-    "retrieved_at": "2026-08-13T08:14:48.557860Z",
+    "retrieved_at": "2026-08-13T14:29:22.922601Z",
     "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
     "source_id": "fred_government",
     "tier": "DISTRIBUTOR",
     "url": "https://fred.stlouisfed.org/docs/api/fred/"
   },
   "unit": "percent",
-  "updated_at": "2026-08-13T08:14:48.557860Z"
+  "updated_at": "2026-08-13T14:29:22.922601Z"
 }
