@@ -2018,8 +2018,8 @@
   "quality": {
     "failure_reason": null,
     "freshness": "FRESH",
-    "last_attempt_at": "2026-08-13T19:02:13.285869Z",
-    "last_success_at": "2026-08-13T19:02:13.285869Z",
+    "last_attempt_at": "2026-08-13T21:35:27.822558Z",
+    "last_success_at": "2026-08-13T21:35:27.822558Z",
     "sample_size": 502,
     "status": "OK"
   },
@@ -2027,12 +2027,12 @@
   "schema_version": "2.3.0",
   "source": {
     "name": "Federal Reserve Bank of New York Markets Data API",
-    "retrieved_at": "2026-08-13T19:02:13.285869Z",
+    "retrieved_at": "2026-08-13T21:35:27.822558Z",
     "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
     "source_id": "nyfed_markets",
     "tier": "OFFICIAL",
     "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
   },
   "unit": "percent",
-  "updated_at": "2026-08-13T19:02:13.285869Z"
+  "updated_at": "2026-08-13T21:35:27.822558Z"
 }
