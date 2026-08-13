@@ -957,6 +957,7 @@ function ProvenancePage({ snapshot }: { snapshot: Snapshot }) {
     <main className="provenance-page">
       <h2 className="route-heading sr-only" data-route-heading tabIndex={-1}>來源與方法</h2>
       <section className="provenance-grid" aria-label="來源、健康狀態與公式說明">
+        <P0VideoFormulaPanel model={snapshot.decision_models.p0_video_liquidity} />
         <div className="provenance-side">
           <article className="provenance-panel">
             <div className="provenance-kicker">PROVENANCE · COLLECTOR HEALTH</div>
@@ -972,7 +973,6 @@ function ProvenancePage({ snapshot }: { snapshot: Snapshot }) {
             <p><strong>Privacy.</strong> This static dashboard does not provide accounts and does not intentionally collect personal information, analytics, or cookies.</p>
           </article>
         </div>
-        <P0VideoFormulaPanel model={snapshot.decision_models.p0_video_liquidity} />
       </section>
     </main>
   );

@@ -2346,7 +2346,7 @@ a:focus-visible,
 
 .provenance-grid {
   display: grid;
-  grid-template-columns: minmax(560px, 660px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 1px;
   width: 100%;
   margin: 0;
@@ -2590,11 +2590,13 @@ a:focus-visible,
 .formula-notation {
   display: grid;
   gap: 12px;
+  width: 100%;
   min-width: 0;
-  padding: 14px;
-  margin: 16px 20px 0;
-  border: 1px solid var(--line);
-  background: var(--surface);
+  padding: 16px 0 0;
+  margin: 18px 0 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: transparent;
 }
 
 .formula-notation-head {
@@ -3293,12 +3295,6 @@ a:focus-visible,
 
   .balance-row-head {
     grid-template-columns: minmax(0, 1fr) auto 76px;
-  }
-}
-
-@media (max-width: 1279px) {
-  .provenance-grid {
-    grid-template-columns: minmax(0, 1fr);
   }
 }
 

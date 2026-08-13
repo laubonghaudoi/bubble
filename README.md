@@ -24,7 +24,7 @@ GitHub Pages 使用 hash routing，所以 project subpath 同直接開頁都唔�
 - `999px` 或以下：Overview 同 detail route 改為單欄 document flow，可以垂直捲動；route navigation、P0 banner 同長公式可喺各自 container 水平捲動，但 document 本身不可水平溢出；
 - 所有可見 UI 文字以 `11px` 為下限，普通文字 contrast 至少 `4.5:1`。`.sr-only`、KaTeX 隱藏 MathML tree 同數學上下標不屬於視覺字體下限審計。
 
-Liquidity Fuel 保留 8 個主指標 tabs 同 6 個 range controls；chart 要隨可用 viewport 高度伸展，唔可以喺 canvas 下方留出大段空白。Provenance 桌面版左邊係 collector／legal notices，右邊依次係三張頂層公式卡、notation、source/model notes；畫面唔再另設 `ANALYSIS CONTRACT` 卡，研究用途聲明由全站 footer 保留。
+Liquidity Fuel 保留 8 個主指標 tabs 同 6 個 range controls；chart 要隨可用 viewport 高度伸展，唔可以喺 canvas 下方留出大段空白。Provenance 全尺寸採用單列：全寬三張頂層公式卡、無外框全寬 notation、source/model notes，然後先係 collector health 同 legal notices；畫面唔再另設 `ANALYSIS CONTRACT` 卡，研究用途聲明由全站 footer 保留。
 
 ## 本地設定
 

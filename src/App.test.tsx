@@ -163,7 +163,7 @@ describe('v2.2 routed dashboard', () => {
     expect(within(banner).getByText('DATA · CURRENT')).toBeVisible();
   });
 
-  it('renders collector health and source notices in a dedicated provenance side column', async () => {
+  it('renders full-width formulas before collector health and source notices', async () => {
     window.history.replaceState(null, '', '/#/provenance');
     render(<App />);
     const heading = await findRouteHeading('來源與方法');
@@ -176,10 +176,16 @@ describe('v2.2 routed dashboard', () => {
 
     const provenance = screen.getByRole('region', { name: '來源、健康狀態與公式說明' });
     expect([...provenance.children].map((item) => item.className)).toEqual([
-      'provenance-side', 'provenance-panel p0-formula-panel',
+      'provenance-panel p0-formula-panel', 'provenance-side',
     ]);
+    const formulaPanel = provenance.querySelector<HTMLElement>(':scope > .p0-formula-panel');
     const provenanceSide = provenance.querySelector<HTMLElement>('.provenance-side');
+    expect(formulaPanel).toBeInTheDocument();
     expect(provenanceSide).toBeInTheDocument();
+    expect(formulaPanel!.compareDocumentPosition(provenanceSide!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect([...provenanceSide!.children].map((item) => item.className)).toEqual([
+      'provenance-panel', 'provenance-panel source-notices',
+    ]);
     expect(provenanceSide!.querySelector('.source-notices')).toBeInTheDocument();
     expect(provenance.querySelectorAll('.source-row')).toHaveLength(Object.keys(snapshot.sources).length);
     expect(within(provenance).getByText('PROVENANCE · COLLECTOR HEALTH')).toBeVisible();
