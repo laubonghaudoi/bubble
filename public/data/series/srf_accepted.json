@@ -5852,8 +5852,8 @@
       "value": 0.0
     },
     {
-      "accepted_amount_usd_bn": 0.0,
-      "alert_eligible_accepted_amount_usd_bn": 0.0,
+      "accepted_amount_usd_bn": 0.002,
+      "alert_eligible_accepted_amount_usd_bn": 0.002,
       "breakdown": {
         "agency_debt": {
           "accepted_amount_usd_bn": 0.0,
@@ -5866,9 +5866,9 @@
           "submitted_amount_usd_bn": 0.0
         },
         "treasury": {
-          "accepted_amount_usd_bn": 0.0,
-          "alert_eligible_accepted_amount_usd_bn": 0.0,
-          "submitted_amount_usd_bn": 0.0
+          "accepted_amount_usd_bn": 0.002,
+          "alert_eligible_accepted_amount_usd_bn": 0.002,
+          "submitted_amount_usd_bn": 0.002
         }
       },
       "classification_complete": true,
@@ -5876,35 +5876,35 @@
       "exercise_accepted_amount_usd_bn": 0.0,
       "exercise_operation_count": 0,
       "has_technical_exercise": false,
-      "operation_count": 1,
+      "operation_count": 2,
       "rate_pct": 3.75,
       "rates_pct": [
         3.75
       ],
-      "released_at": "2026-08-13T12:30:30Z",
-      "submitted_amount_usd_bn": 0.0,
+      "released_at": "2026-08-13T17:45:33Z",
+      "submitted_amount_usd_bn": 0.002,
       "technical_exercise": false,
-      "value": 0.0
+      "value": 0.002
     }
   ],
   "quality": {
     "failure_reason": null,
     "freshness": "FRESH",
-    "last_attempt_at": "2026-08-13T16:42:52.635431Z",
-    "last_success_at": "2026-08-13T16:42:52.635431Z",
+    "last_attempt_at": "2026-08-13T18:28:45.630026Z",
+    "last_success_at": "2026-08-13T18:28:45.630026Z",
     "sample_size": 168,
     "status": "OK"
   },
-  "released_at": "2026-08-13T12:30:30Z",
+  "released_at": "2026-08-13T17:45:33Z",
   "schema_version": "2.2.0",
   "source": {
     "name": "Federal Reserve Bank of New York Markets Data API",
-    "retrieved_at": "2026-08-13T16:42:52.635431Z",
+    "retrieved_at": "2026-08-13T18:28:45.630026Z",
     "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
     "source_id": "nyfed_markets",
     "tier": "OFFICIAL",
     "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
   },
   "unit": "USD bn",
-  "updated_at": "2026-08-13T16:42:52.635431Z"
+  "updated_at": "2026-08-13T18:28:45.630026Z"
 }
