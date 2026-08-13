@@ -27,6 +27,13 @@ from pipeline.contracts import (
 
 
 FIXTURE = Path(__file__).parent / "fixtures" / "snapshot_v2_minimal.json"
+P3_IDS = {
+    "hyperscaler_aggregate_cash_capex",
+    "hyperscaler_aggregate_cash_capex_yoy_acceleration_pp",
+    "ai_upstream_orders_backlog",
+    "customer_prepayments_contract_commitments",
+    "take_or_pay_commitments",
+}
 
 
 def fixture_snapshot():
@@ -279,19 +286,223 @@ def fixture_snapshot():
             "expected_next_update": metric["expected_next_update"],
             "failure_reason": metric["quality"]["failure_reason"],
         }
+    p3_statistics = {
+        "aggregate_cash_capex_usd_bn": None,
+        "qoq_percent_change": None,
+        "yoy_percent_change": None,
+        "qoq_acceleration_pp": None,
+        "yoy_acceleration_pp": None,
+        "company_breadth": 0,
+        "company_total": 4,
+        "company_breadth_ratio": None,
+        "finance_lease_disclosure_breadth": 0,
+        "manual_review_count": 0,
+        "quarter_count": 0,
+    }
+    p3_details = {
+        "fundamental": {
+            "aggregate_direction": "UNKNOWN",
+            "company_breadth": 0,
+            "company_total": 4,
+            "companies": [],
+            "caveats": ["No last-good P3 Company Facts observations are available."],
+        }
+    }
+    for metric_id, unit in (
+        ("hyperscaler_aggregate_cash_capex", "USD bn"),
+        (
+            "hyperscaler_aggregate_cash_capex_yoy_acceleration_pp",
+            "percentage_points",
+        ),
+    ):
+        metric = copy.deepcopy(template)
+        metric.update(
+            {
+                "metric_id": metric_id,
+                "label": metric_id,
+                "availability": "ACTIVE_FREE",
+                "unit": unit,
+                "frequency": "quarterly",
+                "updated_at": snapshot["generated_at"],
+                "expected_next_update": None,
+                "statistics": copy.deepcopy(p3_statistics),
+                "details": copy.deepcopy(p3_details),
+            }
+        )
+        metric["changes"] = {
+            "one_observation": None,
+            "five_observations": None,
+            "twenty_observations": None,
+            "eight_weeks": None,
+            "twelve_weeks": None,
+            "one_quarter": None,
+        }
+        metric["quality"].update(
+            {
+                "status": "ERROR",
+                "freshness": "UNKNOWN",
+                "last_attempt_at": snapshot["generated_at"],
+                "last_success_at": None,
+                "failure_reason": "Fixture has no SEC Company Facts observations.",
+                "sample_size": 0,
+            }
+        )
+        metric["context"].update(
+            {"is_proxy": False, "direction": "UNKNOWN", "technical_flags": []}
+        )
+        metric["source"] = {
+            "source_id": "sec_edgar",
+            "name": "SEC EDGAR APIs and filing data",
+            "url": "https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data",
+            "tier": "OFFICIAL",
+            "retrieved_at": snapshot["generated_at"],
+            "rights_note": "Cite the filing and accession; do not republish long issuer-authored passages.",
+        }
+        metric["methodology"]["proxy_disclosure"] = ""
+        metric["provenance"] = [copy.deepcopy(metric["source"])]
+        metric["unavailability_reason"] = None
+        snapshot["metrics"][metric_id] = metric
+    for metric_id in (
+        "ai_upstream_orders_backlog",
+        "customer_prepayments_contract_commitments",
+        "take_or_pay_commitments",
+    ):
+        metric = copy.deepcopy(template)
+        metric.update(
+            {
+                "metric_id": metric_id,
+                "label": metric_id,
+                "availability": "MANUAL_READY",
+                "unit": "mixed",
+                "frequency": "quarterly",
+                "observation_date": None,
+                "released_at": None,
+                "updated_at": None,
+                "expected_next_update": None,
+                "statistics": {},
+            }
+        )
+        metric["changes"]["one_quarter"] = None
+        metric["changes"]["twenty_observations"] = None
+        metric["quality"].update(
+            {
+                "status": "NOT_APPLICABLE",
+                "freshness": "UNKNOWN",
+                "last_attempt_at": None,
+                "last_success_at": None,
+                "failure_reason": "Reviewed manual filing evidence is not yet available.",
+                "sample_size": None,
+            }
+        )
+        metric["context"].update(
+            {"is_proxy": False, "direction": "UNKNOWN", "technical_flags": []}
+        )
+        metric["source"] = {
+            "source_id": "manual_public_filings",
+            "name": "Human-reviewed public filings",
+            "url": "https://www.sec.gov/search-filings",
+            "tier": "OFFICIAL",
+            "retrieved_at": None,
+            "rights_note": "Publish short factual paraphrases with filing URLs and accessions.",
+        }
+        metric["methodology"]["proxy_disclosure"] = ""
+        metric["provenance"] = [copy.deepcopy(metric["source"])]
+        metric["unavailability_reason"] = (
+            "Disclosure definitions require human review."
+        )
+        snapshot["metrics"][metric_id] = metric
+    snapshot["sources"]["sec_companyfacts_capex"] = {
+        "collector_id": "sec_companyfacts_capex",
+        "name": "SEC EDGAR APIs and filing data",
+        "url": "https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data",
+        "tier": "OFFICIAL",
+        "rights_note": "Cite the filing and accession; do not republish long issuer-authored passages.",
+        "status": "ERROR",
+        "freshness": "UNKNOWN",
+        "observation_date": None,
+        "released_at": None,
+        "updated_at": snapshot["generated_at"],
+        "last_success_at": None,
+        "last_attempt_at": snapshot["generated_at"],
+        "expected_next_update": None,
+        "failure_reason": "Fixture has no SEC Company Facts observations.",
+    }
+    snapshot["switches"]["fundamental_exit"] = {
+        "mode": "EVIDENCE_ONLY",
+        "assessment": None,
+        "available_blocks": 0,
+        "total_blocks": 4,
+        "confidence": "UNKNOWN",
+        "evidence_blocks": [
+            {
+                "id": "aggregate_capex_acceleration",
+                "label": "Aggregate CapEx acceleration",
+                "available": False,
+                "triggered": None,
+                "status": "UNAVAILABLE",
+                "direction": "UNKNOWN",
+                "confidence": "UNKNOWN",
+                "summary": "Fixture has no SEC Company Facts observations.",
+            },
+            {
+                "id": "orders_backlog",
+                "label": "Orders / backlog",
+                "available": False,
+                "triggered": None,
+                "status": "MANUAL_READY",
+                "direction": "UNKNOWN",
+                "confidence": "UNKNOWN",
+                "summary": "No reviewed manual row.",
+            },
+            {
+                "id": "prepayments_commitments",
+                "label": "Prepayments / commitments",
+                "available": False,
+                "triggered": None,
+                "status": "MANUAL_READY",
+                "direction": "UNKNOWN",
+                "confidence": "UNKNOWN",
+                "summary": "No reviewed manual row.",
+            },
+            {
+                "id": "company_breadth",
+                "label": "Company breadth",
+                "available": False,
+                "triggered": None,
+                "status": "UNAVAILABLE",
+                "direction": "UNKNOWN",
+                "confidence": "UNKNOWN",
+                "summary": "Fixture has no company breadth.",
+            },
+        ],
+        "summary": "Evidence only.",
+    }
     snapshot["sources"].pop("manual_spx_0dte", None)
+    p0_source = snapshot["sources"].pop("nyfed_markets")
+    for collector_id in (
+        "nyfed_rates",
+        "fred_iorb",
+        "fred_h41",
+        "treasury_tga",
+        "nyfed_on_rrp",
+        "nyfed_srf",
+        "treasury_auctions",
+    ):
+        source = copy.deepcopy(p0_source)
+        source["collector_id"] = collector_id
+        snapshot["sources"][collector_id] = source
     snapshot.update(
         {
-            "active_free_count": 3,
+            "active_free_count": 5,
             "active_proxy_count": 4,
-            "manual_ready_count": 0,
+            "manual_ready_count": 3,
             "unavailable_free_count": 12,
         }
     )
     snapshot["source_health"] = {
-        "ok": 1,
+        "ok": 7,
         "stale": 0,
-        "error": 3,
+        "error": 4,
         "not_released_yet": 0,
         "not_applicable": 0,
     }
@@ -314,10 +525,28 @@ def test_every_registry_metric_has_locked_methodology_contract():
         assert methodology["proxy_disclosure"] == metric["proxy_disclosure"]
 
 
-def test_release_three_marks_p0_p1_and_p2_interfaces_implemented():
+def test_release_four_marks_all_phases_implemented_with_manual_interfaces_network_disabled():
     bundle = load_config_bundle()
-    assert all(metric["implemented"] for metric in bundle.metrics_by_id.values() if metric["phase"] in {"P0", "P1", "P2"})
-    assert all(not metric["implemented"] for metric in bundle.metrics_by_id.values() if metric["phase"] == "P3")
+    assert all(metric["implemented"] for metric in bundle.metrics_by_id.values())
+    p3 = {
+        metric_id: metric
+        for metric_id, metric in bundle.metrics_by_id.items()
+        if metric["phase"] == "P3"
+    }
+    assert {
+        metric_id for metric_id, metric in p3.items() if metric["network_enabled"]
+    } == {
+        "hyperscaler_aggregate_cash_capex",
+        "hyperscaler_aggregate_cash_capex_yoy_acceleration_pp",
+    }
+    assert all(
+        not p3[metric_id]["network_enabled"]
+        for metric_id in {
+            "ai_upstream_orders_backlog",
+            "customer_prepayments_contract_commitments",
+            "take_or_pay_commitments",
+        }
+    )
 
 
 def test_snapshot_v2_contract_preserves_null_and_zero_distinction():
@@ -372,8 +601,34 @@ def test_publication_contract_hard_cuts_v1_and_cross_checks_all_metric_ids():
                 "label": metric["label"],
                 "unit": metric["unit"],
                 "frequency": metric["frequency"],
-                "layer": "liquidity_fuel" if metric_id == "on_rrp_accepted" else "market_ignition",
-                "phase": "P0" if metric_id == "on_rrp_accepted" else "P2",
+                    "layer": (
+                        "liquidity_fuel"
+                        if metric_id == "on_rrp_accepted"
+                        else "fundamental_exit"
+                        if metric_id
+                        in {
+                            "hyperscaler_aggregate_cash_capex",
+                            "hyperscaler_aggregate_cash_capex_yoy_acceleration_pp",
+                            "ai_upstream_orders_backlog",
+                            "customer_prepayments_contract_commitments",
+                            "take_or_pay_commitments",
+                        }
+                        else "market_ignition"
+                    ),
+                    "phase": (
+                        "P0"
+                        if metric_id == "on_rrp_accepted"
+                        else "P3"
+                        if metric_id
+                        in {
+                            "hyperscaler_aggregate_cash_capex",
+                            "hyperscaler_aggregate_cash_capex_yoy_acceleration_pp",
+                            "ai_upstream_orders_backlog",
+                            "customer_prepayments_contract_commitments",
+                            "take_or_pay_commitments",
+                        }
+                        else "P2"
+                    ),
                 "role": "evidence",
                 "availability": metric["availability"],
                 "series_path": f"data/series/{metric_id}.json",
@@ -453,8 +708,8 @@ def test_publication_cross_checks_contract_critical_metric_fields():
                 "label": metric["label"],
                 "unit": metric["unit"],
                 "frequency": metric["frequency"],
-                "layer": "liquidity_fuel" if metric_id == "on_rrp_accepted" else "market_ignition",
-                "phase": "P0" if metric_id == "on_rrp_accepted" else "P2",
+                "layer": "fundamental_exit" if metric_id in P3_IDS else "liquidity_fuel" if metric_id == "on_rrp_accepted" else "market_ignition",
+                "phase": "P3" if metric_id in P3_IDS else "P0" if metric_id == "on_rrp_accepted" else "P2",
                 "role": "evidence",
                 "availability": metric["availability"],
                 "series_path": f"data/series/{metric_id}.json",
@@ -512,8 +767,8 @@ def test_publication_rejects_internally_mixed_switches_and_timestamps():
                 "label": metric["label"],
                 "unit": metric["unit"],
                 "frequency": metric["frequency"],
-                "layer": "liquidity_fuel" if metric_id == "on_rrp_accepted" else "market_ignition",
-                "phase": "P0" if metric_id == "on_rrp_accepted" else "P2",
+                "layer": "fundamental_exit" if metric_id in P3_IDS else "liquidity_fuel" if metric_id == "on_rrp_accepted" else "market_ignition",
+                "phase": "P3" if metric_id in P3_IDS else "P0" if metric_id == "on_rrp_accepted" else "P2",
                 "role": "evidence",
                 "availability": metric["availability"],
                 "series_path": f"data/series/{metric_id}.json",

@@ -7,9 +7,12 @@ companies:
     ticker: MSFT
     cik: "0000789019"
     fiscal_year_end: "06-30"
+    xbrl_namespace: us-gaap
     preferred_xbrl_tags:
       - PaymentsToAcquirePropertyPlantAndEquipment
     fallback_xbrl_tags: []
+    finance_lease_xbrl_tags:
+      - RightOfUseAssetObtainedInExchangeForFinanceLeaseLiability
     capex_definition: Cash payments to acquire property and equipment; finance-lease additions are excluded unless separately reviewed.
     known_disclosure_differences:
       - Fiscal quarters do not align with calendar-year quarters.
@@ -21,9 +24,12 @@ companies:
     ticker: GOOGL
     cik: "0001652044"
     fiscal_year_end: "12-31"
+    xbrl_namespace: us-gaap
     preferred_xbrl_tags:
       - PaymentsToAcquirePropertyPlantAndEquipment
     fallback_xbrl_tags: []
+    finance_lease_xbrl_tags:
+      - RightOfUseAssetObtainedInExchangeForFinanceLeaseLiability
     capex_definition: Cash purchases of property and equipment reported in the statement of cash flows.
     known_disclosure_differences:
       - Company commentary may use a broader operational definition than the cash-flow tag.
@@ -34,9 +40,12 @@ companies:
     ticker: AMZN
     cik: "0001018724"
     fiscal_year_end: "12-31"
+    xbrl_namespace: us-gaap
     preferred_xbrl_tags:
-      - PaymentsToAcquirePropertyPlantAndEquipment
+      - PaymentsToAcquireProductiveAssets
     fallback_xbrl_tags: []
+    finance_lease_xbrl_tags:
+      - RightOfUseAssetObtainedInExchangeForFinanceLeaseLiability
     capex_definition: Cash capital expenditures; equipment acquired under finance leases or financing obligations remains separate.
     known_disclosure_differences:
       - Finance leases and financing obligations can make cash CapEx differ materially from total asset additions.
@@ -47,9 +56,12 @@ companies:
     ticker: META
     cik: "0001326801"
     fiscal_year_end: "12-31"
+    xbrl_namespace: us-gaap
     preferred_xbrl_tags:
       - PaymentsToAcquirePropertyPlantAndEquipment
     fallback_xbrl_tags: []
+    finance_lease_xbrl_tags:
+      - RightOfUseAssetObtainedInExchangeForFinanceLeaseLiability
     capex_definition: Cash purchases of property and equipment reported in the statement of cash flows.
     known_disclosure_differences:
       - Company guidance may include timing and asset categories that differ from recognized quarterly cash CapEx.

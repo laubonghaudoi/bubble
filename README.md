@@ -37,7 +37,7 @@ npm test
 npm run build
 ```
 
-可用 group：`all`、`daily`、`h41`、`weekly`、`monthly`、`quarterly`、`manual`。`daily` 會處理 P0 同最新已完成 SEC Form 4 daily indexes；`weekly` 同時處理 H.4.1、CFTC TFF positioning 同 45 日 Form 4 index reconciliation；`monthly`／`quarterly` 會重查 government-origin equities/GDP exact-quarter proxy。未推出嘅 P3 group 只會安全重建 last-good schema v2 output，唔會假裝新 metric 已 active。
+可用 group：`all`、`daily`、`h41`、`weekly`、`monthly`、`quarterly`、`manual`。`daily` 會處理 P0 同最新已完成 SEC Form 4 daily indexes；`weekly` 同時處理 H.4.1、CFTC TFF positioning 同 45 日 Form 4 index reconciliation；`monthly`／`quarterly` 會重查 government-origin equities/GDP exact-quarter proxy；`quarterly` 亦會原子更新四間 hyperscaler 嘅 SEC Company Facts CapEx。所有 group 都會先驗證 reviewed manual CSV，`manual` group可安全重建人工 evidence。
 
 ## Schema 2.0.0 contract
 
@@ -65,13 +65,13 @@ npm run build
 - weekday daily、Thursday H.4.1、weekly、monthly、quarterly UTC cron；
 - `workflow_dispatch`：可揀明確 group。
 
-Workflow 依序執行：fetch → validate/transform → 寫入獨立 schema v2 stage → Python tests → 喺臨時 workspace 用同一份 code 加 staged data 跑 frontend tests/build → atomic promote 完整 stage → commit generated `public/data` → push → Pages deploy。所有 gates 通過前，version-controlled `public/data` 都唔會被逐檔覆蓋。任何 data push 失敗會停止 deployment，唔會靜默略過。
+Workflow 依序執行：核對 reviewed P3 filing metadata → fetch → validate/transform → 寫入獨立 schema v2 stage → Python tests → 喺臨時 workspace 用同一份 code 加 staged data 跑 frontend tests/build → atomic promote 完整 stage → commit generated `public/data` → push → Pages deploy。所有 gates 通過前，version-controlled `public/data` 都唔會被逐檔覆蓋。任何 metadata、data push 或 contract failure都會停止 deployment，唔會靜默略過。
 
 Generated-data push 使用本次 job 嘅 repository `GITHUB_TOKEN`。按 [GitHub 官方觸發規則](https://docs.github.com/en/actions/concepts/security/github_token)，由呢個 token 造成嘅 push event 唔會建立另一個 workflow run，因此唔會形成 recursive data-commit loop。原本個 run 會喺 push 成功後直接上載已驗證嘅 `dist` 並部署 Pages；concurrency group 亦確保同一時間只得一個 production writer/deployer。唔好改用 PAT 或 GitHub App token，除非同時另外設計 recursion guard。
 
 Cron 只係喚醒時間，而且 GitHub 可能延遲；collector 會用官方 observation/release metadata 判斷 `NOT_RELEASED_YET`、freshness 同 expected next update，唔會將 job start time 當 source as-of。
 
-## Release 1–3 資料範圍
+## Release 1–4 資料範圍
 
 P0 包括：
 
@@ -100,12 +100,22 @@ P2 Bubble / Fragility 係 Market Ignition 頁嘅獨立 context panel，唔會改
 - Dollar coverage 低於 80% 或 sale-dollar denominator 為零時 dollar ratio 保持 `null`；真實 transaction count zero 仍保留零；
 - FINRA margin debt、SPY Top-10、SPX 0DTE、NDX forward P/E、M2/Nasdaq 同 gamma flip 仍係 `UNAVAILABLE_FREE`，zero network request。
 
-P2 畫面只顯示 `2/8 CONTEXT AVAILABLE`（兩項 active proxy、六項 rights/input hold）同各自 caveat，唔輸出 composite `WATCH`／`STRESS`。P3 Fundamental Exit 尚未推出，繼續 fail closed。
+P2 畫面只顯示 `2/8 CONTEXT AVAILABLE`（兩項 active proxy、六項 rights/input hold）同各自 caveat，唔輸出 composite `WATCH`／`STRESS`。
+
+P3 Fundamental Exit 係獨立 evidence-only 頁面，唔會改變 P0 overall、P1/P2 coverage 或任何 severity：
+
+- `hyperscaler_aggregate_cash_capex` 同 `hyperscaler_aggregate_cash_capex_yoy_acceleration_pp` 由 Microsoft、Alphabet、Amazon、Meta 官方 SEC Company Facts／filing metadata建立；
+- 每間公司按 fiscal Q1／H1／9M／FY context quarterize YTD cash CapEx，Q4 用 FY 減 9M；Amazon 使用現行 `PaymentsToAcquireProductiveAssets`，其餘三間使用 `PaymentsToAcquirePropertyPlantAndEquipment`；
+- aggregate 先加總四間公司嘅 USD cash CapEx，再計 QoQ、YoY 同 acceleration；finance-lease right-of-use additions分開披露，永遠唔加入 cash CapEx；
+- 完整 series 至少保留12個共同季度，並公開 company breadth、tag、accession、filing URL、context同quarterization method；
+- orders/backlog、customer prepayments同take-or-pay使用17欄 reviewed CSV；未有 reviewed row時固定 `MANUAL_READY`，有 row亦只展示方向、coverage同短 factual paraphrase，唔自動抽取 narrative數字；
+- P3初始coverage係 `2/4 / LOW / assessment:null`；三項人工 evidence由獨立 workflow搵新 filing／逾期 review並維護deduplicated issue，publication前會再次同SEC metadata核對。
 
 ## 文件
 
 - [來源、授權同自動化 gate](docs/source-rights.md)
 - [人工覆核及 manual import 政策](docs/manual-review.md)
 - [故障排查](docs/troubleshooting.md)
+- [Release 4 QA紀錄](docs/release-4-qa.md)
 
 本工具只供研究，唔提供投資建議。操作門檻、相關性及 proxy 指標唔代表因果，單一 metric 亦唔足以證明危機、泡沫轉折或資產方向。

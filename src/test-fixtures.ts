@@ -5,12 +5,41 @@ import {
   P1_RIGHTS_GATED_IDS,
   P2_ACTIVE_IDS,
   P2_HELD_IDS,
+  P3_AUTOMATED_IDS,
+  P3_MANUAL_IDS,
+  P3_METRIC_IDS,
   SCHEMA_VERSION,
   type SeriesFile,
 } from './dashboard';
-import type { Availability, CatalogMetric, Layer, Metric, Phase, Snapshot } from './types';
+import type { Availability, CatalogMetric, FundamentalCompanyDetail, Layer, ManualEvidenceRecord, Metric, Phase, Snapshot } from './types';
 
 const NOW = '2026-08-12T17:32:49Z';
+
+export function makeManualEvidenceRecord(
+  metricId: (typeof P3_MANUAL_IDS)[number] = 'ai_upstream_orders_backlog',
+  overrides: Partial<ManualEvidenceRecord> = {},
+): ManualEvidenceRecord {
+  return {
+    company_id: 'microsoft',
+    period_end: '2026-06-30',
+    metric_id: metricId,
+    direction: 'DOWN',
+    value: 0,
+    unit: 'USD bn',
+    yoy_pct: 0,
+    comparable: true,
+    source_type: '10-Q',
+    source_url: 'https://www.sec.gov/Archives/edgar/data/789019/000078901926123456/msft-20260630.htm',
+    filing_accession: '0000789019-26-123456',
+    filing_accepted_at: '2026-07-30T20:15:00Z',
+    as_of: '2026-08-01',
+    reviewer: 'Release reviewer',
+    reviewed_at: '2026-08-02T12:00:00Z',
+    paraphrase: 'Comparable reviewed backlog disclosure moved down year over year.',
+    review_note: 'Definition and period were checked against the linked public filing.',
+    ...overrides,
+  };
+}
 
 export function makeMetric(
   id: string,
@@ -60,6 +89,86 @@ export function makeMetric(
   };
 }
 
+function fundamentalCompany(
+  companyId: 'microsoft' | 'alphabet' | 'amazon' | 'meta',
+  ticker: string,
+  cik: string,
+  cashCapex: number,
+  yoyAcceleration: number,
+  financeLease: number | null,
+): FundamentalCompanyDetail {
+  return {
+    date: '2026-06-30',
+    company_id: companyId,
+    ticker,
+    cik,
+    fiscal_quarter: companyId === 'microsoft' ? 'FY2026Q4' : 'FY2026Q2',
+    calendar_period_end: '2026-06-30',
+    cash_capex_usd_bn: cashCapex,
+    qoq_percent_change: 8.2,
+    yoy_percent_change: 42.4,
+    qoq_acceleration_pp: 3.1,
+    yoy_acceleration_pp: yoyAcceleration,
+    direction: yoyAcceleration > 0 ? 'ACCELERATING' : 'DECELERATING',
+    tag: companyId === 'amazon' ? 'PaymentsToAcquireProductiveAssets' : 'PaymentsToAcquirePropertyPlantAndEquipment',
+    namespace: 'us-gaap',
+    unit: 'USD',
+    accession: `${cik}-26-000001`,
+    form: companyId === 'microsoft' ? '10-K' : '10-Q',
+    filed_at: '2026-07-30',
+    accepted_at: '2026-07-30T20:15:00Z',
+    filing_url: `https://www.sec.gov/Archives/edgar/data/${Number(cik)}/${`${cik}-26-000001`.replaceAll('-', '')}/filing.htm`,
+    frame: companyId === 'microsoft' ? 'CY2026Q2' : null,
+    context_start: '2026-04-01',
+    context_end: '2026-06-30',
+    quarterization_method: companyId === 'microsoft' ? 'FY_MINUS_9M' : 'H1_MINUS_Q1',
+    manual_review_required: false,
+    finance_lease_additions_usd_bn: financeLease,
+    finance_lease_tag: financeLease == null ? null : 'RightOfUseAssetObtainedInExchangeForFinanceLeaseLiability',
+    finance_lease_accession: financeLease == null ? null : `${cik}-26-000001`,
+    finance_lease_quarterization_method: financeLease == null ? null : companyId === 'microsoft' ? 'FY_MINUS_9M' : 'H1_MINUS_Q1',
+  };
+}
+
+const FUNDAMENTAL_COMPANIES = [
+  fundamentalCompany('microsoft', 'MSFT', '0000789019', 8.7, -3.2, 1.1),
+  fundamentalCompany('alphabet', 'GOOGL', '0001652044', 10.2, 4.6, null),
+  fundamentalCompany('amazon', 'AMZN', '0001018724', 12.4, -8.1, 2.5),
+  fundamentalCompany('meta', 'META', '0001326801', 7.2, -1.4, null),
+] satisfies FundamentalCompanyDetail[];
+
+const FUNDAMENTAL_STATISTICS = {
+  aggregate_cash_capex_usd_bn: 38.5,
+  qoq_percent_change: 8.2,
+  yoy_percent_change: 42.4,
+  qoq_acceleration_pp: 3.1,
+  yoy_acceleration_pp: -4.2,
+  company_breadth: 3,
+  company_total: 4,
+  company_breadth_ratio: 0.75,
+  finance_lease_disclosure_breadth: 2,
+  manual_review_count: 0,
+  quarter_count: 12,
+};
+
+const FUNDAMENTAL_DETAILS = {
+  fundamental: {
+    aggregate_direction: 'DECELERATING' as const,
+    company_breadth: 3,
+    company_total: 4 as const,
+    companies: FUNDAMENTAL_COMPANIES,
+    caveats: [
+      'Cash CapEx is kept separate from equipment acquired through finance leases.',
+      'Microsoft fiscal quarters do not align with calendar-year quarters.',
+    ],
+  },
+};
+
+const FUNDAMENTAL_SHORT_SERIES = Array.from({ length: 12 }, (_, index) => ({
+  date: `${2023 + Math.floor((index + 2) / 4)}-${['03-31', '06-30', '09-30', '12-31'][(index + 2) % 4]}`,
+  value: Number((22 + index * 1.5).toFixed(1)),
+}));
+
 export function makeSnapshot(metricOverrides: Record<string, Partial<Metric>> = {}): Snapshot {
   const ids = [...new Set([
     ...OVERVIEW_SERIES_IDS,
@@ -68,7 +177,7 @@ export function makeSnapshot(metricOverrides: Record<string, Partial<Metric>> = 
     ...P1_RIGHTS_GATED_IDS,
     ...P2_ACTIVE_IDS,
     ...P2_HELD_IDS,
-    'hyperscaler_capex',
+    ...P3_METRIC_IDS,
   ])];
   const metrics = Object.fromEntries(ids.map((id) => [id, makeMetric(id, metricOverrides[id])]));
   P1_CFTC_CONFIG.forEach(({ id }, index) => {
@@ -229,7 +338,83 @@ export function makeSnapshot(metricOverrides: Record<string, Partial<Metric>> = 
       ...metricOverrides[id],
     });
   });
-  metrics.hyperscaler_capex = makeMetric('hyperscaler_capex', { availability: 'UNAVAILABLE_FREE', value: null, quality: { status: 'NOT_APPLICABLE', freshness: 'UNKNOWN', last_attempt_at: null, last_success_at: null, failure_reason: null, sample_size: null }, ...metricOverrides.hyperscaler_capex });
+  metrics.hyperscaler_aggregate_cash_capex = makeMetric('hyperscaler_aggregate_cash_capex', {
+    label: 'Hyperscaler aggregate cash CapEx',
+    availability: 'ACTIVE_FREE',
+    value: FUNDAMENTAL_STATISTICS.aggregate_cash_capex_usd_bn,
+    unit: 'USD bn',
+    frequency: 'quarterly',
+    observation_date: '2026-06-30',
+    released_at: '2026-07-30T20:15:00Z',
+    expected_next_update: null,
+    changes: { one_observation: 2.9, five_observations: 11.5, one_quarter: 2.9 },
+    statistics: { ...FUNDAMENTAL_STATISTICS },
+    quality: { status: 'OK', freshness: 'FRESH', last_attempt_at: NOW, last_success_at: NOW, failure_reason: null, sample_size: 12 },
+    context: { technical_flags: [], is_proxy: false, confidence: 'MEDIUM', direction: 'DECELERATING' },
+    source: { source_id: 'sec_edgar', name: 'SEC Company Facts and filings', url: 'https://data.sec.gov/api/xbrl/companyfacts/', tier: 'OFFICIAL', retrieved_at: NOW, rights_note: 'Official public-company filing data with accession-level provenance.' },
+    details: FUNDAMENTAL_DETAILS,
+    short_series: FUNDAMENTAL_SHORT_SERIES,
+    ...metricOverrides.hyperscaler_aggregate_cash_capex,
+  });
+  metrics.hyperscaler_aggregate_cash_capex.provenance = [
+    { ...metrics.hyperscaler_aggregate_cash_capex.source },
+  ];
+  metrics.hyperscaler_aggregate_cash_capex.unavailability_reason = null;
+  metrics.hyperscaler_aggregate_cash_capex_yoy_acceleration_pp = makeMetric('hyperscaler_aggregate_cash_capex_yoy_acceleration_pp', {
+    ...metrics.hyperscaler_aggregate_cash_capex,
+    metric_id: 'hyperscaler_aggregate_cash_capex_yoy_acceleration_pp',
+    label: 'Hyperscaler aggregate cash CapEx YoY acceleration',
+    value: FUNDAMENTAL_STATISTICS.yoy_acceleration_pp,
+    unit: 'percentage_points',
+    changes: { ...metrics.hyperscaler_aggregate_cash_capex.changes },
+    statistics: { ...FUNDAMENTAL_STATISTICS },
+    quality: { ...metrics.hyperscaler_aggregate_cash_capex.quality, sample_size: 7 },
+    context: { ...metrics.hyperscaler_aggregate_cash_capex.context, technical_flags: [] },
+    source: { ...metrics.hyperscaler_aggregate_cash_capex.source },
+    details: {
+      fundamental: {
+        ...FUNDAMENTAL_DETAILS.fundamental,
+        companies: FUNDAMENTAL_DETAILS.fundamental.companies.map((company) => ({ ...company })),
+        caveats: [...FUNDAMENTAL_DETAILS.fundamental.caveats],
+      },
+    },
+    short_series: FUNDAMENTAL_SHORT_SERIES.map((point) => ({ ...point, value: FUNDAMENTAL_STATISTICS.yoy_acceleration_pp })),
+    ...metricOverrides.hyperscaler_aggregate_cash_capex_yoy_acceleration_pp,
+  });
+  metrics.hyperscaler_aggregate_cash_capex_yoy_acceleration_pp.provenance = [
+    { ...metrics.hyperscaler_aggregate_cash_capex_yoy_acceleration_pp.source },
+  ];
+  metrics.hyperscaler_aggregate_cash_capex_yoy_acceleration_pp.unavailability_reason = null;
+  P3_MANUAL_IDS.forEach((id) => {
+    const reason = 'Non-standard public-filing disclosure requires a reviewed manual row.';
+    metrics[id] = makeMetric(id, {
+      availability: 'MANUAL_READY',
+      value: null,
+      unit: 'mixed',
+      frequency: 'quarterly',
+      observation_date: null,
+      released_at: null,
+      updated_at: null,
+      expected_next_update: null,
+      changes: {
+        one_observation: null,
+        five_observations: null,
+        twenty_observations: null,
+        eight_weeks: null,
+        twelve_weeks: null,
+        one_quarter: null,
+      },
+      statistics: {},
+      quality: { status: 'NOT_APPLICABLE', freshness: 'UNKNOWN', last_attempt_at: null, last_success_at: null, failure_reason: reason, sample_size: null },
+      context: { technical_flags: [], is_proxy: false, confidence: 'UNKNOWN', direction: 'UNKNOWN' },
+      source: { source_id: 'manual_public_filings', name: 'Manual public-filing review interface', url: null, tier: 'MANUAL', retrieved_at: null, rights_note: reason },
+      methodology: { ...makeMetric(id).methodology, calculation: `${reason} Reviewed CSV rows must retain filing provenance.`, source_and_license_note: reason },
+      short_series: [],
+      ...metricOverrides[id],
+    });
+    metrics[id].provenance = [{ ...metrics[id].source }];
+    metrics[id].unavailability_reason = reason;
+  });
   const evidence = (prefix: string) => [{ id: `${prefix}-1`, label: 'Evidence 1', available: true, triggered: null, status: 'OK', direction: 'FLAT', confidence: 'HIGH', summary: '有新鮮資料。' }];
   const p1Evidence = [
     { id: 'volatility_term_structure', label: 'Volatility term structure', available: false, triggered: null, status: 'UNAVAILABLE_FREE', direction: 'UNKNOWN', confidence: 'UNKNOWN', summary: rightsReasons.vix_vix3m_term_structure_proxy },
@@ -237,8 +422,30 @@ export function makeSnapshot(metricOverrides: Record<string, Partial<Metric>> = 
     { id: 'options_tail_risk', label: 'Options / tail-risk proxy', available: false, triggered: null, status: 'UNAVAILABLE_FREE', direction: 'UNKNOWN', confidence: 'UNKNOWN', summary: rightsReasons.cboe_skew_tail_risk_proxy },
     { id: 'crypto_cross_asset', label: 'Crypto funding / cross-asset', available: false, triggered: null, status: 'UNAVAILABLE_FREE', direction: 'UNKNOWN', confidence: 'UNKNOWN', summary: rightsReasons.crypto_funding_btc },
   ];
+  const p3Evidence = [
+    { id: 'aggregate_capex_acceleration', label: 'Aggregate CapEx acceleration', available: true, triggered: null, status: 'DECELERATING', direction: 'DECELERATING', confidence: 'MEDIUM', summary: 'YoY growth remains positive, while YoY acceleration is negative.' },
+    { id: 'orders_backlog', label: 'Orders / backlog', available: false, triggered: null, status: 'MANUAL_READY', direction: 'UNKNOWN', confidence: 'UNKNOWN', summary: 'No reviewed manual filing row is published.' },
+    { id: 'prepayments_commitments', label: 'Prepayments / commitments', available: false, triggered: null, status: 'MANUAL_READY', direction: 'UNKNOWN', confidence: 'UNKNOWN', summary: 'No reviewed prepayments or take-or-pay row is published.' },
+    { id: 'company_breadth', label: 'Company breadth', available: true, triggered: null, status: 'MIXED', direction: 'MIXED', confidence: 'MEDIUM', summary: 'Four of four companies have comparable cash CapEx quarters; directions are mixed.' },
+  ];
   const macro = metrics.nonfinancial_equities_gdp_proxy;
   const form4 = metrics.sec_form4_nonderivative_ps_count_ratio_20d;
+  const collectorSource = (collectorId: string, name: string) => ({
+    collector_id: collectorId,
+    name,
+    url: `https://example.com/${collectorId}`,
+    tier: 'OFFICIAL',
+    rights_note: 'Public official data.',
+    status: 'OK' as const,
+    freshness: 'FRESH' as const,
+    observation_date: '2026-08-11',
+    released_at: '2026-08-12T12:00:00Z',
+    updated_at: NOW,
+    last_attempt_at: NOW,
+    last_success_at: NOW,
+    expected_next_update: '2026-08-13',
+    failure_reason: null,
+  });
   return {
     schema_version: SCHEMA_VERSION,
     generated_at: NOW,
@@ -248,7 +455,7 @@ export function makeSnapshot(metricOverrides: Record<string, Partial<Metric>> = 
     switches: {
       liquidity_fuel: { mode: 'ACTIVE', assessment: 'NEUTRAL', available_blocks: 4, total_blocks: 4, confidence: 'HIGH', evidence_blocks: evidence('p0'), summary: 'P0 完整。' },
       market_ignition: { mode: 'EVIDENCE_ONLY', assessment: null, available_blocks: 1, total_blocks: 4, confidence: 'LOW', evidence_blocks: p1Evidence, summary: '只展示 evidence coverage、方向同信心；不設綜合嚴重度。' },
-      fundamental_exit: { mode: 'UNAVAILABLE', assessment: null, available_blocks: 0, total_blocks: 4, confidence: 'LOW', evidence_blocks: evidence('p3'), summary: '季度資料未足夠。' },
+      fundamental_exit: { mode: 'EVIDENCE_ONLY', assessment: null, available_blocks: 2, total_blocks: 4, confidence: 'LOW', evidence_blocks: p3Evidence, summary: '只展示 CapEx 同人工 filing evidence coverage、方向及信心；不設綜合嚴重度。' },
     },
     metrics,
     technical_context: [],
@@ -257,15 +464,17 @@ export function makeSnapshot(metricOverrides: Record<string, Partial<Metric>> = 
       headline: '美元流動性保持中性。',
       bullets: [{ metric_id: 'sofr_iorb_spread_bp', observation: '最新為 1 bp。', meaning: '融資成本略高。', alternative: '可能係結算日。', confirmation: '其他利差平穩。', judgment: '未足以證明壓力。', confidence: 'HIGH' }],
     },
-    source_health: { ok: 4, stale: 0, error: 0, not_released_yet: 0, not_applicable: 1 },
+    source_health: { ok: 11, stale: 0, error: 0, not_released_yet: 0, not_applicable: 0 },
     sources: {
-      nyfed_rates: {
-        name: 'New York Fed rates', url: 'https://example.com/nyfed', tier: 'OFFICIAL', rights_note: 'Public official data.', status: 'OK', freshness: 'FRESH', observation_date: '2026-08-11', released_at: '2026-08-12T12:00:00Z', updated_at: NOW, last_attempt_at: NOW, last_success_at: NOW, expected_next_update: '2026-08-13', failure_reason: null,
-      },
-      manual: {
-        name: 'Manual interface', url: null, tier: 'MANUAL', rights_note: 'No value published.', status: 'NOT_APPLICABLE', freshness: 'UNKNOWN', observation_date: null, released_at: null, updated_at: NOW, last_attempt_at: null, last_success_at: null, expected_next_update: null, failure_reason: null,
-      },
+      nyfed_rates: collectorSource('nyfed_rates', 'New York Fed rates'),
+      fred_iorb: collectorSource('fred_iorb', 'FRED IORB'),
+      fred_h41: collectorSource('fred_h41', 'Federal Reserve H.4.1'),
+      treasury_tga: collectorSource('treasury_tga', 'Treasury General Account'),
+      nyfed_on_rrp: collectorSource('nyfed_on_rrp', 'New York Fed ON RRP'),
+      nyfed_srf: collectorSource('nyfed_srf', 'New York Fed SRF'),
+      treasury_auctions: collectorSource('treasury_auctions', 'Treasury auctions'),
       cftc_tff_futures_only: {
+        collector_id: 'cftc_tff_futures_only',
         name: 'CFTC TFF Futures Only', url: 'https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm', tier: 'OFFICIAL', rights_note: 'Official CFTC public report.', status: 'OK', freshness: 'FRESH', observation_date: '2026-08-11', released_at: '2026-08-12T12:00:00Z', updated_at: NOW, last_attempt_at: NOW, last_success_at: NOW, expected_next_update: '2026-08-13', failure_reason: null,
       },
       fred_nonfinancial_equities_gdp: {
@@ -286,6 +495,17 @@ export function makeSnapshot(metricOverrides: Record<string, Partial<Metric>> = 
         last_success_at: form4.quality.last_success_at,
         expected_next_update: form4.expected_next_update, failure_reason: form4.quality.failure_reason,
       },
+      sec_companyfacts_capex: {
+        collector_id: 'sec_companyfacts_capex',
+        name: 'SEC Company Facts and filings',
+        url: 'https://data.sec.gov/api/xbrl/companyfacts/',
+        tier: 'OFFICIAL',
+        rights_note: 'Official public-company filing data with accession-level provenance.',
+        status: 'OK', freshness: 'FRESH', observation_date: '2026-06-30',
+        released_at: '2026-07-30T20:15:00Z', updated_at: NOW,
+        last_attempt_at: NOW, last_success_at: NOW,
+        expected_next_update: null, failure_reason: null,
+      },
     },
     active_free_count: Object.values(metrics).filter((metric) => metric.availability === 'ACTIVE_FREE').length,
     active_proxy_count: Object.values(metrics).filter((metric) => metric.availability === 'ACTIVE_PROXY').length,
@@ -293,6 +513,53 @@ export function makeSnapshot(metricOverrides: Record<string, Partial<Metric>> = 
     unavailable_free_count: Object.values(metrics).filter((metric) => metric.availability === 'UNAVAILABLE_FREE').length,
     stale_count: 0,
   };
+}
+
+export function makeSnapshotWithReviewedManualEvidence(
+  metricId: (typeof P3_MANUAL_IDS)[number] = 'ai_upstream_orders_backlog',
+  recordOverrides: Partial<ManualEvidenceRecord> = {},
+): Snapshot {
+  const snapshot = makeSnapshot();
+  const record = makeManualEvidenceRecord(metricId, recordOverrides);
+  const metric = snapshot.metrics[metricId];
+  metric.availability = 'ACTIVE_FREE';
+  metric.observation_date = record.as_of;
+  metric.released_at = record.filing_accepted_at;
+  metric.updated_at = record.reviewed_at;
+  metric.quality = { status: 'OK', freshness: 'FRESH', last_attempt_at: record.reviewed_at, last_success_at: record.reviewed_at, failure_reason: null, sample_size: 1 };
+  metric.context = { technical_flags: [], is_proxy: false, confidence: 'MEDIUM', direction: record.direction };
+  metric.statistics = { record_count: 1, company_count: 1, comparable_count: record.comparable ? 1 : 0 };
+  metric.source = { source_id: 'manual_public_filings', name: 'Reviewed public filing', url: record.source_url, tier: 'MANUAL_REVIEWED', retrieved_at: record.reviewed_at, rights_note: 'Human-reviewed public filing with short paraphrase.' };
+  metric.provenance = [{ ...metric.source }];
+  metric.details = {
+    manual_evidence: {
+      source_id: 'manual_public_filings',
+      network_enabled: false,
+      observation_date: record.as_of,
+      direction: record.direction,
+      record_count: 1,
+      company_count: 1,
+      comparable_count: record.comparable ? 1 : 0,
+      latest_filing_accepted_at: record.filing_accepted_at,
+      latest_reviewed_at: record.reviewed_at,
+      records: [record],
+    },
+  };
+  metric.short_series = [{ date: record.as_of, value: null }];
+  snapshot.active_free_count += 1;
+  snapshot.manual_ready_count -= 1;
+  const blockIndex = metricId === 'ai_upstream_orders_backlog' ? 1 : 2;
+  snapshot.switches.fundamental_exit.evidence_blocks[blockIndex] = {
+    ...snapshot.switches.fundamental_exit.evidence_blocks[blockIndex],
+    available: true,
+    status: record.direction,
+    direction: record.direction,
+    confidence: 'MEDIUM',
+    summary: 'Reviewed public-filing evidence is available.',
+  };
+  snapshot.switches.fundamental_exit.available_blocks = 3;
+  snapshot.switches.fundamental_exit.confidence = 'MEDIUM';
+  return snapshot;
 }
 
 function catalogMetric(metricId: string, layer: Layer, phase: Phase, availability: Availability): CatalogMetric {
@@ -306,7 +573,8 @@ export function makeCatalog(): CatalogMetric[] {
     ...P1_RIGHTS_GATED_IDS.map((id) => catalogMetric(id, 'market_ignition', 'P1', 'UNAVAILABLE_FREE')),
     ...P2_ACTIVE_IDS.map((id) => catalogMetric(id, 'market_ignition', 'P2', 'ACTIVE_PROXY')),
     ...P2_HELD_IDS.map((id) => catalogMetric(id, 'market_ignition', 'P2', 'UNAVAILABLE_FREE')),
-    catalogMetric('hyperscaler_capex', 'fundamental_exit', 'P3', 'UNAVAILABLE_FREE'),
+    ...P3_AUTOMATED_IDS.map((id) => ({ ...catalogMetric(id, 'fundamental_exit', 'P3', 'ACTIVE_FREE'), unit: id.endsWith('_pp') ? 'percentage_points' : 'USD bn', frequency: 'quarterly' })),
+    ...P3_MANUAL_IDS.map((id) => ({ ...catalogMetric(id, 'fundamental_exit', 'P3', 'MANUAL_READY'), unit: 'mixed', frequency: 'quarterly' })),
   ];
 }
 
@@ -315,6 +583,47 @@ function LIQUIDITY_IDS() {
 }
 
 export function makeSeriesFile(metric: Metric): SeriesFile {
+  const fundamental = metric.details?.fundamental;
+  const manual = metric.details?.manual_evidence;
+  const observations = P3_AUTOMATED_IDS.includes(metric.metric_id as (typeof P3_AUTOMATED_IDS)[number]) && fundamental
+    ? metric.short_series.map((point) => {
+        const aggregate = metric.metric_id === P3_AUTOMATED_IDS[0]
+          ? point.value : metric.statistics.aggregate_cash_capex_usd_bn;
+        const scale = (aggregate ?? 0) / (metric.statistics.aggregate_cash_capex_usd_bn ?? 1);
+        return {
+        ...point,
+        aggregate_cash_capex_usd_bn: aggregate,
+        qoq_percent_change: metric.statistics.qoq_percent_change,
+        yoy_percent_change: metric.statistics.yoy_percent_change,
+        qoq_acceleration_pp: metric.statistics.qoq_acceleration_pp,
+        yoy_acceleration_pp: metric.statistics.yoy_acceleration_pp,
+        aggregate_direction: fundamental.aggregate_direction,
+        company_breadth: fundamental.company_breadth,
+        company_total: fundamental.company_total,
+        company_breadth_ratio: metric.statistics.company_breadth_ratio,
+        finance_lease_disclosure_breadth: metric.statistics.finance_lease_disclosure_breadth ?? 0,
+        manual_review_count: metric.statistics.manual_review_count ?? 0,
+        companies: fundamental.companies.map((company) => ({
+          ...company, cash_capex_usd_bn: Number((company.cash_capex_usd_bn * scale).toFixed(6)),
+          date: point.date, calendar_period_end: point.date, context_start: point.date, context_end: point.date,
+        })),
+      };
+      })
+    : manual
+      ? [...new Set(manual.records.map(({ as_of }) => as_of))].map((date) => {
+          const records = manual.records.filter(({ as_of }) => as_of === date);
+          const directions = records.map(({ direction }) => direction);
+          return {
+            date,
+            value: null,
+            direction: directions.includes('UNKNOWN') ? 'UNKNOWN' : new Set(directions).size === 1 ? directions[0] : 'MIXED',
+            record_count: records.length,
+            company_count: new Set(records.map(({ company_id }) => company_id)).size,
+            comparable_count: records.filter(({ comparable }) => comparable).length,
+            records,
+          };
+        })
+      : metric.short_series;
   return {
     schema_version: SCHEMA_VERSION,
     metric_id: metric.metric_id,
@@ -327,7 +636,7 @@ export function makeSeriesFile(metric: Metric): SeriesFile {
     released_at: metric.released_at,
     updated_at: metric.updated_at,
     source: metric.source,
-    observations: metric.short_series,
+    observations,
   };
 }
 

@@ -8,7 +8,7 @@
 - `UNAVAILABLE_FREE`：缺少定義一致、可重現或獲准再發布嘅 input，人工亦唔可以偽造；
 - 未實作 phase：registry `implemented: false`，published output 映射為 `UNAVAILABLE_FREE / NOT_APPLICABLE / UNKNOWN`。
 
-P0–P2 人工資料唔會自動變成 `ACTIVE_FREE` 或 `ACTIVE_PROXY`。Availability 改動需要 code/config review、來源權利覆核同測試；P3 將另行提供完整 reviewed-public-filing CSV contract，只有通過嗰份 contract 嘅 record先可以動態標記為 manual-reviewed evidence。
+P0–P2 人工資料唔會自動變成 `ACTIVE_FREE` 或 `ACTIVE_PROXY`。Availability 改動需要 code/config review、來源權利覆核同測試。P3 只有通過下列 reviewed-public-filing CSV contract 嘅 record 先可以動態標記為 `ACTIVE_FREE`；來源仍然係 `network_enabled: false`，程式唔會由 filing prose 猜數字。
 
 ## 每筆 manual record 必須有
 
@@ -43,6 +43,36 @@ P0–P2 人工資料唔會自動變成 `ACTIVE_FREE` 或 `ACTIVE_PROXY`。Availa
 ### Industry signals
 
 Orders、backlog、prepayments、take-or-pay 等非標準披露只可以由公開 filing 人手整理。可以記錄 `UP / FLAT / DOWN / UNKNOWN` 同短 factual paraphrase；唔好長篇複製 issuer narrative。定義轉變時設 `comparable: false`。
+
+正式輸入係 `data/manual/industry_signals.csv`，header 必須保留以下 17 欄及次序：
+
+```text
+company_id,period_end,metric_id,direction,value,unit,yoy_pct,comparable,source_type,source_url,filing_accession,filing_accepted_at,as_of,reviewer,reviewed_at,paraphrase,review_note
+```
+
+- `company_id` 只接受 `microsoft`、`alphabet`、`amazon`、`meta`；
+- `metric_id` 只接受 `ai_upstream_orders_backlog`、`customer_prepayments_contract_commitments`、`take_or_pay_commitments`；
+- `direction` 只接受大寫 `UP`、`FLAT`、`DOWN`、`UNKNOWN`；
+- 無數值時 `value` 同 `unit` 留空，代表真正 `null`；真實零值填 `0` 並保留來源；
+- 有數值時 `unit` 必須精確使用 `USD`、`USD mn`、`USD bn`、`count`、`units`、`percent`、`percentage_points`、`ratio`、`MW` 或 `GW`，pipeline 唔會暗中轉 scale；
+- `yoy_pct` 只收 plain decimal；`comparable=false` 時必須留空；
+- `comparable` 必須係小寫 `true` 或 `false`；定義、scope 或計量基礎改變時必須係 `false`；
+- `source_type` 只收官方 SEC filing 類型；`source_url` 必須係 `www.sec.gov/Archives/edgar/data/...` 嘅直接 filing HTML文件，並同時對應 issuer CIK path同一個 accession；issuer IR、新聞或下載頁唔可以代替 filing URL；
+- `filing_accession` 使用 `##########-##-######` canonical 格式；accession prefix 可以係 filing agent CIK，所以公司身份由 SEC Archives URL 嘅 issuer CIK path 核對，唔靠 prefix 猜；
+- `filing_accepted_at` 同 `reviewed_at` 必須係以 `Z` 結尾嘅 UTC timestamp；`period_end <= filing accepted date <= as_of <= reviewed date`；
+- `reviewer`、短 `paraphrase` 同 `review_note` 全部必填；paraphrase 上限 280 字，review note 上限 500 字，唔可以貼長段原文；
+- `(company_id, period_end, metric_id, filing_accession)` 係唯一 identity，重複 row 會令 validation fail closed。
+
+Header-only template 係有效狀態，三項 metric 會保持 `MANUAL_READY`。任何 row validation 失敗都會阻止正常 PR checks／production publication，唔會部分發布。人工更新必須經 PR review；唔好直接改 `public/data/**`。
+
+同一 metric 每個 `as_of` 只發布一個 aggregate observation；入面保存截至當日每間公司最新嘅完整 reviewed record，唔會因同日多家公司而互相覆寫。相對 aggregate date 超過 120 日嘅 carried record 唔計入 current company／comparable count 或方向；aggregate `value` 因 mixed units 永遠係 `null`，真實 `0` 只喺原 record 保存。
+
+`.github/workflows/check-p3-disclosures.yml` 只讀四間公司嘅 SEC submissions metadata，搵出新 filing、缺少 review 或 evidence `as_of` 超過 120 日嘅 review，然後 create／update 同一個由 `github-actions[bot]` 建立嘅 marker-owned GitHub issue。每個未覆核 accession 都會一直留喺 queue，唔會因只 review 最新 filing 而靜默漏掉舊項；180 日內嘅 reviewed row亦會核對 SEC form、acceptance timestamp同primary document URL。佢只有 `contents: read` 同 `issues: write`，唔會下載 filing prose、抽取數值、commit、push 或 deploy。可以用以下方式先睇本地 discovery output：
+
+```bash
+SEC_USER_AGENT='Bubble USD Liquidity Dashboard laubonghaudoi@icloud.com' \
+  python -m pipeline.check_p3_disclosures --dry-run
+```
 
 ### SEC Form 4 amendment review
 

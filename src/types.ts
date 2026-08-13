@@ -20,6 +20,116 @@ export interface Point {
   value: number | null;
 }
 
+export type FundamentalDirection =
+  | 'ACCELERATING'
+  | 'DECELERATING'
+  | 'FLAT'
+  | 'UNKNOWN';
+
+export interface FundamentalCompanyDetail {
+  date: string;
+  company_id: string;
+  ticker: string;
+  cik: string;
+  fiscal_quarter: string;
+  calendar_period_end: string;
+  cash_capex_usd_bn: number;
+  qoq_percent_change: number | null;
+  yoy_percent_change: number | null;
+  qoq_acceleration_pp: number | null;
+  yoy_acceleration_pp: number | null;
+  direction: FundamentalDirection;
+  tag: string;
+  namespace: string;
+  unit: string;
+  accession: string;
+  form: string;
+  filed_at: string;
+  accepted_at: string;
+  filing_url: string;
+  frame: string | null;
+  context_start: string;
+  context_end: string;
+  quarterization_method: string;
+  manual_review_required: boolean;
+  finance_lease_additions_usd_bn: number | null;
+  finance_lease_tag: string | null;
+  finance_lease_accession: string | null;
+  finance_lease_quarterization_method: string | null;
+}
+
+export interface FundamentalMetricDetail {
+  aggregate_direction: FundamentalDirection;
+  company_breadth: number;
+  company_total: 4;
+  companies: FundamentalCompanyDetail[];
+  caveats: string[];
+}
+
+export interface FundamentalSeriesPoint extends Point {
+  aggregate_cash_capex_usd_bn: number | null;
+  qoq_percent_change: number | null;
+  yoy_percent_change: number | null;
+  qoq_acceleration_pp: number | null;
+  yoy_acceleration_pp: number | null;
+  aggregate_direction: FundamentalDirection;
+  company_breadth: number;
+  company_total: number;
+  company_breadth_ratio: number | null;
+  finance_lease_disclosure_breadth: number;
+  manual_review_count: number;
+  companies: FundamentalCompanyDetail[];
+}
+
+export type ManualDirection = 'UP' | 'FLAT' | 'DOWN' | 'MIXED' | 'UNKNOWN';
+
+export interface ManualEvidenceRecord {
+  company_id: string;
+  period_end: string;
+  metric_id: string;
+  direction: Exclude<ManualDirection, 'MIXED'>;
+  value: number | null;
+  unit: string | null;
+  yoy_pct: number | null;
+  comparable: boolean;
+  source_type: string;
+  source_url: string;
+  filing_accession: string;
+  filing_accepted_at: string;
+  as_of: string;
+  reviewer: string;
+  reviewed_at: string;
+  paraphrase: string;
+  review_note: string;
+}
+
+export interface ManualEvidenceDetail {
+  source_id: 'manual_public_filings';
+  network_enabled: false;
+  observation_date: string;
+  direction: ManualDirection;
+  record_count: number;
+  company_count: number;
+  comparable_count: number;
+  latest_filing_accepted_at: string;
+  latest_reviewed_at: string;
+  records: ManualEvidenceRecord[];
+}
+
+export interface ManualEvidenceSeriesPoint extends Point {
+  record_count: number;
+  company_count: number;
+  comparable_count: number;
+  direction: ManualDirection;
+  records: ManualEvidenceRecord[];
+}
+
+export interface MetricDetails {
+  [key: string]: unknown;
+  fundamental?: FundamentalMetricDetail;
+  manual_evidence?: ManualEvidenceDetail;
+}
+
 export interface MetricChanges {
   one_observation: number | null;
   five_observations: number | null;
@@ -100,6 +210,9 @@ export interface Metric {
   source: MetricSource;
   methodology: Methodology;
   short_series: Point[];
+  provenance?: MetricSource[];
+  unavailability_reason?: string | null;
+  details?: MetricDetails | null;
 }
 
 export interface EvidenceBlock {

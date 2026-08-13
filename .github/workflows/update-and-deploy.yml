@@ -100,6 +100,11 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r pipeline/requirements.txt
 
+      - name: Validate reviewed P3 disclosure metadata
+        env:
+          SEC_USER_AGENT: ${{ vars.SEC_USER_AGENT }}
+        run: python -m pipeline.check_p3_disclosures --dry-run
+
       - name: Restore private SEC submission cache
         uses: actions/cache@v4
         with:

@@ -45,6 +45,13 @@ alerts:
 
   fundamental_exit:
     total_blocks: 4
+    mode: EVIDENCE_ONLY
+    assessments_enabled: false
+    evidence_block_ids:
+      - aggregate_capex_acceleration
+      - orders_backlog
+      - prepayments_commitments
+      - company_breadth
     minimum_current_blocks_for_directional_status: 3
     minimum_confirming_companies: 2
     aggregate_negative_acceleration_quarters: 2

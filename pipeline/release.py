@@ -52,11 +52,14 @@ from pipeline.collectors.sec_form4 import (
     SecHttpClient,
     collect_form4_window,
 )
+from pipeline.collectors.sec_companyfacts import fetch_company_bundles
 from pipeline.collectors.treasury import fetch_auctions, fetch_tga
 from pipeline.config import (
+    ACTIVE_P3_AUTOMATED_METRIC_IDS,
     ACTIVE_P2_METRIC_IDS,
     CANONICAL_P0_METRIC_IDS,
     CANONICAL_P1_CFTC_METRIC_IDS,
+    MANUAL_P3_METRIC_IDS,
     ConfigBundle,
     assert_metric_network_eligible,
     assert_source_network_eligible,
@@ -83,6 +86,11 @@ from pipeline.form4_ledger import (
     public_ledger_entry,
     write_ledger_atomic,
 )
+from pipeline.manual_signals import (
+    DEFAULT_MANUAL_SIGNALS_PATH,
+    build_manual_metric_states,
+    load_manual_signals,
+)
 from pipeline.rules.p0 import liquidity_alert_rule
 from pipeline.transforms.p0 import (
     add_large_settlement_context,
@@ -108,6 +116,11 @@ from pipeline.transforms.p2_macro import (
     nonfinancial_equities_gdp_statistics,
 )
 from pipeline.transforms.p2_form4 import form4_metric_observation
+from pipeline.transforms.p3_capex import (
+    ACCELERATION_METRIC_ID,
+    CAPEX_METRIC_ID,
+    build_hyperscaler_capex,
+)
 
 
 VALID_MODES = frozenset({"incremental", "backfill"})
@@ -129,6 +142,28 @@ CFTC_METRICS = {
 }
 P2_MACRO_ID = "nonfinancial_equities_gdp_proxy"
 P2_FORM4_ID = "sec_form4_nonderivative_ps_count_ratio_20d"
+P3_CAPEX_ID = CAPEX_METRIC_ID
+P3_ACCELERATION_ID = ACCELERATION_METRIC_ID
+P3_AUTOMATED_IDS = (P3_CAPEX_ID, P3_ACCELERATION_ID)
+P3_MANUAL_IDS = tuple(sorted(MANUAL_P3_METRIC_IDS))
+P3_STATISTIC_KEYS = (
+    "aggregate_cash_capex_usd_bn",
+    "qoq_percent_change",
+    "yoy_percent_change",
+    "qoq_acceleration_pp",
+    "yoy_acceleration_pp",
+    "company_breadth",
+    "company_total",
+    "company_breadth_ratio",
+    "finance_lease_disclosure_breadth",
+    "manual_review_count",
+)
+P3_CAVEATS = (
+    "Cash CapEx is quarterized from fiscal YTD cash-flow facts; Q4 is fiscal-year cash CapEx less nine-month cash CapEx.",
+    "Finance-lease right-of-use asset additions are shown separately and are never added to cash CapEx.",
+    "SEC facts may be amended or restated; the latest accepted filing for each exact context is used.",
+    "This is evidence coverage and direction, not an automatic WATCH or STRESS assessment.",
+)
 
 
 def _collect_sec_form4_window(**kwargs: Any) -> Form4Collection:
@@ -150,6 +185,7 @@ class CollectorFunctions:
     cftc: Callable[..., dict[str, list[dict[str, Any]]]] = fetch_tff_futures_only
     fred_p2: Callable[..., dict[str, Any]] = fetch_fred_p2_series
     sec_form4: Callable[..., Form4Collection] = _collect_sec_form4_window
+    sec_companyfacts: Callable[..., dict[str, Any]] = fetch_company_bundles
 
 
 @dataclass(frozen=True)
@@ -435,6 +471,133 @@ def _p2_macro_statistics(
         "common_quarter": observations[-1].get("quarter") if observations else None,
     }
     return statistics, context, latest.get("change_1_quarter_pp")
+
+
+def _p3_capex_payload(
+    observations: Sequence[Mapping[str, Any]],
+    *,
+    acceleration_metric: bool,
+) -> tuple[
+    dict[str, int | float | None],
+    dict[str, Any],
+    float | None,
+    str | None,
+]:
+    """Rebuild the public P3 endpoint from the persisted full series.
+
+    The same helper is used after a fresh SEC collection and on a non-due
+    republish, so the snapshot never depends on transient in-memory collector
+    output that is absent from the canonical series file.
+    """
+
+    if not observations:
+        empty_statistics = {key: None for key in P3_STATISTIC_KEYS}
+        empty_statistics.update(
+            {
+                "company_breadth": 0,
+                "company_total": 4,
+                "finance_lease_disclosure_breadth": 0,
+                "manual_review_count": 0,
+            }
+        )
+        return (
+            {**empty_statistics, "quarter_count": 0},
+            {
+                "fundamental": {
+                    "aggregate_direction": "UNKNOWN",
+                    "company_breadth": 0,
+                    "company_total": 4,
+                    "companies": [],
+                    "caveats": list(P3_CAVEATS),
+                }
+            },
+            None,
+            None,
+        )
+    latest = observations[-1]
+    previous = observations[-2] if len(observations) > 1 else None
+    statistics = {
+        key: latest.get(key)
+        for key in P3_STATISTIC_KEYS
+    }
+    statistics["quarter_count"] = len(observations)
+    companies = latest.get("companies")
+    details = {
+        "fundamental": {
+            "aggregate_direction": latest.get("aggregate_direction", "UNKNOWN"),
+            "company_breadth": latest.get("company_breadth", 0),
+            "company_total": latest.get("company_total", 4),
+            "companies": (
+                [dict(company) for company in companies]
+                if isinstance(companies, list)
+                else []
+            ),
+            "caveats": list(P3_CAVEATS),
+        }
+    }
+    value_key = (
+        "yoy_acceleration_pp"
+        if acceleration_metric
+        else "aggregate_cash_capex_usd_bn"
+    )
+    change = None
+    if previous is not None:
+        current_value = latest.get(value_key)
+        previous_value = previous.get(value_key)
+        if isinstance(current_value, (int, float)) and not isinstance(
+            current_value, bool
+        ) and isinstance(previous_value, (int, float)) and not isinstance(
+            previous_value, bool
+        ):
+            change = round(float(current_value) - float(previous_value), 6)
+    release_candidates = [
+        company.get("accepted_at")
+        for company in details["fundamental"]["companies"]
+        if isinstance(company.get("accepted_at"), str)
+    ]
+    return statistics, details, change, max(release_candidates, default=None)
+
+
+def _manual_series_state(
+    payload: Mapping[str, Any], *, now_et: datetime
+) -> SeriesState | None:
+    """Convert reviewed local CSV evidence into a non-network SeriesState."""
+
+    observations = payload.get("observations")
+    if not isinstance(observations, list) or not observations:
+        return None
+    observation_date = payload.get("observation_date")
+    if not isinstance(observation_date, str):
+        raise ValueError("active P3 manual evidence requires observation_date")
+    lag = (now_et.date() - date.fromisoformat(observation_date)).days
+    if lag < 0:
+        raise ValueError("P3 manual evidence must not be future-dated")
+    reviewed_at = payload.get("latest_reviewed_at")
+    released_at = payload.get("latest_filing_accepted_at")
+    for label, value in (("reviewed_at", reviewed_at), ("released_at", released_at)):
+        if not isinstance(value, str):
+            raise ValueError(f"active P3 manual evidence requires {label}")
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        if parsed > now_et.astimezone(timezone.utc):
+            raise ValueError(f"P3 manual evidence {label} must not be future-dated")
+    stale = lag > 120
+    return SeriesState(
+        metric_id=str(payload["metric_id"]),
+        observations=[dict(point) for point in observations],
+        health="STALE" if stale else "OK",
+        freshness="STALE" if stale else "FRESH",
+        last_success_at=reviewed_at,
+        last_attempt_at=reviewed_at,
+        failure_reason=None,
+        released_at=released_at,
+        updated_at=reviewed_at,
+    )
+
+
+def _common_p3_direction(directions: Sequence[str]) -> str:
+    if not directions or "UNKNOWN" in directions:
+        return "UNKNOWN"
+    return directions[0] if len(set(directions)) == 1 else "MIXED"
 
 
 def _preserve_source_timestamps_when_not_due(
@@ -734,10 +897,10 @@ def _future_evidence_blocks(layer: str) -> list[dict[str, Any]]:
             ("crypto_cross_asset", "Crypto funding / cross-asset"),
         ),
         "fundamental_exit": (
-            ("capex", "Hyperscaler CapEx"),
+            ("aggregate_capex_acceleration", "Aggregate CapEx acceleration"),
             ("orders_backlog", "Orders / backlog"),
-            ("prepayments", "Prepayments"),
-            ("take_or_pay", "Take-or-pay"),
+            ("prepayments_commitments", "Prepayments / commitments"),
+            ("company_breadth", "Company breadth"),
         ),
     }[layer]
     return [
@@ -821,6 +984,7 @@ def build_release(
     now: datetime | None = None,
     bundle: ConfigBundle | None = None,
     collectors: CollectorFunctions | None = None,
+    manual_signals_path: str | Path = DEFAULT_MANUAL_SIGNALS_PATH,
 ) -> Publication:
     """Collect and assemble a complete in-memory schema-v2 publication."""
 
@@ -844,6 +1008,10 @@ def build_release(
     cftc_due = group in {"all", "daily", "weekly"}
     p2_macro_due = group in {"all", "monthly", "quarterly"}
     p2_form4_due = group in {"all", "daily", "weekly"}
+    p3_capex_due = group in {"all", "quarterly"}
+    manual_payloads = build_manual_metric_states(
+        load_manual_signals(manual_signals_path)
+    )
 
     states = {
         metric_id: _preserved_state(
@@ -971,6 +1139,41 @@ def build_release(
             form4_state, data_dir=root, metric_id=P2_FORM4_ID
         )
     states[P2_FORM4_ID] = form4_state
+    for metric_id in P3_AUTOMATED_IDS:
+        state = _preserved_state(
+            metric_id,
+            data_dir=root,
+            frequency="quarterly",
+            attempted_at=attempted_at,
+            now_et=now_et,
+        )
+        if not p3_capex_due:
+            state = _preserve_source_timestamps_when_not_due(
+                state, data_dir=root, metric_id=metric_id
+            )
+        capex_freshness, capex_health = _quarterly_proxy_freshness_for(
+            state.observation_date, now_et=now_et
+        )
+        states[metric_id] = replace(
+            state,
+            freshness=(
+                max(
+                    (state.freshness, capex_freshness),
+                    key=FRESHNESS_ORDER.__getitem__,
+                )
+                if state.failure_reason
+                else capex_freshness
+            ),
+            health=(
+                max((state.health, capex_health), key=HEALTH_ORDER.__getitem__)
+                if state.failure_reason
+                else capex_health
+            ),
+        )
+    for metric_id in P3_MANUAL_IDS:
+        manual_state = _manual_series_state(manual_payloads[metric_id], now_et=now_et)
+        if manual_state is not None:
+            states[metric_id] = manual_state
     prior_form4_ledger = _prior_form4_ledger(root, as_of=now_et.date())
     form4_ledger = prior_form4_ledger
     attempted_collectors: set[str] = set()
@@ -1348,6 +1551,68 @@ def build_release(
             )
             form4_ledger = prior_form4_ledger
 
+    if p3_capex_due:
+        attempted_collectors.add("sec_companyfacts_capex")
+        priors = {metric_id: states[metric_id] for metric_id in P3_AUTOMATED_IDS}
+        try:
+            if set(P3_AUTOMATED_IDS) != set(ACTIVE_P3_AUTOMATED_METRIC_IDS):
+                raise ValueError("P3 automated metric constants are inconsistent")
+            for metric_id in P3_AUTOMATED_IDS:
+                assert_metric_network_eligible(bundle, metric_id)
+            bundles = collectors.sec_companyfacts(bundle.companies["companies"])
+            transformed = build_hyperscaler_capex(bundles)
+            if (
+                transformed.get("metric_id") != P3_CAPEX_ID
+                or transformed.get("acceleration_metric_id") != P3_ACCELERATION_ID
+            ):
+                raise ValueError("P3 transform returned the wrong metric identity")
+            candidate_states: dict[str, SeriesState] = {}
+            for metric_id, key in (
+                (P3_CAPEX_ID, "series"),
+                (P3_ACCELERATION_ID, "acceleration_series"),
+            ):
+                observations = transformed.get(key)
+                if not isinstance(observations, list) or len(observations) < 12:
+                    raise ValueError(
+                        f"{metric_id} requires at least 12 transformed quarters"
+                    )
+                state = _success_with_history(
+                    metric_id,
+                    observations,
+                    prior=priors[metric_id],
+                    frequency="quarterly",
+                    attempted_at=attempted_at,
+                    now_et=now_et,
+                    mode=mode,
+                )
+                freshness, health = _quarterly_proxy_freshness_for(
+                    state.observation_date, now_et=now_et
+                )
+                _stats, _details, _change, released_at = _p3_capex_payload(
+                    state.observations,
+                    acceleration_metric=metric_id == P3_ACCELERATION_ID,
+                )
+                candidate_states[metric_id] = replace(
+                    state,
+                    freshness=freshness,
+                    health=health,
+                    released_at=released_at,
+                )
+            if (
+                candidate_states[P3_CAPEX_ID].observation_date
+                != candidate_states[P3_ACCELERATION_ID].observation_date
+            ):
+                raise ValueError("P3 automated series endpoints do not align")
+            states.update(candidate_states)
+        except Exception as error:
+            for metric_id, prior in priors.items():
+                states[metric_id] = _failed_from_prior(
+                    metric_id,
+                    prior=prior,
+                    attempted_at=attempted_at,
+                    error=error,
+                )
+
     spreads = build_iorb_spreads(
         {metric_id: states[metric_id].observations for metric_id in RATE_IDS},
         states["iorb"].observations,
@@ -1478,6 +1743,24 @@ def build_release(
         form4_ledger, as_of=now_et.date()
     )
     statistics[P2_FORM4_ID] = dict(form4_observation["statistics"])
+    p3_details: dict[str, dict[str, Any]] = {}
+    p3_change_one_quarter: dict[str, float | None] = {}
+    for metric_id in P3_AUTOMATED_IDS:
+        p3_statistics, details, change, _released_at = _p3_capex_payload(
+            states[metric_id].observations,
+            acceleration_metric=metric_id == P3_ACCELERATION_ID,
+        )
+        statistics[metric_id] = p3_statistics
+        p3_details[metric_id] = details
+        p3_change_one_quarter[metric_id] = change
+    for metric_id in P3_MANUAL_IDS:
+        payload = manual_payloads[metric_id]
+        statistics[metric_id] = {
+            "record_count": int(payload["record_count"]),
+            "company_count": int(payload["company_count"]),
+            "comparable_count": int(payload["comparable_count"]),
+        }
+        p3_details[metric_id] = dict(payload["details"])
 
     sofr_stats = statistics["sofr_iorb_spread_bp"]
     confirmations = {
@@ -1531,9 +1814,18 @@ def build_release(
         metric_id = registry_metric["metric_id"]
         effective = effective_metric_state(registry_metric)
         availability = effective.availability.value
+        if metric_id in P3_MANUAL_IDS:
+            availability = str(manual_payloads[metric_id]["availability"])
         state = states.get(metric_id)
         flags = []
-        if state and state.observation_date in event_by_date:
+        # Treasury/tax/period-end flags are P0 liquidity interpretation
+        # context.  A quarterly fundamentals point or filing-window end that
+        # happens to share the same calendar date must not inherit them.
+        if (
+            registry_metric["phase"] == "P0"
+            and state
+            and state.observation_date in event_by_date
+        ):
             flags = event_by_date[state.observation_date]["flags"]
         provenance = []
         for source_id in registry_metric["source_ids"]:
@@ -1563,12 +1855,19 @@ def build_release(
                 for key, value in state.observations[-1].items()
                 if key not in {"date", "value", "net_percent_open_interest_raw"}
             }
+        if metric_id in P3_AUTOMATED_IDS or (
+            metric_id in P3_MANUAL_IDS and availability == "ACTIVE_FREE"
+        ):
+            extra["details"] = p3_details[metric_id]
+        metric_statistics = statistics.get(metric_id)
+        if metric_id in P3_MANUAL_IDS and availability == "MANUAL_READY":
+            metric_statistics = {}
         record = metric_record(
             bundle,
             registry_metric,
             state=state,
             attempted_at=attempted_at,
-            statistics=statistics.get(metric_id),
+            statistics=metric_statistics,
             technical_flags=flags,
             effective_availability=availability,
             extra=extra,
@@ -1601,6 +1900,29 @@ def build_release(
             if not p2_form4_due:
                 record["updated_at"] = state.updated_at if state else None
             record["context"].update(form4_observation["technical_context"])
+        if metric_id in P3_AUTOMATED_IDS:
+            if not p3_capex_due:
+                record["updated_at"] = state.updated_at if state else None
+            record["changes"]["one_quarter"] = p3_change_one_quarter[metric_id]
+            record["expected_next_update"] = None
+            record["context"]["direction"] = p3_details[metric_id][
+                "fundamental"
+            ]["aggregate_direction"]
+        if metric_id in P3_MANUAL_IDS:
+            if availability == "MANUAL_READY":
+                record["source"] = source_details(bundle, "manual_public_filings")
+            record["expected_next_update"] = None
+            record["context"]["direction"] = str(
+                manual_payloads[metric_id]["direction"]
+            )
+            record["context"]["confidence"] = (
+                "MEDIUM" if state is not None and state.health == "OK" else "UNKNOWN"
+            )
+            record["quality"]["sample_size"] = (
+                int(manual_payloads[metric_id]["record_count"])
+                if availability == "ACTIVE_FREE"
+                else None
+            )
         metric_records[metric_id] = record
         registry_for_manifest.append(
             {**registry_metric, "effective_availability": availability}
@@ -1781,6 +2103,148 @@ def build_release(
         "summary": "只展示 evidence coverage、方向與信心；Market Ignition 不產生 WATCH/STRESS。",
     }
 
+    p3_fundamental = p3_details[P3_CAPEX_ID]["fundamental"]
+    p3_automated_available = (
+        states[P3_CAPEX_ID].health == "OK"
+        and states[P3_CAPEX_ID].freshness == "FRESH"
+        and states[P3_ACCELERATION_ID].health == "OK"
+        and states[P3_ACCELERATION_ID].freshness == "FRESH"
+        and len(states[P3_CAPEX_ID].observations) >= 12
+        and len(states[P3_ACCELERATION_ID].observations) >= 12
+        and metric_records[P3_CAPEX_ID]["value"] is not None
+        and metric_records[P3_ACCELERATION_ID]["value"] is not None
+        and statistics[P3_CAPEX_ID].get("quarter_count", 0) >= 12
+        and statistics[P3_ACCELERATION_ID].get("quarter_count", 0) >= 12
+    )
+    p3_aggregate_direction = (
+        str(p3_fundamental["aggregate_direction"])
+        if p3_automated_available
+        else "UNKNOWN"
+    )
+    p3_company_direction = (
+        _common_p3_direction(
+            [str(company["direction"]) for company in p3_fundamental["companies"]]
+        )
+        if p3_automated_available
+        else "UNKNOWN"
+    )
+
+    def manual_block_state(metric_ids: Sequence[str]) -> tuple[bool, str, str]:
+        active_ids = [
+            metric_id
+            for metric_id in metric_ids
+            if manual_payloads[metric_id]["availability"] == "ACTIVE_FREE"
+        ]
+        if not active_ids:
+            return False, "UNKNOWN", "MANUAL_READY"
+        healthy = all(
+            states[metric_id].health == "OK"
+            and states[metric_id].freshness == "FRESH"
+            for metric_id in active_ids
+        )
+        if not healthy:
+            return False, "UNKNOWN", "STALE"
+        direction = _common_p3_direction(
+            [str(manual_payloads[metric_id]["direction"]) for metric_id in active_ids]
+        )
+        return True, direction, direction
+
+    orders_available, orders_direction, orders_status = manual_block_state(
+        ("ai_upstream_orders_backlog",)
+    )
+    commitments_available, commitments_direction, commitments_status = (
+        manual_block_state(
+            (
+                "customer_prepayments_contract_commitments",
+                "take_or_pay_commitments",
+            )
+        )
+    )
+    p3_blocks = [
+        {
+            "id": "aggregate_capex_acceleration",
+            "label": "Aggregate CapEx acceleration",
+            "available": p3_automated_available,
+            "triggered": None,
+            "status": (
+                p3_aggregate_direction if p3_automated_available else "UNAVAILABLE"
+            ),
+            "direction": p3_aggregate_direction,
+            "confidence": "MEDIUM" if p3_automated_available else "UNKNOWN",
+            "summary": (
+                "四家公司現金 CapEx 先加總，再計 QoQ、YoY 同 acceleration；finance leases 分開披露。"
+                if p3_automated_available
+                else "四家公司至少 12 個共同季度嘅健康 SEC facts 尚未齊備。"
+            ),
+        },
+        {
+            "id": "orders_backlog",
+            "label": "Orders / backlog",
+            "available": orders_available,
+            "triggered": None,
+            "status": orders_status,
+            "direction": orders_direction,
+            "confidence": "MEDIUM" if orders_available else "UNKNOWN",
+            "summary": (
+                "顯示已人工覆核、保留 filing provenance 嘅 orders/backlog disclosures。"
+                if orders_available
+                else (
+                    "已有經 PR 覆核嘅 orders/backlog 記錄，但證據已超過 120 日或狀態過期，需重新覆核。"
+                    if orders_status == "STALE"
+                    else "尚未有經 PR 覆核嘅 orders/backlog CSV 記錄。"
+                )
+            ),
+        },
+        {
+            "id": "prepayments_commitments",
+            "label": "Prepayments / commitments",
+            "available": commitments_available,
+            "triggered": None,
+            "status": commitments_status,
+            "direction": commitments_direction,
+            "confidence": "MEDIUM" if commitments_available else "UNKNOWN",
+            "summary": (
+                "顯示已人工覆核嘅 customer prepayments、contract commitments 或 take-or-pay 證據。"
+                if commitments_available
+                else (
+                    "已有經 PR 覆核嘅 prepayments／commitments 記錄，但證據已超過 120 日或狀態過期，需重新覆核。"
+                    if commitments_status == "STALE"
+                    else "尚未有經 PR 覆核嘅 prepayments／commitments CSV 記錄。"
+                )
+            ),
+        },
+        {
+            "id": "company_breadth",
+            "label": "Company breadth",
+            "available": p3_automated_available,
+            "triggered": None,
+            "status": p3_company_direction if p3_automated_available else "UNAVAILABLE",
+            "direction": p3_company_direction,
+            "confidence": "MEDIUM" if p3_automated_available else "UNKNOWN",
+            "summary": (
+                f"{int(statistics[P3_CAPEX_ID]['company_breadth'] or 0)}/4 家公司方向同 aggregate acceleration 一致。"
+                if p3_automated_available
+                else "公司層面 acceleration breadth 尚未有完整健康證據。"
+            ),
+        },
+    ]
+    p3_available_blocks = sum(block["available"] for block in p3_blocks)
+    fundamental_exit_switch = {
+        "mode": "EVIDENCE_ONLY",
+        "assessment": None,
+        "available_blocks": p3_available_blocks,
+        "total_blocks": len(p3_blocks),
+        "confidence": (
+            "UNKNOWN"
+            if p3_available_blocks == 0
+            else "LOW"
+            if p3_available_blocks <= 2
+            else "MEDIUM"
+        ),
+        "evidence_blocks": p3_blocks,
+        "summary": "只展示 evidence coverage、方向與公司 breadth；Fundamental Exit 不產生 WATCH/STRESS。",
+    }
+
     sources = {
         "nyfed_rates": collector_source_record(
             bundle,
@@ -1832,6 +2296,13 @@ def build_release(
             [states[P2_FORM4_ID]],
             attempted_at=attempted_at,
         ),
+        "sec_companyfacts_capex": collector_source_record(
+            bundle,
+            "sec_companyfacts_capex",
+            "sec_edgar",
+            [states[metric_id] for metric_id in P3_AUTOMATED_IDS],
+            attempted_at=attempted_at,
+        ),
     }
     cftc_latest_state = states[
         "cftc_e_mini_sp500_asset_manager_net_pct_oi"
@@ -1858,6 +2329,9 @@ def build_release(
                 ],
                 "fred_nonfinancial_equities_gdp": [states[P2_MACRO_ID]],
                 "sec_form4_daily_index": [states[P2_FORM4_ID]],
+                "sec_companyfacts_capex": [
+                    states[metric_id] for metric_id in P3_AUTOMATED_IDS
+                ],
             }[collector_id]
             source["last_attempt_at"] = max(
                 (state.last_attempt_at for state in relevant_states if state.last_attempt_at),
@@ -1888,15 +2362,7 @@ def build_release(
             "market_ignition": {
                 **market_ignition_switch,
             },
-            "fundamental_exit": {
-                "mode": "EVIDENCE_ONLY",
-                "assessment": None,
-                "available_blocks": 0,
-                "total_blocks": 4,
-                "confidence": "UNKNOWN",
-                "evidence_blocks": _future_evidence_blocks("fundamental_exit"),
-                "summary": "P3 production evidence 未上線；不產生 WATCH/STRESS。",
-            },
+            "fundamental_exit": fundamental_exit_switch,
         },
         "metrics": metric_records,
         "technical_context": (

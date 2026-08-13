@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
+  COLLECTOR_SOURCE_IDS,
   CONFIRMATION_SPREAD_IDS,
   OVERVIEW_SERIES_IDS,
   P1_CFTC_CONFIG,
@@ -7,6 +8,10 @@ import {
   P2_ACTIVE_IDS,
   P2_HELD_IDS,
   P2_SERIES_IDS,
+  P3_AUTOMATED_IDS,
+  P3_EVIDENCE_BLOCK_IDS,
+  P3_MANUAL_IDS,
+  P3_METRIC_IDS,
   RANGE_DAYS,
   SCHEMA_VERSION,
   SWITCH_CONFIG,
@@ -25,8 +30,8 @@ import {
   windowPoints,
   type SeriesMap,
 } from './dashboard';
-import { jsonResponse, makeCatalog, makeMetric, makeSeriesFile, makeSnapshot } from './test-fixtures';
-import type { Snapshot } from './types';
+import { jsonResponse, makeCatalog, makeManualEvidenceRecord, makeMetric, makeSeriesFile, makeSnapshot, makeSnapshotWithReviewedManualEvidence } from './test-fixtures';
+import type { FundamentalCompanyDetail, Metric, Snapshot } from './types';
 
 describe('v2 contract and configuration', () => {
   it('hard-cuts to schema 2.0.0 and requires the locked assessment field', () => {
@@ -105,9 +110,34 @@ describe('v2 contract and configuration', () => {
     nonUtcAttempt.metrics.sofr.quality.last_attempt_at = '2026-08-12T10:32:49-07:00';
     expect(isSnapshot(nonUtcAttempt)).toBe(false);
 
+    expect(Object.keys(valid.sources).sort()).toEqual([...COLLECTOR_SOURCE_IDS].sort());
+    const extraCollector = structuredClone(valid);
+    extraCollector.sources.unreviewed_collector = {
+      ...extraCollector.sources.nyfed_rates,
+      collector_id: 'unreviewed_collector',
+    };
+    extraCollector.source_health.ok += 1;
+    expect(isSnapshot(extraCollector)).toBe(false);
+
+    const missingCollector = structuredClone(valid);
+    delete missingCollector.sources.treasury_auctions;
+    missingCollector.source_health.ok -= 1;
+    expect(isSnapshot(missingCollector)).toBe(false);
+
+    const mismatchedCollectorIdentity = structuredClone(valid);
+    mismatchedCollectorIdentity.sources.fred_iorb.collector_id = 'fred_h41';
+    expect(isSnapshot(mismatchedCollectorIdentity)).toBe(false);
+
     const invalidStatistic = structuredClone(valid) as unknown as Record<string, unknown>;
     ((invalidStatistic.metrics as Record<string, Record<string, unknown>>).sofr.statistics as Record<string, unknown>).trend = 'up';
     expect(isSnapshot(invalidStatistic)).toBe(false);
+
+    const existingNonP3Details = structuredClone(valid);
+    existingNonP3Details.metrics.on_rrp_accepted.details = {
+      submitted_usd_bn: 0,
+      counterparties: 12,
+    };
+    expect(isSnapshot(existingNonP3Details)).toBe(true);
   });
 
   it('only exposes CFTC positioning when every weekly input is complete, fresh, and aligned', () => {
@@ -255,7 +285,7 @@ describe('v2 contract and configuration', () => {
       ...P1_RIGHTS_GATED_IDS,
       ...P2_SERIES_IDS,
     ]);
-    expect(routeMetricIds('fundamental-exit', catalog, snapshot)).toEqual(['hyperscaler_capex']);
+    expect(routeMetricIds('fundamental-exit', catalog, snapshot)).toEqual(P3_METRIC_IDS);
     expect(routeMetricIds('market-ignition', [], snapshot)).toEqual([
       ...P1_CFTC_CONFIG.map(({ id }) => id),
       ...P1_RIGHTS_GATED_IDS,
@@ -333,6 +363,384 @@ describe('v2 contract and configuration', () => {
     mismatchedSecSource.sources.sec_form4_daily_index.observation_date = '2026-08-10';
     expect(isSnapshot(mismatchedSecSource)).toBe(false);
   });
+
+  it('strictly validates canonical P3 evidence-only metrics, details, and 12-quarter history', () => {
+    const valid = makeSnapshot();
+    expect(P3_AUTOMATED_IDS).toEqual([
+      'hyperscaler_aggregate_cash_capex',
+      'hyperscaler_aggregate_cash_capex_yoy_acceleration_pp',
+    ]);
+    expect(P3_MANUAL_IDS).toEqual([
+      'ai_upstream_orders_backlog',
+      'customer_prepayments_contract_commitments',
+      'take_or_pay_commitments',
+    ]);
+    expect(valid.switches.fundamental_exit).toMatchObject({
+      mode: 'EVIDENCE_ONLY', assessment: null, available_blocks: 2, total_blocks: 4, confidence: 'LOW',
+    });
+    expect(valid.switches.fundamental_exit.evidence_blocks.map(({ id }) => id)).toEqual(P3_EVIDENCE_BLOCK_IDS);
+    expect(valid.overall_assessment).toBe(valid.switches.liquidity_fuel.assessment);
+    expect(valid.switches.market_ignition.assessment).toBeNull();
+    expect(isSnapshot(valid)).toBe(true);
+
+    const severity = structuredClone(valid);
+    severity.switches.fundamental_exit.assessment = 'WATCH';
+    expect(isSnapshot(severity)).toBe(false);
+
+    const triggered = structuredClone(valid);
+    triggered.switches.fundamental_exit.evidence_blocks[0].triggered = true;
+    expect(isSnapshot(triggered)).toBe(false);
+
+    const severityStatus = structuredClone(valid);
+    severityStatus.switches.fundamental_exit.evidence_blocks[0].status = 'WATCH';
+    expect(isSnapshot(severityStatus)).toBe(false);
+
+    const extraSwitchField = structuredClone(valid);
+    (extraSwitchField.switches.fundamental_exit as unknown as Record<string, unknown>).severity = 'WATCH';
+    expect(isSnapshot(extraSwitchField)).toBe(false);
+
+    const extraBlockField = structuredClone(valid);
+    (extraBlockField.switches.fundamental_exit.evidence_blocks[0] as unknown as Record<string, unknown>).severity = null;
+    expect(isSnapshot(extraBlockField)).toBe(false);
+
+    const missingBlockField = structuredClone(valid);
+    delete (missingBlockField.switches.fundamental_exit.evidence_blocks[0] as unknown as Record<string, unknown>).summary;
+    expect(isSnapshot(missingBlockField)).toBe(false);
+
+    const missingCanonicalMetric = structuredClone(valid);
+    delete missingCanonicalMetric.metrics.hyperscaler_aggregate_cash_capex;
+    expect(isSnapshot(missingCanonicalMetric)).toBe(false);
+
+    const legacyAlias = structuredClone(valid);
+    legacyAlias.metrics.hyperscaler_capex = structuredClone(valid.metrics.hyperscaler_aggregate_cash_capex);
+    legacyAlias.metrics.hyperscaler_capex.metric_id = 'hyperscaler_capex';
+    expect(isSnapshot(legacyAlias)).toBe(false);
+
+    const missingStatistic = structuredClone(valid);
+    delete missingStatistic.metrics.hyperscaler_aggregate_cash_capex.statistics.qoq_acceleration_pp;
+    expect(isSnapshot(missingStatistic)).toBe(false);
+
+    const extraStatistic = structuredClone(valid);
+    extraStatistic.metrics.hyperscaler_aggregate_cash_capex.statistics.unreviewed_extra = 1;
+    expect(isSnapshot(extraStatistic)).toBe(false);
+
+    const extraAutomatedMetricField = structuredClone(valid);
+    (extraAutomatedMetricField.metrics.hyperscaler_aggregate_cash_capex as unknown as Record<string, unknown>)
+      .assessment = null;
+    expect(isSnapshot(extraAutomatedMetricField)).toBe(false);
+
+    const missingAutomatedProvenance = structuredClone(valid);
+    delete (missingAutomatedProvenance.metrics.hyperscaler_aggregate_cash_capex as unknown as Record<string, unknown>)
+      .provenance;
+    expect(isSnapshot(missingAutomatedProvenance)).toBe(false);
+
+    const extraAutomatedProvenance = structuredClone(valid);
+    extraAutomatedProvenance.metrics.hyperscaler_aggregate_cash_capex.provenance!.push({
+      ...extraAutomatedProvenance.metrics.hyperscaler_aggregate_cash_capex.source,
+    });
+    expect(isSnapshot(extraAutomatedProvenance)).toBe(false);
+
+    const mismatchedAutomatedProvenance = structuredClone(valid);
+    mismatchedAutomatedProvenance.metrics.hyperscaler_aggregate_cash_capex.provenance![0].retrieved_at = null;
+    expect(isSnapshot(mismatchedAutomatedProvenance)).toBe(false);
+
+    const capexValueMismatch = structuredClone(valid);
+    capexValueMismatch.metrics.hyperscaler_aggregate_cash_capex.value = 0;
+    expect(isSnapshot(capexValueMismatch)).toBe(false);
+
+    const accelerationValueMismatch = structuredClone(valid);
+    accelerationValueMismatch.metrics.hyperscaler_aggregate_cash_capex_yoy_acceleration_pp.value = 0;
+    expect(isSnapshot(accelerationValueMismatch)).toBe(false);
+
+    const tooShort = structuredClone(valid);
+    for (const id of P3_AUTOMATED_IDS) {
+      tooShort.metrics[id].short_series = tooShort.metrics[id].short_series.slice(-11);
+    }
+    expect(isSnapshot(tooShort)).toBe(false);
+
+    const malformedMapping = structuredClone(valid) as unknown as Record<string, unknown>;
+    const malformedMetrics = malformedMapping.metrics as Record<string, Metric>;
+    delete (malformedMetrics.hyperscaler_aggregate_cash_capex.details!.fundamental!.companies[0] as unknown as Record<string, unknown>).accession;
+    expect(isSnapshot(malformedMapping)).toBe(false);
+
+    const mutateMicrosoft = (snapshot: Snapshot, mutation: (company: FundamentalCompanyDetail) => void) => {
+      for (const id of P3_AUTOMATED_IDS) {
+        const company = snapshot.metrics[id].details!.fundamental!.companies
+          .find(({ company_id }) => company_id === 'microsoft')!;
+        mutation(company);
+      }
+    };
+    const wrongQuarterization = structuredClone(valid);
+    mutateMicrosoft(wrongQuarterization, (company) => { company.quarterization_method = 'Q1_YTD'; });
+    expect(isSnapshot(wrongQuarterization)).toBe(false);
+
+    const wrongFiscalForm = structuredClone(valid);
+    mutateMicrosoft(wrongFiscalForm, (company) => { company.form = '10-Q'; });
+    expect(isSnapshot(wrongFiscalForm)).toBe(false);
+
+    const wrongFinanceQuarterization = structuredClone(valid);
+    mutateMicrosoft(wrongFinanceQuarterization, (company) => { company.finance_lease_quarterization_method = 'H1_MINUS_Q1'; });
+    expect(isSnapshot(wrongFinanceQuarterization)).toBe(false);
+
+    const extraCompanyField = structuredClone(valid);
+    mutateMicrosoft(extraCompanyField, (company) => {
+      (company as unknown as Record<string, unknown>).schema_drift = true;
+    });
+    expect(isSnapshot(extraCompanyField)).toBe(false);
+
+    const missingCompanyDate = structuredClone(valid);
+    mutateMicrosoft(missingCompanyDate, (company) => {
+      delete (company as unknown as Record<string, unknown>).date;
+    });
+    expect(isSnapshot(missingCompanyDate)).toBe(false);
+
+    const mismatchedCompanyDate = structuredClone(valid);
+    mutateMicrosoft(mismatchedCompanyDate, (company) => { company.date = '2026-03-31'; });
+    expect(isSnapshot(mismatchedCompanyDate)).toBe(false);
+
+    const mismatchedFinanceAccession = structuredClone(valid);
+    mutateMicrosoft(mismatchedFinanceAccession, (company) => {
+      company.finance_lease_accession = '0001193125-26-999999';
+    });
+    expect(isSnapshot(mismatchedFinanceAccession)).toBe(false);
+
+    const partialNullFinanceLease = structuredClone(valid);
+    for (const id of P3_AUTOMATED_IDS) {
+      const alphabet = partialNullFinanceLease.metrics[id].details!.fundamental!.companies
+        .find(({ company_id }) => company_id === 'alphabet')!;
+      alphabet.finance_lease_tag = 'RightOfUseAssetObtainedInExchangeForFinanceLeaseLiability';
+    }
+    expect(isSnapshot(partialNullFinanceLease)).toBe(false);
+
+    const filedNextUtcDay = structuredClone(valid);
+    mutateMicrosoft(filedNextUtcDay, (company) => { company.filed_at = '2026-07-31'; });
+    expect(isSnapshot(filedNextUtcDay)).toBe(true);
+
+    const filingAcceptanceGap = structuredClone(valid);
+    mutateMicrosoft(filingAcceptanceGap, (company) => { company.filed_at = '2026-08-01'; });
+    expect(isSnapshot(filingAcceptanceGap)).toBe(false);
+
+    const filedBeforeContextEnd = structuredClone(valid);
+    mutateMicrosoft(filedBeforeContextEnd, (company) => { company.filed_at = '2026-06-29'; });
+    expect(isSnapshot(filedBeforeContextEnd)).toBe(false);
+
+    const acceptedBeforeContextEnd = structuredClone(valid);
+    mutateMicrosoft(acceptedBeforeContextEnd, (company) => {
+      company.filed_at = '2026-06-30';
+      company.accepted_at = '2026-06-29T23:59:59Z';
+    });
+    expect(isSnapshot(acceptedBeforeContextEnd)).toBe(false);
+
+    const futureAcceptance = structuredClone(valid);
+    mutateMicrosoft(futureAcceptance, (company) => {
+      company.filed_at = '2027-01-01';
+      company.accepted_at = '2027-01-01T00:00:00Z';
+    });
+    expect(isSnapshot(futureAcceptance)).toBe(false);
+
+    const breadthMismatch = structuredClone(valid);
+    breadthMismatch.metrics.hyperscaler_aggregate_cash_capex.details!.fundamental!.company_breadth = 2;
+    expect(isSnapshot(breadthMismatch)).toBe(false);
+
+    const automatedAgentAccession = structuredClone(valid);
+    for (const id of P3_AUTOMATED_IDS) {
+      const microsoft = automatedAgentAccession.metrics[id].details!.fundamental!.companies
+        .find(({ company_id }) => company_id === 'microsoft')!;
+      microsoft.accession = '0001193125-26-323660';
+      microsoft.finance_lease_accession = '0001193125-26-323660';
+      microsoft.filing_url = 'https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630.htm';
+    }
+    expect(isSnapshot(automatedAgentAccession)).toBe(true);
+    expect(valid.metrics.hyperscaler_aggregate_cash_capex.quality.sample_size).toBe(12);
+    expect(valid.metrics.hyperscaler_aggregate_cash_capex_yoy_acceleration_pp.quality.sample_size).toBe(7);
+
+    const atomicStateMutations: Array<[string, (metric: Metric) => void]> = [
+      ['status', (metric) => { metric.quality.status = 'STALE'; }],
+      ['freshness', (metric) => { metric.quality.freshness = 'STALE'; }],
+      ['last attempt', (metric) => { metric.quality.last_attempt_at = '2026-08-11T17:32:49Z'; }],
+      ['last success', (metric) => { metric.quality.last_success_at = '2026-08-11T17:32:49Z'; }],
+      ['failure reason', (metric) => { metric.quality.failure_reason = 'one endpoint failed'; }],
+      ['context confidence', (metric) => { metric.context.confidence = 'LOW'; }],
+    ];
+    for (const [field, mutate] of atomicStateMutations) {
+      const nonAtomic = structuredClone(valid);
+      mutate(nonAtomic.metrics.hyperscaler_aggregate_cash_capex_yoy_acceleration_pp);
+      expect(isSnapshot(nonAtomic), field).toBe(false);
+    }
+
+    const reviewedZero = makeSnapshotWithReviewedManualEvidence();
+    expect(reviewedZero.metrics.ai_upstream_orders_backlog.value).toBeNull();
+    expect(reviewedZero.metrics.ai_upstream_orders_backlog.details!.manual_evidence!.records[0].value).toBe(0);
+    expect(reviewedZero.switches.fundamental_exit).toMatchObject({ available_blocks: 3, confidence: 'MEDIUM', assessment: null });
+    expect(isSnapshot(reviewedZero)).toBe(true);
+
+    const extraActiveManualMetricField = structuredClone(reviewedZero);
+    (extraActiveManualMetricField.metrics.ai_upstream_orders_backlog as unknown as Record<string, unknown>)
+      .severity = 'WATCH';
+    expect(isSnapshot(extraActiveManualMetricField)).toBe(false);
+
+    const manualAgentAccession = makeSnapshotWithReviewedManualEvidence('ai_upstream_orders_backlog', {
+      filing_accession: '0001193125-26-323660',
+      source_url: 'https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630.htm',
+    });
+    expect(isSnapshot(manualAgentAccession)).toBe(true);
+
+    const noUnitForTrueZero = structuredClone(reviewedZero);
+    noUnitForTrueZero.metrics.ai_upstream_orders_backlog.details!.manual_evidence!.records[0].unit = null;
+    expect(isSnapshot(noUnitForTrueZero)).toBe(false);
+
+    const manualRecordMutations: Array<[string, (record: ReturnType<typeof makeManualEvidenceRecord>) => void]> = [
+      ['source type', (record) => { record.source_type = 'PRESS RELEASE'; }],
+      ['unit', (record) => { record.unit = 'USD thousands'; }],
+      ['negative value', (record) => { record.value = -1; }],
+      ['wrong issuer URL', (record) => {
+        record.source_url = 'https://www.sec.gov/Archives/edgar/data/1652044/000078901926123456/msft-20260630.htm';
+      }],
+      ['issuer-host URL', (record) => {
+        record.source_url = 'https://www.microsoft.com/Archives/edgar/data/789019/000078901926123456/msft-20260630.htm';
+      }],
+      ['SEC subdomain URL', (record) => {
+        record.source_url = 'https://data.sec.gov/Archives/edgar/data/789019/000078901926123456/msft-20260630.htm';
+      }],
+      ['explicit port URL', (record) => {
+        record.source_url = 'https://www.sec.gov:443/Archives/edgar/data/789019/000078901926123456/msft-20260630.htm';
+      }],
+      ['query URL', (record) => { record.source_url += '?output=1'; }],
+      ['fragment URL', (record) => { record.source_url += '#evidence'; }],
+      ['non-HTML URL', (record) => {
+        record.source_url = 'https://www.sec.gov/Archives/edgar/data/789019/000078901926123456/msft-20260630.txt';
+      }],
+      ['nested filing URL', (record) => {
+        record.source_url = 'https://www.sec.gov/Archives/edgar/data/789019/000078901926123456/nested/msft-20260630.htm';
+      }],
+    ];
+    for (const [field, mutate] of manualRecordMutations) {
+      const invalidManual = structuredClone(reviewedZero);
+      mutate(invalidManual.metrics.ai_upstream_orders_backlog.details!.manual_evidence!.records[0]);
+      expect(isSnapshot(invalidManual), field).toBe(false);
+    }
+
+    const directionMismatch = structuredClone(reviewedZero);
+    directionMismatch.switches.fundamental_exit.evidence_blocks[1].direction = 'UP';
+    expect(isSnapshot(directionMismatch)).toBe(false);
+
+    const networkEnabledManual = structuredClone(reviewedZero);
+    networkEnabledManual.metrics.ai_upstream_orders_backlog.details!.manual_evidence!.network_enabled = true as false;
+    expect(isSnapshot(networkEnabledManual)).toBe(false);
+
+    const manualReadyClaimsUpdate = structuredClone(valid);
+    manualReadyClaimsUpdate.metrics.ai_upstream_orders_backlog.updated_at = '2026-08-12T12:00:00Z';
+    expect(isSnapshot(manualReadyClaimsUpdate)).toBe(false);
+
+    expect(valid.metrics.ai_upstream_orders_backlog.details).toBeUndefined();
+    expect(valid.metrics.ai_upstream_orders_backlog.provenance).toEqual([
+      valid.metrics.ai_upstream_orders_backlog.source,
+    ]);
+    expect(valid.metrics.ai_upstream_orders_backlog.changes).toEqual({
+      one_observation: null,
+      five_observations: null,
+      twenty_observations: null,
+      eight_weeks: null,
+      twelve_weeks: null,
+      one_quarter: null,
+    });
+    const manualReadyWithNullDetails = structuredClone(valid);
+    manualReadyWithNullDetails.metrics.ai_upstream_orders_backlog.details = null;
+    expect(isSnapshot(manualReadyWithNullDetails)).toBe(false);
+    const extraManualReadyMetricField = structuredClone(valid);
+    (extraManualReadyMetricField.metrics.ai_upstream_orders_backlog as unknown as Record<string, unknown>)
+      .unknown = true;
+    expect(isSnapshot(extraManualReadyMetricField)).toBe(false);
+    const missingManualChange = structuredClone(valid);
+    delete missingManualChange.metrics.ai_upstream_orders_backlog.changes.twenty_observations;
+    expect(isSnapshot(missingManualChange)).toBe(false);
+    const nonNullManualChange = structuredClone(valid);
+    nonNullManualChange.metrics.ai_upstream_orders_backlog.changes.eight_weeks = 0;
+    expect(isSnapshot(nonNullManualChange)).toBe(false);
+    const extraManualChange = structuredClone(valid);
+    (extraManualChange.metrics.ai_upstream_orders_backlog.changes as unknown as Record<string, unknown>)
+      .one_year = null;
+    expect(isSnapshot(extraManualChange)).toBe(false);
+    const activeManualWithNullDetails = structuredClone(reviewedZero);
+    activeManualWithNullDetails.metrics.ai_upstream_orders_backlog.details = null;
+    expect(isSnapshot(activeManualWithNullDetails)).toBe(false);
+
+    const staleManual = makeSnapshotWithReviewedManualEvidence('ai_upstream_orders_backlog', {
+      period_end: '2026-03-31',
+      filing_accepted_at: '2026-04-12T20:15:00Z',
+      as_of: '2026-04-13',
+      reviewed_at: '2026-04-14T12:00:00Z',
+    });
+    expect(isSnapshot(staleManual)).toBe(false);
+    staleManual.metrics.ai_upstream_orders_backlog.quality.status = 'STALE';
+    staleManual.metrics.ai_upstream_orders_backlog.quality.freshness = 'STALE';
+    staleManual.metrics.ai_upstream_orders_backlog.context.confidence = 'UNKNOWN';
+    staleManual.stale_count += 1;
+    staleManual.switches.fundamental_exit.evidence_blocks[1] = {
+      ...staleManual.switches.fundamental_exit.evidence_blocks[1],
+      available: false,
+      status: 'STALE',
+      direction: 'UNKNOWN',
+      confidence: 'UNKNOWN',
+    };
+    staleManual.switches.fundamental_exit.available_blocks = 2;
+    staleManual.switches.fundamental_exit.confidence = 'LOW';
+    expect(isSnapshot(staleManual)).toBe(true);
+
+    const exactBoundary = makeSnapshotWithReviewedManualEvidence('ai_upstream_orders_backlog', {
+      period_end: '2026-03-31',
+      filing_accepted_at: '2026-04-13T20:15:00Z',
+      as_of: '2026-04-14',
+      reviewed_at: '2026-04-15T12:00:00Z',
+    });
+    exactBoundary.generated_at = '2026-08-13T03:59:59Z';
+    expect(isSnapshot(exactBoundary), '120 days at New York 23:59 remains fresh').toBe(true);
+    const afterNewYorkMidnight = structuredClone(exactBoundary);
+    afterNewYorkMidnight.generated_at = '2026-08-13T04:00:00Z';
+    expect(isSnapshot(afterNewYorkMidnight), '121 days after New York midnight must be stale').toBe(false);
+    afterNewYorkMidnight.metrics.ai_upstream_orders_backlog.quality.status = 'STALE';
+    afterNewYorkMidnight.metrics.ai_upstream_orders_backlog.quality.freshness = 'STALE';
+    afterNewYorkMidnight.metrics.ai_upstream_orders_backlog.context.confidence = 'UNKNOWN';
+    afterNewYorkMidnight.stale_count += 1;
+    afterNewYorkMidnight.switches.fundamental_exit.evidence_blocks[1] = {
+      ...afterNewYorkMidnight.switches.fundamental_exit.evidence_blocks[1],
+      available: false, status: 'STALE', direction: 'UNKNOWN', confidence: 'UNKNOWN',
+    };
+    afterNewYorkMidnight.switches.fundamental_exit.available_blocks = 2;
+    afterNewYorkMidnight.switches.fundamental_exit.confidence = 'LOW';
+    expect(isSnapshot(afterNewYorkMidnight)).toBe(true);
+
+    const partialCommitments = makeSnapshotWithReviewedManualEvidence('customer_prepayments_contract_commitments');
+    const staleTakeOrPay = makeSnapshotWithReviewedManualEvidence('take_or_pay_commitments', {
+      period_end: '2026-03-31',
+      filing_accepted_at: '2026-04-12T20:15:00Z',
+      as_of: '2026-04-13',
+      reviewed_at: '2026-04-14T12:00:00Z',
+    });
+    partialCommitments.metrics.take_or_pay_commitments = staleTakeOrPay.metrics.take_or_pay_commitments;
+    partialCommitments.metrics.take_or_pay_commitments.quality.status = 'STALE';
+    partialCommitments.metrics.take_or_pay_commitments.quality.freshness = 'STALE';
+    partialCommitments.metrics.take_or_pay_commitments.context.confidence = 'UNKNOWN';
+    partialCommitments.active_free_count += 1;
+    partialCommitments.manual_ready_count -= 1;
+    partialCommitments.stale_count += 1;
+    partialCommitments.switches.fundamental_exit.evidence_blocks[2] = {
+      ...partialCommitments.switches.fundamental_exit.evidence_blocks[2],
+      available: false, status: 'STALE', direction: 'UNKNOWN', confidence: 'UNKNOWN',
+    };
+    partialCommitments.switches.fundamental_exit.available_blocks = 2;
+    partialCommitments.switches.fundamental_exit.confidence = 'LOW';
+    expect(isSnapshot(partialCommitments)).toBe(true);
+
+    const partialCommitmentsClaimAvailable = structuredClone(partialCommitments);
+    partialCommitmentsClaimAvailable.switches.fundamental_exit.evidence_blocks[2] = {
+      ...partialCommitmentsClaimAvailable.switches.fundamental_exit.evidence_blocks[2],
+      available: true, status: 'DOWN', direction: 'DOWN', confidence: 'MEDIUM',
+    };
+    partialCommitmentsClaimAvailable.switches.fundamental_exit.available_blocks = 3;
+    partialCommitmentsClaimAvailable.switches.fundamental_exit.confidence = 'MEDIUM';
+    expect(isSnapshot(partialCommitmentsClaimAvailable)).toBe(false);
+  });
 });
 
 describe('formatting and range behavior', () => {
@@ -384,6 +792,28 @@ describe('formatting and range behavior', () => {
 });
 
 describe('route-lazy loading', () => {
+  it('loads the five canonical P3 series and validates enriched CapEx history independently', async () => {
+    const snapshot = makeSnapshot();
+    const catalog = makeCatalog();
+    const requested: string[] = [];
+    const fetcher = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input); requested.push(url);
+      const id = /\/data\/series\/([^/]+)\.json$/.exec(url)?.[1] ?? '';
+      const file = makeSeriesFile(snapshot.metrics[id]);
+      if (id === 'hyperscaler_aggregate_cash_capex_yoy_acceleration_pp') {
+        file.observations = file.observations.slice(-11);
+      }
+      return jsonResponse(file);
+    }) as unknown as typeof fetch;
+    const result = await loadRouteSeries('/bubble/', 'fundamental-exit', snapshot, catalog, fetcher);
+    expect(requested).toEqual(P3_METRIC_IDS.map((id) => `/bubble/data/series/${id}.json`));
+    expect(result.errors).toHaveProperty('hyperscaler_aggregate_cash_capex_yoy_acceleration_pp');
+    expect(result.series.hyperscaler_aggregate_cash_capex.observations).toHaveLength(12);
+    expect(result.series.hyperscaler_aggregate_cash_capex_yoy_acceleration_pp.observations)
+      .toEqual(snapshot.metrics.hyperscaler_aggregate_cash_capex_yoy_acceleration_pp.short_series);
+    expect(result.errors).not.toHaveProperty('ai_upstream_orders_backlog');
+  });
+
   it('loads only route series and falls back independently to short_series', async () => {
     const snapshot = makeSnapshot();
     const catalog = makeCatalog();

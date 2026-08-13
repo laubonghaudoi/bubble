@@ -10,6 +10,10 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.12', cache: pip, cache-dependency-path: pipeline/requirements.txt}
       - run: pip install -r pipeline/requirements.txt
+      - name: Validate reviewed P3 disclosure metadata
+        env:
+          SEC_USER_AGENT: ${{ vars.SEC_USER_AGENT }}
+        run: python -m pipeline.check_p3_disclosures --dry-run
       - run: python -m pytest pipeline/tests
       - uses: actions/setup-node@v4
         with: {node-version: 22, cache: npm}

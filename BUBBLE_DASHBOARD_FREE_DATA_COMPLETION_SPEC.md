@@ -625,7 +625,7 @@ Aggregate 先加總 dollar CapEx，再計 growth／acceleration；唔好直接�
 - acceleration > 0：增長加速；
 - acceleration < 0 且 growth > 0：仍然增長，但增速放慢；
 - growth < 0：CapEx 絕對值收縮；
-- 單季 acceleration 轉負只係 watch；連續兩季或有 orders/backlog 確認先升級。
+- 呢啲只係evidence direction，唔對應`WATCH`／`STRESS`；連續季度或orders/backlog只會增加coverage／confidence，唔會自動升級severity。
 
 UI 必須顯示 level、QoQ、YoY、QoQ acceleration、YoY acceleration，同時提供至少 12 季歷史。
 
@@ -636,8 +636,8 @@ UI 必須顯示 level、QoQ、YoY、QoQ acceleration、YoY acceleration，同時
 建立 `data/manual/industry_signals.csv`：
 
 ```csv
-company,period_end,metric_id,value,unit,yoy_pct,source_type,source_url,filing_accession,as_of,review_note
-MSFT,2026-06-30,ai_upstream_backlog,,,,10-Q,https://...,000...,2026-07-30,"definition changed; not comparable"
+company_id,period_end,metric_id,direction,value,unit,yoy_pct,comparable,source_type,source_url,filing_accession,filing_accepted_at,as_of,reviewer,reviewed_at,paraphrase,review_note
+microsoft,2026-06-30,ai_upstream_orders_backlog,UNKNOWN,,,,false,10-K,https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630.htm,0001193125-26-323660,2026-07-29T20:08:01Z,2026-07-29,reviewer@example.com,2026-07-30T02:00:00Z,"No comparable numeric disclosure was published for this reviewed scope.","Period scope and comparability checked against the filing."
 ```
 
 規則：
@@ -658,7 +658,7 @@ MSFT,2026-06-30,ai_upstream_backlog,,,,10-Q,https://...,000...,2026-07-30,"defin
 3. customer prepayments／contract commitments；
 4. breadth：至少幾多間 hyperscaler 同方向。
 
-至少 3/4 block 有最新數據先出 directional status；否則 `UNAVAILABLE`。高信心 exit signal 應要求：
+後續鎖定實作將本頁固定為 `EVIDENCE_ONLY`：每個block可以各自報direction同confidence，但switch `assessment`永遠係`null`，唔會輸出`WATCH`／`STRESS`。Coverage只描述可用證據；初始兩個automated blocks為`2/4 / LOW`，並不等於neutral或exit signal。若日後研究高信心exit hypothesis，至少應要求：
 
 - aggregate acceleration 連續兩季轉負；
 - 至少兩間公司或一個 upstream signal 確認；
@@ -986,7 +986,7 @@ GitHub cron 用 UTC，亦可能延遲；collector 必須依 source as-of 判斷�
 - stale badge、as-of、last-good time 正確；
 - mobile layout 唔橫向溢出；
 - keyboard 可開關 modal；
-- light/dark mode 圖表文字可讀。
+- Bloomberg editorial單一主題嘅圖表、badge、focus同文字對比可讀。
 
 ### 13.4 Scenario tests
 
@@ -1004,16 +1004,16 @@ GitHub cron 用 UTC，亦可能延遲；collector 必須依 source as-of 判斷�
 
 ### P0：核心流動性完整
 
-- [ ] ON RRP 自動更新；
-- [ ] SRF 自動更新、同日 operations aggregate、exercise flag；
-- [ ] SOFR−IORB 1obs／5obs／streak／+3 bp；
-- [ ] EFFR／OBFR／TGCR／BGCR−IORB confirmation spreads；
-- [ ] month/quarter/year end、Treasury settlement、tax window；
-- [ ] H.4.1 level／1w／4w；
-- [ ] 2.9／2.8／2.5 只作 reference zone；
-- [ ] weekly `1D` bug 及 stale chart alt text 修正；
-- [ ] 專屬 methodology metadata；
-- [ ] tests/build 通過。
+- [x] ON RRP 自動更新；
+- [x] SRF 自動更新、同日 operations aggregate、exercise flag；
+- [x] SOFR−IORB 1obs／5obs／streak／+3 bp；
+- [x] EFFR／OBFR／TGCR／BGCR−IORB confirmation spreads；
+- [x] month/quarter/year end、Treasury settlement、tax window；
+- [x] H.4.1 level／1w／4w；
+- [x] 2.9／2.8／2.5 只作 reference zone；
+- [x] weekly `1D` bug 及 stale chart alt text 修正；
+- [x] 專屬 methodology metadata；
+- [x] tests/build 通過。
 
 ### P1：Market Ignition 免費版可用
 
@@ -1025,22 +1025,22 @@ GitHub cron 用 UTC，亦可能延遲；collector 必須依 source as-of 判斷�
 
 ### P2：泡沫指標免費層
 
-- [ ] FINRA margin debt；
-- [ ] SPY Top-10 weight proxy；
-- [ ] Buffett proxy；
-- [ ] M2/Nasdaq divergence；
-- [ ] SEC Form 4 insider proxy；
-- [ ] 0DTE manual/public interface；
-- [ ] NDX forward P/E 正式 `UNAVAILABLE_FREE`，唔偽造。
+- [x] FINRA margin debt正式`UNAVAILABLE_FREE`，rights未清前零network；
+- [x] SPY Top-10 weight正式`UNAVAILABLE_FREE`，rights未清前零network；
+- [x] government-origin nonfinancial equities/GDP proxy取代冒充Buffett indicator嘅命名；
+- [x] M2/Nasdaq divergence正式`UNAVAILABLE_FREE`；
+- [x] SEC Form 4 P/S transaction-row count proxy、privacy ledger同review audit；
+- [x] SPX 0DTE正式`UNAVAILABLE_FREE`，保留provider interface；
+- [x] NDX forward P/E正式`UNAVAILABLE_FREE`，唔偽造。
 
 ### P3：Fundamental Exit
 
-- [ ] 四間 hyperscaler 12+ quarters CapEx；
-- [ ] QoQ／YoY growth；
-- [ ] QoQ／YoY acceleration；
-- [ ] aggregate 先加總再計 growth；
-- [ ] orders/backlog/prepayments/take-or-pay manual workflow；
-- [ ] Fundamental Exit 3/4 availability rule。
+- [x] 四間 hyperscaler 12+ quarters CapEx；
+- [x] QoQ／YoY growth；
+- [x] QoQ／YoY acceleration；
+- [x] aggregate 先加總再計 growth；
+- [x] orders/backlog/prepayments/take-or-pay manual workflow；
+- [x] Fundamental Exit固定`EVIDENCE_ONLY`，分block報direction／confidence，無composite severity。
 
 ### 全局完成
 

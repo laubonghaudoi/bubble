@@ -391,7 +391,7 @@ def test_release_two_publishes_one_cftc_source_and_evidence_only_switch(tmp_path
         "cftc_leveraged_funds_positioning_proxy",
         "cta_proxy",
     } & snapshot["metrics"].keys()
-    assert len(snapshot["sources"]) == 10
+    assert len(snapshot["sources"]) == 11
     assert "cftc_tff_futures_only" in snapshot["sources"]
     switch = snapshot["switches"]["market_ignition"]
     assert switch["mode"] == "EVIDENCE_ONLY"

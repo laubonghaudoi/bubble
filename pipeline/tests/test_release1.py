@@ -183,6 +183,11 @@ def fixture_collectors(
             source_requests=20,
         )
 
+    def sec_companyfacts(_companies, **_kwargs):
+        # Release-1/2/3 fixture scenarios predate P3 and must never cross the
+        # network. Release-4 success coverage uses its own four-company bundle.
+        raise RuntimeError("P3 Company Facts fixture is intentionally unavailable")
+
     return CollectorFunctions(
         rate=rate,
         fred=fred,
@@ -193,6 +198,7 @@ def fixture_collectors(
         cftc=cftc,
         fred_p2=fred_p2,
         sec_form4=sec_form4,
+        sec_companyfacts=sec_companyfacts,
     )
 
 
@@ -208,8 +214,8 @@ def test_release_one_builds_complete_v2_contract_and_preserves_real_zero(tmp_pat
     )
     assert publication.snapshot["schema_version"] == "2.0.0"
     assert CANONICAL_P0_METRIC_IDS <= publication.snapshot["metrics"].keys()
-    assert len(publication.snapshot["sources"]) == 10
-    assert sum(publication.snapshot["source_health"].values()) == 10
+    assert len(publication.snapshot["sources"]) == 11
+    assert sum(publication.snapshot["source_health"].values()) == 11
     assert publication.snapshot["metrics"]["srf_accepted"]["value"] == 0
     assert publication.snapshot["metrics"]["on_rrp_accepted"]["value"] == 0
     on_rrp = publication.snapshot["metrics"]["on_rrp_accepted"]

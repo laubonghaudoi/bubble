@@ -12,7 +12,10 @@ import type {
   Availability,
   CatalogMetric,
   CollectorSource,
+  FundamentalCompanyDetail,
+  FundamentalSeriesPoint,
   HealthStatus,
+  ManualEvidenceRecord,
   Metric,
   Snapshot,
   SwitchState,
@@ -28,6 +31,8 @@ import {
   P1_RIGHTS_GATED_IDS,
   P2_ACTIVE_IDS,
   P2_HELD_IDS,
+  P3_AUTOMATED_IDS,
+  P3_MANUAL_IDS,
   ROUTES,
   SWITCH_CONFIG,
   TAPE_GROUPS,
@@ -66,10 +71,10 @@ type StatusTone = 'positive' | 'neutral' | 'warning' | 'negative' | 'unavailable
 
 function statusTone(status: string | null | undefined): StatusTone {
   const value = status?.toUpperCase() ?? '';
-  if (['OK', 'NORMAL', 'AMPLE', 'ACTIVE', 'FRESH', 'ACTIVE_FREE', 'ACTIVE_PROXY', 'RISING'].includes(value)) return 'positive';
+  if (['OK', 'NORMAL', 'AMPLE', 'ACTIVE', 'FRESH', 'ACTIVE_FREE', 'ACTIVE_PROXY', 'RISING', 'ACCELERATING', 'UP'].includes(value)) return 'positive';
   if (['NEUTRAL', 'UNKNOWN', 'NOT_APPLICABLE', 'FLAT'].includes(value)) return 'neutral';
-  if (['WATCH', 'ELEVATED', 'PARTIAL', 'STALE', 'LATE', 'NOT_RELEASED_YET', 'MANUAL_READY', 'MIXED'].includes(value)) return 'warning';
-  if (['TIGHTENING', 'WARNING', 'STRESS', 'ERROR', 'FALLING'].includes(value)) return 'negative';
+  if (['WATCH', 'ELEVATED', 'PARTIAL', 'STALE', 'LATE', 'NOT_RELEASED_YET', 'MANUAL_READY', 'MIXED', 'DECELERATING'].includes(value)) return 'warning';
+  if (['TIGHTENING', 'WARNING', 'STRESS', 'ERROR', 'FALLING', 'CONTRACTING', 'DOWN'].includes(value)) return 'negative';
   return 'unavailable';
 }
 
@@ -324,9 +329,9 @@ function ReadRail({ snapshot, onMetric }: { snapshot: Snapshot; onMetric: (id: s
   );
 }
 
-function EvidenceBlocks({ value, evidenceOnly = false }: { value: SwitchState; evidenceOnly?: boolean }) {
+function EvidenceBlocks({ value, evidenceOnly = false, label = 'Evidence blocks' }: { value: SwitchState; evidenceOnly?: boolean; label?: string }) {
   return (
-    <section className={`evidence-section${evidenceOnly ? ' is-evidence-only' : ''}`} aria-label={evidenceOnly ? 'Market Ignition evidence coverage；不設綜合嚴重度' : 'Evidence blocks'}>
+    <section className={`evidence-section${evidenceOnly ? ' is-evidence-only' : ''}`} aria-label={evidenceOnly ? `${label}；不設綜合嚴重度` : label}>
       <div className="detail-section-head">
         <span>{evidenceOnly ? 'EVIDENCE COVERAGE · NO COMPOSITE SEVERITY' : 'EVIDENCE BLOCKS'}</span>
         <b>{value.available_blocks}/{value.total_blocks} AVAILABLE</b>
@@ -549,32 +554,146 @@ function LiquidityPage(props: Pick<DashboardProps, 'snapshot' | 'series' | 'main
   return <main className="detail-page"><header className="detail-hero"><div><span className="detail-number">01</span><h2 className="route-heading" data-route-heading tabIndex={-1}>流動性燃料</h2><p>{value.summary}</p></div><div className="detail-assessment" style={statusStyle(value.assessment ?? value.mode)}><span>P0 ASSESSMENT</span><strong>{value.assessment ?? '未能評估'}</strong><small>CONFIDENCE {value.confidence.toUpperCase()}</small></div></header><ConfirmationGrid snapshot={props.snapshot} onMain={props.onMain} onMetric={props.onDrawer} /><ChartPanel snapshot={props.snapshot} series={props.series} main={props.main} range={props.range} overlay={props.overlay} tabs={LIQUIDITY_MAIN_TABS} onMain={props.onMain} onRange={props.onRange} onOverlay={props.onOverlay} /><EvidenceBlocks value={value} /></main>;
 }
 
-function PhasePage({ route, snapshot, catalog, catalogError, series, range, onRange, onMetric }: { route: 'market-ignition' | 'fundamental-exit'; snapshot: Snapshot; catalog: CatalogMetric[]; catalogError: string; series: SeriesMap; range: RangeKey; onRange: (range: RangeKey) => void; onMetric: (id: string) => void }) {
-  const layer = route === 'market-ignition' ? 'market_ignition' : 'fundamental_exit';
-  const value = snapshot.switches[layer];
-  const title = route === 'market-ignition' ? '市場引信' : '基本面逃生門';
-  const p3Metrics = catalog.filter((item) => item.layer === layer && item.phase === 'P3')
-    .map((item) => snapshot.metrics[item.metric_id]).filter((metric): metric is Metric => Boolean(metric));
-  const p3Active = p3Metrics.filter((metric) => ['ACTIVE_FREE', 'ACTIVE_PROXY'].includes(metric.availability) && metric.quality.status === 'OK').length;
+function percentageChange(value: number | null | undefined) {
+  return formatSignedDelta(value, 'percent', 1);
+}
+
+function percentagePoints(value: number | null | undefined) {
+  return value == null ? '—' : `${formatSignedDelta(value, '', 1)} pp`;
+}
+
+function FundamentalCompanyCard({ company }: { company: FundamentalCompanyDetail }) {
+  return (
+    <article className="fundamental-company" data-company-id={company.company_id}>
+      <div className="fundamental-company-head">
+        <div><strong>{company.ticker}</strong><span>{company.fiscal_quarter} · {company.calendar_period_end}</span></div>
+        <Badge status={company.direction} />
+      </div>
+      <dl className="fundamental-company-values">
+        <FragilityStat label="CASH CAPEX" value={formatValue(company.cash_capex_usd_bn, 'USD bn')} />
+        <FragilityStat label="QOQ" value={percentageChange(company.qoq_percent_change)} tone={deltaClass(company.qoq_percent_change)} />
+        <FragilityStat label="YOY" value={percentageChange(company.yoy_percent_change)} tone={deltaClass(company.yoy_percent_change)} />
+        <FragilityStat label="QOQ ACCELERATION" value={percentagePoints(company.qoq_acceleration_pp)} tone={deltaClass(company.qoq_acceleration_pp)} />
+        <FragilityStat label="YOY ACCELERATION" value={percentagePoints(company.yoy_acceleration_pp)} tone={deltaClass(company.yoy_acceleration_pp)} />
+        <FragilityStat label="FINANCE-LEASE ADDITIONS" value={formatValue(company.finance_lease_additions_usd_bn, 'USD bn')} detail="Separate from cash CapEx" />
+        <FragilityStat label="REVIEW" value={company.manual_review_required ? 'MANUAL REVIEW' : 'AUTOMATED CHECKS PASS'} />
+      </dl>
+      <dl className="fundamental-mapping">
+        <div><dt>XBRL MAPPING</dt><dd>{company.namespace}:{company.tag}</dd></div>
+        <div><dt>QUARTERIZATION</dt><dd>{company.quarterization_method.replaceAll('_', ' ')}</dd></div>
+        <div><dt>CONTEXT</dt><dd>{company.context_start} → {company.context_end}{company.frame ? ` · ${company.frame}` : ''}</dd></div>
+        <div><dt>FILING</dt><dd><a href={company.filing_url} target="_blank" rel="noreferrer">{company.form} · {company.accession} ↗</a></dd></div>
+      </dl>
+    </article>
+  );
+}
+
+function FundamentalCapexPanel({ snapshot, series, onMetric }: { snapshot: Snapshot; series: SeriesMap; onMetric: (id: string) => void }) {
+  const capex = snapshot.metrics[P3_AUTOMATED_IDS[0]];
+  const acceleration = snapshot.metrics[P3_AUTOMATED_IDS[1]];
+  const details = capex?.details?.fundamental;
+  if (!capex || !acceleration) return <section className="phase-section" aria-label="P3 CapEx data unavailable"><p className="phase-empty">Canonical P3 CapEx metrics are absent; missing values are not replaced with zero.</p></section>;
+  const stats = capex.statistics;
+  const history = (series[capex.metric_id]?.observations ?? capex.short_series) as FundamentalSeriesPoint[];
+  const latestTwelve = history.slice(-12);
+  const lastGood = isLastGood(capex) || isLastGood(acceleration);
+  const active = [capex, acceleration].filter((metric) => metric.quality.status === 'OK' && metric.value != null).length;
+  return (
+    <section className="phase-section fundamental-capex-section" aria-labelledby="fundamental-capex-title">
+      <div className="detail-section-head"><span id="fundamental-capex-title">P3 · HYPERSCALER CASH CAPEX</span><b>{active}/{P3_AUTOMATED_IDS.length} AUTOMATED METRICS ACTIVE</b></div>
+      <p className="fundamental-contract"><strong>EVIDENCE ONLY.</strong> Aggregate 先加總四間公司嘅美元 cash CapEx，再計 growth 同 acceleration；唔會平均公司 growth，亦唔會產生 WATCH／STRESS。</p>
+      <article className={`fundamental-aggregate${lastGood ? ' is-last-good' : ''}`} data-value-state={lastGood ? 'last-good' : 'current'}>
+        <div className="fundamental-aggregate-readout">
+          <div><small>AGGREGATE CASH CAPEX</small><strong>{formatValue(capex.value, 'USD bn')}</strong>{lastGood ? <LastGoodTag status={capex.quality.status} /> : null}</div>
+          <span>{details?.aggregate_direction ?? 'UNKNOWN'}</span>
+        </div>
+        <Sparkline points={history} selected label="Hyperscaler aggregate cash CapEx，至少 12 季歷史" lastGood={lastGood} />
+        <dl className="fundamental-aggregate-stats">
+          <FragilityStat label="QOQ GROWTH" value={percentageChange(stats.qoq_percent_change)} tone={deltaClass(stats.qoq_percent_change)} />
+          <FragilityStat label="YOY GROWTH" value={percentageChange(stats.yoy_percent_change)} tone={deltaClass(stats.yoy_percent_change)} />
+          <FragilityStat label="QOQ ACCELERATION" value={percentagePoints(stats.qoq_acceleration_pp)} tone={deltaClass(stats.qoq_acceleration_pp)} />
+          <FragilityStat label="YOY ACCELERATION" value={percentagePoints(acceleration.value)} tone={deltaClass(acceleration.value)} />
+          <FragilityStat label="COMPANY BREADTH" value={`${countValue(stats.company_breadth)} / ${countValue(stats.company_total)}`} detail={`${coverageValue(stats.company_breadth_ratio)} current-quarter coverage`} />
+          <FragilityStat label="HISTORY" value={`${countValue(stats.quarter_count)} QUARTERS`} detail={`${countValue(stats.finance_lease_disclosure_breadth)} companies disclose finance-lease additions`} />
+        </dl>
+        <dl className="fragility-dates">
+          <div><dt>OBSERVATION</dt><dd>{capex.observation_date ?? '—'}</dd></div>
+          <div><dt>RELEASE</dt><dd>{displayTimestamp(capex.released_at)}</dd></div>
+          <div><dt>PIPELINE UPDATE</dt><dd>{displayTimestamp(capex.updated_at)}</dd></div>
+        </dl>
+        <div className="fundamental-method-actions"><button type="button" className="metric-method" onClick={() => onMetric(capex.metric_id)}>Cash CapEx 方法與來源 →</button><button type="button" className="metric-method" onClick={() => onMetric(acceleration.metric_id)}>Acceleration 方法與來源 →</button></div>
+      </article>
+
+      <div className="fundamental-history-wrap" tabIndex={0} role="region" aria-label="Hyperscaler aggregate CapEx 12-quarter history">
+        <table className="fundamental-history">
+          <caption>AGGREGATE HISTORY · LATEST 12 QUARTERS</caption>
+          <thead><tr><th scope="col">PERIOD</th><th scope="col">CASH CAPEX</th><th scope="col">QOQ</th><th scope="col">YOY</th><th scope="col">QOQ ACCEL.</th><th scope="col">YOY ACCEL.</th><th scope="col">BREADTH</th></tr></thead>
+          <tbody>{latestTwelve.map((point) => <tr key={point.date}><th scope="row">{point.date}</th><td>{formatValue(point.aggregate_cash_capex_usd_bn ?? point.value, 'USD bn')}</td><td className={deltaClass(point.qoq_percent_change)}>{percentageChange(point.qoq_percent_change)}</td><td className={deltaClass(point.yoy_percent_change)}>{percentageChange(point.yoy_percent_change)}</td><td className={deltaClass(point.qoq_acceleration_pp)}>{percentagePoints(point.qoq_acceleration_pp)}</td><td className={deltaClass(point.yoy_acceleration_pp)}>{percentagePoints(point.yoy_acceleration_pp)}</td><td>{point.company_breadth == null ? '—' : `${point.company_breadth}/${point.company_total}`}</td></tr>)}</tbody>
+        </table>
+      </div>
+
+      <div className="fundamental-company-grid" aria-label="Latest company CapEx, mappings and filing provenance">
+        {details?.companies.map((company) => <FundamentalCompanyCard company={company} key={company.company_id} />)}
+      </div>
+      <div className="fundamental-caveats"><strong>DEFINITION BOUNDARY</strong><p>Cash CapEx 同 finance-lease／financing additions 分開展示；單季 timing、公司 fiscal calendar 同 tag 變動都可以影響比較。</p>{details?.caveats.map((caveat) => <p key={caveat}>{caveat}</p>)}</div>
+    </section>
+  );
+}
+
+function FundamentalManualPanel({ snapshot, onMetric }: { snapshot: Snapshot; onMetric: (id: string) => void }) {
+  const manualValue = (record: ManualEvidenceRecord) => {
+    if (record.value === null) return '—';
+    if (record.unit === 'percentage_points') return `${formatValue(record.value, '', 2)} pp`;
+    return formatValue(record.value, record.unit ?? '', record.unit === 'count' || record.unit === 'units' ? 0 : undefined);
+  };
+  return (
+    <section className="phase-section fundamental-manual-section" aria-labelledby="fundamental-manual-title">
+      <div className="detail-section-head"><span id="fundamental-manual-title">P3 · MANUAL / PUBLIC FILING</span><b>REVIEWED ROWS ONLY</b></div>
+      <p className="rights-gate-intro">非標準 filing disclosure 唔會由程式或 LLM 猜數字。未有經覆核 CSV row 就保持 MANUAL_READY／null；「—」唔代表零或 neutral。</p>
+      <div className="fundamental-manual-grid">
+        {P3_MANUAL_IDS.map((id) => {
+          const metric = snapshot.metrics[id];
+          if (!metric) return null;
+          const evidence = metric.details?.manual_evidence;
+          const published = metric.availability === 'ACTIVE_FREE' && Boolean(evidence);
+          const lastGood = published && metric.quality.status !== 'OK';
+          return <article className={`fundamental-manual-card${published ? ' is-reviewed' : ''}${lastGood ? ' is-last-good' : ''}`} data-metric-id={id} data-value-state={published ? lastGood ? 'last-good' : 'current' : 'missing'} key={id}><div><strong>{metric.label}</strong><div className="fundamental-manual-badges"><Badge status={metric.availability} label={published ? 'MANUAL / PUBLIC FILING' : AVAILABILITY_LABELS[metric.availability]} />{published ? <Badge status={metric.quality.status} label={healthText(metric.quality.status)} /> : null}</div></div>{published && evidence ? <><div className="manual-evidence-summary"><span><small>DIRECTION</small><strong>{evidence.direction}</strong>{lastGood ? <LastGoodTag status={metric.quality.status} /> : null}</span><span><small>RECORDS / COMPANIES</small><strong>{evidence.record_count} / {evidence.company_count}</strong></span><span><small>COMPARABLE</small><strong>{evidence.comparable_count}</strong></span></div><div className="manual-record-list">{evidence.records.map((record) => <article className="manual-record" key={`${record.company_id}-${record.period_end}-${record.filing_accession}`}><div className="manual-record-head"><strong>{record.company_id.toUpperCase()}</strong><Badge status={record.direction} /></div><div className="manual-record-value"><span>{manualValue(record)}</span><small>{record.unit ?? 'NARRATIVE'}{record.yoy_pct == null ? '' : ` · ${formatSignedDelta(record.yoy_pct, 'percent')} YOY`}</small></div><dl><div><dt>PERIOD / AS-OF</dt><dd>{record.period_end} / {record.as_of}</dd></div><div><dt>COMPARABLE</dt><dd>{record.comparable ? 'YES' : 'NO · DEFINITION CHANGED'}</dd></div><div><dt>PUBLIC FILING</dt><dd><a href={record.source_url} target="_blank" rel="noreferrer">{record.source_type} · {record.filing_accession} ↗</a></dd></div><div><dt>REVIEW</dt><dd>{record.reviewer} · {displayTimestamp(record.reviewed_at)}</dd></div></dl><p className="manual-paraphrase"><b>SHORT PARAPHRASE</b>{record.paraphrase}</p><p className="manual-review-note"><b>REVIEW NOTE</b>{record.review_note}</p></article>)}</div></> : <><span className="manual-value">—</span><p><b>MANUAL READY</b>{metric.quality.failure_reason || metric.methodology.calculation}</p></>}<button type="button" className="metric-method" onClick={() => onMetric(id)}>方法、來源與人工覆核 contract →</button></article>;
+        })}
+      </div>
+    </section>
+  );
+}
+
+function FundamentalExitPage({ snapshot, series, catalogError, onMetric }: { snapshot: Snapshot; series: SeriesMap; catalogError: string; onMetric: (id: string) => void }) {
+  const value = snapshot.switches.fundamental_exit;
+  return (
+    <main className="detail-page">
+      <header className="detail-hero"><div><span className="detail-number">03</span><h2 className="route-heading" data-route-heading tabIndex={-1}>基本面逃生門</h2><p>{value.summary}</p></div><div className="detail-assessment is-evidence-only" style={statusStyle('UNKNOWN')}><span>EVIDENCE ONLY</span><strong>{value.available_blocks}/{value.total_blocks} AVAILABLE</strong><small>DIRECTION + CONFIDENCE {value.confidence.toUpperCase()} · NO WATCH/STRESS</small></div></header>
+      {catalogError ? <div className="inline-error" role="status">Manifest 暫時不可用：{catalogError}</div> : null}
+      <EvidenceBlocks value={value} evidenceOnly label="Fundamental Exit evidence coverage" />
+      <FundamentalCapexPanel snapshot={snapshot} series={series} onMetric={onMetric} />
+      <FundamentalManualPanel snapshot={snapshot} onMetric={onMetric} />
+    </main>
+  );
+}
+
+function PhasePage({ route, snapshot, catalogError, series, range, onRange, onMetric }: { route: 'market-ignition' | 'fundamental-exit'; snapshot: Snapshot; catalogError: string; series: SeriesMap; range: RangeKey; onRange: (range: RangeKey) => void; onMetric: (id: string) => void }) {
+  if (route === 'fundamental-exit') return <FundamentalExitPage snapshot={snapshot} series={series} catalogError={catalogError} onMetric={onMetric} />;
+  const value = snapshot.switches.market_ignition;
   return (
     <main className="detail-page">
       <header className="detail-hero">
-        <div><span className="detail-number">{route === 'market-ignition' ? '02' : '03'}</span><h2 className="route-heading" data-route-heading tabIndex={-1}>{title}</h2><p>{value.summary}</p></div>
-        {route === 'market-ignition'
-          ? <div className="detail-assessment is-evidence-only" style={statusStyle('UNKNOWN')}><span>EVIDENCE ONLY</span><strong>{value.available_blocks}/{value.total_blocks} AVAILABLE</strong><small>DIRECTION + CONFIDENCE · NO WATCH/STRESS</small></div>
-          : <div className="detail-assessment" style={statusStyle(value.assessment ?? value.mode)}><span>{value.mode.toUpperCase()}</span><strong>{value.assessment ?? '資料未足以評估'}</strong><small>{value.available_blocks}/{value.total_blocks} BLOCKS · {value.confidence.toUpperCase()}</small></div>}
+        <div><span className="detail-number">02</span><h2 className="route-heading" data-route-heading tabIndex={-1}>市場引信</h2><p>{value.summary}</p></div>
+        <div className="detail-assessment is-evidence-only" style={statusStyle('UNKNOWN')}><span>EVIDENCE ONLY</span><strong>{value.available_blocks}/{value.total_blocks} AVAILABLE</strong><small>DIRECTION + CONFIDENCE · NO WATCH/STRESS</small></div>
       </header>
       {catalogError ? <div className="inline-error" role="status">Manifest 暫時不可用：{catalogError}</div> : null}
-      {route === 'market-ignition' ? <>
-        <EvidenceBlocks value={value} evidenceOnly />
+      <>
+        <EvidenceBlocks value={value} evidenceOnly label="Market Ignition evidence coverage" />
         <CftcPositioningPanel snapshot={snapshot} series={series} range={range} onRange={onRange} onMetric={onMetric} />
         <RightsGatedInterfaces snapshot={snapshot} onMetric={onMetric} />
         <FragilityPanel snapshot={snapshot} series={series} range={range} onMetric={onMetric} />
         <P2RightsHeld snapshot={snapshot} onMetric={onMetric} />
-      </> : <>
-        <section className="phase-section"><div className="detail-section-head"><span>P3 · CAPEX / INDUSTRY DEMAND</span><b>{p3Active}/{p3Metrics.length} ACTIVE</b></div>{p3Metrics.length ? <StatusGroups metrics={p3Metrics} onMetric={onMetric} /> : <p className="phase-empty">呢個 phase 暫時未有可驗證 metric metadata；唔會用假數字補位。</p>}</section>
-        <EvidenceBlocks value={value} />
-      </>}
+      </>
     </main>
   );
 }
@@ -589,6 +708,10 @@ function CftcLegalNotice() {
 
 function SecLegalNotice() {
   return <p className="sec-legal-notice"><strong>SEC EDGAR Form 4.</strong> Filing data are obtained from the <a href="https://www.sec.gov/Archives/edgar/daily-index/" target="_blank" rel="noreferrer">official EDGAR daily indexes ↗</a>. Under the official <a href="https://www.sec.gov/files/form4.pdf" target="_blank" rel="noreferrer">Form 4 instructions ↗</a>, transaction codes P and S cover open-market <em>or private</em> purchases and sales; this dashboard therefore does not label them open-market-only. The count ratio measures eligible non-derivative transaction rows, while missing prices affect dollar coverage. Filing-level 10b5-1 flags are not exact transaction-level classifications, and unlinked amendments are quarantined for review. Public EDGAR information may be reused subject to the SEC’s <a href="https://www.sec.gov/about/privacy-information" target="_blank" rel="noreferrer">privacy and dissemination notice ↗</a>. No SEC seal or logo is used, and Bubble USD Liquidity Dashboard is not affiliated with or endorsed by the SEC.</p>;
+}
+
+function SecCompanyFactsLegalNotice() {
+  return <p className="sec-companyfacts-legal-notice"><strong>SEC Company Facts / filings.</strong> Hyperscaler cash CapEx uses the SEC’s <a href="https://www.sec.gov/search-filings/edgar-application-programming-interfaces" target="_blank" rel="noreferrer">official EDGAR APIs ↗</a> and linked 10-Q／10-K filings. Company-specific XBRL tags, filing accessions and quarterization methods are disclosed; cash payments are never silently combined with finance-lease additions. Manual demand evidence publishes only reviewed short paraphrases with public filing links. No SEC seal or logo is used, and the dashboard does not imply SEC affiliation or endorsement.</p>;
 }
 
 function Provenance({ snapshot }: { snapshot: Snapshot }) {
@@ -608,6 +731,7 @@ function Provenance({ snapshot }: { snapshot: Snapshot }) {
         <p><strong>New York Fed reference rates.</strong> The SOFR, EFFR, OBFR, TGCR and BGCR data are subject to the <a href="https://www.newyorkfed.org/privacy/termsofuse.html" target="_blank" rel="noreferrer">Terms of Use posted at newyorkfed.org ↗</a>. The New York Fed is not responsible for publication of these data by Bubble USD Liquidity Dashboard, does not sanction or endorse this republication, and has no liability for your use. Bubble USD Liquidity Dashboard is not affiliated with the New York Fed. The New York Fed does not sanction, endorse, or recommend any products or services offered by Bubble USD Liquidity Dashboard. © 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org.</p>
         <CftcLegalNotice />
         <SecLegalNotice />
+        <SecCompanyFactsLegalNotice />
         <p><strong>Privacy.</strong> This static dashboard does not provide accounts and does not intentionally collect personal information, analytics, or cookies.</p>
       </article>
     </section>
@@ -625,6 +749,11 @@ function AttemptStatus({ attempt, success }: { attempt: string | null; success: 
 }
 
 function formatStatistic(name: string, value: number): string {
+  if (name === 'aggregate_cash_capex_usd_bn') return formatValue(value, 'USD bn');
+  if (name === 'company_breadth_ratio') return formatValue(value * 100, 'percent', 1);
+  if (name === 'qoq_percent_change' || name === 'yoy_percent_change') return formatSignedDelta(value, 'percent', 2);
+  if (name === 'qoq_acceleration_pp' || name === 'yoy_acceleration_pp') return `${formatSignedDelta(value, '', 2)} pp`;
+  if (['company_breadth', 'company_total', 'finance_lease_disclosure_breadth', 'manual_review_count', 'quarter_count'].includes(name)) return formatValue(value, '', 0);
   // Ratio semantics take precedence over the generic count-name shape used by
   // keys such as ex_explicit_false_count_ratio_20d.
   if (name.includes('ratio')) return formatValue(value, '', 2);
@@ -635,7 +764,7 @@ function formatStatistic(name: string, value: number): string {
     return formatValue(value, '', 0);
   }
   if (name.includes('coverage_rate') || name.startsWith('ex_explicit_false_coverage_')) return formatValue(value * 100, 'percent', 1);
-  if (name === 'percentile_10y' || name === 'qoq_percent_change' || name === 'yoy_percent_change') return formatValue(value, 'percent', 2);
+  if (name === 'percentile_10y') return formatValue(value, 'percent', 2);
   if (name === 'equity_usd_bn' || name === 'gdp_usd_bn') return formatValue(value, 'USD bn');
   if (name === 'net_percent_open_interest') return formatValue(value, 'percent_open_interest');
   if (name === 'change_8_weeks' || name === 'change_12_weeks') return `${formatSignedDelta(value, '', 2)} pp`;
@@ -656,7 +785,7 @@ function Drawer({ mode, snapshot, catalog, catalogError, restoreFocus, onClose }
   useEffect(() => { const overflow = document.body.style.overflow; document.body.style.overflow = 'hidden'; closeRef.current?.focus(); const onKeyDown = (event: KeyboardEvent) => { if (event.key === 'Escape') { event.preventDefault(); onClose(); return; } if (event.key !== 'Tab' || !drawerRef.current) return; const focusable = [...drawerRef.current.querySelectorAll<HTMLElement>('button, a[href], [tabindex]:not([tabindex="-1"])')].filter((element) => !element.hasAttribute('disabled')); if (!focusable.length) return; const first = focusable[0]; const last = focusable.at(-1)!; if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); } }; document.addEventListener('keydown', onKeyDown); return () => { document.removeEventListener('keydown', onKeyDown); document.body.style.overflow = overflow; if (restoreFocus?.isConnected) restoreFocus.focus(); window.requestAnimationFrame(() => { if (restoreFocus?.isConnected) restoreFocus.focus(); }); }; }, [onClose, restoreFocus]);
   const sourceMode = mode === 'sources'; const metric = sourceMode ? undefined : snapshot.metrics[mode]; const catalogMetric = sourceMode ? undefined : catalog.find((item) => item.metric_id === mode);
   const definitions: Array<[string, keyof Metric['methodology']]> = [['回答問題', 'question'], ['精確定義', 'definition'], ['點解要睇', 'why_it_matters'], ['方向判讀', 'direction'], ['計算方法', 'calculation'], ['頻率與滯後', 'frequency_and_lag'], ['常見誤判', 'common_misreads'], ['技術扭曲', 'technical_distortions'], ['一齊確認', 'confirm_with'], ['唔可以推論', 'cannot_infer'], ['來源／授權', 'source_and_license_note'], ['Proxy disclosure', 'proxy_disclosure']];
-  return <div className="drawer-scrim" onClick={(event: MouseEvent<HTMLDivElement>) => { if (event.target === event.currentTarget) onClose(); }}><aside className="drawer" ref={drawerRef} role="dialog" aria-modal="true" aria-labelledby="drawer-title"><button className="drawer-close" type="button" ref={closeRef} onClick={onClose} aria-label="關閉">×</button><div className="drawer-kicker">{sourceMode ? 'PROVENANCE' : 'METRIC METHODOLOGY'}</div><h2 id="drawer-title">{sourceMode ? '來源與健康狀態' : metric?.label ?? mode}</h2>{!sourceMode && catalogError ? <p className="drawer-catalog-warning" role="status">Manifest／方法目錄暫時不可用（{catalogError}）。以下 snapshot metric 資料仍可查看，但方法目錄完整性未能確認。</p> : null}{sourceMode ? <>{Object.entries(snapshot.sources).map(([id, source]) => <SourceDrawerRow key={id} source={source} />)}<section className="drawer-legal-notice" aria-label="CFTC and SEC source notices"><CftcLegalNotice /><SecLegalNotice /></section></> : metric ? <><div className="drawer-badges"><Badge status={metric.availability} label={AVAILABILITY_LABELS[metric.availability]} /><Badge status={metric.quality.status} label={healthText(metric.quality.status)} /><Badge status={metric.quality.freshness} label={FRESHNESS_LABELS[metric.quality.freshness]} /></div><TimestampGrid observation={metric.observation_date} released={metric.released_at} updated={metric.updated_at} /><AttemptStatus attempt={metric.quality.last_attempt_at} success={metric.quality.last_success_at} /><Statistics values={metric.statistics} /><p className="rights-note"><b>RIGHTS / USE</b>{metric.source.rights_note || metric.methodology.source_and_license_note}</p>{metric.quality.failure_reason ? <p className="drawer-error">{metric.quality.failure_reason}</p> : null}<dl className="drawer-def">{definitions.map(([term, key]) => { const content = metric.methodology[key]; const text = Array.isArray(content) ? content.join('、') : content; return text ? <div key={key}><dt>{term}</dt><dd>{text}</dd></div> : null; })}</dl></> : <p className="drawer-message">{catalogError || (catalogMetric ? 'Snapshot metric 暫時未提供。' : '方法資料暫時未提供。')}</p>}</aside></div>;
+  return <div className="drawer-scrim" onClick={(event: MouseEvent<HTMLDivElement>) => { if (event.target === event.currentTarget) onClose(); }}><aside className="drawer" ref={drawerRef} role="dialog" aria-modal="true" aria-labelledby="drawer-title"><button className="drawer-close" type="button" ref={closeRef} onClick={onClose} aria-label="關閉">×</button><div className="drawer-kicker">{sourceMode ? 'PROVENANCE' : 'METRIC METHODOLOGY'}</div><h2 id="drawer-title">{sourceMode ? '來源與健康狀態' : metric?.label ?? mode}</h2>{!sourceMode && catalogError ? <p className="drawer-catalog-warning" role="status">Manifest／方法目錄暫時不可用（{catalogError}）。以下 snapshot metric 資料仍可查看，但方法目錄完整性未能確認。</p> : null}{sourceMode ? <>{Object.entries(snapshot.sources).map(([id, source]) => <SourceDrawerRow key={id} source={source} />)}<section className="drawer-legal-notice" aria-label="CFTC and SEC source notices"><CftcLegalNotice /><SecLegalNotice /><SecCompanyFactsLegalNotice /></section></> : metric ? <><div className="drawer-badges"><Badge status={metric.availability} label={AVAILABILITY_LABELS[metric.availability]} /><Badge status={metric.quality.status} label={healthText(metric.quality.status)} /><Badge status={metric.quality.freshness} label={FRESHNESS_LABELS[metric.quality.freshness]} /></div><TimestampGrid observation={metric.observation_date} released={metric.released_at} updated={metric.updated_at} /><AttemptStatus attempt={metric.quality.last_attempt_at} success={metric.quality.last_success_at} /><Statistics values={metric.statistics} /><p className="rights-note"><b>RIGHTS / USE</b>{metric.source.rights_note || metric.methodology.source_and_license_note}</p>{metric.quality.failure_reason ? <p className="drawer-error">{metric.quality.failure_reason}</p> : null}<dl className="drawer-def">{definitions.map(([term, key]) => { const content = metric.methodology[key]; const text = Array.isArray(content) ? content.join('、') : content; return text ? <div key={key}><dt>{term}</dt><dd>{text}</dd></div> : null; })}</dl></> : <p className="drawer-message">{catalogError || (catalogMetric ? 'Snapshot metric 暫時未提供。' : '方法資料暫時未提供。')}</p>}</aside></div>;
 }
 
 export interface DashboardProps {
@@ -678,7 +807,7 @@ export function Dashboard(props: DashboardProps) {
   }, [props.onDrawer]);
   const closeDrawer = useCallback(() => props.onDrawer(null), [props.onDrawer]);
   const openSources = useCallback(() => openDrawer('sources'), [openDrawer]);
-  return <div className="app-shell"><div className="deck"><StatusBar snapshot={props.snapshot} route={props.route} onOpenSources={openSources} /><SwitchStrip snapshot={props.snapshot} route={props.route} /><div className="series-live-region" role="status" aria-live="polite">{props.seriesLoading ? '載入本頁完整時間序列…' : Object.keys(props.seriesErrors).length ? `${Object.keys(props.seriesErrors).length} 條完整時間序列暫不可用，已使用 snapshot 短序列。` : '本頁完整時間序列已載入。'}</div>{props.route === 'overview' ? <OverviewPage {...props} onDrawer={openDrawer} /> : props.route === 'liquidity-fuel' ? <LiquidityPage {...props} onDrawer={openDrawer} /> : <PhasePage route={props.route} snapshot={props.snapshot} catalog={props.catalog} catalogError={props.catalogError} series={props.series} range={props.range} onRange={props.onRange} onMetric={openDrawer} />}<FooterTicker snapshotUrl={`${props.baseUrl}data/snapshot.json`} onSources={openSources} /></div><Provenance snapshot={props.snapshot} />{props.drawer ? <Drawer mode={props.drawer} snapshot={props.snapshot} catalog={props.catalog} catalogError={props.catalogError} restoreFocus={drawerTriggerRef.current} onClose={closeDrawer} /> : null}</div>;
+  return <div className="app-shell"><div className="deck"><StatusBar snapshot={props.snapshot} route={props.route} onOpenSources={openSources} /><SwitchStrip snapshot={props.snapshot} route={props.route} /><div className="series-live-region" role="status" aria-live="polite">{props.seriesLoading ? '載入本頁完整時間序列…' : Object.keys(props.seriesErrors).length ? `${Object.keys(props.seriesErrors).length} 條完整時間序列暫不可用，已使用 snapshot 短序列。` : '本頁完整時間序列已載入。'}</div>{props.route === 'overview' ? <OverviewPage {...props} onDrawer={openDrawer} /> : props.route === 'liquidity-fuel' ? <LiquidityPage {...props} onDrawer={openDrawer} /> : <PhasePage route={props.route} snapshot={props.snapshot} catalogError={props.catalogError} series={props.series} range={props.range} onRange={props.onRange} onMetric={openDrawer} />}<FooterTicker snapshotUrl={`${props.baseUrl}data/snapshot.json`} onSources={openSources} /></div><Provenance snapshot={props.snapshot} />{props.drawer ? <Drawer mode={props.drawer} snapshot={props.snapshot} catalog={props.catalog} catalogError={props.catalogError} restoreFocus={drawerTriggerRef.current} onClose={closeDrawer} /> : null}</div>;
 }
 
 export function StateScreen({ error }: { error?: string }) {

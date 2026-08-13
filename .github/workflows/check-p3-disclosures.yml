@@ -1,0 +1,37 @@
+name: Check P3 manual disclosures
+
+on:
+  schedule:
+    # Discovery only: filing metadata becomes a human-review queue. This
+    # workflow never publishes data or guesses disclosure values.
+    - cron: '30 14 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: bubble-p3-manual-disclosure-review
+  cancel-in-progress: false
+
+jobs:
+  update-review-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: pipeline/requirements.txt
+
+      - name: Install Python dependencies
+        run: pip install -r pipeline/requirements.txt
+
+      - name: Validate reviewed CSV and update the deduplicated issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SEC_USER_AGENT: ${{ vars.SEC_USER_AGENT }}
+        run: python -m pipeline.check_p3_disclosures

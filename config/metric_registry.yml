@@ -33,6 +33,12 @@ canonical_p2_metric_ids:
 - spy_holdings_top10_weight_proxy
 - m2_nasdaq_divergence
 - ndx_forward_pe
+canonical_p3_metric_ids:
+- hyperscaler_aggregate_cash_capex
+- hyperscaler_aggregate_cash_capex_yoy_acceleration_pp
+- ai_upstream_orders_backlog
+- customer_prepayments_contract_commitments
+- take_or_pay_commitments
 metrics:
 - metric_id: sofr
   legacy_ids: []
@@ -1129,7 +1135,7 @@ metrics:
     source_and_license_note: A consistent, reproducible forward-earnings consensus is proprietary. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.
     proxy_disclosure: ''
   implemented: true
-- metric_id: hyperscaler_capex
+- metric_id: hyperscaler_aggregate_cash_capex
   legacy_ids: []
   label: Hyperscaler aggregate cash CapEx
   layer: FUNDAMENTAL_EXIT
@@ -1144,22 +1150,25 @@ metrics:
   reason: null
   proxy_disclosure: ''
   methodology:
-    question: What does Hyperscaler aggregate cash CapEx reveal within its dashboard evidence block?
-    definition: Canonical Hyperscaler aggregate cash CapEx metric as defined by the registry.
-    why_it_matters: It supplies an independent evidence input; it is never sufficient alone.
-    direction: Interpret direction only with the metric definition, freshness, and independent confirmations.
-    calculation: Apply the documented metric transform to validated source observations; never coerce null to zero.
-    frequency_and_lag: 'Expected cadence: Hyperscaler aggregate cash CapEx; the observation date and release lag must be shown separately.'
-    common_misreads: A single observation is not a forecast or causal proof.
-    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
-    confirm_with: []
-    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
-    source_and_license_note: Use only the source IDs whose automated-fetch and redistribution rights gates pass.
+    question: How much cash CapEx did Microsoft, Alphabet, Amazon and Meta report for the latest comparable calendar quarter?
+    definition: Sum company cash payments for property, equipment or productive assets after company-specific fiscal/YTD quarterization. Finance-lease additions remain separate and never enter the cash total.
+    why_it_matters: Aggregate dollars show the realised investment level behind AI and cloud infrastructure, while company breadth exposes whether one issuer dominates the move.
+    direction: Level and growth describe investment intensity; they are evidence only and do not by themselves establish a fundamental exit.
+    calculation: Select reviewed company-specific US-GAAP tags, resolve duplicate/restated facts by filing chronology, derive Q1/H1/9M/FY single quarters, align by calendar period end, then sum USD cash CapEx before calculating growth.
+    frequency_and_lag: Quarterly after all four companies have a comparable filed quarter. Observation, filing acceptance and pipeline update times are shown separately.
+    common_misreads: Cash CapEx is not total asset additions, purchase commitments, finance leases, AI-only spend or management guidance.
+    technical_distortions: Fiscal calendars, restatements, tag changes, acquisitions and lumpier payment timing can move a single quarter; incomplete company coverage lowers confidence rather than becoming zero.
+    confirm_with:
+    - hyperscaler_aggregate_cash_capex_yoy_acceleration_pp
+    - ai_upstream_orders_backlog
+    - customer_prepayments_contract_commitments
+    cannot_infer: Cannot identify an AI-cycle peak, future demand or equity returns from CapEx level alone.
+    source_and_license_note: SEC Company Facts and linked 10-Q/10-K filings; cite accessions, do not use the SEC seal, and do not imply SEC affiliation or endorsement.
     proxy_disclosure: ''
-  implemented: false
-- metric_id: capex_acceleration
+  implemented: true
+- metric_id: hyperscaler_aggregate_cash_capex_yoy_acceleration_pp
   legacy_ids: []
-  label: Hyperscaler CapEx acceleration
+  label: Hyperscaler aggregate cash CapEx YoY acceleration
   layer: FUNDAMENTAL_EXIT
   phase: P3
   availability: ACTIVE_FREE
@@ -1172,22 +1181,25 @@ metrics:
   reason: null
   proxy_disclosure: ''
   methodology:
-    question: What does Hyperscaler CapEx acceleration reveal within its dashboard evidence block?
-    definition: Canonical Hyperscaler CapEx acceleration metric as defined by the registry.
-    why_it_matters: It supplies an independent evidence input; it is never sufficient alone.
-    direction: Interpret direction only with the metric definition, freshness, and independent confirmations.
-    calculation: Apply the documented metric transform to validated source observations; never coerce null to zero.
-    frequency_and_lag: 'Expected cadence: Hyperscaler CapEx acceleration; the observation date and release lag must be shown separately.'
-    common_misreads: A single observation is not a forecast or causal proof.
-    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
-    confirm_with: []
-    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
-    source_and_license_note: Use only the source IDs whose automated-fetch and redistribution rights gates pass.
+    question: Is aggregate hyperscaler cash CapEx growth accelerating or decelerating year over year?
+    definition: Percentage-point change in aggregate YoY cash CapEx growth versus the previous calendar quarter; aggregate dollars are summed before growth and acceleration are calculated.
+    why_it_matters: A persistent broad deceleration is more informative than a single company's timing-driven quarter, while positive acceleration shows investment growth is still gaining pace.
+    direction: Positive is ACCELERATING, negative is DECELERATING, zero is FLAT; a single negative quarter is context, not an exit signal.
+    calculation: For aggregate cash CapEx, compute YoY growth as CapEx_t / CapEx_t-4 - 1, then YoY acceleration as growth_t minus growth_t-1. QoQ growth and acceleration are retained as supporting statistics.
+    frequency_and_lag: Quarterly after a comparable four-company calendar quarter is available, with at least 12 quarters retained and every source filing disclosed.
+    common_misreads: Negative acceleration can coexist with positive absolute growth; it does not mean CapEx contracted.
+    technical_distortions: Company fiscal calendars, restatements, tag changes, acquisition timing and payment schedules can distort one quarter; breadth and manual demand evidence must be shown separately.
+    confirm_with:
+    - hyperscaler_aggregate_cash_capex
+    - ai_upstream_orders_backlog
+    - customer_prepayments_contract_commitments
+    cannot_infer: Cannot issue WATCH/STRESS, identify a cycle top or predict security prices.
+    source_and_license_note: SEC Company Facts and linked 10-Q/10-K filings; cite accessions, do not use the SEC seal, and do not imply SEC affiliation or endorsement.
     proxy_disclosure: ''
-  implemented: false
-- metric_id: upstream_backlog
+  implemented: true
+- metric_id: ai_upstream_orders_backlog
   legacy_ids: []
-  label: AI upstream backlog
+  label: AI upstream orders / backlog
   layer: FUNDAMENTAL_EXIT
   phase: P3
   availability: MANUAL_READY
@@ -1200,20 +1212,22 @@ metrics:
   reason: Disclosure definitions are non-standard and require filing-by-filing human review.
   proxy_disclosure: ''
   methodology:
-    question: What does AI upstream backlog reveal within its dashboard evidence block?
-    definition: Canonical AI upstream backlog metric as defined by the registry.
-    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
-    direction: No direction is published while the value is null.
-    calculation: Disclosure definitions are non-standard and require filing-by-filing human review. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
-    frequency_and_lag: 'Expected cadence: AI upstream backlog; the observation date and release lag must be shown separately.'
-    common_misreads: A single observation is not a forecast or causal proof.
-    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
-    confirm_with: []
-    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
-    source_and_license_note: Disclosure definitions are non-standard and require filing-by-filing human review. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    question: Are reviewed public-filing orders or backlog disclosures moving up, flat or down on a comparable basis?
+    definition: Human-reviewed issuer filing evidence for non-standard orders, backlog or remaining-performance disclosures; no automated text model invents a value.
+    why_it_matters: Demand evidence can confirm or contradict changes in hyperscaler CapEx acceleration.
+    direction: Publish only reviewed UP, FLAT, DOWN or UNKNOWN direction with explicit comparability and coverage.
+    calculation: Validate the version-controlled manual CSV contract, retain the official filing URL/accession and short factual paraphrase, and use the latest reviewed comparable record without coercing null to zero.
+    frequency_and_lag: Filing-driven quarterly evidence; review time, filing acceptance time and period end are distinct.
+    common_misreads: Backlog definitions differ across issuers and periods; a larger number can reflect scope or accounting changes rather than demand.
+    technical_distortions: Definition changes, acquisitions, currency, cancellations and issuer-specific disclosure timing can break comparability.
+    confirm_with:
+    - hyperscaler_aggregate_cash_capex_yoy_acceleration_pp
+    - customer_prepayments_contract_commitments
+    cannot_infer: Cannot establish industry-wide demand or a fundamental exit without comparable breadth and independent confirmation.
+    source_and_license_note: Human-reviewed public filings only; publish short factual paraphrases with source URLs and accessions, never long issuer-authored passages.
     proxy_disclosure: ''
-  implemented: false
-- metric_id: prepayments
+  implemented: true
+- metric_id: customer_prepayments_contract_commitments
   legacy_ids: []
   label: Customer prepayments and contract commitments
   layer: FUNDAMENTAL_EXIT
@@ -1228,20 +1242,22 @@ metrics:
   reason: Disclosure definitions are non-standard and require filing-by-filing human review.
   proxy_disclosure: ''
   methodology:
-    question: What does Customer prepayments and contract commitments reveal within its dashboard evidence block?
-    definition: Canonical Customer prepayments and contract commitments metric as defined by the registry.
-    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
-    direction: No direction is published while the value is null.
-    calculation: Disclosure definitions are non-standard and require filing-by-filing human review. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
-    frequency_and_lag: 'Expected cadence: Customer prepayments and contract commitments; the observation date and release lag must be shown separately.'
-    common_misreads: A single observation is not a forecast or causal proof.
-    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
-    confirm_with: []
-    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
-    source_and_license_note: Disclosure definitions are non-standard and require filing-by-filing human review. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    question: Are reviewed customer prepayment or contract-commitment disclosures strengthening, flat or weakening?
+    definition: Human-reviewed public-filing evidence for customer prepayments and definition-consistent contract commitments, with period comparability disclosed.
+    why_it_matters: Customer funding and commitments can provide a second demand-side check on supplier backlog and CapEx plans.
+    direction: Publish only reviewed UP, FLAT, DOWN or UNKNOWN direction; null remains null when a comparable figure is absent.
+    calculation: Validate the manual CSV record, source URL, accession, reviewer, review time, comparability and short paraphrase; select the latest reviewed record per company and metric.
+    frequency_and_lag: Filing-driven quarterly evidence; disclosures can be irregular and must show period, filing acceptance, as-of and review times separately.
+    common_misreads: Prepayments are not revenue, backlog or guaranteed demand, and issuer definitions may change.
+    technical_distortions: Contract scope, billing terms, acquisitions, currency and disclosure-policy changes can break comparability.
+    confirm_with:
+    - ai_upstream_orders_backlog
+    - take_or_pay_commitments
+    cannot_infer: Cannot prove sustained demand, cancellation risk or a fundamental exit by itself.
+    source_and_license_note: Human-reviewed public filings only; publish short factual paraphrases with source URLs and accessions, never long issuer-authored passages.
     proxy_disclosure: ''
-  implemented: false
-- metric_id: take_or_pay
+  implemented: true
+- metric_id: take_or_pay_commitments
   legacy_ids: []
   label: Take-or-pay commitments
   layer: FUNDAMENTAL_EXIT
@@ -1256,16 +1272,18 @@ metrics:
   reason: Disclosure definitions are non-standard and require filing-by-filing human review.
   proxy_disclosure: ''
   methodology:
-    question: What does Take-or-pay commitments reveal within its dashboard evidence block?
-    definition: Canonical Take-or-pay commitments metric as defined by the registry.
-    why_it_matters: The intended signal remains visible without inventing a value when the required input is unavailable.
-    direction: No direction is published while the value is null.
-    calculation: Disclosure definitions are non-standard and require filing-by-filing human review. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
-    frequency_and_lag: 'Expected cadence: Take-or-pay commitments; the observation date and release lag must be shown separately.'
-    common_misreads: A single observation is not a forecast or causal proof.
-    technical_distortions: Release timing, coverage, definition changes, and technical dates must lower confidence rather than delete observations.
-    confirm_with: []
-    cannot_infer: Cannot alone prove a crisis, bubble turn, fundamental exit, or asset-price direction.
-    source_and_license_note: Disclosure definitions are non-standard and require filing-by-filing human review. Future interface accepts a reviewed value, period/as-of date, definition-consistent numerator and denominator where applicable, source URL, and reviewer note.
+    question: Do reviewed take-or-pay or minimum-purchase commitments provide additional demand or obligation context?
+    definition: Human-reviewed public-filing evidence for explicitly disclosed take-or-pay or minimum-purchase commitments, kept separate from standard backlog.
+    why_it_matters: Contractual obligations can qualify the interpretation of prepayments, backlog and infrastructure spending.
+    direction: Publish only reviewed UP, FLAT, DOWN or UNKNOWN direction with comparability and coverage; no record means MANUAL_READY, not zero.
+    calculation: Validate the manual CSV contract and use only reviewed issuer disclosures with official URLs, accessions, timestamps and short factual paraphrases.
+    frequency_and_lag: Irregular filing-driven evidence; observation period and review time must both be visible.
+    common_misreads: A commitment is not necessarily current revenue, realised demand or an unconditional purchase.
+    technical_distortions: Contract duration, price resets, cancellation clauses, acquisitions and disclosure-policy changes can break comparability.
+    confirm_with:
+    - customer_prepayments_contract_commitments
+    - hyperscaler_aggregate_cash_capex_yoy_acceleration_pp
+    cannot_infer: Cannot establish a cycle turn, company solvency or market direction by itself.
+    source_and_license_note: Human-reviewed public filings only; publish short factual paraphrases with source URLs and accessions, never long issuer-authored passages.
     proxy_disclosure: ''
-  implemented: false
+  implemented: true

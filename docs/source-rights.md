@@ -19,6 +19,7 @@
 | Treasury FiscalData | 無 key | Daily TGA 同 auction settlement 可自動化；`"null"` 字串要當缺失，並保留 dataset/as-of attribution。 |
 | FRED government-origin allowlist | `FRED_API_KEY` repository secret | 只容許 IORB、WRESBAL、WALCL、WTREGEN、NCBEILQ027S、GDP；每項仍要標示 FRED 同原發布機構。 |
 | SEC EDGAR daily index / filings | `SEC_USER_AGENT` repository variable | P2 Form 4 collector 以 4 req/s serialized、cache/backoff、accession dedupe 同 complete-submission parsing運作；公開輸出只保存 privacy-minimized ledger。 |
+| SEC Company Facts / submissions metadata | `SEC_USER_AGENT` repository variable | P3只讀四間reviewed issuer嘅Company Facts同filing metadata；cash CapEx按公司tag/fiscal context quarterize，finance leases分開；唔下載或再發布長篇filing narrative。 |
 | CFTC PRE | 無 key | Release 2 只讀官方 TFF Futures Only dataset；E-mini S&P 500 同 Nasdaq-100 Consolidated、Asset Manager 同 Leveraged Funds 分開發布，並保留 weekly release lag。 |
 
 ## CFTC attribution and interpretation limits
@@ -61,6 +62,10 @@ Bubble USD Liquidity Dashboard laubonghaudoi@icloud.com
 P2 Form 4 collector 由每日 `master.YYYYMMDD.idx` 出發，按 accession 去重後讀 complete submission；`P`／`S` 依 SEC 官方 code table係 open-market **或 private** purchase/sale，唔可以標成純 open-market。Raw filing text、owner name/address/signature同 security-title narrative只可以留喺私有 Actions cache。Version-controlled public ledger只容許 accession、issuer CIK、日期／hash、hashed owner-CIK set、normalized transaction aggregates、10b5 tri-state、amendment/review狀態同 audit counts；loader會拒絕未喺 manifest 聲明嘅檔案、symlink、錯 schema／retention／hash。
 
 Form 4/A 唔會靠姓名、金額或 `dateOfOriginalSubmission` 猜 original accession。只有 issuer、owner-CIK set、period/date同 transaction fingerprint能唯一對應先會取代原 record；其餘保持 `UNLINKED_REVIEW` 並排除。呢個 proxy係 transaction-row evidence，唔係 unique insider count、全市場 corporate sentiment結論或投資信號。
+
+P3 Company Facts collector只處理 version-controlled `config/companies.yml` 四間公司同exact XBRL mappings。Microsoft、Alphabet、Meta cash CapEx用 `PaymentsToAcquirePropertyPlantAndEquipment`；Amazon現行資料用 `PaymentsToAcquireProductiveAssets`。Collector保留unit、context、frame、form、accession、accepted timestamp同filing URL；Q1/H1/9M/FY YTD contexts先quarterize。Finance-lease additions用獨立tag及欄位，唔可以混入cash CapEx，而且只會喺同一cash filing accession有完整來源綁定時發布；另一份filing嘅finance fact會fail closed為`null`。完整publication contract會重算公司及aggregate QoQ／YoY／acceleration，並拒絕錯issuer path、fiscal quarter、form、context或未來timestamp。
+
+Orders/backlog、prepayments同take-or-pay係human-reviewed public-filing evidence，唔係network collector，亦唔計入source-health分母。CSV只容許reviewed SEC filing類型、canonical accession、直接SEC Archives HTML filing URL、reviewer/timestamps同短factual paraphrase；production同PR均會以SEC submissions metadata核對form、acceptance timestamp同primary document URL。未有reviewed row時保持 `MANUAL_READY`；超過120日只會轉成stale evidence，永遠唔會自動產生WATCH/STRESS。
 
 ## Rights-held sources
 

@@ -80,6 +80,25 @@ ACTIVE_P2_METRIC_IDS = frozenset(
     }
 )
 
+CANONICAL_P3_METRIC_IDS = frozenset(
+    {
+        "hyperscaler_aggregate_cash_capex",
+        "hyperscaler_aggregate_cash_capex_yoy_acceleration_pp",
+        "ai_upstream_orders_backlog",
+        "customer_prepayments_contract_commitments",
+        "take_or_pay_commitments",
+    }
+)
+
+ACTIVE_P3_AUTOMATED_METRIC_IDS = frozenset(
+    {
+        "hyperscaler_aggregate_cash_capex",
+        "hyperscaler_aggregate_cash_capex_yoy_acceleration_pp",
+    }
+)
+
+MANUAL_P3_METRIC_IDS = CANONICAL_P3_METRIC_IDS - ACTIVE_P3_AUTOMATED_METRIC_IDS
+
 
 class ConfigValidationError(ContractValidationError):
     """Raised when a registry/config bundle is internally inconsistent."""
@@ -403,6 +422,45 @@ def validate_config_bundle(bundle: ConfigBundle) -> None:
             raise ConfigValidationError(
                 f"P2 metric {metric_id} availability must be {expected_availability.value}"
             )
+    declared_p3 = bundle.metric_registry.get("canonical_p3_metric_ids")
+    if not isinstance(declared_p3, list) or set(declared_p3) != CANONICAL_P3_METRIC_IDS:
+        raise ConfigValidationError("canonical_p3_metric_ids does not match contract")
+    missing_p3 = sorted(CANONICAL_P3_METRIC_IDS - set(metrics))
+    if missing_p3:
+        raise ConfigValidationError(
+            "metric registry is missing canonical P3 IDs: " + ", ".join(missing_p3)
+        )
+    retired_p3_ids = {
+        "hyperscaler_capex",
+        "capex_acceleration",
+        "upstream_backlog",
+        "prepayments",
+        "take_or_pay",
+    }
+    if retired_p3_ids & set(metrics):
+        raise ConfigValidationError("retired P3 metric IDs remain in registry")
+    for metric_id in ACTIVE_P3_AUTOMATED_METRIC_IDS:
+        metric = metrics[metric_id]
+        if (
+            metric.get("implemented") is not True
+            or metric.get("availability") != Availability.ACTIVE_FREE.value
+            or metric.get("network_enabled") is not True
+            or metric.get("source_ids") != ["sec_edgar"]
+        ):
+            raise ConfigValidationError(
+                f"automated P3 metric {metric_id} must be implemented ACTIVE_FREE via SEC EDGAR"
+            )
+    for metric_id in MANUAL_P3_METRIC_IDS:
+        metric = metrics[metric_id]
+        if (
+            metric.get("implemented") is not True
+            or metric.get("availability") != Availability.MANUAL_READY.value
+            or metric.get("network_enabled") is not False
+            or metric.get("source_ids") != ["manual_public_filings"]
+        ):
+            raise ConfigValidationError(
+                f"manual P3 metric {metric_id} must be implemented MANUAL_READY with network disabled"
+            )
     expected_cftc_identity = {
         "cftc_e_mini_sp500_asset_manager_net_pct_oi": ("13874A", "E-MINI S&P 500", "asset_manager"),
         "cftc_e_mini_sp500_leveraged_funds_net_pct_oi": ("13874A", "E-MINI S&P 500", "leveraged_funds"),
@@ -553,6 +611,32 @@ def validate_config_bundle(bundle: ConfigBundle) -> None:
     )
     if set(companies) != {"microsoft", "alphabet", "amazon", "meta"}:
         raise ConfigValidationError("companies registry must contain the four fixed hyperscalers")
+    expected_company_contract = {
+        "microsoft": (
+            "MSFT",
+            "0000789019",
+            "06-30",
+            "PaymentsToAcquirePropertyPlantAndEquipment",
+        ),
+        "alphabet": (
+            "GOOGL",
+            "0001652044",
+            "12-31",
+            "PaymentsToAcquirePropertyPlantAndEquipment",
+        ),
+        "amazon": (
+            "AMZN",
+            "0001018724",
+            "12-31",
+            "PaymentsToAcquireProductiveAssets",
+        ),
+        "meta": (
+            "META",
+            "0001326801",
+            "12-31",
+            "PaymentsToAcquirePropertyPlantAndEquipment",
+        ),
+    }
     for company in companies.values():
         cik = company.get("cik")
         if not isinstance(cik, str) or len(cik) != 10 or not cik.isdigit():
@@ -578,6 +662,42 @@ def validate_config_bundle(bundle: ConfigBundle) -> None:
             raise ConfigValidationError(
                 f"company {company['company_id']} requires a preferred XBRL tag"
             )
+        ticker, expected_cik, fiscal_year_end, cash_tag = expected_company_contract[
+            company["company_id"]
+        ]
+        if (
+            company.get("ticker") != ticker
+            or company.get("cik") != expected_cik
+            or company.get("fiscal_year_end") != fiscal_year_end
+            or company.get("xbrl_namespace") != "us-gaap"
+            or company.get("preferred_xbrl_tags") != [cash_tag]
+            or company.get("fallback_xbrl_tags") != []
+            or company.get("finance_lease_xbrl_tags")
+            != ["RightOfUseAssetObtainedInExchangeForFinanceLeaseLiability"]
+            or company.get("manual_override") is not None
+        ):
+            raise ConfigValidationError(
+                f"company {company['company_id']} does not match the reviewed P3 SEC contract"
+            )
+
+    fundamental_rules = bundle.alert_rules.get("alerts", {}).get(
+        "fundamental_exit"
+    )
+    if not isinstance(fundamental_rules, Mapping) or (
+        fundamental_rules.get("mode") != "EVIDENCE_ONLY"
+        or fundamental_rules.get("assessments_enabled") is not False
+        or fundamental_rules.get("total_blocks") != 4
+        or fundamental_rules.get("evidence_block_ids")
+        != [
+            "aggregate_capex_acceleration",
+            "orders_backlog",
+            "prepayments_commitments",
+            "company_breadth",
+        ]
+    ):
+        raise ConfigValidationError(
+            "alert_rules fundamental_exit must use the exact evidence-only P3 blocks"
+        )
 
     tax_dates = _unique_records(
         bundle.us_tax_dates.get("tax_dates"), "event_id", "tax_dates"

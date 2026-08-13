@@ -11,7 +11,7 @@ import {
   snapshotSeriesFallback,
   type RouteId,
 } from './dashboard';
-import { makeCatalog, makeSnapshot } from './test-fixtures';
+import { makeCatalog, makeSnapshot, makeSnapshotWithReviewedManualEvidence } from './test-fixtures';
 
 vi.mock('./components/Charts', () => ({
   MainMetricChart: ({ label, lastGood }: { label: string; lastGood?: boolean }) => <div role="img" aria-label={`${label} 圖表${lastGood ? '，最後成功值，並非今日新值' : ''}`} />,
@@ -120,7 +120,8 @@ describe('v2 routed dashboard', () => {
     window.dispatchEvent(new HashChangeEvent('hashchange'));
     const fundamentalHeading = await findRouteHeading('基本面逃生門');
     await waitFor(() => expect(fundamentalHeading).toHaveFocus());
-    expect(screen.getByText(/P3 · CAPEX/)).toBeVisible();
+    expect(screen.getByText(/P3 · HYPERSCALER CASH CAPEX/)).toBeVisible();
+    expect(vi.mocked(loadRouteSeries)).toHaveBeenCalledWith(expect.any(String), 'fundamental-exit', snapshot, catalog);
 
     window.location.hash = '#/overview';
     window.dispatchEvent(new HashChangeEvent('hashchange'));
@@ -255,6 +256,137 @@ describe('v2 routed dashboard', () => {
     expect(screen.getByText('Manifest 暫時不可用：503 manifest offline')).toHaveAttribute('role', 'status');
     expect(screen.getByRole('region', { name: 'P2 · BUBBLE / FRAGILITY CONTEXT' })).toHaveTextContent('2/8 CONTEXT AVAILABLE');
     expect(screen.getByRole('region', { name: 'P2 · UNAVAILABLE FREE' }).querySelectorAll('.rights-gate-card')).toHaveLength(6);
+  });
+
+  it('renders P3 as evidence-only CapEx, breadth, history, mappings, and fail-closed manual filings', async () => {
+    window.history.replaceState(null, '', '/#/fundamental-exit');
+    const { container } = render(<App />);
+    await findRouteHeading('基本面逃生門');
+
+    expect(snapshot.switches.fundamental_exit.assessment).toBeNull();
+    expect(snapshot.overall_assessment).toBe(snapshot.switches.liquidity_fuel.assessment);
+    const coverage = screen.getByRole('region', { name: /Fundamental Exit evidence coverage/ });
+    expect(coverage).toHaveTextContent('2/4 AVAILABLE');
+    expect(coverage.querySelectorAll('.evidence-card')).toHaveLength(4);
+    expect([...coverage.querySelectorAll<HTMLElement>('.evidence-direction b')].map(({ textContent }) => textContent)).toEqual([
+      'DECELERATING', 'UNKNOWN', 'UNKNOWN', 'MIXED',
+    ]);
+    expect(coverage.querySelector('.badge-watch, .badge-stress')).toBeNull();
+
+    const capex = screen.getByRole('region', { name: 'P3 · HYPERSCALER CASH CAPEX' });
+    expect(capex).toHaveTextContent('2/2 AUTOMATED METRICS ACTIVE');
+    expect(capex).toHaveTextContent('38.5B');
+    expect(capex).toHaveTextContent('+8.2%');
+    expect(capex).toHaveTextContent('+42.4%');
+    expect(capex).toHaveTextContent('+3.1 pp');
+    expect(capex).toHaveTextContent('-4.2 pp');
+    expect(capex).toHaveTextContent('3 / 4');
+    expect(capex).toHaveTextContent('75.0% current-quarter coverage');
+    expect(capex).toHaveTextContent('12 QUARTERS');
+    expect(capex).toHaveTextContent('2 companies disclose finance-lease additions');
+
+    const history = screen.getByRole('region', { name: 'Hyperscaler aggregate CapEx 12-quarter history' });
+    expect(history.querySelectorAll('tbody tr')).toHaveLength(12);
+    expect(history).toHaveTextContent('2023-09-30');
+    expect(history).toHaveTextContent('2026-06-30');
+
+    const companies = container.querySelectorAll('.fundamental-company');
+    expect(companies).toHaveLength(4);
+    expect(capex).toHaveTextContent('MSFT');
+    expect(capex).toHaveTextContent('GOOGL');
+    expect(capex).toHaveTextContent('AMZN');
+    expect(capex).toHaveTextContent('META');
+    expect(capex).toHaveTextContent('us-gaap:PaymentsToAcquireProductiveAssets');
+    expect(capex).toHaveTextContent('Separate from cash CapEx');
+    expect(capex).toHaveTextContent(/Cash CapEx 同 finance-lease/);
+    expect(within(capex).getAllByRole('link', { name: /10-[QK].*↗/ })).toHaveLength(4);
+
+    const manual = screen.getByRole('region', { name: 'P3 · MANUAL / PUBLIC FILING' });
+    expect(manual.querySelectorAll('.fundamental-manual-card')).toHaveLength(3);
+    expect(within(manual).getAllByText('可人工匯入')).toHaveLength(3);
+    expect(within(manual).getAllByText('—')).toHaveLength(3);
+    expect(manual).toHaveTextContent('未有經覆核 CSV row 就保持 MANUAL_READY');
+
+    const methodButton = within(capex).getByRole('button', { name: 'Cash CapEx 方法與來源 →' });
+    methodButton.focus();
+    fireEvent.click(methodButton);
+    const drawer = await screen.findByRole('dialog', { name: 'Hyperscaler aggregate cash CapEx' });
+    expect(drawer).toHaveTextContent('aggregate_cash_capex_usd_bn');
+    expect(drawer).toHaveTextContent('38.5B');
+    expect(drawer).toHaveTextContent('yoy_acceleration_pp');
+    expect(drawer).toHaveTextContent('-4.20 pp');
+    fireEvent.keyDown(document, { key: 'Escape' });
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(methodButton).toHaveFocus();
+  });
+
+  it('renders reviewed manual filing evidence with source, reviewer, comparability, paraphrase, and true zero', async () => {
+    window.history.replaceState(null, '', '/#/fundamental-exit');
+    const reviewedSnapshot = makeSnapshotWithReviewedManualEvidence();
+    vi.mocked(loadDashboardCore).mockResolvedValueOnce({ snapshot: reviewedSnapshot, catalog, catalogError: null });
+    render(<App />);
+    await findRouteHeading('基本面逃生門');
+
+    const coverage = screen.getByRole('region', { name: /Fundamental Exit evidence coverage/ });
+    expect(coverage).toHaveTextContent('3/4 AVAILABLE');
+    expect(coverage).toHaveTextContent('CONFIDENCE MEDIUM');
+    const manual = screen.getByRole('region', { name: 'P3 · MANUAL / PUBLIC FILING' });
+    const orders = manual.querySelector<HTMLElement>('[data-metric-id="ai_upstream_orders_backlog"]')!;
+    expect(orders).toHaveTextContent('MANUAL / PUBLIC FILING');
+    expect(orders).toHaveTextContent('DOWN');
+    expect(orders).toHaveTextContent('1 / 1');
+    expect(orders).toHaveTextContent('0B');
+    expect(orders).toHaveTextContent('0.00% YOY');
+    expect(orders).toHaveTextContent('YES');
+    expect(orders).toHaveTextContent('2026-06-30 / 2026-08-01');
+    expect(orders).toHaveTextContent('Release reviewer');
+    expect(orders).toHaveTextContent('Comparable reviewed backlog disclosure moved down year over year.');
+    expect(orders).toHaveTextContent('Definition and period were checked against the linked public filing.');
+    expect(within(orders).getByRole('link', { name: /10-Q · 0000789019-26-123456/ })).toHaveAttribute(
+      'href',
+      'https://www.sec.gov/Archives/edgar/data/789019/000078901926123456/msft-20260630.htm',
+    );
+    expect(orders).not.toHaveTextContent('—');
+
+    const remainingManual = [...manual.querySelectorAll<HTMLElement>('.fundamental-manual-card')]
+      .filter((card) => card !== orders);
+    expect(remainingManual).toHaveLength(2);
+    remainingManual.forEach((card) => {
+      expect(card).toHaveTextContent('可人工匯入');
+      expect(card).toHaveTextContent('—');
+    });
+  });
+
+  it('keeps stale reviewed P3 evidence visible as last-good while excluding it from coverage', async () => {
+    window.history.replaceState(null, '', '/#/fundamental-exit');
+    const staleManual = makeSnapshotWithReviewedManualEvidence('ai_upstream_orders_backlog', {
+      period_end: '2026-03-31',
+      filing_accepted_at: '2026-04-12T20:15:00Z',
+      as_of: '2026-04-13',
+      reviewed_at: '2026-04-14T12:00:00Z',
+    });
+    const metric = staleManual.metrics.ai_upstream_orders_backlog;
+    metric.quality.status = 'STALE';
+    metric.quality.freshness = 'STALE';
+    metric.context.confidence = 'UNKNOWN';
+    staleManual.stale_count += 1;
+    staleManual.switches.fundamental_exit.evidence_blocks[1] = {
+      ...staleManual.switches.fundamental_exit.evidence_blocks[1],
+      available: false, status: 'STALE', direction: 'UNKNOWN', confidence: 'UNKNOWN',
+    };
+    staleManual.switches.fundamental_exit.available_blocks = 2;
+    staleManual.switches.fundamental_exit.confidence = 'LOW';
+    vi.mocked(loadDashboardCore).mockResolvedValueOnce({ snapshot: staleManual, catalog, catalogError: null });
+    render(<App />);
+    await findRouteHeading('基本面逃生門');
+
+    expect(screen.getByRole('region', { name: /Fundamental Exit evidence coverage/ })).toHaveTextContent('2/4 AVAILABLE');
+    const orders = screen.getByRole('region', { name: 'P3 · MANUAL / PUBLIC FILING' })
+      .querySelector<HTMLElement>('[data-metric-id="ai_upstream_orders_backlog"]')!;
+    expect(orders).toHaveAttribute('data-value-state', 'last-good');
+    expect(orders).toHaveTextContent('LAST-GOOD');
+    expect(orders).toHaveTextContent('0B');
+    expect(orders).toHaveTextContent('沿用最後成功值');
   });
 
   it('renders the detailed P0 page and confirmation spreads', async () => {

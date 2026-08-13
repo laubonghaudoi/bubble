@@ -74,6 +74,29 @@ Daily job改喺約 07:00 UTC Tue–Sat喚醒，避開 SEC current-day index夜�
 
 初次啟用要做 bounded 45 日 backfill，可能需要約一小時；唔好中途用手改 stage。Form 4 `P`／`S`係 open-market或private transaction code，唔好將卡片或説明改成純 open-market。
 
+## P3 Company Facts／CapEx 失敗
+
+P3只讀`config/companies.yml`固定四間公司。先檢查：
+
+- Microsoft、Alphabet、Meta使用`PaymentsToAcquirePropertyPlantAndEquipment`；Amazon使用`PaymentsToAcquireProductiveAssets`；
+- issuer CIK、fiscal-year-end、Q1／H1／9M／FY context、form、unit、accession同SEC Archives issuer path必須一致；
+- Q1至Q3只接受10-Q／10-Q-A context，Q4只接受10-K／10-K-A；Q2、Q3、Q4分別由H1−Q1、9M−H1、FY−9M計算；
+- 四間公司要有至少12個連續共同季度；aggregate一定先加總USD cash CapEx，再計QoQ、YoY同acceleration；
+- finance-lease additions唔會加入cash CapEx，亦只會喺finance fact同cash fact屬同一filing accession時發布，否則保持`null`。
+
+Collector或schema失敗會原子保留兩條automated metric嘅同一份last-good，兩者唔可以一條`OK`、另一條`STALE`。P3只影響evidence coverage，唔可以改P0 overall、P1 switch或alerts。
+
+## P3 reviewed manual filing 驗證失敗
+
+所有group都會先結構驗證`data/manual/industry_signals.csv`；PR同production workflow亦會執行：
+
+```bash
+SEC_USER_AGENT='Bubble USD Liquidity Dashboard laubonghaudoi@icloud.com' \
+python -m pipeline.check_p3_disclosures --dry-run
+```
+
+每條record要有canonical accession、reviewer、review time、短paraphrase，同直接`www.sec.gov/Archives/edgar/data/.../*.htm[l]` filing URL。URL必須同issuer CIK、accession及SEC submissions嘅primary document完全一致；issuer marketing page、PDF、redirect、query、fragment或path traversal一律拒絕。未有row係`MANUAL_READY`；有row但超過120日係`STALE`並要求重新覆核，唔可以描述成「冇記錄」，亦唔會自動變成WATCH/STRESS。
+
 ## Generated-data commit 或 push 失敗
 
 Workflow 會喺 deploy 前 commit/push `public/data`。Push failure 係 blocking failure；Pages 唔會用一個未記錄嘅 data state 繼續發布。

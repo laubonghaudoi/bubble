@@ -1826,6 +1826,396 @@ a:focus-visible,
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.fundamental-contract {
+  margin: 8px 0 12px;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+.fundamental-contract strong {
+  color: var(--action);
+  font: 700 10px 'DM Mono', monospace;
+  letter-spacing: 0.08em;
+}
+
+.fundamental-aggregate,
+.fundamental-company,
+.fundamental-manual-card {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--action);
+  background: var(--surface);
+}
+
+.fundamental-aggregate.is-last-good {
+  border-top-color: var(--warning);
+}
+
+.fundamental-aggregate-readout {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  padding: 12px;
+}
+
+.fundamental-aggregate-readout > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.fundamental-aggregate-readout small {
+  color: var(--faint);
+  font: 9px 'DM Mono', monospace;
+  letter-spacing: 0.06em;
+}
+
+.fundamental-aggregate-readout strong {
+  color: var(--ink);
+  font: 500 28px 'DM Mono', monospace;
+}
+
+.fundamental-aggregate-readout > span {
+  margin: 0 0 3px auto;
+  padding: 4px 7px;
+  border: 1px solid var(--action);
+  color: var(--action);
+  font: 700 10px 'DM Mono', monospace;
+}
+
+.fundamental-aggregate > .sparkline {
+  display: block;
+  width: calc(100% - 24px);
+  height: 52px;
+  margin: 0 12px 10px;
+}
+
+.fundamental-aggregate-stats,
+.fundamental-company-values {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  background: var(--line);
+}
+
+.fundamental-aggregate-stats > div,
+.fundamental-company-values > div {
+  min-width: 0;
+  padding: 8px;
+  background: var(--white);
+}
+
+.fundamental-aggregate-stats dt,
+.fundamental-company-values dt,
+.fundamental-mapping dt {
+  color: var(--faint);
+  font: 9px 'DM Mono', monospace;
+  letter-spacing: 0.05em;
+}
+
+.fundamental-aggregate-stats dd,
+.fundamental-company-values dd,
+.fundamental-mapping dd {
+  margin: 4px 0 0;
+  color: var(--ink2);
+  font: 11.5px/1.4 'DM Mono', monospace;
+  overflow-wrap: anywhere;
+}
+
+.fundamental-aggregate-stats small,
+.fundamental-company-values small {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font: 8.5px/1.35 'DM Mono', monospace;
+}
+
+.fundamental-method-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.fundamental-method-actions .metric-method + .metric-method {
+  border-left: 1px solid var(--rowline);
+}
+
+.fundamental-history-wrap {
+  margin-top: 12px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  background: var(--white);
+}
+
+.fundamental-history-wrap:focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 2px;
+}
+
+.fundamental-history {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  color: var(--ink2);
+  font: 10.5px 'DM Mono', monospace;
+}
+
+.fundamental-history caption {
+  padding: 8px;
+  color: var(--faint);
+  font: 9px 'DM Mono', monospace;
+  letter-spacing: 0.07em;
+  text-align: left;
+}
+
+.fundamental-history th,
+.fundamental-history td {
+  padding: 7px 8px;
+  border-top: 1px solid var(--rowline);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.fundamental-history th:first-child {
+  text-align: left;
+}
+
+.fundamental-history thead th {
+  color: var(--faint);
+  font-size: 8.5px;
+}
+
+.fundamental-company-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.fundamental-company-head,
+.fundamental-manual-card > div:first-child {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px;
+  border-bottom: 1px solid var(--rowline);
+}
+
+.fundamental-company-head > div:first-child,
+.fundamental-manual-card > div:first-child > strong {
+  min-width: 0;
+}
+
+.fundamental-company-head strong,
+.fundamental-manual-card strong {
+  display: block;
+  color: var(--ink2);
+  font: 700 12px 'DM Mono', monospace;
+}
+
+.fundamental-company-head span {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font: 10px 'DM Mono', monospace;
+}
+
+.fundamental-company-head .badge,
+.fundamental-manual-card .badge {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+.fundamental-manual-badges {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  margin-left: auto;
+  flex-direction: column;
+}
+
+.fundamental-manual-badges .badge {
+  margin-left: 0;
+}
+
+.fundamental-company-values {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.fundamental-mapping {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  background: var(--line);
+}
+
+.fundamental-mapping > div {
+  min-width: 0;
+  padding: 8px;
+  background: var(--surface);
+}
+
+.fundamental-mapping a {
+  color: var(--action);
+}
+
+.fundamental-caveats {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--accent);
+  background: var(--warnbg);
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.55;
+}
+
+.fundamental-caveats strong {
+  color: var(--warning-fg);
+  font: 700 9px 'DM Mono', monospace;
+  letter-spacing: 0.06em;
+}
+
+.fundamental-caveats p {
+  margin: 4px 0 0;
+}
+
+.fundamental-manual-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.fundamental-manual-card {
+  border-top-color: var(--warning);
+}
+
+.fundamental-manual-card.is-reviewed {
+  border-top-color: var(--action);
+}
+
+.fundamental-manual-card.is-last-good {
+  border-top-color: var(--warning);
+}
+
+.manual-value {
+  display: block;
+  padding: 9px 10px 0;
+  color: var(--ink);
+  font: 500 24px 'DM Mono', monospace;
+}
+
+.manual-evidence-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+}
+
+.manual-evidence-summary > span {
+  display: flex;
+  min-width: 0;
+  padding: 8px;
+  background: var(--white);
+  flex-direction: column;
+}
+
+.manual-evidence-summary small,
+.manual-record dt,
+.manual-paraphrase b,
+.manual-review-note b {
+  color: var(--faint);
+  font: 8.5px 'DM Mono', monospace;
+  letter-spacing: 0.05em;
+}
+
+.manual-evidence-summary strong {
+  margin-top: 3px;
+  color: var(--ink2);
+  font: 12px 'DM Mono', monospace;
+}
+
+.manual-record-list {
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+}
+
+.manual-record {
+  min-width: 0;
+  padding: 9px 10px;
+  background: var(--surface);
+}
+
+.manual-record-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.manual-record-head .badge {
+  margin-left: auto;
+}
+
+.manual-record-value {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.manual-record-value > span {
+  color: var(--ink);
+  font: 500 20px 'DM Mono', monospace;
+}
+
+.manual-record-value > small {
+  color: var(--muted);
+  font: 9px 'DM Mono', monospace;
+}
+
+.manual-record dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 10px;
+  margin: 8px 0 0;
+}
+
+.manual-record dd {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font: 9px/1.45 'DM Mono', monospace;
+  overflow-wrap: anywhere;
+}
+
+.manual-record a {
+  color: var(--action);
+}
+
+.manual-record .manual-paraphrase,
+.manual-record .manual-review-note {
+  margin: 7px 0 0;
+}
+
+.fundamental-manual-card p {
+  margin: 7px 10px 0;
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.fundamental-manual-card p b {
+  display: block;
+  color: var(--faint);
+  font: 9px 'DM Mono', monospace;
+  letter-spacing: 0.05em;
+}
+
+.fundamental-manual-card .metric-method {
+  margin-top: 9px;
+}
+
 .phase-section > .status-groups {
   margin-top: 12px;
 }
@@ -2487,6 +2877,18 @@ a:focus-visible,
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .fundamental-aggregate-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .fundamental-company-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fundamental-manual-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .p2-held-section .rights-gate-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2711,7 +3113,28 @@ a:focus-visible,
   .cftc-grid,
   .rights-gate-grid,
   .fragility-grid,
+  .fundamental-company-grid,
+  .fundamental-manual-grid,
   .p2-held-section .rights-gate-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fundamental-aggregate-stats,
+  .fundamental-company-values,
+  .fundamental-mapping,
+  .manual-record dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fundamental-method-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fundamental-method-actions .metric-method + .metric-method {
+    border-left: 0;
+  }
+
+  .manual-record dl {
     grid-template-columns: minmax(0, 1fr);
   }
 

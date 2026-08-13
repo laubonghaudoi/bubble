@@ -4,6 +4,7 @@ import yaml
 
 
 WORKFLOW_PATH = Path(".github/workflows/update-and-deploy.yml")
+PR_WORKFLOW_PATH = Path(".github/workflows/pull-request-checks.yml")
 
 
 def workflow():
@@ -75,9 +76,17 @@ def test_workflow_requires_source_configuration_and_stage_only_update():
 
     python_tests = steps["Run Python tests"]
     assert python_tests["env"]["BUBBLE_DATA_DIR"] == "${{ runner.temp }}/bubble-data-stage"
+    disclosure_check = steps["Validate reviewed P3 disclosure metadata"]
+    assert disclosure_check["env"] == {
+        "SEC_USER_AGENT": "${{ vars.SEC_USER_AGENT }}",
+    }
+    assert disclosure_check["run"] == (
+        "python -m pipeline.check_p3_disclosures --dry-run"
+    )
     for step in job["steps"]:
         if step.get("name") not in {
             "Require production source configuration",
+            "Validate reviewed P3 disclosure metadata",
             "Fetch, validate, transform, and write schema v2 stage",
         }:
             assert "FRED_API_KEY" not in step.get("env", {})
@@ -89,6 +98,7 @@ def test_workflow_orders_gates_before_atomic_promote_push_and_deploy():
     labels = [step.get("name") or step.get("uses") for step in job["steps"]]
     ordered = [
         "Require production source configuration",
+        "Validate reviewed P3 disclosure metadata",
         "Fetch, validate, transform, and write schema v2 stage",
         "Run Python tests",
         "Test and build against staged schema v2 data",
@@ -121,6 +131,25 @@ def test_workflow_orders_gates_before_atomic_promote_push_and_deploy():
     assert "git add public/data" in commit_script
     assert "git push" in commit_script
     assert "git push || true" not in commit_script
+
+
+def test_pull_request_workflow_reconciles_reviewed_disclosures_before_tests():
+    pr_workflow = yaml.load(
+        PR_WORKFLOW_PATH.read_text(),
+        Loader=yaml.BaseLoader,
+    )
+    job = pr_workflow["jobs"]["test"]
+    labels = [step.get("name") or step.get("run") or step.get("uses") for step in job["steps"]]
+    disclosure_label = "Validate reviewed P3 disclosure metadata"
+    disclosure = next(
+        step for step in job["steps"] if step.get("name") == disclosure_label
+    )
+    assert disclosure["env"] == {
+        "SEC_USER_AGENT": "${{ vars.SEC_USER_AGENT }}",
+    }
+    assert disclosure["run"] == "python -m pipeline.check_p3_disclosures --dry-run"
+    assert labels.index(disclosure_label) < labels.index("python -m pytest pipeline/tests")
+    assert "GITHUB_TOKEN" not in disclosure.get("env", {})
 
 
 def test_sec_form4_private_cache_is_actions_cache_only():

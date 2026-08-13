@@ -11,6 +11,8 @@ from enum import StrEnum
 import math
 import re
 from typing import Any, Mapping
+from urllib.parse import unquote, urlsplit
+from zoneinfo import ZoneInfo
 
 
 SCHEMA_VERSION = "2.0.0"
@@ -127,6 +129,312 @@ P2_COLLECTOR_SOURCES = {
         "sec_form4_nonderivative_ps_count_ratio_20d",
         "sec_edgar",
     ),
+}
+
+P3_AUTOMATED_METRICS = {
+    "hyperscaler_aggregate_cash_capex": ("USD bn", "quarterly"),
+    "hyperscaler_aggregate_cash_capex_yoy_acceleration_pp": (
+        "percentage_points",
+        "quarterly",
+    ),
+}
+P3_MANUAL_METRICS = frozenset(
+    {
+        "ai_upstream_orders_backlog",
+        "customer_prepayments_contract_commitments",
+        "take_or_pay_commitments",
+    }
+)
+P3_RETIRED_METRICS = frozenset(
+    {
+        "hyperscaler_capex",
+        "capex_acceleration",
+        "upstream_backlog",
+        "prepayments",
+        "take_or_pay",
+    }
+)
+P3_BLOCK_IDS = (
+    "aggregate_capex_acceleration",
+    "orders_backlog",
+    "prepayments_commitments",
+    "company_breadth",
+)
+P3_FUNDAMENTAL_DIRECTIONS = frozenset(
+    {"ACCELERATING", "DECELERATING", "FLAT", "UNKNOWN"}
+)
+P3_MANUAL_DIRECTIONS = frozenset({"UP", "DOWN", "FLAT", "MIXED", "UNKNOWN"})
+P3_AUTOMATED_STATISTICS = frozenset(
+    {
+        "aggregate_cash_capex_usd_bn",
+        "qoq_percent_change",
+        "yoy_percent_change",
+        "qoq_acceleration_pp",
+        "yoy_acceleration_pp",
+        "company_breadth",
+        "company_total",
+        "company_breadth_ratio",
+        "finance_lease_disclosure_breadth",
+        "manual_review_count",
+        "quarter_count",
+    }
+)
+P3_COMPANIES = {
+    "alphabet": (
+        "GOOGL",
+        "0001652044",
+        "PaymentsToAcquirePropertyPlantAndEquipment",
+    ),
+    "amazon": ("AMZN", "0001018724", "PaymentsToAcquireProductiveAssets"),
+    "meta": (
+        "META",
+        "0001326801",
+        "PaymentsToAcquirePropertyPlantAndEquipment",
+    ),
+    "microsoft": (
+        "MSFT",
+        "0000789019",
+        "PaymentsToAcquirePropertyPlantAndEquipment",
+    ),
+}
+P3_COMPANY_FISCAL_YEAR_END = {
+    "alphabet": (12, 31),
+    "amazon": (12, 31),
+    "meta": (12, 31),
+    "microsoft": (6, 30),
+}
+P3_COMPANY_FIELDS = frozenset(
+    {
+        "date",
+        "company_id",
+        "ticker",
+        "cik",
+        "fiscal_quarter",
+        "calendar_period_end",
+        "cash_capex_usd_bn",
+        "qoq_percent_change",
+        "yoy_percent_change",
+        "qoq_acceleration_pp",
+        "yoy_acceleration_pp",
+        "direction",
+        "tag",
+        "namespace",
+        "unit",
+        "accession",
+        "form",
+        "filed_at",
+        "accepted_at",
+        "filing_url",
+        "frame",
+        "context_start",
+        "context_end",
+        "quarterization_method",
+        "manual_review_required",
+        "finance_lease_additions_usd_bn",
+        "finance_lease_tag",
+        "finance_lease_accession",
+        "finance_lease_quarterization_method",
+    }
+)
+P3_METRIC_BASE_FIELDS = frozenset(
+    {
+        "metric_id",
+        "label",
+        "availability",
+        "value",
+        "unit",
+        "frequency",
+        "observation_date",
+        "released_at",
+        "updated_at",
+        "expected_next_update",
+        "changes",
+        "statistics",
+        "quality",
+        "context",
+        "source",
+        "methodology",
+        "short_series",
+        "provenance",
+        "unavailability_reason",
+    }
+)
+P3_SWITCH_FIELDS = frozenset(
+    {
+        "mode",
+        "assessment",
+        "available_blocks",
+        "total_blocks",
+        "confidence",
+        "summary",
+        "evidence_blocks",
+    }
+)
+P3_EVIDENCE_BLOCK_FIELDS = frozenset(
+    {
+        "id",
+        "label",
+        "available",
+        "triggered",
+        "status",
+        "summary",
+        "direction",
+        "confidence",
+    }
+)
+P3_QUALITY_FIELDS = frozenset(
+    {
+        "status",
+        "freshness",
+        "last_success_at",
+        "last_attempt_at",
+        "failure_reason",
+        "sample_size",
+    }
+)
+P3_CONTEXT_FIELDS = frozenset(
+    {"is_proxy", "confidence", "direction", "technical_flags"}
+)
+P3_SOURCE_FIELDS = frozenset(
+    {"source_id", "name", "url", "tier", "retrieved_at", "rights_note"}
+)
+P3_FUNDAMENTAL_FIELDS = frozenset(
+    {"aggregate_direction", "company_breadth", "company_total", "companies", "caveats"}
+)
+P3_MANIFEST_FIELDS = frozenset(
+    {
+        "metric_id",
+        "label",
+        "unit",
+        "frequency",
+        "layer",
+        "phase",
+        "role",
+        "availability",
+        "series_path",
+    }
+)
+P3_SERIES_FIELDS = frozenset(
+    {
+        "schema_version",
+        "metric_id",
+        "label",
+        "unit",
+        "frequency",
+        "availability",
+        "quality",
+        "observation_date",
+        "released_at",
+        "updated_at",
+        "expected_next_update",
+        "source",
+        "observations",
+    }
+)
+P3_COLLECTOR_SOURCE_FIELDS = frozenset(
+    {
+        "collector_id",
+        "name",
+        "url",
+        "tier",
+        "rights_note",
+        "status",
+        "freshness",
+        "observation_date",
+        "released_at",
+        "updated_at",
+        "last_success_at",
+        "last_attempt_at",
+        "expected_next_update",
+        "failure_reason",
+    }
+)
+P3_MANUAL_RECORD_FIELDS = frozenset(
+    {
+        "company_id",
+        "period_end",
+        "metric_id",
+        "direction",
+        "value",
+        "unit",
+        "yoy_pct",
+        "comparable",
+        "source_type",
+        "source_url",
+        "filing_accession",
+        "filing_accepted_at",
+        "as_of",
+        "reviewer",
+        "reviewed_at",
+        "paraphrase",
+        "review_note",
+    }
+)
+CANONICAL_COLLECTOR_IDS = frozenset(
+    {
+        "nyfed_rates",
+        "fred_iorb",
+        "fred_h41",
+        "treasury_tga",
+        "nyfed_on_rrp",
+        "nyfed_srf",
+        "treasury_auctions",
+        "cftc_tff_futures_only",
+        "fred_nonfinancial_equities_gdp",
+        "sec_form4_daily_index",
+        "sec_companyfacts_capex",
+    }
+)
+P3_QUARTERIZATION_METHODS = {
+    "1": "Q1_YTD",
+    "2": "H1_MINUS_Q1",
+    "3": "9M_MINUS_H1",
+    "4": "FY_MINUS_9M",
+}
+P3_AUTOMATED_FORMS = frozenset({"10-Q", "10-Q/A", "10-K", "10-K/A"})
+P3_AUTOMATED_FORMS_BY_QUARTER = {
+    1: frozenset({"10-Q", "10-Q/A"}),
+    2: frozenset({"10-Q", "10-Q/A"}),
+    3: frozenset({"10-Q", "10-Q/A"}),
+    4: frozenset({"10-K", "10-K/A"}),
+}
+P3_MANUAL_SOURCE_TYPES = frozenset(
+    {"10-Q", "10-Q/A", "10-K", "10-K/A", "8-K", "8-K/A", "DEF 14A"}
+)
+P3_MANUAL_VALUE_UNITS = frozenset(
+    {
+        "USD",
+        "USD mn",
+        "USD bn",
+        "count",
+        "units",
+        "percent",
+        "percentage_points",
+        "ratio",
+        "MW",
+        "GW",
+    }
+)
+P3_MANUAL_HOST_SUFFIXES = {
+    "microsoft": ("sec.gov", "microsoft.com"),
+    "alphabet": ("sec.gov", "abc.xyz", "alphabet.com"),
+    "amazon": ("sec.gov", "amazon.com", "aboutamazon.com"),
+    "meta": ("sec.gov", "meta.com"),
+}
+P3_MANUAL_MAX_AGE_DAYS = 120
+P3_SEC_SOURCE_METADATA = {
+    "source_id": "sec_edgar",
+    "name": "SEC EDGAR APIs and filing data",
+    "url": "https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data",
+    "tier": "OFFICIAL",
+    "rights_note": "Cite the filing and accession; do not republish long issuer-authored passages.",
+}
+P3_MANUAL_SOURCE_METADATA = {
+    "source_id": "manual_public_filings",
+    "name": "Human-reviewed public filings",
+    "url": "https://www.sec.gov/search-filings",
+    "tier": "OFFICIAL",
+    "rights_note": "Publish short factual paraphrases with filing URLs and accessions.",
 }
 
 
@@ -485,6 +793,1268 @@ def _validate_p2_collector_sources(
             raise ContractValidationError(
                 f"snapshot.sources.{collector_id} state/provenance must match {metric_id}"
             )
+
+
+def _p3_direction(value: Any) -> str:
+    if value is None:
+        return "UNKNOWN"
+    if value > 0:
+        return "ACCELERATING"
+    if value < 0:
+        return "DECELERATING"
+    return "FLAT"
+
+
+def _p3_common_direction(values: list[str]) -> str:
+    if not values or "UNKNOWN" in values:
+        return "UNKNOWN"
+    return values[0] if len(set(values)) == 1 else "MIXED"
+
+
+def _validate_p3_company(
+    value: Any,
+    path: str,
+    *,
+    expected_date: str,
+    generated_at: str | None = None,
+) -> Mapping[str, Any]:
+    company = _require_mapping(value, path)
+    if set(company) != P3_COMPANY_FIELDS:
+        raise ContractValidationError(f"{path} must use the exact P3 company fields")
+    company_id = _require_nonempty_string(company.get("company_id"), f"{path}.company_id")
+    if company_id not in P3_COMPANIES:
+        raise ContractValidationError(f"{path}.company_id is not a reviewed hyperscaler")
+    ticker, cik, tag = P3_COMPANIES[company_id]
+    expected = {
+        "date": expected_date,
+        "ticker": ticker,
+        "cik": cik,
+        "tag": tag,
+        "namespace": "us-gaap",
+        "unit": "USD",
+        "calendar_period_end": expected_date,
+        "context_end": expected_date,
+        "manual_review_required": False,
+    }
+    if any(company.get(field) != expected_value for field, expected_value in expected.items()):
+        raise ContractValidationError(f"{path} identity, tag, unit, or period does not match P3 contract")
+    for field in (
+        "cash_capex_usd_bn",
+        "qoq_percent_change",
+        "yoy_percent_change",
+        "qoq_acceleration_pp",
+        "yoy_acceleration_pp",
+        "finance_lease_additions_usd_bn",
+    ):
+        _validate_nullable_number(company.get(field), f"{path}.{field}")
+    if company.get("cash_capex_usd_bn") is None or company["cash_capex_usd_bn"] < 0:
+        raise ContractValidationError(f"{path}.cash_capex_usd_bn must be non-negative")
+    finance_value = company.get("finance_lease_additions_usd_bn")
+    if finance_value is not None and finance_value < 0:
+        raise ContractValidationError(f"{path}.finance_lease_additions_usd_bn must be non-negative")
+    direction = company.get("direction")
+    if direction not in P3_FUNDAMENTAL_DIRECTIONS or direction != _p3_direction(
+        company.get("yoy_acceleration_pp")
+    ):
+        raise ContractValidationError(f"{path}.direction must match YoY acceleration")
+    for field in (
+        "fiscal_quarter",
+        "accession",
+        "form",
+        "filing_url",
+        "quarterization_method",
+    ):
+        _require_nonempty_string(company.get(field), f"{path}.{field}")
+    fiscal_quarter = re.fullmatch(r"FY(\d{4})Q([1-4])", company["fiscal_quarter"])
+    if fiscal_quarter is None:
+        raise ContractValidationError(f"{path}.fiscal_quarter is invalid")
+    calendar_end = date.fromisoformat(expected_date)
+    quarter_days = {3: 31, 6: 30, 9: 30, 12: 31}
+    if (
+        calendar_end.month not in quarter_days
+        or calendar_end.day != quarter_days[calendar_end.month]
+    ):
+        raise ContractValidationError(f"{path}.calendar_period_end is not a quarter end")
+    if P3_COMPANY_FISCAL_YEAR_END[company_id] == (12, 31):
+        expected_fiscal_year = calendar_end.year
+        expected_fiscal_quarter = calendar_end.month // 3
+    else:
+        expected_fiscal_year = (
+            calendar_end.year + 1 if calendar_end.month > 6 else calendar_end.year
+        )
+        expected_fiscal_quarter = {9: 1, 12: 2, 3: 3, 6: 4}.get(
+            calendar_end.month
+        )
+    if (
+        expected_fiscal_quarter is None
+        or int(fiscal_quarter.group(1)) != expected_fiscal_year
+        or int(fiscal_quarter.group(2)) != expected_fiscal_quarter
+    ):
+        raise ContractValidationError(
+            f"{path}.fiscal_quarter does not match issuer fiscal calendar"
+        )
+    expected_quarterization = P3_QUARTERIZATION_METHODS[
+        str(expected_fiscal_quarter)
+    ]
+    if company["form"] not in P3_AUTOMATED_FORMS:
+        raise ContractValidationError(f"{path}.form is not an allowed Company Facts filing")
+    if company["form"] not in P3_AUTOMATED_FORMS_BY_QUARTER[
+        expected_fiscal_quarter
+    ]:
+        raise ContractValidationError(f"{path}.form does not match fiscal_quarter")
+    if company["quarterization_method"] != expected_quarterization:
+        raise ContractValidationError(
+            f"{path}.quarterization_method does not match fiscal_quarter"
+        )
+    if re.fullmatch(r"\d{10}-\d{2}-\d{6}", company["accession"]) is None:
+        raise ContractValidationError(f"{path}.accession must use canonical SEC form")
+    _validate_optional_date(company.get("filed_at"), f"{path}.filed_at")
+    _validate_required_utc_datetime(company.get("accepted_at"), f"{path}.accepted_at")
+    _validate_optional_date(company.get("context_start"), f"{path}.context_start")
+    if not isinstance(company.get("filed_at"), str) or not isinstance(
+        company.get("context_start"), str
+    ):
+        raise ContractValidationError(f"{path} filing and context dates are required")
+    filed_day = date.fromisoformat(company["filed_at"])
+    accepted_day = date.fromisoformat(company["accepted_at"][:10])
+    if (
+        filed_day < calendar_end
+        or accepted_day < calendar_end
+        or abs((filed_day - accepted_day).days) > 1
+    ):
+        raise ContractValidationError(
+            f"{path} filing/acceptance must follow context end and remain within one source-date day"
+        )
+    expected_context_start = (
+        f"{expected_fiscal_year}-01-01"
+        if P3_COMPANY_FISCAL_YEAR_END[company_id] == (12, 31)
+        else f"{expected_fiscal_year - 1}-07-01"
+    )
+    if company["context_start"] != expected_context_start:
+        raise ContractValidationError(
+            f"{path}.context_start does not match the fiscal YTD context"
+        )
+    if generated_at is not None and datetime.fromisoformat(
+        company["accepted_at"].replace("Z", "+00:00")
+    ) > datetime.fromisoformat(generated_at.replace("Z", "+00:00")):
+        raise ContractValidationError(f"{path}.accepted_at must not be future-dated")
+    _validate_p3_sec_filing_url(
+        company.get("filing_url"),
+        f"{path}.filing_url",
+        company_id=company_id,
+        accession=company["accession"],
+    )
+    _validate_optional_string(company.get("frame"), f"{path}.frame")
+    for field in (
+        "finance_lease_tag",
+        "finance_lease_accession",
+        "finance_lease_quarterization_method",
+    ):
+        _validate_optional_string(company.get(field), f"{path}.{field}")
+    if finance_value is None:
+        if any(
+            company.get(field) is not None
+            for field in (
+                "finance_lease_tag",
+                "finance_lease_accession",
+                "finance_lease_quarterization_method",
+            )
+        ):
+            raise ContractValidationError(f"{path} finance-lease metadata requires a value")
+    else:
+        if company.get("finance_lease_tag") != "RightOfUseAssetObtainedInExchangeForFinanceLeaseLiability":
+            raise ContractValidationError(f"{path}.finance_lease_tag is not reviewed")
+        accession = company.get("finance_lease_accession")
+        if not isinstance(accession, str) or re.fullmatch(r"\d{10}-\d{2}-\d{6}", accession) is None:
+            raise ContractValidationError(f"{path}.finance_lease_accession is invalid")
+        _require_nonempty_string(
+            company.get("finance_lease_quarterization_method"),
+            f"{path}.finance_lease_quarterization_method",
+        )
+        if company["finance_lease_quarterization_method"] != expected_quarterization:
+            raise ContractValidationError(
+                f"{path}.finance_lease_quarterization_method does not match fiscal_quarter"
+            )
+        if accession != company["accession"]:
+            raise ContractValidationError(
+                f"{path}.finance_lease_accession must match the cash filing accession"
+            )
+    return company
+
+
+def _validate_p3_sec_filing_url(
+    value: Any,
+    path: str,
+    *,
+    company_id: str,
+    accession: str,
+) -> None:
+    source_url = _require_nonempty_string(value, path)
+    try:
+        parsed = urlsplit(source_url)
+        port = parsed.port
+    except ValueError as exc:
+        raise ContractValidationError(f"{path} is not a valid public URL") from exc
+    hostname = (parsed.hostname or "").lower().rstrip(".")
+    if (
+        parsed.scheme != "https"
+        or not hostname
+        or parsed.username is not None
+        or parsed.password is not None
+        or port not in {None, 443}
+        or parsed.fragment
+        or parsed.path in {"", "/"}
+    ):
+        raise ContractValidationError(
+            f"{path} must be a document-level public HTTPS URL"
+        )
+    if hostname != "www.sec.gov":
+        raise ContractValidationError(f"{path} is not an allowlisted official source")
+    accession_digits = accession.replace("-", "")
+    decoded_path = unquote(parsed.path)
+    cik = P3_COMPANIES[company_id][1]
+    archive_prefix = f"/Archives/edgar/data/{int(cik)}/{accession_digits}/"
+    if (
+        parsed.query
+        or decoded_path != parsed.path
+        or any(segment in {".", ".."} for segment in decoded_path.split("/"))
+        or re.fullmatch(
+            re.escape(archive_prefix) + r"[^/]+\.html?",
+            decoded_path,
+            flags=re.IGNORECASE,
+        )
+        is None
+    ):
+        raise ContractValidationError(
+            f"{path} must be a direct SEC filing document matching accession and issuer CIK"
+        )
+
+
+def _validate_p3_manual_source_url(
+    value: Any,
+    path: str,
+    *,
+    company_id: str,
+    accession: str,
+) -> None:
+    _validate_p3_sec_filing_url(
+        value,
+        path,
+        company_id=company_id,
+        accession=accession,
+    )
+
+
+def _validate_p3_fundamental_details(
+    metric: Mapping[str, Any],
+    path: str,
+    *,
+    generated_at: str,
+) -> Mapping[str, Any]:
+    details = _require_mapping(metric.get("details"), f"{path}.details")
+    if set(details) != {"fundamental"}:
+        raise ContractValidationError(f"{path}.details must contain only fundamental")
+    fundamental = _require_mapping(details["fundamental"], f"{path}.details.fundamental")
+    if set(fundamental) != P3_FUNDAMENTAL_FIELDS:
+        raise ContractValidationError(
+            f"{path}.details.fundamental must use the exact P3 fields"
+        )
+    direction = fundamental.get("aggregate_direction")
+    if direction not in P3_FUNDAMENTAL_DIRECTIONS:
+        raise ContractValidationError(f"{path}.details.fundamental.aggregate_direction is invalid")
+    breadth = fundamental.get("company_breadth")
+    if isinstance(breadth, bool) or not isinstance(breadth, int) or not 0 <= breadth <= 4:
+        raise ContractValidationError(f"{path}.details.fundamental.company_breadth is invalid")
+    if fundamental.get("company_total") != 4:
+        raise ContractValidationError(f"{path}.details.fundamental.company_total must be 4")
+    companies = fundamental.get("companies")
+    if not isinstance(companies, list):
+        raise ContractValidationError(f"{path}.details.fundamental.companies must be a list")
+    if metric.get("value") is None:
+        if companies or direction != "UNKNOWN" or breadth != 0:
+            raise ContractValidationError(f"{path} failed/empty fundamental details must remain unknown")
+    else:
+        if len(companies) != 4 or {company.get("company_id") for company in companies if isinstance(company, Mapping)} != set(P3_COMPANIES):
+            raise ContractValidationError(f"{path} must expose exactly four company records")
+        day = metric.get("observation_date")
+        if not isinstance(day, str):
+            raise ContractValidationError(f"{path}.observation_date is required")
+        validated = [
+            _validate_p3_company(
+                company,
+                f"{path}.details.fundamental.companies[{index}]",
+                expected_date=day,
+                generated_at=generated_at,
+            )
+            for index, company in enumerate(companies)
+        ]
+        expected_direction = _p3_direction(metric["statistics"].get("yoy_acceleration_pp"))
+        expected_breadth = sum(
+            company.get("direction") == expected_direction
+            for company in validated
+            if company.get("direction") != "UNKNOWN"
+        ) if expected_direction != "UNKNOWN" else 0
+        if direction != expected_direction or breadth != expected_breadth:
+            raise ContractValidationError(f"{path} aggregate direction/breadth does not reconcile")
+    caveats = fundamental.get("caveats")
+    _validate_string_list(caveats, f"{path}.details.fundamental.caveats")
+    return fundamental
+
+
+def _validate_p3_manual_record(
+    value: Any,
+    path: str,
+    *,
+    metric_id: str,
+    point_date: str,
+    generated_at: str,
+) -> Mapping[str, Any]:
+    record = _require_mapping(value, path)
+    if set(record) != P3_MANUAL_RECORD_FIELDS:
+        raise ContractValidationError(f"{path} must use the exact 17-field manual contract")
+    if record.get("metric_id") != metric_id or record.get("company_id") not in P3_COMPANIES:
+        raise ContractValidationError(f"{path} manual metric/company identity is invalid")
+    for field in ("period_end", "as_of"):
+        _validate_optional_date(record.get(field), f"{path}.{field}")
+        if record.get(field) is None:
+            raise ContractValidationError(f"{path}.{field} is required")
+    if record["as_of"] > point_date:
+        raise ContractValidationError(f"{path}.as_of must not follow its aggregate point")
+    for field in ("filing_accepted_at", "reviewed_at"):
+        _validate_required_utc_datetime(record.get(field), f"{path}.{field}")
+    if not (record["period_end"] <= record["filing_accepted_at"][:10] <= record["as_of"] <= record["reviewed_at"][:10]):
+        raise ContractValidationError(f"{path} manual chronology is invalid")
+    if datetime.fromisoformat(record["filing_accepted_at"].replace("Z", "+00:00")) > datetime.fromisoformat(
+        record["reviewed_at"].replace("Z", "+00:00")
+    ):
+        raise ContractValidationError(f"{path} review cannot predate filing acceptance")
+    generated = datetime.fromisoformat(generated_at.replace("Z", "+00:00"))
+    if any(
+        datetime.fromisoformat(record[field].replace("Z", "+00:00")) > generated
+        for field in ("filing_accepted_at", "reviewed_at")
+    ):
+        raise ContractValidationError(f"{path} manual timestamps must not be future-dated")
+    direction = record.get("direction")
+    if direction not in {"UP", "DOWN", "FLAT", "UNKNOWN"}:
+        raise ContractValidationError(f"{path}.direction is invalid")
+    if not isinstance(record.get("comparable"), bool):
+        raise ContractValidationError(f"{path}.comparable must be boolean")
+    for field in ("value", "yoy_pct"):
+        _validate_nullable_number(record.get(field), f"{path}.{field}")
+    if record.get("value") is not None and record["value"] < 0:
+        raise ContractValidationError(f"{path}.value must be non-negative")
+    _validate_optional_string(record.get("unit"), f"{path}.unit")
+    if (record.get("value") is None) != (record.get("unit") is None):
+        raise ContractValidationError(f"{path}.value and unit must be jointly present or null")
+    if record.get("unit") is not None and record["unit"] not in P3_MANUAL_VALUE_UNITS:
+        raise ContractValidationError(f"{path}.unit is not allowlisted")
+    if not record["comparable"] and record.get("yoy_pct") is not None:
+        raise ContractValidationError(f"{path}.yoy_pct requires comparable=true")
+    for field in (
+        "source_type",
+        "source_url",
+        "filing_accession",
+        "reviewer",
+        "paraphrase",
+        "review_note",
+    ):
+        _require_nonempty_string(record.get(field), f"{path}.{field}")
+    if re.fullmatch(r"\d{10}-\d{2}-\d{6}", record["filing_accession"]) is None:
+        raise ContractValidationError(f"{path}.filing_accession is invalid")
+    if record["source_type"] not in P3_MANUAL_SOURCE_TYPES:
+        raise ContractValidationError(f"{path}.source_type is not allowlisted")
+    _validate_p3_manual_source_url(
+        record["source_url"],
+        f"{path}.source_url",
+        company_id=record["company_id"],
+        accession=record["filing_accession"],
+    )
+    for field, maximum in (("reviewer", 80), ("paraphrase", 280), ("review_note", 500)):
+        if len(record[field]) > maximum:
+            raise ContractValidationError(f"{path}.{field} exceeds the reviewed limit")
+    return record
+
+
+def _p3_manual_direction(records: list[Mapping[str, Any]]) -> str:
+    directions = [record["direction"] for record in records if record["comparable"]]
+    if not directions or "UNKNOWN" in directions:
+        return "UNKNOWN"
+    return directions[0] if len(set(directions)) == 1 else "MIXED"
+
+
+def _validate_p3_snapshot(
+    snapshot: Mapping[str, Any],
+    metrics: Mapping[str, Any],
+    sources: Mapping[str, Any],
+) -> None:
+    if set(sources) != CANONICAL_COLLECTOR_IDS:
+        missing = sorted(CANONICAL_COLLECTOR_IDS - set(sources))
+        extra = sorted(set(sources) - CANONICAL_COLLECTOR_IDS)
+        raise ContractValidationError(
+            f"snapshot.sources must use the exact automated collector set; missing={missing}, extra={extra}"
+        )
+    p3_collector = _require_mapping(
+        sources["sec_companyfacts_capex"],
+        "snapshot.sources.sec_companyfacts_capex",
+    )
+    if set(p3_collector) != P3_COLLECTOR_SOURCE_FIELDS:
+        raise ContractValidationError(
+            "sec_companyfacts_capex must use the exact collector source fields"
+        )
+    required_ids = set(P3_AUTOMATED_METRICS) | set(P3_MANUAL_METRICS)
+    missing = required_ids - metrics.keys()
+    if missing:
+        raise ContractValidationError(
+            "snapshot is missing canonical P3 metrics: " + ", ".join(sorted(missing))
+        )
+    retired = P3_RETIRED_METRICS & metrics.keys()
+    if retired:
+        raise ContractValidationError(
+            "snapshot contains retired P3 metric IDs: " + ", ".join(sorted(retired))
+        )
+    for metric_id in required_ids:
+        metric = _require_mapping(metrics[metric_id], f"snapshot.metrics.{metric_id}")
+        expected_fields = set(P3_METRIC_BASE_FIELDS)
+        if metric_id in P3_AUTOMATED_METRICS or metric.get("availability") == "ACTIVE_FREE":
+            expected_fields.add("details")
+        if set(metric) != expected_fields:
+            raise ContractValidationError(
+                f"{metric_id} must use the exact P3 metric fields"
+            )
+        for nested_name, expected_nested_fields in (
+            ("quality", P3_QUALITY_FIELDS),
+            ("context", P3_CONTEXT_FIELDS),
+            ("source", P3_SOURCE_FIELDS),
+            ("methodology", METHODOLOGY_FIELDS),
+        ):
+            nested = _require_mapping(
+                metric.get(nested_name), f"snapshot.metrics.{metric_id}.{nested_name}"
+            )
+            if set(nested) != set(expected_nested_fields):
+                raise ContractValidationError(
+                    f"{metric_id}.{nested_name} must use the exact P3 fields"
+                )
+        if metric.get("provenance") != [metric.get("source")]:
+            raise ContractValidationError(
+                f"{metric_id}.provenance must contain exactly its reviewed source"
+            )
+
+    automated: dict[str, Mapping[str, Any]] = {}
+    fundamentals: dict[str, Mapping[str, Any]] = {}
+    for metric_id, (unit, frequency) in P3_AUTOMATED_METRICS.items():
+        metric = _require_mapping(metrics[metric_id], f"snapshot.metrics.{metric_id}")
+        automated[metric_id] = metric
+        if (
+            metric.get("availability") != "ACTIVE_FREE"
+            or metric.get("unit") != unit
+            or metric.get("frequency") != frequency
+            or metric.get("expected_next_update") is not None
+            or metric.get("source", {}).get("source_id") != "sec_edgar"
+            or metric.get("context", {}).get("technical_flags") != []
+        ):
+            raise ContractValidationError(f"{metric_id} does not match the P3 automated contract")
+        if any(
+            metric.get("source", {}).get(field) != expected
+            for field, expected in P3_SEC_SOURCE_METADATA.items()
+        ):
+            raise ContractValidationError(
+                f"{metric_id} SEC source metadata does not match the registry"
+            )
+        stats = _require_mapping(metric.get("statistics"), f"{metric_id}.statistics")
+        if set(stats) != P3_AUTOMATED_STATISTICS:
+            raise ContractValidationError(f"{metric_id}.statistics must use the exact P3 fields")
+        for field in (
+            "company_breadth",
+            "company_total",
+            "finance_lease_disclosure_breadth",
+            "manual_review_count",
+            "quarter_count",
+        ):
+            value = stats[field]
+            if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+                raise ContractValidationError(f"{metric_id}.statistics.{field} must be a non-negative integer")
+        if stats["company_total"] != 4 or stats["company_breadth"] > 4 or stats["finance_lease_disclosure_breadth"] > 4:
+            raise ContractValidationError(f"{metric_id} company counts exceed the four-company contract")
+        ratio = stats["company_breadth_ratio"]
+        if ratio is not None and not 0 <= ratio <= 1:
+            raise ContractValidationError(f"{metric_id}.statistics.company_breadth_ratio is invalid")
+        if metric_id == "hyperscaler_aggregate_cash_capex":
+            expected_value = stats["aggregate_cash_capex_usd_bn"]
+        else:
+            expected_value = stats["yoy_acceleration_pp"]
+        if not _same_nullable_number(metric.get("value"), expected_value, tolerance=0.000002):
+            raise ContractValidationError(f"{metric_id}.value must match its endpoint statistic")
+        expected_direction = _p3_direction(stats["yoy_acceleration_pp"])
+        expected_confidence = (
+            "HIGH"
+            if metric["quality"].get("status") == "OK"
+            else "MEDIUM"
+            if metric.get("value") is not None
+            else "UNKNOWN"
+        )
+        if (
+            metric["context"].get("direction") != expected_direction
+            or metric["context"].get("confidence") != expected_confidence
+            or metric["context"].get("is_proxy") is not False
+        ):
+            raise ContractValidationError(
+                f"{metric_id} context direction/confidence must match its evidence state"
+            )
+        fundamentals[metric_id] = _validate_p3_fundamental_details(
+            metric,
+            f"snapshot.metrics.{metric_id}",
+            generated_at=str(snapshot["generated_at"]),
+        )
+        generated = datetime.fromisoformat(
+            str(snapshot["generated_at"]).replace("Z", "+00:00")
+        )
+        timestamp_fields = [
+            metric.get("updated_at"),
+            metric["quality"].get("last_success_at"),
+            metric["quality"].get("last_attempt_at"),
+            metric["source"].get("retrieved_at"),
+        ]
+        if any(
+            datetime.fromisoformat(value.replace("Z", "+00:00")) > generated
+            for value in timestamp_fields
+            if isinstance(value, str)
+        ):
+            raise ContractValidationError(
+                f"{metric_id} state timestamps must not follow generated_at"
+            )
+        if metric["source"].get("retrieved_at") != metric["quality"].get(
+            "last_attempt_at"
+        ):
+            raise ContractValidationError(
+                f"{metric_id} source.retrieved_at must equal quality.last_attempt_at"
+            )
+        success = metric["quality"].get("last_success_at")
+        attempt = metric["quality"].get("last_attempt_at")
+        if isinstance(success, str) and (
+            not isinstance(attempt, str)
+            or datetime.fromisoformat(success.replace("Z", "+00:00"))
+            > datetime.fromisoformat(attempt.replace("Z", "+00:00"))
+        ):
+            raise ContractValidationError(
+                f"{metric_id} last_success_at must not follow last_attempt_at"
+            )
+        if metric["quality"].get("status") == "OK":
+            if (
+                metric["quality"].get("failure_reason") is not None
+                or success is None
+                or success != attempt
+                or success != metric.get("updated_at")
+                or success != metric["source"].get("retrieved_at")
+            ):
+                raise ContractValidationError(
+                    f"{metric_id} successful automated state must share one success timestamp and no failure"
+                )
+        elif not isinstance(metric["quality"].get("failure_reason"), str) or not metric[
+            "quality"
+        ]["failure_reason"]:
+            raise ContractValidationError(
+                f"{metric_id} unsuccessful automated state must disclose its failure"
+            )
+    capex = automated["hyperscaler_aggregate_cash_capex"]
+    acceleration = automated[
+        "hyperscaler_aggregate_cash_capex_yoy_acceleration_pp"
+    ]
+    if capex["statistics"] != acceleration["statistics"] or capex.get("details") != acceleration.get("details"):
+        raise ContractValidationError("P3 automated metrics must share statistics and fundamental details")
+    for field in ("observation_date", "released_at", "updated_at", "expected_next_update"):
+        if capex.get(field) != acceleration.get(field):
+            raise ContractValidationError(f"P3 automated metrics must share {field}")
+    for field in (
+        "status",
+        "freshness",
+        "last_success_at",
+        "last_attempt_at",
+        "failure_reason",
+    ):
+        if capex["quality"].get(field) != acceleration["quality"].get(field):
+            raise ContractValidationError(
+                f"P3 automated metrics must share quality.{field}"
+            )
+    if capex["context"].get("confidence") != acceleration["context"].get(
+        "confidence"
+    ):
+        raise ContractValidationError(
+            "P3 automated metrics must share context.confidence"
+        )
+
+    manual_details: dict[str, Mapping[str, Any] | None] = {}
+    manual_healthy: dict[str, bool] = {}
+    for metric_id in P3_MANUAL_METRICS:
+        metric = _require_mapping(metrics[metric_id], f"snapshot.metrics.{metric_id}")
+        if metric.get("unit") != "mixed" or metric.get("frequency") != "quarterly" or metric.get("value") is not None:
+            raise ContractValidationError(f"{metric_id} must be a null-valued quarterly mixed-unit manual metric")
+        if metric.get("source", {}).get("source_id") != "manual_public_filings":
+            raise ContractValidationError(f"{metric_id} source must be manual_public_filings")
+        if any(
+            metric.get("source", {}).get(field) != expected
+            for field, expected in P3_MANUAL_SOURCE_METADATA.items()
+        ):
+            raise ContractValidationError(
+                f"{metric_id} manual source metadata does not match the registry"
+            )
+        if metric.get("expected_next_update") is not None or metric.get("context", {}).get("technical_flags") != []:
+            raise ContractValidationError(f"{metric_id} cannot invent a schedule or technical flags")
+        expected_manual_changes = {
+            "one_observation": None,
+            "five_observations": None,
+            "twenty_observations": None,
+            "eight_weeks": None,
+            "twelve_weeks": None,
+            "one_quarter": None,
+        }
+        if metric.get("changes") != expected_manual_changes:
+            raise ContractValidationError(
+                f"{metric_id}.changes must remain null for mixed-unit manual evidence"
+            )
+        availability = metric.get("availability")
+        details = metric.get("details")
+        if availability == "MANUAL_READY":
+            if (
+                metric.get("statistics") != {}
+                or metric.get("observation_date") is not None
+                or metric.get("released_at") is not None
+                or metric.get("updated_at") is not None
+                or metric.get("short_series") != []
+                or metric.get("quality", {}).get("status") != "NOT_APPLICABLE"
+                or metric.get("quality", {}).get("freshness") != "UNKNOWN"
+                or metric.get("quality", {}).get("last_success_at") is not None
+                or metric.get("quality", {}).get("last_attempt_at") is not None
+                or metric.get("source", {}).get("retrieved_at") is not None
+                or details is not None
+                or metric.get("context", {}).get("direction") != "UNKNOWN"
+                or metric.get("context", {}).get("confidence") != "UNKNOWN"
+            ):
+                raise ContractValidationError(f"{metric_id} MANUAL_READY state must remain empty and null")
+            manual_details[metric_id] = None
+            manual_healthy[metric_id] = False
+            continue
+        if availability != "ACTIVE_FREE":
+            raise ContractValidationError(f"{metric_id} availability must be MANUAL_READY or ACTIVE_FREE")
+        wrapped = _require_mapping(details, f"{metric_id}.details")
+        if set(wrapped) != {"manual_evidence"}:
+            raise ContractValidationError(f"{metric_id}.details must contain only manual_evidence")
+        detail = _require_mapping(wrapped["manual_evidence"], f"{metric_id}.details.manual_evidence")
+        expected_keys = {
+            "source_id", "network_enabled", "observation_date", "direction",
+            "record_count", "company_count", "comparable_count",
+            "latest_filing_accepted_at", "latest_reviewed_at", "records",
+        }
+        if set(detail) != expected_keys or detail.get("source_id") != "manual_public_filings" or detail.get("network_enabled") is not False:
+            raise ContractValidationError(f"{metric_id}.manual_evidence shape is invalid")
+        records = detail.get("records")
+        if not isinstance(records, list) or not records:
+            raise ContractValidationError(f"{metric_id}.manual_evidence.records must be non-empty")
+        observation_date = detail.get("observation_date")
+        _validate_optional_date(observation_date, f"{metric_id}.manual_evidence.observation_date")
+        if not isinstance(observation_date, str):
+            raise ContractValidationError(f"{metric_id}.manual_evidence.observation_date is required")
+        validated = [
+            _validate_p3_manual_record(
+                record,
+                f"{metric_id}.manual_evidence.records[{index}]",
+                metric_id=metric_id,
+                point_date=observation_date,
+                generated_at=str(snapshot["generated_at"]),
+            )
+            for index, record in enumerate(records)
+        ]
+        if len({record["company_id"] for record in validated}) != len(validated):
+            raise ContractValidationError(f"{metric_id} manual evidence must retain one latest row per company")
+        expected_direction = _p3_manual_direction(validated)
+        expected_fields = {
+            "record_count": len(validated),
+            "company_count": len({record["company_id"] for record in validated}),
+            "comparable_count": sum(bool(record["comparable"]) for record in validated),
+            "direction": expected_direction,
+            "observation_date": max(record["as_of"] for record in validated),
+            "latest_filing_accepted_at": max(record["filing_accepted_at"] for record in validated),
+            "latest_reviewed_at": max(record["reviewed_at"] for record in validated),
+        }
+        if any(detail.get(field) != expected for field, expected in expected_fields.items()):
+            raise ContractValidationError(f"{metric_id}.manual_evidence does not reconcile its records")
+        if metric.get("statistics") != {
+            "record_count": expected_fields["record_count"],
+            "company_count": expected_fields["company_count"],
+            "comparable_count": expected_fields["comparable_count"],
+        }:
+            raise ContractValidationError(f"{metric_id}.statistics must match manual evidence")
+        quality = metric["quality"]
+        if quality.get("status") not in {"OK", "STALE"} or quality.get("freshness") not in {"FRESH", "STALE"}:
+            raise ContractValidationError(f"{metric_id} active manual quality is invalid")
+        if (quality.get("status") == "OK") != (quality.get("freshness") == "FRESH"):
+            raise ContractValidationError(f"{metric_id} active manual health/freshness must align")
+        generated_at = datetime.fromisoformat(
+            str(snapshot["generated_at"]).replace("Z", "+00:00")
+        ).astimezone(ZoneInfo("America/New_York"))
+        age_days = (
+            generated_at.date() - date.fromisoformat(expected_fields["observation_date"])
+        ).days
+        if age_days < 0:
+            raise ContractValidationError(f"{metric_id} manual evidence is future-dated")
+        expected_health = "STALE" if age_days > P3_MANUAL_MAX_AGE_DAYS else "OK"
+        expected_freshness = "STALE" if age_days > P3_MANUAL_MAX_AGE_DAYS else "FRESH"
+        if (
+            quality.get("status") != expected_health
+            or quality.get("freshness") != expected_freshness
+            or quality.get("failure_reason") is not None
+        ):
+            raise ContractValidationError(
+                f"{metric_id} manual quality must match its 120-day evidence age"
+            )
+        if (
+            metric.get("observation_date") != expected_fields["observation_date"]
+            or metric.get("released_at") != expected_fields["latest_filing_accepted_at"]
+            or metric.get("updated_at") != expected_fields["latest_reviewed_at"]
+            or quality.get("last_success_at") != expected_fields["latest_reviewed_at"]
+            or quality.get("last_attempt_at") != expected_fields["latest_reviewed_at"]
+            or quality.get("sample_size") != expected_fields["record_count"]
+            or metric.get("source", {}).get("retrieved_at") != expected_fields["latest_reviewed_at"]
+            or metric.get("context", {}).get("direction") != expected_direction
+            or metric.get("context", {}).get("confidence")
+            != ("MEDIUM" if expected_health == "OK" else "UNKNOWN")
+        ):
+            raise ContractValidationError(f"{metric_id} active manual timestamps/state do not reconcile")
+        manual_details[metric_id] = detail
+        manual_healthy[metric_id] = quality.get("status") == "OK" and quality.get("freshness") == "FRESH"
+
+    switch = _require_mapping(
+        snapshot["switches"]["fundamental_exit"],
+        "snapshot.switches.fundamental_exit",
+    )
+    if set(switch) != P3_SWITCH_FIELDS:
+        raise ContractValidationError(
+            "fundamental_exit must use the exact evidence-only switch fields"
+        )
+    blocks = switch["evidence_blocks"]
+    if any(set(block) != P3_EVIDENCE_BLOCK_FIELDS for block in blocks):
+        raise ContractValidationError(
+            "fundamental_exit blocks must use the exact evidence-only fields"
+        )
+    if switch.get("mode") != "EVIDENCE_ONLY" or switch.get("assessment") is not None:
+        raise ContractValidationError("fundamental_exit must remain evidence-only with null assessment")
+    if tuple(block["id"] for block in blocks) != P3_BLOCK_IDS:
+        raise ContractValidationError("fundamental_exit evidence block IDs/order do not match P3 contract")
+    if any(block.get("triggered") is not None for block in blocks):
+        raise ContractValidationError("fundamental_exit evidence triggered must remain null")
+    automated_available = all(
+        metric["quality"]["status"] == "OK"
+        and metric["quality"]["freshness"] == "FRESH"
+        and metric["value"] is not None
+        and metric["statistics"]["quarter_count"] >= 12
+        for metric in automated.values()
+    )
+    aggregate_direction = fundamentals["hyperscaler_aggregate_cash_capex"]["aggregate_direction"] if automated_available else "UNKNOWN"
+    companies = fundamentals["hyperscaler_aggregate_cash_capex"]["companies"]
+    breadth_direction = _p3_common_direction([company["direction"] for company in companies]) if automated_available else "UNKNOWN"
+    orders = "ai_upstream_orders_backlog"
+    orders_available = manual_details[orders] is not None and manual_healthy[orders]
+    commitment_ids = (
+        "customer_prepayments_contract_commitments",
+        "take_or_pay_commitments",
+    )
+    active_commitments = [
+        metric_id for metric_id in commitment_ids if manual_details[metric_id] is not None
+    ]
+    commitments_available = bool(active_commitments) and all(
+        manual_healthy[metric_id] for metric_id in active_commitments
+    )
+    expected = [
+        (automated_available, aggregate_direction, aggregate_direction if automated_available else "UNAVAILABLE"),
+        (orders_available, manual_details[orders]["direction"] if orders_available else "UNKNOWN", "MANUAL_READY" if manual_details[orders] is None else "STALE" if not orders_available else manual_details[orders]["direction"]),
+        (commitments_available, _p3_common_direction([manual_details[metric_id]["direction"] for metric_id in active_commitments]) if commitments_available else "UNKNOWN", "MANUAL_READY" if not active_commitments else "STALE" if not commitments_available else _p3_common_direction([manual_details[metric_id]["direction"] for metric_id in active_commitments])),
+        (automated_available, breadth_direction, breadth_direction if automated_available else "UNAVAILABLE"),
+    ]
+    for index, block in enumerate(blocks):
+        available, direction, status = expected[index]
+        if (
+            block.get("available") != available
+            or block.get("direction") != direction
+            or block.get("status") != status
+            or block.get("confidence") != ("MEDIUM" if available else "UNKNOWN")
+        ):
+            raise ContractValidationError(f"fundamental_exit block {block['id']} does not match P3 evidence")
+    available_count = sum(item[0] for item in expected)
+    expected_confidence = "UNKNOWN" if available_count == 0 else "LOW" if available_count <= 2 else "MEDIUM"
+    if switch.get("available_blocks") != available_count or switch.get("total_blocks") != 4 or switch.get("confidence") != expected_confidence:
+        raise ContractValidationError("fundamental_exit coverage/confidence does not match P3 evidence")
+
+    if "manual_public_filings" in sources:
+        raise ContractValidationError("manual_public_filings must not count as an automated collector")
+    collector_id = "sec_companyfacts_capex"
+    if collector_id not in sources:
+        raise ContractValidationError("snapshot.sources.sec_companyfacts_capex is required")
+    source = _require_mapping(sources[collector_id], f"snapshot.sources.{collector_id}")
+    if source.get("collector_id") != collector_id:
+        raise ContractValidationError("sec_companyfacts_capex collector_id is invalid")
+    metric_sources = [metric["source"] for metric in automated.values()]
+    if any(metric_source.get("source_id") != "sec_edgar" for metric_source in metric_sources):
+        raise ContractValidationError("P3 automated metrics must use sec_edgar")
+    if any(
+        source.get(field) != metric_source.get(field)
+        for metric_source in metric_sources
+        for field in ("name", "url", "tier", "rights_note")
+    ):
+        raise ContractValidationError("P3 collector provenance must match both metrics")
+    health_rank = {"NOT_APPLICABLE": -1, "OK": 0, "NOT_RELEASED_YET": 1, "STALE": 2, "ERROR": 3}
+    freshness_rank = {"FRESH": 0, "LATE": 1, "STALE": 2, "UNKNOWN": 3}
+    qualities = [metric["quality"] for metric in automated.values()]
+    attempts = [quality["last_attempt_at"] for quality in qualities if quality["last_attempt_at"]]
+    successes = [quality["last_success_at"] for quality in qualities if quality["last_success_at"]]
+    failures = list(dict.fromkeys(quality["failure_reason"] for quality in qualities if quality["failure_reason"]))
+    updates = [metric["updated_at"] for metric in automated.values() if metric["updated_at"]]
+    expected_attempt = max(attempts, default=None)
+    expected_source = {
+        "status": max((quality["status"] for quality in qualities), key=health_rank.__getitem__),
+        "freshness": max((quality["freshness"] for quality in qualities), key=freshness_rank.__getitem__),
+        "observation_date": max((metric["observation_date"] for metric in automated.values() if metric["observation_date"]), default=None),
+        "released_at": max((metric["released_at"] for metric in automated.values() if metric["released_at"]), default=None),
+        "updated_at": expected_attempt if expected_attempt == snapshot.get("generated_at") else max(updates, default=None),
+        "last_success_at": min(successes) if successes and all(quality["status"] == "OK" for quality in qualities) else max(successes, default=None),
+        "last_attempt_at": expected_attempt,
+        "expected_next_update": None,
+        "failure_reason": "; ".join(failures) if failures else None,
+    }
+    if any(source.get(field) != expected_value for field, expected_value in expected_source.items()):
+        raise ContractValidationError("sec_companyfacts_capex state/provenance must match both metrics")
+
+
+def _p3_percent_change(current: Any, previous: Any) -> float | None:
+    if current is None or previous in (None, 0):
+        return None
+    return round((float(current) / float(previous) - 1) * 100, 6)
+
+
+def _validate_p3_publication(
+    snapshot: Mapping[str, Any],
+    manifest_by_id: Mapping[str, Mapping[str, Any]],
+    series_by_id: Mapping[str, Mapping[str, Any]],
+) -> None:
+    canonical_p3_ids = set(P3_AUTOMATED_METRICS) | set(P3_MANUAL_METRICS)
+    declared_p3_ids = {
+        metric_id
+        for metric_id, metric in manifest_by_id.items()
+        if metric.get("phase") == "P3" or metric.get("layer") == "fundamental_exit"
+    }
+    if declared_p3_ids != canonical_p3_ids:
+        raise ContractValidationError(
+            "manifest must declare exactly the five canonical P3 metrics"
+        )
+    for metric_id in canonical_p3_ids:
+        manifest_metric = manifest_by_id[metric_id]
+        series_metric = series_by_id[metric_id]
+        if set(manifest_metric) != P3_MANIFEST_FIELDS:
+            raise ContractValidationError(
+                f"{metric_id} manifest must use the exact P3 fields"
+            )
+        if set(series_metric) != P3_SERIES_FIELDS:
+            raise ContractValidationError(
+                f"{metric_id} series must use the exact P3 envelope"
+            )
+        if set(series_metric["quality"]) != P3_QUALITY_FIELDS:
+            raise ContractValidationError(
+                f"{metric_id} series quality must use the exact P3 fields"
+            )
+        if set(series_metric["source"]) != P3_SOURCE_FIELDS:
+            raise ContractValidationError(
+                f"{metric_id} series source must use the exact P3 fields"
+            )
+        if manifest_metric.get("phase") != "P3" or manifest_metric.get("layer") != "fundamental_exit":
+            raise ContractValidationError(f"{metric_id} manifest phase/layer must be P3 fundamental_exit")
+
+    capex_id = "hyperscaler_aggregate_cash_capex"
+    acceleration_id = "hyperscaler_aggregate_cash_capex_yoy_acceleration_pp"
+    capex_series = series_by_id[capex_id]
+    acceleration_series = series_by_id[acceleration_id]
+    capex_points = capex_series["observations"]
+    acceleration_points = acceleration_series["observations"]
+    if len(capex_points) != len(acceleration_points) or len(capex_points) not in {0} and len(capex_points) < 12:
+        raise ContractValidationError("P3 automated series must be empty together or contain at least 12 quarters")
+    point_fields = {
+        "date", "value", "aggregate_cash_capex_usd_bn", "qoq_percent_change",
+        "yoy_percent_change", "qoq_acceleration_pp", "yoy_acceleration_pp",
+        "aggregate_direction", "company_breadth", "company_total",
+        "company_breadth_ratio", "finance_lease_disclosure_breadth",
+        "manual_review_count", "companies",
+    }
+    previous: Mapping[str, Any] | None = None
+    by_ordinal: dict[int, Mapping[str, Any]] = {}
+    company_by_ordinal: dict[str, dict[int, Mapping[str, Any]]] = {
+        company_id: {} for company_id in P3_COMPANIES
+    }
+    for index, (capex_point, acceleration_point) in enumerate(
+        zip(capex_points, acceleration_points, strict=True)
+    ):
+        path = f"{capex_id}.observations[{index}]"
+        if set(capex_point) != point_fields or set(acceleration_point) != point_fields:
+            raise ContractValidationError(f"{path} must use the exact P3 point fields")
+        if any(
+            capex_point.get(field) != acceleration_point.get(field)
+            for field in point_fields - {"value"}
+        ):
+            raise ContractValidationError(f"{path} and acceleration series must share one base point")
+        day = capex_point["date"]
+        parsed = date.fromisoformat(day)
+        quarter_days = {3: 31, 6: 30, 9: 30, 12: 31}
+        if parsed.month not in quarter_days or parsed.day != quarter_days[parsed.month]:
+            raise ContractValidationError(f"{path}.date must be a calendar quarter end")
+        ordinal = parsed.year * 4 + (parsed.month - 1) // 3
+        if previous is not None and ordinal != max(by_ordinal) + 1:
+            raise ContractValidationError("P3 automated observations must be consecutive quarters")
+        companies = capex_point.get("companies")
+        if not isinstance(companies, list) or len(companies) != 4:
+            raise ContractValidationError(f"{path}.companies must contain four records")
+        validated = [
+            _validate_p3_company(
+                company,
+                f"{path}.companies[{company_index}]",
+                expected_date=day,
+                generated_at=str(snapshot["generated_at"]),
+            )
+            for company_index, company in enumerate(companies)
+        ]
+        if {company["company_id"] for company in validated} != set(P3_COMPANIES):
+            raise ContractValidationError(f"{path}.companies identities are incomplete")
+        for company in validated:
+            company_path = f"{path}.companies[{company['company_id']}]"
+            history = company_by_ordinal[company["company_id"]]
+            prior_company = history.get(ordinal - 1)
+            year_ago_company = history.get(ordinal - 4)
+            if prior_company is not None:
+                expected_company_qoq = _p3_percent_change(
+                    company["cash_capex_usd_bn"],
+                    prior_company["cash_capex_usd_bn"],
+                )
+                if not _same_nullable_number(
+                    company.get("qoq_percent_change"),
+                    expected_company_qoq,
+                    tolerance=0.000002,
+                ):
+                    raise ContractValidationError(
+                        f"{company_path}.qoq_percent_change does not reconcile"
+                    )
+                expected_company_qoq_acceleration = (
+                    round(
+                        float(expected_company_qoq)
+                        - float(prior_company["qoq_percent_change"]),
+                        6,
+                    )
+                    if expected_company_qoq is not None
+                    and prior_company.get("qoq_percent_change") is not None
+                    else None
+                )
+                if not _same_nullable_number(
+                    company.get("qoq_acceleration_pp"),
+                    expected_company_qoq_acceleration,
+                    tolerance=0.000002,
+                ):
+                    raise ContractValidationError(
+                        f"{company_path}.qoq_acceleration_pp does not reconcile"
+                    )
+            elif (
+                company.get("qoq_percent_change") is not None
+                or company.get("qoq_acceleration_pp") is not None
+            ):
+                raise ContractValidationError(
+                    f"{company_path} leading QoQ fields require visible prior-quarter provenance"
+                )
+            if year_ago_company is not None:
+                expected_company_yoy = _p3_percent_change(
+                    company["cash_capex_usd_bn"],
+                    year_ago_company["cash_capex_usd_bn"],
+                )
+                if not _same_nullable_number(
+                    company.get("yoy_percent_change"),
+                    expected_company_yoy,
+                    tolerance=0.000002,
+                ):
+                    raise ContractValidationError(
+                        f"{company_path}.yoy_percent_change does not reconcile"
+                    )
+                expected_company_yoy_acceleration = (
+                    round(
+                        float(expected_company_yoy)
+                        - float(prior_company["yoy_percent_change"]),
+                        6,
+                    )
+                    if expected_company_yoy is not None
+                    and prior_company is not None
+                    and prior_company.get("yoy_percent_change") is not None
+                    else None
+                )
+                if not _same_nullable_number(
+                    company.get("yoy_acceleration_pp"),
+                    expected_company_yoy_acceleration,
+                    tolerance=0.000002,
+                ):
+                    raise ContractValidationError(
+                        f"{company_path}.yoy_acceleration_pp does not reconcile"
+                    )
+            elif (
+                company.get("yoy_percent_change") is not None
+                or company.get("yoy_acceleration_pp") is not None
+            ):
+                raise ContractValidationError(
+                    f"{company_path} leading YoY fields require visible year-ago provenance"
+                )
+            history[ordinal] = company
+        aggregate = round(sum(float(company["cash_capex_usd_bn"]) for company in validated), 6)
+        prior_quarter = previous.get("aggregate_cash_capex_usd_bn") if previous else None
+        year_ago = by_ordinal.get(ordinal - 4)
+        expected_qoq = _p3_percent_change(aggregate, prior_quarter)
+        expected_yoy = _p3_percent_change(
+            aggregate,
+            year_ago.get("aggregate_cash_capex_usd_bn") if year_ago else None,
+        )
+        expected_qoq_acceleration = (
+            round(expected_qoq - float(previous["qoq_percent_change"]), 6)
+            if expected_qoq is not None and previous is not None and previous.get("qoq_percent_change") is not None
+            else None
+        )
+        expected_yoy_acceleration = (
+            round(expected_yoy - float(previous["yoy_percent_change"]), 6)
+            if expected_yoy is not None and previous is not None and previous.get("yoy_percent_change") is not None
+            else None
+        )
+        expected_direction = _p3_direction(expected_yoy_acceleration)
+        known_directions = [company["direction"] for company in validated if company["direction"] != "UNKNOWN"]
+        expected_breadth = sum(direction == expected_direction for direction in known_directions) if expected_direction != "UNKNOWN" else 0
+        expected_breadth_ratio = (
+            round(expected_breadth / len(known_directions), 6)
+            if expected_direction != "UNKNOWN" and known_directions
+            else None
+        )
+        expected_values = {
+            "aggregate_cash_capex_usd_bn": aggregate,
+            "qoq_percent_change": expected_qoq,
+            "yoy_percent_change": expected_yoy,
+            "qoq_acceleration_pp": expected_qoq_acceleration,
+            "yoy_acceleration_pp": expected_yoy_acceleration,
+            "aggregate_direction": expected_direction,
+            "company_breadth": expected_breadth,
+            "company_total": 4,
+            "company_breadth_ratio": expected_breadth_ratio,
+            "finance_lease_disclosure_breadth": sum(company["finance_lease_additions_usd_bn"] is not None for company in validated),
+            "manual_review_count": 0,
+        }
+        for field, expected_value in expected_values.items():
+            actual = capex_point.get(field)
+            if isinstance(expected_value, (int, float)) and not isinstance(expected_value, bool):
+                if not _same_nullable_number(actual, expected_value, tolerance=0.000002):
+                    raise ContractValidationError(f"{path}.{field} does not reconcile")
+            elif actual != expected_value:
+                raise ContractValidationError(f"{path}.{field} does not reconcile")
+        if not _same_nullable_number(capex_point.get("value"), aggregate, tolerance=0.000002):
+            raise ContractValidationError(f"{path}.value must equal aggregate cash CapEx")
+        if not _same_nullable_number(
+            acceleration_point.get("value"), expected_yoy_acceleration, tolerance=0.000002
+        ):
+            raise ContractValidationError(f"{acceleration_id}.observations[{index}].value must equal YoY acceleration")
+        by_ordinal[ordinal] = capex_point
+        previous = capex_point
+
+    latest = capex_points[-1] if capex_points else None
+    expected_statistics = {
+        field: latest.get(field) if latest else None
+        for field in P3_AUTOMATED_STATISTICS - {"quarter_count"}
+    }
+    if latest is None:
+        expected_statistics.update(
+            {
+                "company_breadth": 0,
+                "company_total": 4,
+                "finance_lease_disclosure_breadth": 0,
+                "manual_review_count": 0,
+            }
+        )
+    expected_statistics["quarter_count"] = len(capex_points)
+    for metric_id in (capex_id, acceleration_id):
+        metric = snapshot["metrics"][metric_id]
+        for field, expected_value in expected_statistics.items():
+            if not _same_nullable_number(metric["statistics"].get(field), expected_value, tolerance=0.000002):
+                raise ContractValidationError(f"{metric_id}.statistics.{field} must match full series")
+        observations = series_by_id[metric_id]["observations"]
+        values = [point["value"] for point in observations if point["value"] is not None]
+        expected_change = (
+            round(float(values[-1]) - float(values[-2]), 6)
+            if len(values) >= 2
+            else None
+        )
+        expected_changes = {
+            "one_observation": expected_change,
+            "five_observations": (
+                round(float(values[-1]) - float(values[-6]), 6)
+                if len(values) >= 6
+                else None
+            ),
+            "twenty_observations": (
+                round(float(values[-1]) - float(values[-21]), 6)
+                if len(values) >= 21
+                else None
+            ),
+            "eight_weeks": None,
+            "twelve_weeks": None,
+            "one_quarter": expected_change,
+        }
+        if set(metric["changes"]) != set(expected_changes) or any(
+            not _same_nullable_number(
+                metric["changes"].get(field),
+                expected_value,
+                tolerance=0.000002,
+            )
+            for field, expected_value in expected_changes.items()
+        ):
+            raise ContractValidationError(
+                f"{metric_id}.changes must match its full quarterly series"
+            )
+        expected_sample = sum(point["value"] is not None for point in observations)
+        if metric["quality"].get("sample_size") != expected_sample:
+            raise ContractValidationError(f"{metric_id}.quality.sample_size must match full series")
+    if latest:
+        expected_release = max(company["accepted_at"] for company in latest["companies"])
+        if capex_series.get("released_at") != expected_release or acceleration_series.get("released_at") != expected_release:
+            raise ContractValidationError("P3 automated released_at must match latest company filings")
+        for metric_id in (capex_id, acceleration_id):
+            fundamental = snapshot["metrics"][metric_id]["details"]["fundamental"]
+            if (
+                fundamental["aggregate_direction"] != latest["aggregate_direction"]
+                or fundamental["company_breadth"] != latest["company_breadth"]
+                or fundamental["company_total"] != 4
+                or fundamental["companies"] != latest["companies"]
+            ):
+                raise ContractValidationError(f"{metric_id}.details must match full-series endpoint")
+
+    for metric_id in P3_MANUAL_METRICS:
+        metric = snapshot["metrics"][metric_id]
+        series = series_by_id[metric_id]
+        observations = series["observations"]
+        if metric["availability"] == "MANUAL_READY":
+            if observations:
+                raise ContractValidationError(f"{metric_id} MANUAL_READY series must be empty")
+            continue
+        validated_points: list[tuple[Mapping[str, Any], list[Mapping[str, Any]]]] = []
+        record_versions: dict[tuple[Any, ...], Mapping[str, Any]] = {}
+        records_by_identity: dict[tuple[Any, ...], Mapping[str, Any]] = {}
+        latest_point: Mapping[str, Any] | None = None
+        for index, point in enumerate(observations):
+            path = f"{metric_id}.observations[{index}]"
+            expected_fields = {
+                "date", "value", "direction", "record_count",
+                "company_count", "comparable_count", "records",
+            }
+            if set(point) != expected_fields or point.get("value") is not None:
+                raise ContractValidationError(f"{path} must use the exact null-valued manual point shape")
+            records = point.get("records")
+            if not isinstance(records, list) or not records:
+                raise ContractValidationError(f"{path}.records must be non-empty")
+            validated = [
+                _validate_p3_manual_record(
+                    record,
+                    f"{path}.records[{record_index}]",
+                    metric_id=metric_id,
+                    point_date=point["date"],
+                    generated_at=str(snapshot["generated_at"]),
+                )
+                for record_index, record in enumerate(records)
+            ]
+            if len({record["company_id"] for record in validated}) != len(validated):
+                raise ContractValidationError(f"{path} must contain one latest record per company")
+            expected_direction = _p3_manual_direction(validated)
+            expected_counts = {
+                "record_count": len(validated),
+                "company_count": len({record["company_id"] for record in validated}),
+                "comparable_count": sum(bool(record["comparable"]) for record in validated),
+                "direction": expected_direction,
+            }
+            if any(point.get(field) != value for field, value in expected_counts.items()):
+                raise ContractValidationError(f"{path} counts/direction do not reconcile")
+            for record in validated:
+                identity = (
+                    record["company_id"],
+                    record["period_end"],
+                    record["metric_id"],
+                    record["filing_accession"],
+                )
+                existing_identity = records_by_identity.get(identity)
+                if existing_identity is not None and existing_identity != record:
+                    raise ContractValidationError(
+                        f"{path} redefines one manual CSV record identity"
+                    )
+                records_by_identity[identity] = record
+                version_key = (
+                    record["company_id"],
+                    record["as_of"],
+                    record["period_end"],
+                    record["filing_accepted_at"],
+                    record["reviewed_at"],
+                    record["filing_accession"],
+                )
+                existing = record_versions.get(version_key)
+                if existing is not None and existing != record:
+                    raise ContractValidationError(
+                        f"{path} contains conflicting versions of one reviewed record"
+                    )
+                record_versions[version_key] = record
+            validated_points.append((point, validated))
+            latest_point = point
+        if latest_point is None:
+            raise ContractValidationError(f"{metric_id} ACTIVE_FREE series must be non-empty")
+        record_pool = list(record_versions.values())
+        expected_point_dates = sorted({record["as_of"] for record in record_pool})
+        actual_point_dates = [point["date"] for point, _ in validated_points]
+        if actual_point_dates != expected_point_dates:
+            raise ContractValidationError(
+                f"{metric_id} manual points must equal the reviewed as-of dates"
+            )
+        for point, _ in validated_points:
+            point_day = date.fromisoformat(point["date"])
+            latest_by_company: dict[str, Mapping[str, Any]] = {}
+            for record in record_pool:
+                record_day = date.fromisoformat(record["as_of"])
+                if (
+                    record_day > point_day
+                    or (point_day - record_day).days > P3_MANUAL_MAX_AGE_DAYS
+                ):
+                    continue
+                current = latest_by_company.get(record["company_id"])
+                record_key = (
+                    record["as_of"],
+                    record["period_end"],
+                    record["filing_accepted_at"],
+                    record["reviewed_at"],
+                    record["filing_accession"],
+                )
+                current_key = (
+                    current["as_of"],
+                    current["period_end"],
+                    current["filing_accepted_at"],
+                    current["reviewed_at"],
+                    current["filing_accession"],
+                ) if current is not None else None
+                if current_key is None or record_key > current_key:
+                    latest_by_company[record["company_id"]] = record
+            expected_records = [
+                latest_by_company[company_id]
+                for company_id in sorted(latest_by_company)
+            ]
+            if point["records"] != expected_records:
+                raise ContractValidationError(
+                    f"{metric_id} manual point {point['date']} does not use cumulative latest evidence"
+                )
+        detail = metric["details"]["manual_evidence"]
+        if (
+            detail["records"] != latest_point["records"]
+            or detail["observation_date"] != latest_point["date"]
+            or detail["direction"] != latest_point["direction"]
+            or detail["record_count"] != latest_point["record_count"]
+            or detail["company_count"] != latest_point["company_count"]
+            or detail["comparable_count"] != latest_point["comparable_count"]
+        ):
+            raise ContractValidationError(f"{metric_id}.manual_evidence must match full-series endpoint")
 
 
 METHODOLOGY_FIELDS = frozenset(
@@ -1295,6 +2865,21 @@ def validate_snapshot(snapshot: Mapping[str, Any]) -> None:
                 raise ContractValidationError(
                     f"snapshot.alerts[{index}].{field} must be a string"
                 )
+    if liquidity_assessment == "NEUTRAL":
+        if alerts:
+            raise ContractValidationError(
+                "snapshot.alerts must be empty when Liquidity Fuel is NEUTRAL"
+            )
+    elif (
+        len(alerts) != 1
+        or alerts[0].get("level") != liquidity_assessment
+        or alerts[0].get("title") != "Liquidity Fuel P0 assessment"
+        or alerts[0].get("detail")
+        != "技術事件只降低 confidence；severity 由獨立 evidence blocks 決定。"
+    ):
+        raise ContractValidationError(
+            "snapshot.alerts must contain only the Liquidity Fuel P0 assessment"
+        )
 
     explanations = _require_mapping(
         snapshot.get("explanations"), "snapshot.explanations"
@@ -1325,6 +2910,7 @@ def validate_snapshot(snapshot: Mapping[str, Any]) -> None:
         _require_nonempty_string(source_id, "snapshot.sources key")
         _validate_collector_source(source, f"snapshot.sources.{source_id}")
     _validate_p2_collector_sources(snapshot, metrics, sources)
+    _validate_p3_snapshot(snapshot, metrics, sources)
 
     source_health = _require_mapping(
         snapshot.get("source_health"), "snapshot.source_health"
@@ -1734,3 +3320,4 @@ def validate_publication(
             raise ContractValidationError(
                 f"{metric_id}.observation_date must match the full-series endpoint"
             )
+    _validate_p3_publication(snapshot, manifest_by_id, series_by_id)
