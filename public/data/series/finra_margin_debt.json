@@ -15,7 +15,7 @@
     "status": "NOT_APPLICABLE"
   },
   "released_at": null,
-  "schema_version": "2.0.0",
+  "schema_version": "2.1.0",
   "source": {
     "name": null,
     "retrieved_at": null,

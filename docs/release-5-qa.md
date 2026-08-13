@@ -18,7 +18,7 @@ Baseline commit: `55e9d3f7b517ccea9f5c0257f1ba5a39f5a08a33`
 
 - Built an offline `manual` group stage from the checked-in last-good full series; no collector network call, JSON hand edit, workflow change, push, or deployment was used.
 - `load_stage` revalidated the complete candidate before promotion. The independent stage frontend checkout used exactly that candidate under `public/data` before local atomic promotion.
-- Candidate: generated `2026-08-13T08:05:03.154394Z`; audited overall `UNAVAILABLE`; existing alert count `1`; independent video model `GREEN / LAST_GOOD / LOW`; Yellow, Red, and Extreme all false.
+- After the scheduled production refresh advanced `main`, the release branch was rebased onto bot data commit `73f2929` and the offline stage was rebuilt from that newer last-good bundle. Publication candidate: generated `2026-08-13T14:24:43.862717Z`; audited overall `UNAVAILABLE`; existing alert count `1`; independent video model `GREEN / LAST_GOOD / LOW`; Yellow, Red, and Extreme all false.
 - A direct pre/post comparison confirms `overall_assessment`, the complete audited `composite`, snapshot alerts, and standalone alert content are byte-equivalent after removing only schema/generation timestamps.
 - Python suite against the candidate and again after promotion: **477 passed**.
 - Frontend Vitest after the final integration: **58 passed** across three files. Coverage includes all video statuses and data statuses, 2.0 hard rejection, tampered model rejection, formula copy/routes/source links, deep-link focus, threshold propagation, domain isolation, zero-line dedupe, SRF marker/tooltips, and degraded fallback metadata.
@@ -28,6 +28,8 @@ Baseline commit: `55e9d3f7b517ccea9f5c0257f1ba5a39f5a08a33`
 ## Rendered browser QA
 
 The existing Bloomberg-editorial interface was the visual reference. The new work deliberately reuses its black status bar, square panels, mono data labels, 1px rules, orange action accent, and compact information density.
+
+The screenshot set was captured against the equivalent `2026-08-13T08:05:03.154394Z` candidate before the final remote-data rebase. The rebased candidate changed operational timestamps only; its model status, displayed metric values, formula outcomes, tests, build, and layout code are unchanged.
 
 | Requested viewport | Result |
 | --- | --- |
