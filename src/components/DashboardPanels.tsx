@@ -12,11 +12,13 @@ import type {
   CollectorSource,
   FundamentalCompanyDetail,
   FundamentalSeriesPoint,
+  FormulaClause,
   HealthStatus,
   ManualEvidenceRecord,
   Metric,
   Snapshot,
   SwitchState,
+  VideoP0Model,
 } from '../types';
 import {
   AVAILABILITY_LABELS,
@@ -33,7 +35,6 @@ import {
   P3_MANUAL_IDS,
   ROUTES,
   TAPE_GROUPS,
-  THRESHOLD_BP,
   TICKERS,
   changePresentation,
   formatSignedDelta,
@@ -45,7 +46,15 @@ import {
   type SeriesMap,
   windowPoints,
 } from '../dashboard';
-import { MainMetricChart, OVERLAY_CONFIG, RateOverlayChart, Sparkline } from './Charts';
+import {
+  MainMetricChart,
+  OVERLAY_CONFIG,
+  RateOverlayChart,
+  Sparkline,
+  type ChartPoint,
+  type ReferenceLine,
+  type SrfAlertWindow,
+} from './Charts';
 
 const TAPE_IDS = TAPE_GROUPS.flatMap(({ ids }) => [...ids]);
 const BALANCE_IDS = ['fed_total_assets', 'reserve_balances', 'tga_daily', 'tga_weekly_h41'] as const;
@@ -57,21 +66,16 @@ const UNIT_LABEL: Record<string, string> = {
   percent_open_interest: 'NET % OPEN INTEREST',
   'USD bn': 'USD BILLIONS',
 };
-const RESERVE_REFERENCE_LINES = [
-  { value: 2900, label: '參考區 2.9T' },
-  { value: 2800, label: '參考區 2.8T' },
-  { value: 2500, label: '參考區 2.5T' },
-] as const;
 const LAST_GOOD_NOTE = '最後成功值，並非今日新值';
 
 type StatusTone = 'positive' | 'neutral' | 'warning' | 'negative' | 'unavailable';
 
 function statusTone(status: string | null | undefined): StatusTone {
   const value = status?.toUpperCase() ?? '';
-  if (['OK', 'NORMAL', 'AMPLE', 'ACTIVE', 'FRESH', 'ACTIVE_FREE', 'ACTIVE_PROXY', 'RISING', 'ACCELERATING', 'UP'].includes(value)) return 'positive';
-  if (['NEUTRAL', 'UNKNOWN', 'NOT_APPLICABLE', 'FLAT'].includes(value)) return 'neutral';
-  if (['WATCH', 'ELEVATED', 'PARTIAL', 'STALE', 'LATE', 'NOT_RELEASED_YET', 'MANUAL_READY', 'MIXED', 'DECELERATING'].includes(value)) return 'warning';
-  if (['TIGHTENING', 'WARNING', 'STRESS', 'ERROR', 'FALLING', 'CONTRACTING', 'DOWN'].includes(value)) return 'negative';
+  if (['OK', 'NORMAL', 'AMPLE', 'ACTIVE', 'FRESH', 'ACTIVE_FREE', 'ACTIVE_PROXY', 'RISING', 'ACCELERATING', 'UP', 'GREEN', 'CURRENT', 'MET', 'TRIGGERED'].includes(value)) return 'positive';
+  if (['NEUTRAL', 'UNKNOWN', 'NOT_APPLICABLE', 'FLAT', 'NOT MET', 'NOT TRIGGERED'].includes(value)) return 'neutral';
+  if (['WATCH', 'ELEVATED', 'PARTIAL', 'STALE', 'LATE', 'LAST_GOOD', 'LAST-GOOD', 'NOT_RELEASED_YET', 'MANUAL_READY', 'MIXED', 'DECELERATING', 'YELLOW', 'REVIEW_REQUIRED', 'REVIEW REQUIRED'].includes(value)) return 'warning';
+  if (['TIGHTENING', 'WARNING', 'STRESS', 'ERROR', 'FALLING', 'CONTRACTING', 'DOWN', 'RED', 'EXTREME_CONTEXT_REQUIRED', 'EXTREME_CONFIRMED'].includes(value)) return 'negative';
   return 'unavailable';
 }
 
@@ -122,6 +126,146 @@ function isLastGood(metric: Metric | undefined) {
 
 function LastGoodTag({ status }: { status: HealthStatus }) {
   return <small className="last-good-tag" data-health={status} title={LAST_GOOD_NOTE} aria-label={LAST_GOOD_NOTE}>LAST-GOOD</small>;
+}
+
+function compactP0Value(metricId: string, metric: Metric | undefined) {
+  if (metric?.value == null) return '—';
+  if (metric.unit === 'USD bn' && ['reserve_balances', 'tga_daily'].includes(metricId)) {
+    return `${(metric.value / 1_000).toFixed(2)}T`;
+  }
+  return formatValue(metric.value, metric.unit);
+}
+
+function clauseValue(value: FormulaClause['current_value'], unit: string | null) {
+  if (value == null) return '—';
+  if (typeof value === 'boolean') return value ? 'TRUE' : 'FALSE';
+  if (typeof value === 'string') return value.replaceAll('_', ' ');
+  if (unit === 'USD bn' && Math.abs(value) >= 1_000) return `${(value / 1_000).toFixed(2)}T`;
+  if (unit === 'bp') return `${value > 0 ? '+' : ''}${formatValue(value, 'bp')}`;
+  if (unit === 'USD bn') return formatValue(value, unit);
+  if (unit) return `${formatValue(value, '', Number.isInteger(value) ? 0 : 2)} ${unit}`;
+  return formatValue(value, '', Number.isInteger(value) ? 0 : 2);
+}
+
+function clauseComparison(clause: FormulaClause) {
+  const current = clauseValue(clause.current_value, clause.current_unit);
+  if (clause.threshold == null) return current;
+  return `${current} / ${clause.operator} ${clauseValue(clause.threshold, clause.threshold_unit)}`;
+}
+
+function clauseState(clause: FormulaClause): { label: string; tone: StatusTone } {
+  if (clause.evaluation_state === 'REVIEW_REQUIRED') return { label: 'REVIEW REQUIRED', tone: 'warning' };
+  if (clause.evaluation_state === 'LAST_GOOD' || (clause.quality_status === 'NOT_RELEASED_YET' && clause.current_value != null)) return { label: 'LAST-GOOD', tone: 'warning' };
+  if (clause.evaluation_state === 'STALE' || clause.quality_status === 'STALE' || clause.freshness === 'STALE') return { label: 'STALE', tone: 'warning' };
+  if (clause.evaluation_state === 'MISSING' || clause.evaluation_state === 'DISABLED' || clause.quality_status === 'ERROR' || clause.current_value == null || clause.met == null) return { label: 'UNKNOWN', tone: 'unavailable' };
+  return clause.met ? { label: 'MET', tone: 'positive' } : { label: 'NOT MET', tone: 'neutral' };
+}
+
+function formulaOutcome(value: boolean | null) {
+  return value == null ? 'UNKNOWN' : value ? 'TRIGGERED' : 'NOT TRIGGERED';
+}
+
+function formulaAria(kind: 'yellow' | 'red' | 'red-route-a' | 'red-route-b' | 'extreme') {
+  if (kind === 'yellow') return '黃色警報：四項條件必須同時成立。';
+  if (kind === 'red') return '紅色警報：利差與準備金條件同時成立，或者非技術性常備回購使用條件成立。';
+  if (kind === 'red-route-a') return '紅色路徑 A：利差條件與準備金條件必須同時成立。';
+  if (kind === 'red-route-b') return '紅色路徑 B：非技術性常備回購使用條件可以獨立成立。';
+  return '極端條件：準備金、快速下跌和重大危機背景三項條件必須同時成立，其中危機背景需要人工覆核。';
+}
+
+function FormulaExpression({ expression, ariaLabel }: { expression: string; ariaLabel: string }) {
+  return <p className="formula-expression" aria-label={ariaLabel}><span aria-hidden="true">{expression}</span></p>;
+}
+
+function FormulaClauseList({ clauses }: { clauses: readonly FormulaClause[] }) {
+  return (
+    <div className="formula-clause-list">
+      {[...clauses].sort((a, b) => a.order - b.order).map((clause) => {
+        const state = clauseState(clause);
+        const basis = clause.basis.length
+          ? clause.basis.map((item) => item.kind === 'VIDEO_SOURCE_RULE' ? 'SOURCE RULE' : item.kind === 'DASHBOARD_OPERATIONALIZATION' ? 'OPERATIONALIZED' : 'MANUAL CONTEXT').join(' + ')
+          : 'BASIS UNKNOWN';
+        return (
+          <div className="formula-clause" data-clause-id={clause.clause_id} data-clause-state={state.label} key={clause.clause_id}>
+            <strong className="formula-clause-label">{clause.label}</strong>
+            <span className="formula-clause-value">{clauseComparison(clause)}</span>
+            <span className="formula-clause-status" style={statusStyle(state.label)}>{state.label}</span>
+            <span className="formula-clause-meta">AS-OF {clause.observation_date ?? '—'} · {clause.freshness} · {basis}</span>
+            {clause.note ? <small className="formula-clause-note">{clause.note}</small> : null}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function P0VideoBanner({ model, metrics }: { model: VideoP0Model; metrics: Snapshot['metrics'] }) {
+  const keyMetrics = [
+    { id: 'sofr_iorb_spread_bp', label: 'SOFR−IORB' },
+    { id: 'reserve_balances', label: 'RESERVES' },
+    { id: 'tga_daily', label: 'TGA' },
+    { id: 'srf_accepted', label: 'SRF · 2/3' },
+  ] as const;
+  return (
+    <section className="video-p0-banner" style={statusStyle(model.status)} aria-label={`VIDEO P0 MODEL：${model.status}；資料狀態 ${model.data_status}`}>
+      <div className="video-p0-banner-state">
+        <span>VIDEO P0 MODEL</span>
+        <strong style={statusStyle(model.status)}>{model.status.replaceAll('_', ' ')}</strong>
+        <small style={statusStyle(model.data_status)}>DATA · {model.data_status.replaceAll('_', '-')}</small>
+      </div>
+      <dl className="video-p0-values">
+        {keyMetrics.map(({ id, label }) => {
+          const metric = metrics[id];
+          const state = valueState(metric);
+          return <div data-value-state={state} key={id}><dt>{label}</dt><dd>{compactP0Value(id, metric)}</dd>{state !== 'current' ? <small>{state === 'last-good' ? 'LAST-GOOD' : 'UNKNOWN'}</small> : null}</div>;
+        })}
+      </dl>
+      <a className="video-p0-link" href="#/provenance#p0-video-formulas">睇黃色／紅色公式 <span aria-hidden="true">→</span></a>
+    </section>
+  );
+}
+
+function P0VideoFormulaPanel({ model }: { model: VideoP0Model }) {
+  const yellow = model.formulas.yellow;
+  const red = model.formulas.red;
+  const extreme = model.formulas.extreme;
+  const redRoutes = red.routes.length ? red.routes : [{ route_id: 'red-combined', label: 'RED ROUTES', expression: red.expression, triggered: red.triggered, clauses: red.clauses }];
+  return (
+    <article id="p0-video-formulas" className="provenance-panel p0-formula-panel" tabIndex={-1} aria-label="P0 影片流動性公式">
+      <header className="formula-panel-head">
+        <div><div className="provenance-kicker">P0 VIDEO MODEL · LIVE EVALUATION</div><h2 className="formula-panel-title">流動性黃／紅警報公式</h2><p>CONFIDENCE {model.confidence} · UPDATED {displayTimestamp(model.evaluated_at)}</p></div>
+        <div className="formula-model-state"><strong style={statusStyle(model.status)}>CURRENT · {model.status.replaceAll('_', ' ')}</strong><small style={statusStyle(model.data_status)}>DATA · {model.data_status.replaceAll('_', '-')}</small></div>
+      </header>
+
+      <section className="formula-card is-yellow" aria-labelledby="formula-yellow-title">
+        <div className="formula-card-head"><h3 id="formula-yellow-title">YELLOW</h3><span>{formulaOutcome(yellow.triggered)}</span></div>
+        <FormulaExpression expression={yellow.expression} ariaLabel={formulaAria('yellow')} />
+        <FormulaClauseList clauses={yellow.clauses} />
+      </section>
+
+      <section className="formula-card is-red" aria-labelledby="formula-red-title">
+        <div className="formula-card-head"><h3 id="formula-red-title">RED · TWO INDEPENDENT ROUTES</h3><span>{formulaOutcome(red.triggered)}</span></div>
+        <FormulaExpression expression={red.expression} ariaLabel={formulaAria('red')} />
+        <div className="formula-route-list">
+          {redRoutes.map((route, index) => <section className="formula-route" key={route.route_id}><div className="formula-route-head"><h4>{route.label}</h4><span>{formulaOutcome(route.triggered)}</span></div><FormulaExpression expression={route.expression} ariaLabel={formulaAria(index === 0 ? 'red-route-a' : 'red-route-b')} /><FormulaClauseList clauses={route.clauses} /></section>)}
+        </div>
+      </section>
+
+      <section className="formula-card is-extreme" aria-labelledby="formula-extreme-title">
+        <div className="formula-card-head"><h3 id="formula-extreme-title">EXTREME · CONTEXT REQUIRED</h3><span>CANDIDATE {formulaOutcome(extreme.candidate)}</span></div>
+        <FormulaExpression expression={extreme.expression} ariaLabel={formulaAria('extreme')} />
+        <FormulaClauseList clauses={extreme.clauses} />
+      </section>
+
+      <section className="formula-source" aria-labelledby="formula-source-title">
+        <div><div className="provenance-kicker" id="formula-source-title">SOURCE MODEL</div><a href={model.source.url} target="_blank" rel="noreferrer">YouTube · {model.source.display_title || model.source.title} ↗</a></div>
+        <div className="formula-source-segments">{model.source.segments.map((segment) => <a href={segment.timestamp_url} target="_blank" rel="noreferrer" key={segment.segment_id}>{segment.label} · {segment.start_seconds}s–{segment.end_seconds}s ↗</a>)}</div>
+      </section>
+      {model.technical_flags.length ? <p className="formula-technical-flags"><strong>TECHNICAL FLAGS</strong>{model.technical_flags.join(' · ')}</p> : null}
+      {model.notes.length ? <ul className="formula-notes">{model.notes.map((note) => <li key={note}>{note}</li>)}</ul> : null}
+      <div className="formula-contract-note"><span className="provenance-kicker">ANALYSIS CONTRACT</span><strong>訊號唔係結論。</strong><p>以上係對影片 P0 門檻嘅可審核重現；Dashboard 操作化項目有獨立標記，現有 NORMAL／WATCH／ELEVATED／STRESS engine 繼續獨立運作。</p><p>RED 並未包含雲端企業 CapEx 共振判定；本面板不提供投資或買賣建議。</p></div>
+    </article>
+  );
 }
 
 function RouteNav({ route }: { route: RouteId }) {
@@ -202,6 +346,71 @@ interface ChartPanelProps {
   onOverlay: (id: string) => void;
 }
 
+function chartThresholdLabel(value: number, unit: 'bp' | 'USD bn') {
+  if (unit === 'bp') return `${value > 0 ? '+' : ''}${formatValue(value, 'bp')}`;
+  const trillions = value / 1_000;
+  return `${trillions.toFixed(Number.isInteger(trillions * 10) ? 1 : 2)}T`;
+}
+
+function p0ReferenceLines(model: VideoP0Model, metricId: string): ReferenceLine[] {
+  if (!model.enabled) return [];
+  if (metricId === 'sofr_iorb_spread_bp') {
+    return [
+      {
+        id: 'video-yellow-spread', value: model.thresholds.yellow.spread_positive_bp,
+        label: `${chartThresholdLabel(model.thresholds.yellow.spread_positive_bp, 'bp')} · 持續轉正黃燈條件`, tone: 'warning', lineType: 'dashed',
+      },
+      {
+        id: 'video-red-spread', value: model.thresholds.red.spread_bp,
+        label: `${chartThresholdLabel(model.thresholds.red.spread_bp, 'bp')} · VIDEO RED SPREAD LINE`, tone: 'danger', lineType: 'dashed',
+      },
+    ];
+  }
+  if (metricId === 'reserve_balances') return [
+    {
+      id: 'video-yellow-reserve', value: model.thresholds.yellow.reserve_usd_bn,
+      label: `${chartThresholdLabel(model.thresholds.yellow.reserve_usd_bn, 'USD bn')} · VIDEO YELLOW ZONE`, tone: 'warning', lineType: 'dashed',
+    },
+    {
+      id: 'video-red-reserve', value: model.thresholds.red.reserve_usd_bn,
+      label: `${chartThresholdLabel(model.thresholds.red.reserve_usd_bn, 'USD bn')} · VIDEO RED CONFIRMATION`, tone: 'danger', lineType: 'dashed',
+    },
+    {
+      id: 'video-extreme-reserve', value: model.thresholds.extreme.reserve_usd_bn,
+      label: `${chartThresholdLabel(model.thresholds.extreme.reserve_usd_bn, 'USD bn')} · VIDEO EXTREME LINE`, tone: 'extreme', lineType: 'dash-dot',
+    },
+  ];
+  if (metricId === 'tga_daily') return [
+    {
+      id: 'video-yellow-tga-floor', value: model.thresholds.yellow.tga_operational_floor_usd_bn,
+      label: `${chartThresholdLabel(model.thresholds.yellow.tga_operational_floor_usd_bn, 'USD bn')} · OPERATIONAL FLOOR`, tone: 'warning', lineType: 'dashed',
+    },
+    {
+      id: 'video-tga-source-target', value: model.thresholds.tga_source_target_usd_bn,
+      label: `${chartThresholdLabel(model.thresholds.tga_source_target_usd_bn, 'USD bn')} · VIDEO SOURCE TARGET`, tone: 'neutral', lineType: 'dashed',
+    },
+  ];
+  return [];
+}
+
+function p0SrfAlertWindow(model: VideoP0Model): SrfAlertWindow {
+  const srfClause = model.formulas.red.routes.flatMap((route) => route.clauses)
+    .find((clause) => clause.metric_id === 'srf_accepted');
+  return {
+    positiveDays: typeof srfClause?.current_value === 'number' ? srfClause.current_value : null,
+    requiredPositiveDays: model.thresholds.red.srf_positive_days_required,
+    windowDays: model.thresholds.red.srf_window_completed_days,
+  };
+}
+
+function p0ChartNote(model: VideoP0Model, metricId: string) {
+  if (metricId === 'reserve_balances') return `以上 ${chartThresholdLabel(model.thresholds.yellow.reserve_usd_bn, 'USD bn')}／${chartThresholdLabel(model.thresholds.red.reserve_usd_bn, 'USD bn')}／${chartThresholdLabel(model.thresholds.extreme.reserve_usd_bn, 'USD bn')} 係影片模型內嘅來源門檻，唔係跨時期固定嘅 reserve-scarcity 自然定律。實際 reserve demand 會隨銀行體系規模、監管、支付需要同政策制度改變。`;
+  if (metricId === 'tga_daily') return `${chartThresholdLabel(model.thresholds.yellow.tga_operational_floor_usd_bn, 'USD bn')} 係 Dashboard 對「向 ${chartThresholdLabel(model.thresholds.tga_source_target_usd_bn, 'USD bn')} 靠攏」嘅操作化起點。`;
+  if (metricId === 'sofr_iorb_spread_bp') return `紅燈利差線來自模型 JSON；Route A 仍需準備金低於 ${chartThresholdLabel(model.thresholds.red.reserve_usd_bn, 'USD bn')} 才成立。黃燈要求持續正值，唔係單日越線。`;
+  if (metricId === 'srf_accepted') return `SRF 沒有任意美元水平線；圖中技術性演練與可計入嘅非技術性 operation 必須分開。`;
+  return null;
+}
+
 function ChartPanel({ snapshot, series, main, range, overlay, tabs, onMain, onRange, onOverlay }: ChartPanelProps) {
   const fallbackId = tabs[0]?.id ?? 'sofr_iorb_spread_bp';
   const metric = snapshot.metrics[main] ?? snapshot.metrics[fallbackId];
@@ -212,7 +421,16 @@ function ChartPanel({ snapshot, series, main, range, overlay, tabs, onMain, onRa
   const overlayLastGoodIds = useMemo(() => OVERLAY_CONFIG.flatMap(({ id }) => isLastGood(snapshot.metrics[id]) ? [id] : []), [snapshot.metrics]);
   const change = changePresentation(metric);
   const lastGood = isLastGood(metric);
-  const referenceLines = metricId === 'reserve_balances' ? RESERVE_REFERENCE_LINES : [];
+  const model = snapshot.decision_models.p0_video_liquidity;
+  const referenceLines = useMemo(() => p0ReferenceLines(model, metricId), [metricId, model]);
+  const chartPoints: readonly ChartPoint[] = points;
+  const p0Metric = ['sofr_iorb_spread_bp', 'reserve_balances', 'tga_daily', 'srf_accepted'].includes(metricId);
+  const modelChartProps = {
+    dataStatus: p0Metric ? model.data_status : 'CURRENT' as const,
+    srfAlertWindow: metricId === 'srf_accepted' && model.enabled ? p0SrfAlertWindow(model) : undefined,
+    srfAnnotationsEnabled: model.enabled,
+  };
+  const chartNote = p0ChartNote(model, metricId);
   return (
     <section className="panel chart-panel" aria-label="主要流動性圖表">
       <div className="chart-toolbar">
@@ -224,8 +442,8 @@ function ChartPanel({ snapshot, series, main, range, overlay, tabs, onMain, onRa
         <span className={`readout-delta ${deltaClass(change.value)}`}>{formatSignedDelta(change.value, metric.unit)} {change.label}</span>
         <div className="readout-meta"><span>{points[0]?.date ?? '—'} → {points.at(-1)?.date ?? '—'} · {points.length} pts</span><span>HOVER 睇每日數值</span></div>
       </div>
-      <div className="main-chart"><MainMetricChart metricId={metricId} label={metric.label} unit={metric.unit} points={points} thresholdBp={THRESHOLD_BP} referenceLines={referenceLines} lastGood={lastGood} /></div>
-      {metricId === 'reserve_balances' ? <p className="chart-reference-note">2.9T／2.8T／2.5T 只係存量參考區，會隨銀行體系規模、監管同 reserve demand 改變，唔係固定壓力門檻。</p> : null}
+      <div className="main-chart"><MainMetricChart metricId={metricId} label={metric.label} unit={metric.unit} points={chartPoints} referenceLines={referenceLines} lastGood={lastGood} {...modelChartProps} /></div>
+      {chartNote ? <p className="chart-reference-note">{chartNote}</p> : null}
       <div className="overlay-toolbar">
         <span className="overlay-title">OVERLAY · 隔夜利率</span>
         {OVERLAY_CONFIG.map(({ id, label, cssVariable }) => {
@@ -497,12 +715,14 @@ function ConfirmationGrid({ snapshot, onMain, onMetric }: { snapshot: Snapshot; 
 }
 
 function OverviewPage(props: Pick<DashboardProps, 'snapshot' | 'series' | 'main' | 'range' | 'overlay' | 'onMain' | 'onRange' | 'onOverlay' | 'onDrawer'>) {
-  return <><h2 className="route-heading sr-only" data-route-heading tabIndex={-1}>總覽</h2><main className="body-grid"><LiveTape snapshot={props.snapshot} series={props.series} selected={props.main} onSelect={props.onMain} /><ChartPanel snapshot={props.snapshot} series={props.series} main={props.main} range={props.range} overlay={props.overlay} tabs={OVERVIEW_MAIN_TABS} onMain={props.onMain} onRange={props.onRange} onOverlay={props.onOverlay} /><ReadRail snapshot={props.snapshot} onMetric={props.onDrawer} /></main></>;
+  const model = props.snapshot.decision_models.p0_video_liquidity;
+  return <main className="overview-page"><h2 className="route-heading sr-only" data-route-heading tabIndex={-1}>總覽</h2><P0VideoBanner model={model} metrics={props.snapshot.metrics} /><div className="body-grid"><LiveTape snapshot={props.snapshot} series={props.series} selected={props.main} onSelect={props.onMain} /><ChartPanel snapshot={props.snapshot} series={props.series} main={props.main} range={props.range} overlay={props.overlay} tabs={OVERVIEW_MAIN_TABS} onMain={props.onMain} onRange={props.onRange} onOverlay={props.onOverlay} /><ReadRail snapshot={props.snapshot} onMetric={props.onDrawer} /></div></main>;
 }
 
 function LiquidityPage(props: Pick<DashboardProps, 'snapshot' | 'series' | 'main' | 'range' | 'overlay' | 'onMain' | 'onRange' | 'onOverlay' | 'onDrawer'>) {
   const value = props.snapshot.switches.liquidity_fuel;
-  return <main className="detail-page"><header className="detail-hero"><div><span className="detail-number">01</span><h2 className="route-heading" data-route-heading tabIndex={-1}>流動性燃料</h2><p>{value.summary}</p></div><div className="detail-assessment" style={statusStyle(value.assessment ?? value.mode)}><span>P0 ASSESSMENT</span><strong>{value.assessment ?? '未能評估'}</strong><small>CONFIDENCE {value.confidence.toUpperCase()}</small></div></header><ConfirmationGrid snapshot={props.snapshot} onMain={props.onMain} onMetric={props.onDrawer} /><ChartPanel snapshot={props.snapshot} series={props.series} main={props.main} range={props.range} overlay={props.overlay} tabs={LIQUIDITY_MAIN_TABS} onMain={props.onMain} onRange={props.onRange} onOverlay={props.onOverlay} /><EvidenceBlocks value={value} /></main>;
+  const model = props.snapshot.decision_models.p0_video_liquidity;
+  return <main className="detail-page"><header className="detail-hero"><div><span className="detail-number">01</span><h2 className="route-heading" data-route-heading tabIndex={-1}>流動性燃料</h2><p>{value.summary}</p></div><div className="detail-assessment" style={statusStyle(value.assessment ?? value.mode)}><span>P0 ASSESSMENT</span><strong>{value.assessment ?? '未能評估'}</strong><small>CONFIDENCE {value.confidence.toUpperCase()}</small></div></header><P0VideoBanner model={model} metrics={props.snapshot.metrics} /><ConfirmationGrid snapshot={props.snapshot} onMain={props.onMain} onMetric={props.onDrawer} /><ChartPanel snapshot={props.snapshot} series={props.series} main={props.main} range={props.range} overlay={props.overlay} tabs={LIQUIDITY_MAIN_TABS} onMain={props.onMain} onRange={props.onRange} onOverlay={props.onOverlay} /><EvidenceBlocks value={value} /></main>;
 }
 
 function percentageChange(value: number | null | undefined) {
@@ -674,10 +894,7 @@ function ProvenancePage({ snapshot }: { snapshot: Snapshot }) {
           <div className="provenance-kicker">PROVENANCE · COLLECTOR HEALTH</div>
           {Object.entries(snapshot.sources).map(([id, source]) => <div className="source-row" key={id}><div className="source-main">{source.url ? <a className="source-link" href={source.url} target="_blank" rel="noreferrer">{source.name} ↗</a> : <strong>{source.name}</strong>}<span className="source-meta">{source.observation_date ?? '—'} · {FRESHNESS_LABELS[source.freshness]}</span></div><span className="source-quality">{source.tier ?? '—'}</span><Badge status={source.status} label={healthText(source.status)} /></div>)}
         </article>
-        <article className="provenance-panel analysis-contract">
-          <div className="provenance-kicker">ANALYSIS CONTRACT</div><h2>訊號唔係結論。</h2>
-          <p>Overview 嘅總體判讀只代表 P0 流動性燃料；P1–P3 只報 evidence coverage、方向同信心。+{THRESHOLD_BP} bp 係可配置操作門檻，技術日只降低信心。</p>
-        </article>
+        <P0VideoFormulaPanel model={snapshot.decision_models.p0_video_liquidity} />
         <article className="provenance-panel source-notices" aria-labelledby="source-notices-title">
           <div className="provenance-kicker" id="source-notices-title">LEGAL · SOURCE NOTICES</div>
           <p><strong>FRED® API.</strong> This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. By using this dashboard, users agree to be bound by the <a href="https://fred.stlouisfed.org/docs/api/terms_of_use.html" target="_blank" rel="noreferrer">FRED® API Terms of Use ↗</a>. Only reviewed government-origin series are enabled; a FRED API key does not grant third-party data rights.</p>

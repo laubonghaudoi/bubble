@@ -30,9 +30,25 @@ python -m pipeline.update --mode incremental --group daily
 python -m pytest pipeline/tests
 ```
 
-Production log 會以 `pipeline-health-<run-id>` artifact 保存 14 日。Workflow 將完整 v2 output 留喺獨立 stage，Python 同 frontend gates 全過先 atomic promote。檢查 HTTP content type、必要 JSON keys/CSV columns、date、unit、duplicate observations 同 source as-of。HTML error page、空 200 response 或 schema drift 必須 fail closed，唔可以當正常空 series。
+Production log 會以 `pipeline-health-<run-id>` artifact 保存 14 日。Workflow 將完整 schema `2.1.0` output 留喺獨立 stage，Python 同 frontend gates 全過先 atomic promote。檢查 HTTP content type、必要 JSON keys/CSV columns、date、unit、duplicate observations 同 source as-of。HTML error page、空 200 response 或 schema drift 必須 fail closed，唔可以當正常空 series。
 
 Collector 失敗時 pipeline 應保留 last-good observations：有歷史值用 `STALE`，完全冇可用值用 `ERROR`，並保存 `last_success_at`、`last_attempt_at` 同 `failure_reason`。唔好用零代替缺失。
+
+## Schema `2.0.0` 或 P0 decision model 被拒絕
+
+Schema `2.1.0` 係 hard cut。Code、config、staged publication 同 frontend 必須同版；舊 `2.0.0` snapshot 唔會由 compatibility shim 載入。最少檢查：
+
+```bash
+jq -r '.schema_version' public/data/{snapshot,manifest,alerts,events}.json
+jq -r '(.decision_models // {}) | keys[]' public/data/snapshot.json
+```
+
+- 四個 top-level artifact 同所有 `series/*.json` 必須係 `2.1.0`；Form 4 ledger 有自己獨立 schema，唔好用全域 search/replace 改版本；
+- `snapshot.decision_models` 必須恰好有 `p0_video_liquidity`，唔可以缺失或加入未註冊 model；
+- model `evaluated_at` 必須等於 snapshot `generated_at`；source segments、thresholds、clauses、route truth values、status、data status 同 confidence 必須通過 contract 重算；
+- SRF full／short observations 必須帶完整 technical／nontechnical classification fields，未知分類唔可以默認為 `false`。
+
+如果 checkout 仲係 `2.0.0` generated data，應重跑相應 update group／production workflow，等 pipeline 重新生成完整 stage，再通過 Python、frontend 同 publication gates。唔好只改 `schema_version`，亦唔好手加 `decision_models`；咁做會令 model、metrics、manifest 同 timestamps 失去一致性，而且 contract 應該繼續 fail closed。
 
 ## H.4.1 顯示 `NOT_RELEASED_YET`
 
@@ -110,6 +126,8 @@ Workflow 會喺 deploy 前 commit/push `public/data`。Push failure 係 blocking
 
 先處理權限／branch divergence，再重跑 group。唔好恢復 `git push || true`。
 
+`public/data/**` 係整套 generated publication，唔可以直接修補 snapshot、decision model、formula result、series、manifest hash 或 generated timestamp。應改 `config/`、pipeline code 或 reviewed `data/manual/` source input，再由 staging workflow 重建同 atomic promote。即使只係 schema 升級或一條 formula threshold，都唔可以用手改 live JSON 繞過 contract。
+
 Generated-data push 使用 repository `GITHUB_TOKEN`，按 GitHub 官方規則唔會建立另一個 push-triggered workflow run。如果見到 recursive runs，檢查 checkout/push authentication 有冇被改成 PAT、deploy key 或 GitHub App token；恢復預設 `GITHUB_TOKEN`，或者喺改 token 前加入明確 recursion guard。同時保持 deterministic serialization，避免每次執行只因無金融意義嘅 order 改變而產生 data commit。
 
 ## Pages deploy 或 route 404
@@ -124,12 +142,13 @@ Generated-data push 使用 repository `GITHUB_TOKEN`，按 GitHub 官方規則�
 
 先檢查 `public/data/snapshot.json`：
 
-- `schema_version` 必須係 `2.0.0`；
+- `schema_version` 必須係 `2.1.0`；`2.0.0` 會被 hard reject，唔會顯示舊 dashboard；
+- `decision_models` 必須恰好包含完整 `p0_video_liquidity`，而且 status／formula／threshold／timestamp 要同 metrics 對得上；
 - snapshot counts 要同 metrics availability/health 相符；
 - source health counts 要同 collector source records 相符；
 - required P0 metric IDs、source fields、12 methodology fields、statistics、timestamps 同 `short_series` 都要存在。
 
-Manifest 失敗只應令 methodology/catalog 部分降級；snapshot 失敗會顯示完整 dashboard error。修正 staging/build contract後先重新發布，唔好直接手改 live JSON。
+Manifest 失敗只應令 methodology/catalog 部分降級；snapshot schema 或 required decision model 失敗會顯示完整 dashboard error。先修正 source/config/pipeline，再重新生成 stage 同發布；唔好直接手改 live JSON。
 
 ## Quick verification
 
@@ -140,4 +159,4 @@ npm run build
 git diff --check
 ```
 
-部署後再開四條 hash route，驗證 source/methodology drawers、JSON data paths、console/network errors，同 live deployment commit。
+部署後再開五條 hash route，驗證 P0 formula panel、chart threshold／SRF marker、source/methodology drawers、JSON data paths、console/network errors，同 live deployment commit。

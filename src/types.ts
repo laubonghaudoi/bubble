@@ -20,6 +20,15 @@ export interface Point {
   value: number | null;
 }
 
+export interface SrfPoint extends Point {
+  accepted_amount_usd_bn: number;
+  alert_eligible_accepted_amount_usd_bn: number;
+  exercise_accepted_amount_usd_bn: number;
+  has_technical_exercise: boolean;
+  technical_exercise: boolean;
+  classification_complete: true;
+}
+
 export type FundamentalDirection =
   | 'ACCELERATING'
   | 'DECELERATING'
@@ -277,8 +286,141 @@ export interface SourceHealthCounts {
   not_applicable: number;
 }
 
+export type VideoP0Status =
+  | 'GREEN'
+  | 'YELLOW'
+  | 'RED'
+  | 'EXTREME_CONTEXT_REQUIRED'
+  | 'EXTREME_CONFIRMED'
+  | 'UNAVAILABLE';
+
+export type VideoP0DataStatus =
+  | 'CURRENT'
+  | 'LAST_GOOD'
+  | 'PARTIAL'
+  | 'UNAVAILABLE';
+
+export type DecisionConfidence = 'HIGH' | 'MEDIUM' | 'LOW' | 'UNKNOWN';
+export type FormulaSourceKind =
+  | 'VIDEO_SOURCE_RULE'
+  | 'DASHBOARD_OPERATIONALIZATION'
+  | 'MANUAL_CONTEXT';
+export type FormulaEvaluationState =
+  | 'CURRENT'
+  | 'LAST_GOOD'
+  | 'STALE'
+  | 'MISSING'
+  | 'DISABLED'
+  | 'REVIEW_REQUIRED';
+
+export interface FormulaBasis {
+  kind: FormulaSourceKind;
+  label: string;
+  source_segment_id: string | null;
+  note: string;
+}
+
+export interface FormulaClause {
+  clause_id: string;
+  order: number;
+  label: string;
+  metric_id: string | null;
+  operator: '>' | '>=' | '<' | '<=' | '=';
+  threshold: number | string | boolean | null;
+  threshold_unit: string | null;
+  current_value: number | string | boolean | null;
+  current_unit: string | null;
+  met: boolean | null;
+  observation_date: string | null;
+  released_at: string | null;
+  quality_status: HealthStatus;
+  freshness: Freshness;
+  evaluation_state: FormulaEvaluationState;
+  basis: FormulaBasis[];
+  note: string;
+}
+
+export interface FormulaEvaluation {
+  expression: string;
+  triggered: boolean | null;
+  clauses: FormulaClause[];
+}
+
+export interface FormulaRoute extends FormulaEvaluation {
+  route_id: string;
+  label: string;
+}
+
+export interface VideoSourceSegment {
+  segment_id: string;
+  label: string;
+  start_seconds: number;
+  end_seconds: number;
+  timestamp_url: string;
+}
+
+export interface VideoP0Thresholds {
+  yellow: {
+    spread_positive_bp: number;
+    positive_streak_observations: number;
+    reserve_usd_bn: number;
+    reserve_change_4w_usd_bn: number;
+    tga_operational_floor_usd_bn: number;
+  };
+  red: {
+    spread_bp: number;
+    reserve_usd_bn: number;
+    srf_positive_days_required: number;
+    srf_window_completed_days: number;
+  };
+  extreme: {
+    reserve_usd_bn: number;
+    decline_percentile: string;
+  };
+  tga_source_target_usd_bn: number;
+}
+
+export interface VideoP0CrisisContext {
+  status: 'UNKNOWN' | 'MAJOR_CRISIS_PRESENT' | 'NO_MAJOR_CRISIS';
+  as_of: string | null;
+  reviewed_at: string | null;
+  reviewer: string | null;
+  note: string | null;
+}
+
+export interface VideoP0Model {
+  model_id: 'henren778_p0_liquidity';
+  label: string;
+  enabled: boolean;
+  status: VideoP0Status;
+  data_status: VideoP0DataStatus;
+  confidence: DecisionConfidence;
+  availability_reason: string | null;
+  evaluated_at: string;
+  source: {
+    title: string;
+    display_title: string;
+    author: string;
+    url: string;
+    segments: VideoSourceSegment[];
+  };
+  thresholds: VideoP0Thresholds;
+  operationalizations: Record<string, string | number | boolean>;
+  crisis_context: VideoP0CrisisContext;
+  formulas: {
+    yellow: FormulaEvaluation;
+    red: FormulaEvaluation & { routes: FormulaRoute[] };
+    extreme: FormulaEvaluation & {
+      candidate: boolean | null;
+      context_required: boolean;
+    };
+  };
+  technical_flags: string[];
+  notes: string[];
+}
+
 export interface Snapshot {
-  schema_version: '2.0.0';
+  schema_version: '2.1.0';
   generated_at: string;
   pipeline_updated_at: string;
   market_date: string | null;
@@ -289,6 +431,9 @@ export interface Snapshot {
   alerts: Array<{ level: string; title: string; detail: string }>;
   explanations: { headline: string; bullets: ExplanationBullet[] };
   source_health: SourceHealthCounts;
+  decision_models: {
+    p0_video_liquidity: VideoP0Model;
+  };
   sources: Record<string, CollectorSource>;
   active_free_count: number;
   active_proxy_count: number;

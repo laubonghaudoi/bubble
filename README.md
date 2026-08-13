@@ -1,6 +1,6 @@
 # 美元流動性監測
 
-一個以 React/Vite 建立、由 GitHub Pages 托管嘅靜態美元流動性儀錶板。瀏覽器只讀取已發布嘅 schema `2.0.0` JSON；第三方 fetch、schema validation、金融計算、freshness 判斷同粵文解釋全部喺 Python pipeline 完成。
+一個以 React/Vite 建立、由 GitHub Pages 托管嘅靜態美元流動性儀錶板。瀏覽器只讀取已發布嘅 schema `2.1.0` JSON；第三方 fetch、schema validation、金融計算、freshness 判斷同粵文解釋全部喺 Python pipeline 完成。
 
 網站固定使用 Bloomberg editorial 配色，冇 dark-mode 或 theme switch。
 
@@ -40,9 +40,13 @@ npm run build
 
 可用 group：`all`、`daily`、`h41`、`weekly`、`monthly`、`quarterly`、`manual`。`daily` 會處理 P0 同最新已完成 SEC Form 4 daily indexes；`weekly` 同時處理 H.4.1、CFTC TFF positioning 同 45 日 Form 4 index reconciliation；`monthly`／`quarterly` 會重查 government-origin equities/GDP exact-quarter proxy；`quarterly` 亦會原子更新四間 hyperscaler 嘅 SEC Company Facts CapEx。所有 group 都會先驗證 reviewed manual CSV，`manual` group可安全重建人工 evidence。
 
-## Schema 2.0.0 contract
+## Schema 2.1.0 contract
 
 `public/data/` 係一次過發布嘅完整 artifact set，包括 `snapshot.json`、`manifest.json`、`alerts.json`、`events.json`、`series/*.json`，以及 privacy-minimized `ledgers/sec_form4/`。Pipeline 先喺 staging directory 完成 fetch、normalize、transform、ledger hash/privacy allowlist 同 contract validation，全部成功先用 directory promotion 取代 live data；任何一步失敗都保留上一版完整資料。Raw SEC submissions 只可以留喺私有 Actions cache，永遠唔可以進入 public artifact。
+
+`2.1.0` 係 hard cut，唔係向後兼容提示。Python publication contract 同 frontend loader 都會拒絕 `2.0.0` snapshot；唔會忽略新欄位、補預設門檻，或者靜默退回舊模型。`snapshot.decision_models` 必須只包含完整嘅 `p0_video_liquidity`：模型狀態、資料狀態、信心、影片來源段落、黃／紅／極端門檻、operationalizations、formula clauses、兩條紅色路徑、crisis context 同 technical flags 都要存在，並同 snapshot metric value、quality、freshness、timestamps 同公式真值逐項對得上。缺少、額外、過期或被手改嘅 model data 都會 fail closed。
+
+`p0_video_liquidity` 係對影片公式嘅獨立、可審核 decision model；唔會改寫既有 P0 `overall_assessment`、switch 或 alerts。SRF full series 同 snapshot fallback 亦必須保留 technical／nontechnical classification metadata，缺失分類唔可以當作非技術性零使用。
 
 狀態分成三條獨立軸：
 
@@ -51,6 +55,8 @@ npm run build
 - Freshness：`FRESH`、`LATE`、`STALE`、`UNKNOWN`。
 
 缺失值永遠係 `null`，唔會轉成 `0`。每項 metric 都有 observation/release/update/attempt timestamps、source rights note、quality metadata、numeric statistics 同 12 欄專屬 methodology。詳細權利政策見 [docs/source-rights.md](docs/source-rights.md)，人工資料政策見 [docs/manual-review.md](docs/manual-review.md)。
+
+`public/data/**` 全部係 pipeline generated output，唔係手改資料源。包括 schema version、decision model、formula outcome、threshold、series、manifest hash 同 generated timestamp，都唔可以直接修改去「修好」build 或 deployment。應該改相應 `config/`、pipeline code 或 reviewed `data/manual/` input，再重跑完整 staging、contract tests、frontend tests/build 同 atomic promotion；schema 升級亦一樣。
 
 ## GitHub Actions 同 Pages
 
@@ -66,13 +72,13 @@ npm run build
 - weekday daily、Thursday H.4.1、weekly、monthly、quarterly UTC cron；
 - `workflow_dispatch`：可揀明確 group。
 
-Workflow 依序執行：核對 reviewed P3 filing metadata → fetch → validate/transform → 寫入獨立 schema v2 stage → Python tests → 喺臨時 workspace 用同一份 code 加 staged data 跑 frontend tests/build → atomic promote 完整 stage → commit generated `public/data` → push → Pages deploy。所有 gates 通過前，version-controlled `public/data` 都唔會被逐檔覆蓋。任何 metadata、data push 或 contract failure都會停止 deployment，唔會靜默略過。
+Workflow 依序執行：核對 reviewed P3 filing metadata → fetch → validate/transform → 寫入獨立 schema `2.1.0` stage → Python tests → 喺臨時 workspace 用同一份 code 加 staged data 跑 frontend tests/build → atomic promote 完整 stage → commit generated `public/data` → push → Pages deploy。所有 gates 通過前，version-controlled `public/data` 都唔會被逐檔覆蓋。任何 metadata、data push 或 contract failure都會停止 deployment，唔會靜默略過。
 
 Generated-data push 使用本次 job 嘅 repository `GITHUB_TOKEN`。按 [GitHub 官方觸發規則](https://docs.github.com/en/actions/concepts/security/github_token)，由呢個 token 造成嘅 push event 唔會建立另一個 workflow run，因此唔會形成 recursive data-commit loop。原本個 run 會喺 push 成功後直接上載已驗證嘅 `dist` 並部署 Pages；concurrency group 亦確保同一時間只得一個 production writer/deployer。唔好改用 PAT 或 GitHub App token，除非同時另外設計 recursion guard。
 
 Cron 只係喚醒時間，而且 GitHub 可能延遲；collector 會用官方 observation/release metadata 判斷 `NOT_RELEASED_YET`、freshness 同 expected next update，唔會將 job start time 當 source as-of。
 
-## Release 1–4 資料範圍
+## Release 1–5 資料範圍
 
 P0 包括：
 
@@ -82,6 +88,7 @@ P0 包括：
 - Treasury daily TGA、auction settlement context；
 - FRED 政府來源 allowlist：IORB、WRESBAL、WALCL、WTREGEN；
 - 月／季／年結、已覆核報稅窗口同大型 Treasury settlement context。
+- 獨立 `p0_video_liquidity` 黃／紅／Extreme 來源公式模型；只供可審核重現，唔改既有 P0 overall、switch、pill 或 alerts。
 
 P1 Market Ignition 使用 CFTC 官方 TFF Futures Only：
 
@@ -118,5 +125,6 @@ P3 Fundamental Exit 係獨立 evidence-only 頁面，唔會改變 P0 overall、P
 - [人工覆核及 manual import 政策](docs/manual-review.md)
 - [故障排查](docs/troubleshooting.md)
 - [Release 4 QA紀錄](docs/release-4-qa.md)
+- [Release 5 QA紀錄](docs/release-5-qa.md)
 
 本工具只供研究，唔提供投資建議。操作門檻、相關性及 proxy 指標唔代表因果，單一 metric 亦唔足以證明危機、泡沫轉折或資產方向。

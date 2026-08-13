@@ -6,25 +6,28 @@ import {
   loadRouteSeries,
   LIQUIDITY_MAIN_TABS,
   OVERVIEW_MAIN_TABS,
-  parseRoute,
+  parseRouteTarget,
   routeMetricIds,
   snapshotSeriesFallback,
   type DashboardCore,
   type RangeKey,
   type RouteId,
+  type RouteTarget,
   type SeriesMap,
 } from './dashboard';
 
 const baseUrl = import.meta.env.BASE_URL;
 
-function currentRoute(): RouteId {
-  return parseRoute(window.location.hash);
+function currentRoute(): RouteTarget {
+  return parseRouteTarget(window.location.hash);
 }
 
 export default function App() {
   const [core, setCore] = useState<DashboardCore | null>(null);
   const [error, setError] = useState('');
-  const [route, setRoute] = useState<RouteId>(() => currentRoute());
+  const [initialRoute] = useState<RouteTarget>(() => currentRoute());
+  const [route, setRoute] = useState<RouteId>(initialRoute.route);
+  const [section, setSection] = useState<string | null>(initialRoute.section);
   const [series, setSeries] = useState<SeriesMap>({});
   const [seriesErrors, setSeriesErrors] = useState<Record<string, string>>({});
   const [seriesLoading, setSeriesLoading] = useState(true);
@@ -40,10 +43,15 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!window.location.hash || parseRoute(window.location.hash) === 'overview' && window.location.hash !== '#/overview') {
+    const target = parseRouteTarget(window.location.hash);
+    if (!window.location.hash || !target.valid) {
       window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#/overview`);
     }
-    const onHashChange = () => setRoute(currentRoute());
+    const onHashChange = () => {
+      const next = currentRoute();
+      setRoute(next.route);
+      setSection(next.section);
+    };
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
@@ -85,10 +93,16 @@ export default function App() {
   useEffect(() => {
     if (!core) return;
     const frame = window.requestAnimationFrame(() => {
+      if (section) {
+        const target = document.getElementById(section);
+        target?.scrollIntoView?.({ block: 'start' });
+        target?.focus({ preventScroll: true });
+        return;
+      }
       document.querySelector<HTMLElement>('[data-route-heading]')?.focus();
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [core, route]);
+  }, [core, route, section]);
 
   const availableMain = useMemo(() => main in (core?.snapshot.metrics ?? {}) ? main : 'sofr_iorb_spread_bp', [core, main]);
 

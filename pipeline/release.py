@@ -1,4 +1,4 @@
-"""Phased orchestration for the schema 2.0.0 static publication.
+"""Phased orchestration for the schema 2.1.0 static publication.
 
 The module deliberately keeps collection, transformation, contract validation,
 staging, and promotion as separate operations.  GitHub Actions can therefore
@@ -11,6 +11,7 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, replace
 from datetime import date, datetime, timedelta, timezone
+import math
 import os
 from pathlib import Path
 import re
@@ -92,6 +93,7 @@ from pipeline.manual_signals import (
     load_manual_signals,
 )
 from pipeline.rules.p0 import liquidity_alert_rule
+from pipeline.rules.p0_video_model import evaluate_video_p0_model
 from pipeline.transforms.p0 import (
     add_large_settlement_context,
     aggregate_srf_operations,
@@ -1715,20 +1717,44 @@ def build_release(
         "near_floor_threshold_percentile": 0.10,
         "near_floor_minimum_samples": 20,
     }
-    srf_points = states["srf_accepted"].observations
+    srf_points = []
+    for point in states["srf_accepted"].observations:
+        numeric_fields = (
+            "accepted_amount_usd_bn",
+            "alert_eligible_accepted_amount_usd_bn",
+            "exercise_accepted_amount_usd_bn",
+        )
+        classification_complete = (
+            all(
+                isinstance(point.get(field), (int, float))
+                and not isinstance(point.get(field), bool)
+                and math.isfinite(float(point[field]))
+                for field in numeric_fields
+            )
+            and isinstance(point.get("has_technical_exercise"), bool)
+            and isinstance(point.get("technical_exercise"), bool)
+        )
+        srf_points.append(
+            {**point, "classification_complete": classification_complete}
+        )
+    states["srf_accepted"] = replace(
+        states["srf_accepted"], observations=srf_points
+    )
+    classified_srf = all(
+        point.get("classification_complete") is True for point in srf_points
+    )
     statistics["srf_accepted"] = {
         "sample_size": len(srf_points),
         "nontechnical_positive_use_streak": (
             srf_nontechnical_positive_use_streak(srf_points)
         ),
-        "positive_nontechnical_latest_3": sum(
-            point.get(
-                "alert_eligible_accepted_amount_usd_bn",
-                point.get("accepted_amount_usd_bn", point.get("value", 0)),
+        "positive_nontechnical_latest_3": (
+            sum(
+                point["alert_eligible_accepted_amount_usd_bn"] > 0
+                for point in srf_points[-3:]
             )
-            > 0
-            and not point.get("technical_exercise", False)
-            for point in srf_points[-3:]
+            if classified_srf
+            else None
         ),
     }
     for metric_id in CFTC_METRICS:
@@ -1927,6 +1953,35 @@ def build_release(
         registry_for_manifest.append(
             {**registry_metric, "effective_availability": availability}
         )
+
+    video_p0_model = evaluate_video_p0_model(
+        latest_sofr_iorb_bp=sofr_stats["latest"],
+        positive_streak=(
+            int(sofr_stats["positive_streak"])
+            if sofr_stats.get("positive_streak") is not None
+            else None
+        ),
+        reserve_balance_usd_bn=metric_records["reserve_balances"]["value"],
+        reserve_change_4w_usd_bn=reserve_context["change_4w"],
+        reserve_trailing_5y_p10_usd_bn=reserve_context["trailing_5y_p10"],
+        tga_daily_usd_bn=metric_records["tga_daily"]["value"],
+        srf_recent_operation_days=srf_points,
+        metric_quality={
+            metric_id: metric_records[metric_id]
+            for metric_id in (
+                "sofr_iorb_spread_bp",
+                "reserve_balances",
+                "tga_daily",
+                "srf_accepted",
+            )
+        },
+        technical_flags=technical_flags,
+        crisis_context=bundle.alert_rules["alerts"]["video_p0_model"][
+            "crisis_context"
+        ],
+        config=bundle.alert_rules,
+        evaluated_at=attempted_at,
+    )
 
     price_available = states["sofr_iorb_spread_bp"].health == "OK"
     confirmation_available = all(
@@ -2387,6 +2442,7 @@ def build_release(
         ),
         "sources": sources,
         "source_health": source_health_counts(sources),
+        "decision_models": {"p0_video_liquidity": video_p0_model},
         "composite": rule,
         **availability_counts(metric_records),
     }

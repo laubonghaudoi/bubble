@@ -506,13 +506,86 @@ def fixture_snapshot():
         "not_released_yet": 0,
         "not_applicable": 0,
     }
+    # The compact fixture is for the pre-video metric/switch contract.  Build a
+    # deliberately disabled required 2.1 decision model so those tests can keep
+    # exercising their original axis while the model itself has dedicated
+    # rule/contract tests.
+    metric_template = snapshot["metrics"]["on_rrp_accepted"]
+    unknown_clause_specs = (
+        ("sofr_positive_streak", 1, "sofr_iorb_spread_bp", ">=", 3, "observations"),
+        ("reserve_below_yellow", 2, "reserve_balances", "<", 2900, "USD bn"),
+        ("reserve_change_4w_negative", 3, "reserve_balances", "<", 0, "USD bn"),
+        ("tga_near_1t", 4, "tga_daily", ">=", 950, "USD bn"),
+        ("sofr_spread_above_red", 1, "sofr_iorb_spread_bp", ">", 3, "bp"),
+        ("reserve_below_red", 2, "reserve_balances", "<", 2800, "USD bn"),
+        ("srf_positive_days", 3, "srf_accepted", ">=", 2, "days in latest 3 completed days"),
+        ("reserve_below_extreme", 1, "reserve_balances", "<", 2500, "USD bn"),
+        ("reserve_rapid_decline", 2, "reserve_balances", "<=", None, "USD bn"),
+        ("no_major_crisis", 3, None, "=", "NO_MAJOR_CRISIS", None),
+    )
+    clauses = {}
+    for clause_id, order, metric_id, operator, threshold, threshold_unit in unknown_clause_specs:
+        clauses[clause_id] = {
+            "clause_id": clause_id,
+            "order": order,
+            "label": clause_id,
+            "metric_id": metric_id,
+            "operator": operator,
+            "threshold": threshold,
+            "threshold_unit": threshold_unit,
+            "current_value": None,
+            "current_unit": threshold_unit,
+            "met": None,
+            "observation_date": None,
+            "released_at": None,
+            "quality_status": "NOT_APPLICABLE",
+            "freshness": "UNKNOWN",
+            "evaluation_state": "DISABLED",
+            "basis": [
+                {"kind": "VIDEO_SOURCE_RULE", "label": "Cited rule", "source_segment_id": "yellow_red", "note": "Disabled fixture."},
+                {"kind": "MANUAL_CONTEXT" if metric_id is None else "DASHBOARD_OPERATIONALIZATION", "label": "Disabled", "source_segment_id": "yellow_red", "note": "Disabled fixture."},
+            ],
+            "note": "",
+        }
+    yellow = [clauses[key] for key in ("sofr_positive_streak", "reserve_below_yellow", "reserve_change_4w_negative", "tga_near_1t")]
+    red = [clauses[key] for key in ("sofr_spread_above_red", "reserve_below_red", "srf_positive_days")]
+    extreme = [clauses[key] for key in ("reserve_below_extreme", "reserve_rapid_decline", "no_major_crisis")]
+    video_url = "https://www.youtube.com/watch?v=MrnjBdgQPLU"
+    snapshot["decision_models"] = {"p0_video_liquidity": {
+        "model_id": "henren778_p0_liquidity", "label": "影片 P0 黃／紅流動性警報",
+        "enabled": False, "status": "UNAVAILABLE", "data_status": "UNAVAILABLE",
+        "confidence": "UNKNOWN", "availability_reason": "DISABLED",
+        "evaluated_at": snapshot["generated_at"],
+        "source": {"title": "一個月前全網喊AI泡沫要崩，我說鬼故事是洗盤不是葬禮，二波窗口鎖死7月底8月初！對賭：納指洗完近一成，道指標普齊創新高，美光單日暴拉18.4%！復盤釘死，二波打法五步三開關全套交付", "display_title": "一個月前全網喊 AI 泡沫要崩", "author": "一个狠人", "url": video_url, "segments": [
+            {"segment_id": "yellow_red", "label": "Yellow / Red", "start_seconds": 1380, "end_seconds": 1440, "timestamp_url": f"{video_url}&t=1380s"},
+            {"segment_id": "reserve_exit_1", "label": "Reserve I", "start_seconds": 1140, "end_seconds": 1200, "timestamp_url": f"{video_url}&t=1140s"},
+            {"segment_id": "reserve_exit_2", "label": "Reserve II", "start_seconds": 1560, "end_seconds": 1620, "timestamp_url": f"{video_url}&t=1560s"},
+        ]},
+        "thresholds": {
+            "yellow": {"spread_positive_bp": 0, "positive_streak_observations": 3, "reserve_usd_bn": 2900, "reserve_change_4w_usd_bn": 0, "tga_operational_floor_usd_bn": 950},
+            "red": {"spread_bp": 3, "reserve_usd_bn": 2800, "srf_positive_days_required": 2, "srf_window_completed_days": 3},
+            "extreme": {"reserve_usd_bn": 2500, "decline_percentile": "TRAILING_5Y_P10"},
+            "tga_source_target_usd_bn": 1000,
+        },
+        "operationalizations": {"exclude_technical_srf_exercises": True},
+        "crisis_context": {"status": "UNKNOWN", "as_of": None, "reviewed_at": None, "reviewer": None, "note": None},
+        "formulas": {
+            "yellow": {"expression": "YELLOW", "triggered": None, "clauses": yellow},
+            "red": {"expression": "RED", "triggered": None, "clauses": red, "routes": [
+                {"route_id": "spread_and_reserves", "label": "Route A", "expression": "A", "triggered": None, "clauses": red[:2]},
+                {"route_id": "srf_2_of_3", "label": "Route B", "expression": "B", "triggered": None, "clauses": red[2:]},
+            ]},
+            "extreme": {"expression": "EXTREME", "triggered": None, "candidate": None, "context_required": False, "clauses": extreme},
+        },
+        "technical_flags": [], "notes": ["Disabled fixture."],
+    }}
     return snapshot
 
 
 def test_loads_schema_2_registry_bundle_and_canonical_p0_ids():
     bundle = load_config_bundle()
-    assert bundle.metric_registry["schema_version"] == "2.0.0"
-    assert bundle.source_registry["schema_version"] == "2.0.0"
+    assert bundle.metric_registry["schema_version"] == "2.1.0"
+    assert bundle.source_registry["schema_version"] == "2.1.0"
     assert CANONICAL_P0_METRIC_IDS <= bundle.metrics_by_id.keys()
 
 
@@ -593,7 +666,7 @@ def test_statistics_are_numeric_or_null_and_attempt_time_is_utc():
 def test_publication_contract_hard_cuts_v1_and_cross_checks_all_metric_ids():
     snapshot = fixture_snapshot()
     manifest = {
-        "schema_version": "2.0.0",
+        "schema_version": "2.1.0",
         "generated_at": snapshot["generated_at"],
         "metrics": [
             {
@@ -638,7 +711,7 @@ def test_publication_contract_hard_cuts_v1_and_cross_checks_all_metric_ids():
     }
     series = {
         metric_id: {
-            "schema_version": "2.0.0",
+            "schema_version": "2.1.0",
             "metric_id": metric_id,
             "label": metric["label"],
             "unit": metric["unit"],
@@ -675,7 +748,7 @@ def test_series_contract_requires_sorted_unique_real_dates():
     snapshot = fixture_snapshot()
     metric = snapshot["metrics"]["on_rrp_accepted"]
     series = {
-        "schema_version": "2.0.0",
+        "schema_version": "2.1.0",
         "metric_id": metric["metric_id"],
         "label": metric["label"],
         "unit": metric["unit"],
@@ -696,7 +769,7 @@ def test_series_contract_requires_sorted_unique_real_dates():
 def test_publication_cross_checks_contract_critical_metric_fields():
     snapshot = fixture_snapshot()
     manifest = {
-        "schema_version": "2.0.0",
+        "schema_version": "2.1.0",
         "generated_at": snapshot["generated_at"],
         "metrics": [],
     }
@@ -716,7 +789,7 @@ def test_publication_cross_checks_contract_critical_metric_fields():
             }
         )
         series[metric_id] = {
-            "schema_version": "2.0.0",
+            "schema_version": "2.1.0",
             "metric_id": metric_id,
             "label": metric["label"],
             "unit": metric["unit"],
@@ -755,7 +828,7 @@ def test_publication_cross_checks_contract_critical_metric_fields():
 def test_publication_rejects_internally_mixed_switches_and_timestamps():
     snapshot = fixture_snapshot()
     manifest = {
-        "schema_version": "2.0.0",
+        "schema_version": "2.1.0",
         "generated_at": snapshot["generated_at"],
         "metrics": [],
     }
@@ -775,7 +848,7 @@ def test_publication_rejects_internally_mixed_switches_and_timestamps():
             }
         )
         series[metric_id] = {
-            "schema_version": "2.0.0",
+            "schema_version": "2.1.0",
             "metric_id": metric_id,
             "label": metric["label"],
             "unit": metric["unit"],
@@ -811,7 +884,7 @@ def test_standalone_alerts_and_events_require_v2_shapes():
     with pytest.raises(ContractValidationError, match="events must be a list"):
         validate_events_file(
             {
-                "schema_version": "2.0.0",
+                "schema_version": "2.1.0",
                 "generated_at": "2026-08-12T20:00:00Z",
                 "events": "not-a-list",
             }

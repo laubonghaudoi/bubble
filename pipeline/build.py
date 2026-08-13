@@ -1,4 +1,4 @@
-"""Schema 2.0.0 assembly helpers for the static dashboard publication."""
+"""Schema 2.1.0 assembly helpers for the static dashboard publication."""
 
 from __future__ import annotations
 
@@ -396,6 +396,22 @@ def metric_record(
         )
         last_success = last_attempt = released_at = updated_at = None
     methodology = dict(registry_metric["methodology"])
+    short_series = []
+    for point in points[-22:]:
+        short_point = {"date": point["date"], "value": point["value"]}
+        if registry_metric["metric_id"] == "srf_accepted":
+            for field in (
+                "accepted_amount_usd_bn",
+                "alert_eligible_accepted_amount_usd_bn",
+                "exercise_accepted_amount_usd_bn",
+                "has_technical_exercise",
+                "technical_exercise",
+                "classification_complete",
+            ):
+                if field in point:
+                    short_point[field] = point[field]
+        short_series.append(short_point)
+
     record: dict[str, Any] = {
         "metric_id": registry_metric["metric_id"],
         "label": registry_metric["label"],
@@ -427,7 +443,7 @@ def metric_record(
         },
         "source": source,
         "methodology": methodology,
-        "short_series": [{"date": point["date"], "value": point["value"]} for point in points[-22:]],
+        "short_series": short_series,
     }
     if extra:
         record.update(extra)
