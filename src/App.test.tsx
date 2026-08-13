@@ -91,14 +91,13 @@ describe('v2 routed dashboard', () => {
 
   it('renders collector health, analysis contract, and source notices on a standalone route', async () => {
     window.history.replaceState(null, '', '/#/provenance');
-    const { container } = render(<App />);
+    render(<App />);
     const heading = await findRouteHeading('來源與方法');
     await waitFor(() => expect(heading).toHaveFocus());
 
     const navLink = screen.getByRole('link', { name: '來源與方法' });
     expect(navLink).toHaveAttribute('href', '#/provenance');
     expect(navLink).toHaveAttribute('aria-current', 'page');
-    expect(container.querySelector('.switch-strip')).toBeNull();
     expect(vi.mocked(loadRouteSeries)).toHaveBeenCalledWith(expect.any(String), 'provenance', snapshot, catalog);
 
     const provenance = screen.getByRole('region', { name: '來源、健康狀態與分析聲明' });
@@ -122,20 +121,26 @@ describe('v2 routed dashboard', () => {
     expect(within(provenance).getByText(/No CFTC seal or logo is used/)).toBeVisible();
   });
 
-  it('supports deep links, hash navigation, route focus, and switch-card arrow navigation', async () => {
+  it('supports deep links, hash navigation, route focus, and a single primary route navigation', async () => {
     window.history.replaceState(null, '', '/#/market-ignition');
-    render(<App />);
+    const { container } = render(<App />);
     const marketHeading = await findRouteHeading('市場引信');
     await waitFor(() => expect(marketHeading).toHaveFocus());
     expect(screen.getByText(/P1 · CFTC TFF FUTURES ONLY/)).toBeVisible();
     expect(screen.getByText(/P2 · BUBBLE/)).toBeVisible();
     expect(vi.mocked(loadRouteSeries)).toHaveBeenCalledWith(expect.any(String), 'market-ignition', snapshot, catalog);
+    expect(screen.queryByRole('region', { name: '三個監測開關' })).not.toBeInTheDocument();
 
-    const switches = screen.getAllByRole('link').filter((link) => link.classList.contains('switch-card'));
-    expect(switches.map((link) => link.getAttribute('href'))).toEqual(['#/liquidity-fuel', '#/market-ignition', '#/fundamental-exit']);
-    switches[0].focus();
-    fireEvent.keyDown(switches[0], { key: 'ArrowRight' });
-    expect(switches[1]).toHaveFocus();
+    const navigation = screen.getByRole('navigation', { name: 'Dashboard 頁面' });
+    expect(within(navigation).getAllByRole('link').map((link) => link.getAttribute('href'))).toEqual([
+      '#/overview',
+      '#/liquidity-fuel',
+      '#/market-ignition',
+      '#/fundamental-exit',
+      '#/provenance',
+    ]);
+    expect(within(navigation).getByRole('link', { name: '市場引信' })).toHaveAttribute('aria-current', 'page');
+    expect(container.querySelectorAll('[aria-current="page"]')).toHaveLength(1);
 
     window.location.hash = '#/fundamental-exit';
     window.dispatchEvent(new HashChangeEvent('hashchange'));
@@ -143,11 +148,15 @@ describe('v2 routed dashboard', () => {
     await waitFor(() => expect(fundamentalHeading).toHaveFocus());
     expect(screen.getByText(/P3 · HYPERSCALER CASH CAPEX/)).toBeVisible();
     expect(vi.mocked(loadRouteSeries)).toHaveBeenCalledWith(expect.any(String), 'fundamental-exit', snapshot, catalog);
+    expect(within(navigation).getByRole('link', { name: '基本面逃生門' })).toHaveAttribute('aria-current', 'page');
+    expect(container.querySelectorAll('[aria-current="page"]')).toHaveLength(1);
 
     window.location.hash = '#/overview';
     window.dispatchEvent(new HashChangeEvent('hashchange'));
     const overviewHeading = await findRouteHeading('總覽');
     await waitFor(() => expect(overviewHeading).toHaveFocus());
+    expect(within(navigation).getByRole('link', { name: '總覽' })).toHaveAttribute('aria-current', 'page');
+    expect(container.querySelectorAll('[aria-current="page"]')).toHaveLength(1);
   });
 
   it('renders P1 as four evidence-only blocks with quantitative CFTC cards and fail-closed rights holds', async () => {

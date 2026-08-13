@@ -169,7 +169,7 @@ a:focus-visible,
 
 .deck {
   display: grid;
-  grid-template-rows: 46px 30px 140px minmax(0, 1fr) 28px;
+  grid-template-rows: 46px 30px minmax(0, 1fr) 28px;
   gap: 1px;
   width: 100%;
   height: 100vh;
@@ -177,10 +177,6 @@ a:focus-visible,
   min-height: 0;
   overflow: hidden;
   background: var(--line);
-}
-
-.deck.is-provenance {
-  grid-template-rows: 46px 30px minmax(0, 1fr) 28px;
 }
 
 .route-nav {
@@ -230,7 +226,6 @@ a:focus-visible,
 }
 
 .status-bar,
-.switch-card,
 .panel,
 .chart-panel,
 .read-rail,
@@ -325,134 +320,6 @@ a:focus-visible,
   border: 1px solid var(--status-color, var(--unavail));
   color: var(--status-color, var(--unavail));
   line-height: 1.25;
-  text-transform: uppercase;
-}
-
-.switch-strip {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1px;
-  min-width: 0;
-  background: var(--line);
-}
-
-.switch-card {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  padding: 13px 16px;
-  border-top: 2px solid var(--status-color, var(--unavail));
-}
-
-.switch-card-link {
-  color: inherit;
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.switch-card-link:hover {
-  background: var(--hover);
-  color: inherit;
-}
-
-.switch-card-link.is-current {
-  box-shadow: inset 0 0 0 1px var(--status-color, var(--line));
-}
-
-.switch-head {
-  display: flex;
-  align-items: baseline;
-  gap: 9px;
-  min-width: 0;
-  color: var(--muted);
-  font: 11.5px 'DM Mono', monospace;
-}
-
-.switch-number {
-  flex: 0 0 auto;
-  color: var(--faint);
-}
-
-.switch-kicker {
-  overflow: hidden;
-  letter-spacing: 0.14em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.switch-status {
-  margin-left: auto;
-  overflow: hidden;
-  color: var(--status-fg, var(--unavailable-fg));
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.switch-title-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-  margin-top: 7px;
-}
-
-.switch-title-row h2,
-.switch-title {
-  min-width: 0;
-  margin: 0;
-  overflow: hidden;
-  color: var(--ink);
-  font-size: 21px;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  line-height: 1.25;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.meter {
-  display: flex;
-  gap: 3px;
-  margin-left: auto;
-  flex: 0 0 auto;
-}
-
-.meter-segment {
-  width: 19px;
-  height: 7px;
-  background: var(--line);
-}
-
-.meter-segment.is-filled,
-.meter-segment.filled,
-.meter-segment[data-filled='true'] {
-  background: var(--status-color, var(--accent));
-}
-
-.switch-score {
-  min-width: 26px;
-  flex: 0 0 auto;
-  color: var(--status-fg, var(--unavailable-fg));
-  font: 500 15px 'DM Mono', monospace;
-  text-align: right;
-}
-
-.switch-summary {
-  margin: 7px 0 0;
-  color: var(--muted);
-  font-size: 13.5px;
-  line-height: 1.5;
-}
-
-.switch-confidence {
-  margin-top: auto;
-  padding-top: 6px;
-  color: var(--faint);
-  font: 11px 'DM Mono', monospace;
-  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -2860,10 +2727,6 @@ a:focus-visible,
     overflow: visible;
   }
 
-  .deck.is-provenance {
-    grid-template-rows: auto;
-  }
-
   .status-bar {
     align-items: flex-start;
     min-height: 46px;
@@ -2881,16 +2744,8 @@ a:focus-visible,
     flex-wrap: wrap;
   }
 
-  .switch-strip {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   .route-nav {
     min-height: 34px;
-  }
-
-  .switch-card {
-    min-height: 0;
   }
 
   .body-grid {
@@ -3016,28 +2871,6 @@ a:focus-visible,
   .status-item,
   .overall-pill {
     min-width: 0;
-  }
-
-  .switch-card {
-    min-height: 0;
-    padding: 12px;
-  }
-
-  .switch-title-row {
-    gap: 8px;
-  }
-
-  .switch-title-row h2,
-  .switch-title {
-    font-size: 19px;
-  }
-
-  .meter {
-    gap: 2px;
-  }
-
-  .meter-segment {
-    width: 14px;
   }
 
   .tape-head,

@@ -1,7 +1,5 @@
 import {
   type CSSProperties,
-  type KeyboardEvent as ReactKeyboardEvent,
-  type MutableRefObject,
   type MouseEvent,
   useCallback,
   useEffect,
@@ -34,7 +32,6 @@ import {
   P3_AUTOMATED_IDS,
   P3_MANUAL_IDS,
   ROUTES,
-  SWITCH_CONFIG,
   TAPE_GROUPS,
   THRESHOLD_BP,
   TICKERS,
@@ -159,52 +156,6 @@ function StatusBar({ snapshot, route, onOpenSources }: { snapshot: Snapshot; rou
       </header>
       <RouteNav route={route} />
     </>
-  );
-}
-
-function onSwitchKeyDown(event: ReactKeyboardEvent<HTMLAnchorElement>, index: number, refs: MutableRefObject<Array<HTMLAnchorElement | null>>) {
-  const keys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
-  if (!keys.includes(event.key)) return;
-  event.preventDefault();
-  const last = SWITCH_CONFIG.length - 1;
-  const next = event.key === 'Home' ? 0 : event.key === 'End' ? last
-    : event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? (index + last) % SWITCH_CONFIG.length
-      : (index + 1) % SWITCH_CONFIG.length;
-  refs.current[next]?.focus();
-}
-
-function SwitchStrip({ snapshot, route }: { snapshot: Snapshot; route: RouteId }) {
-  const refs = useRef<Array<HTMLAnchorElement | null>>([]);
-  return (
-    <section className="switch-strip" aria-label="三個監測開關">
-      {SWITCH_CONFIG.map((config, index) => {
-        const value = snapshot.switches[config.id];
-        const assessment = value.assessment ?? value.mode;
-        const available = Math.max(0, Math.min(value.total_blocks, value.available_blocks));
-        const total = Math.max(1, value.total_blocks);
-        return (
-          <a
-            className={`switch-card switch-card-link${route === config.route ? ' is-current' : ''}`}
-            href={`#/${config.route}`}
-            key={config.id}
-            style={statusStyle(assessment)}
-            aria-label={`${config.title}，${assessment ?? '未能評估'}，${available}/${total} evidence blocks`}
-            aria-current={route === config.route ? 'page' : undefined}
-            ref={(node) => { refs.current[index] = node; }}
-            onKeyDown={(event) => onSwitchKeyDown(event, index, refs)}
-          >
-            <div className="switch-head"><span className="switch-number">{config.num}</span><span className="switch-kicker">{config.kicker}</span><strong className="switch-status">{assessment ?? 'UNAVAILABLE'}</strong></div>
-            <div className="switch-title-row">
-              <h2>{config.title}</h2>
-              <div className="meter" aria-hidden="true">{Array.from({ length: total }, (_, segment) => <span className={`meter-segment${segment < available ? ' is-filled' : ''}`} key={segment} />)}</div>
-              <b className="switch-score">{available}/{total}</b>
-            </div>
-            <p className="switch-summary">{value.summary}</p>
-            <div className="switch-confidence">CONFIDENCE {value.confidence.toUpperCase()}</div>
-          </a>
-        );
-      })}
-    </section>
   );
 }
 
@@ -811,7 +762,7 @@ export function Dashboard(props: DashboardProps) {
   const closeDrawer = useCallback(() => props.onDrawer(null), [props.onDrawer]);
   const openSources = useCallback(() => openDrawer('sources'), [openDrawer]);
   const provenanceRoute = props.route === 'provenance';
-  return <div className="app-shell"><div className={`deck${provenanceRoute ? ' is-provenance' : ''}`}><StatusBar snapshot={props.snapshot} route={props.route} onOpenSources={openSources} />{provenanceRoute ? null : <SwitchStrip snapshot={props.snapshot} route={props.route} />}{provenanceRoute ? null : <div className="series-live-region" role="status" aria-live="polite">{props.seriesLoading ? '載入本頁完整時間序列…' : Object.keys(props.seriesErrors).length ? `${Object.keys(props.seriesErrors).length} 條完整時間序列暫不可用，已使用 snapshot 短序列。` : '本頁完整時間序列已載入。'}</div>}{props.route === 'overview' ? <OverviewPage {...props} onDrawer={openDrawer} /> : props.route === 'liquidity-fuel' ? <LiquidityPage {...props} onDrawer={openDrawer} /> : props.route === 'provenance' ? <ProvenancePage snapshot={props.snapshot} /> : <PhasePage route={props.route} snapshot={props.snapshot} catalogError={props.catalogError} series={props.series} range={props.range} onRange={props.onRange} onMetric={openDrawer} />}<FooterTicker snapshotUrl={`${props.baseUrl}data/snapshot.json`} /></div>{props.drawer ? <Drawer mode={props.drawer} snapshot={props.snapshot} catalog={props.catalog} catalogError={props.catalogError} restoreFocus={drawerTriggerRef.current} onClose={closeDrawer} /> : null}</div>;
+  return <div className="app-shell"><div className="deck"><StatusBar snapshot={props.snapshot} route={props.route} onOpenSources={openSources} />{provenanceRoute ? null : <div className="series-live-region" role="status" aria-live="polite">{props.seriesLoading ? '載入本頁完整時間序列…' : Object.keys(props.seriesErrors).length ? `${Object.keys(props.seriesErrors).length} 條完整時間序列暫不可用，已使用 snapshot 短序列。` : '本頁完整時間序列已載入。'}</div>}{props.route === 'overview' ? <OverviewPage {...props} onDrawer={openDrawer} /> : props.route === 'liquidity-fuel' ? <LiquidityPage {...props} onDrawer={openDrawer} /> : props.route === 'provenance' ? <ProvenancePage snapshot={props.snapshot} /> : <PhasePage route={props.route} snapshot={props.snapshot} catalogError={props.catalogError} series={props.series} range={props.range} onRange={props.onRange} onMetric={openDrawer} />}<FooterTicker snapshotUrl={`${props.baseUrl}data/snapshot.json`} /></div>{props.drawer ? <Drawer mode={props.drawer} snapshot={props.snapshot} catalog={props.catalog} catalogError={props.catalogError} restoreFocus={drawerTriggerRef.current} onClose={closeDrawer} /> : null}</div>;
 }
 
 export function StateScreen({ error }: { error?: string }) {

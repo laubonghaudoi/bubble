@@ -78,12 +78,6 @@ export const ROUTES = [
   { id: 'provenance', href: '#/provenance', label: '來源與方法' },
 ] as const satisfies ReadonlyArray<{ id: RouteId; href: string; label: string }>;
 
-export const SWITCH_CONFIG = [
-  { id: 'liquidity_fuel', route: 'liquidity-fuel', num: '01', kicker: 'LIQUIDITY FUEL', title: '流動性燃料' },
-  { id: 'market_ignition', route: 'market-ignition', num: '02', kicker: 'MARKET IGNITION', title: '市場引信' },
-  { id: 'fundamental_exit', route: 'fundamental-exit', num: '03', kicker: 'FUNDAMENTAL EXIT', title: '基本面逃生門' },
-] as const;
-
 export const RANGE_DAYS: Record<RangeKey, number> = {
   '1M': 31,
   '8W': 56,

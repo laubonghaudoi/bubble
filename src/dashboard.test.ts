@@ -14,7 +14,6 @@ import {
   P3_METRIC_IDS,
   RANGE_DAYS,
   SCHEMA_VERSION,
-  SWITCH_CONFIG,
   TAPE_GROUPS,
   buildOverlayUnion,
   changePresentation,
@@ -260,8 +259,7 @@ describe('v2 contract and configuration', () => {
     expect(isSnapshot(synchronizedDegraded)).toBe(true);
   });
 
-  it('keeps switch and tape order explicit and includes ON RRP and SRF', () => {
-    expect(SWITCH_CONFIG.map(({ id }) => id)).toEqual(['liquidity_fuel', 'market_ignition', 'fundamental_exit']);
+  it('keeps tape order explicit and includes ON RRP and SRF', () => {
     const tape = TAPE_GROUPS.flatMap(({ ids }) => ids);
     expect(tape).toEqual(OVERVIEW_SERIES_IDS);
     expect(tape).toContain('on_rrp_accepted');
