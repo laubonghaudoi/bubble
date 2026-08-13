@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date, datetime
+from math import isfinite
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -98,6 +99,33 @@ ACTIVE_P3_AUTOMATED_METRIC_IDS = frozenset(
 )
 
 MANUAL_P3_METRIC_IDS = CANONICAL_P3_METRIC_IDS - ACTIVE_P3_AUTOMATED_METRIC_IDS
+
+VIDEO_P0_CRISIS_CONTEXT_STATUSES = frozenset(
+    {"UNKNOWN", "MAJOR_CRISIS_PRESENT", "NO_MAJOR_CRISIS"}
+)
+VIDEO_P0_SOURCE_SEGMENTS = (
+    (
+        "yellow_red",
+        "Yellow / Red formula",
+        1380,
+        1440,
+        "https://www.youtube.com/watch?v=MrnjBdgQPLU&t=1380s",
+    ),
+    (
+        "reserve_exit_1",
+        "Reserve exit context I",
+        1140,
+        1200,
+        "https://www.youtube.com/watch?v=MrnjBdgQPLU&t=1140s",
+    ),
+    (
+        "reserve_exit_2",
+        "Reserve exit context II",
+        1560,
+        1620,
+        "https://www.youtube.com/watch?v=MrnjBdgQPLU&t=1560s",
+    ),
+)
 
 
 class ConfigValidationError(ContractValidationError):
@@ -328,6 +356,240 @@ def effective_metric_state(metric: Mapping[str, Any]) -> EffectiveMetricState:
     )
 
 
+def _finite_positive_config_number(value: Any, path: str) -> float:
+    if (
+        isinstance(value, bool)
+        or not isinstance(value, (int, float))
+        or not isfinite(value)
+        or value <= 0
+    ):
+        raise ConfigValidationError(f"{path} must be a finite positive number")
+    return float(value)
+
+
+def _finite_config_number(value: Any, path: str) -> float:
+    if (
+        isinstance(value, bool)
+        or not isinstance(value, (int, float))
+        or not isfinite(value)
+    ):
+        raise ConfigValidationError(f"{path} must be a finite number")
+    return float(value)
+
+
+def validate_video_p0_crisis_context(
+    context: Any,
+    *,
+    path: str = "alert_rules alerts.video_p0_model.crisis_context",
+) -> None:
+    """Validate the manually audited context gate without accepting stale metadata."""
+
+    if not isinstance(context, Mapping):
+        raise ConfigValidationError(f"{path} must be an object")
+    expected_fields = {"status", "as_of", "reviewed_at", "reviewer", "note"}
+    if set(context) != expected_fields:
+        raise ConfigValidationError(
+            f"{path} must contain exactly: " + ", ".join(sorted(expected_fields))
+        )
+    status = context.get("status")
+    if status not in VIDEO_P0_CRISIS_CONTEXT_STATUSES:
+        raise ConfigValidationError(
+            f"{path}.status must be UNKNOWN, MAJOR_CRISIS_PRESENT, or NO_MAJOR_CRISIS"
+        )
+    audit_fields = ("as_of", "reviewed_at", "reviewer", "note")
+    if status == "UNKNOWN":
+        if any(context.get(field) is not None for field in audit_fields):
+            raise ConfigValidationError(
+                f"{path} UNKNOWN status requires null audit metadata"
+            )
+        return
+
+    raw_as_of = context.get("as_of")
+    if not isinstance(raw_as_of, str):
+        raise ConfigValidationError(f"{path}.as_of must be an ISO date")
+    try:
+        as_of = date.fromisoformat(raw_as_of)
+    except ValueError as exc:
+        raise ConfigValidationError(f"{path}.as_of must be an ISO date") from exc
+    if as_of.isoformat() != raw_as_of:
+        raise ConfigValidationError(f"{path}.as_of must be an ISO date")
+
+    raw_reviewed_at = context.get("reviewed_at")
+    if not isinstance(raw_reviewed_at, str) or not raw_reviewed_at.endswith("Z"):
+        raise ConfigValidationError(f"{path}.reviewed_at must be a UTC Z timestamp")
+    try:
+        reviewed_at = datetime.fromisoformat(raw_reviewed_at[:-1] + "+00:00")
+    except ValueError as exc:
+        raise ConfigValidationError(
+            f"{path}.reviewed_at must be a UTC Z timestamp"
+        ) from exc
+    if reviewed_at.utcoffset() is None or reviewed_at.utcoffset().total_seconds() != 0:
+        raise ConfigValidationError(f"{path}.reviewed_at must be a UTC Z timestamp")
+    if reviewed_at.date() < as_of:
+        raise ConfigValidationError(f"{path}.reviewed_at cannot precede as_of")
+    for field in ("reviewer", "note"):
+        value = context.get(field)
+        if not isinstance(value, str) or not value.strip():
+            raise ConfigValidationError(f"{path}.{field} must be non-empty")
+
+
+def _validate_video_p0_model_config(alerts: Mapping[str, Any]) -> None:
+    path = "alert_rules alerts.video_p0_model"
+    model = alerts.get("video_p0_model")
+    if not isinstance(model, Mapping):
+        raise ConfigValidationError(f"{path} must be an object")
+    if not isinstance(model.get("enabled"), bool):
+        raise ConfigValidationError(f"{path}.enabled must be boolean")
+    if model.get("model_id") != "henren778_p0_liquidity":
+        raise ConfigValidationError(
+            f"{path}.model_id must be henren778_p0_liquidity"
+        )
+    if model.get("label") != "影片 P0 黃／紅警報":
+        raise ConfigValidationError(f"{path}.label does not match the audited model")
+
+    source = model.get("source")
+    if not isinstance(source, Mapping):
+        raise ConfigValidationError(f"{path}.source must be an object")
+    expected_source = {
+        "title": "一個月前全網喊AI泡沫要崩，我說鬼故事是洗盤不是葬禮，二波窗口鎖死7月底8月初！對賭：納指洗完近一成，道指標普齊創新高，美光單日暴拉18.4%！復盤釘死，二波打法五步三開關全套交付",
+        "display_title": "一個月前全網喊 AI 泡沫要崩",
+        "author": "一个狠人",
+        "url": "https://www.youtube.com/watch?v=MrnjBdgQPLU",
+    }
+    for field, expected in expected_source.items():
+        if source.get(field) != expected:
+            raise ConfigValidationError(
+                f"{path}.source.{field} does not match the audited source"
+            )
+    segments = source.get("segments")
+    if not isinstance(segments, list) or len(segments) != len(VIDEO_P0_SOURCE_SEGMENTS):
+        raise ConfigValidationError(f"{path}.source.segments must contain three entries")
+    segment_fields = {
+        "segment_id",
+        "label",
+        "start_seconds",
+        "end_seconds",
+        "timestamp_url",
+    }
+    for index, (segment, expected) in enumerate(
+        zip(segments, VIDEO_P0_SOURCE_SEGMENTS, strict=True)
+    ):
+        segment_path = f"{path}.source.segments[{index}]"
+        if not isinstance(segment, Mapping) or set(segment) != segment_fields:
+            raise ConfigValidationError(
+                f"{segment_path} must contain the exact audited segment fields"
+            )
+        actual = (
+            segment.get("segment_id"),
+            segment.get("label"),
+            segment.get("start_seconds"),
+            segment.get("end_seconds"),
+            segment.get("timestamp_url"),
+        )
+        if actual != expected:
+            raise ConfigValidationError(
+                f"{segment_path} does not match the audited source segment"
+            )
+
+    yellow = model.get("yellow")
+    red = model.get("red")
+    extreme = model.get("extreme")
+    if not all(isinstance(item, Mapping) for item in (yellow, red, extreme)):
+        raise ConfigValidationError(f"{path} yellow/red/extreme rules must be objects")
+    assert isinstance(yellow, Mapping)
+    assert isinstance(red, Mapping)
+    assert isinstance(extreme, Mapping)
+
+    yellow_reserve = _finite_positive_config_number(
+        yellow.get("reserve_below_usd_tn"), f"{path}.yellow.reserve_below_usd_tn"
+    )
+    red_reserve = _finite_positive_config_number(
+        red.get("reserve_below_usd_tn"), f"{path}.red.reserve_below_usd_tn"
+    )
+    extreme_reserve = _finite_positive_config_number(
+        extreme.get("reserve_below_usd_tn"),
+        f"{path}.extreme.reserve_below_usd_tn",
+    )
+    if not extreme_reserve < red_reserve < yellow_reserve:
+        raise ConfigValidationError(
+            f"{path} reserve thresholds must satisfy extreme < red < yellow"
+        )
+    if (yellow_reserve, red_reserve, extreme_reserve) != (2.9, 2.8, 2.5):
+        raise ConfigValidationError(
+            f"{path} reserve thresholds must be the audited 2.9T/2.8T/2.5T values"
+        )
+    reserve_rules = alerts.get("reserve_balances")
+    if not isinstance(reserve_rules, Mapping):
+        raise ConfigValidationError("alert_rules alerts.reserve_balances must be an object")
+    reserve_zones = reserve_rules.get("reference_zones_usd_tn")
+    if reserve_zones != [yellow_reserve, red_reserve, extreme_reserve]:
+        raise ConfigValidationError(
+            f"{path} reserve thresholds must equal reserve_balances reference zones"
+        )
+    if reserve_rules.get("reference_only") is not True:
+        raise ConfigValidationError(
+            "alert_rules alerts.reserve_balances.reference_only must remain true"
+        )
+
+    streak = yellow.get("positive_streak_observations")
+    if isinstance(streak, bool) or not isinstance(streak, int) or streak != 3:
+        raise ConfigValidationError(
+            f"{path}.yellow.positive_streak_observations must be exactly 3"
+        )
+    spread_positive = _finite_config_number(
+        yellow.get("spread_positive_bp"), f"{path}.yellow.spread_positive_bp"
+    )
+    if spread_positive != 0:
+        raise ConfigValidationError(
+            f"{path}.yellow.spread_positive_bp must be exactly 0"
+        )
+    if yellow.get("require_negative_reserve_change_4w") is not True:
+        raise ConfigValidationError(
+            f"{path}.yellow.require_negative_reserve_change_4w must be true"
+        )
+    tga_floor = _finite_positive_config_number(
+        yellow.get("tga_near_1t_floor_usd_tn"),
+        f"{path}.yellow.tga_near_1t_floor_usd_tn",
+    )
+    tga_target = _finite_positive_config_number(
+        yellow.get("tga_source_target_usd_tn"),
+        f"{path}.yellow.tga_source_target_usd_tn",
+    )
+    if not tga_floor < tga_target:
+        raise ConfigValidationError(f"{path} TGA floor must be below its source target")
+    if (tga_floor, tga_target) != (0.95, 1.0):
+        raise ConfigValidationError(
+            f"{path} TGA floor/target must be the audited 0.95T/1.0T values"
+        )
+
+    spread = _finite_positive_config_number(
+        red.get("sofr_iorb_bp"), f"{path}.red.sofr_iorb_bp"
+    )
+    if spread != 3.0:
+        raise ConfigValidationError(f"{path}.red.sofr_iorb_bp must be exactly 3.0")
+    if red.get("srf_window_completed_operation_days") != 3:
+        raise ConfigValidationError(
+            f"{path}.red.srf_window_completed_operation_days must be exactly 3"
+        )
+    if red.get("srf_positive_days_latest_3") != 2:
+        raise ConfigValidationError(
+            f"{path}.red.srf_positive_days_latest_3 must be exactly 2"
+        )
+    if red.get("exclude_technical_exercises") is not True:
+        raise ConfigValidationError(
+            f"{path}.red.exclude_technical_exercises must be true"
+        )
+    if extreme.get("rapid_decline_rule") != "trailing_5y_p10":
+        raise ConfigValidationError(
+            f"{path}.extreme.rapid_decline_rule must be trailing_5y_p10"
+        )
+    if extreme.get("crisis_context_required") is not True:
+        raise ConfigValidationError(
+            f"{path}.extreme.crisis_context_required must be true"
+        )
+    validate_video_p0_crisis_context(model.get("crisis_context"), path=f"{path}.crisis_context")
+
+
 def validate_config_bundle(bundle: ConfigBundle) -> None:
     metrics = _unique_records(
         bundle.metric_registry.get("metrics"), "metric_id", "metrics"
@@ -335,6 +597,10 @@ def validate_config_bundle(bundle: ConfigBundle) -> None:
     sources = _unique_records(
         bundle.source_registry.get("sources"), "source_id", "sources"
     )
+    alerts = bundle.alert_rules.get("alerts")
+    if not isinstance(alerts, Mapping):
+        raise ConfigValidationError("alert_rules alerts must be an object")
+    _validate_video_p0_model_config(alerts)
     releases = bundle.cftc_release_schedule.get("releases")
     if not isinstance(releases, list) or not releases:
         raise ConfigValidationError("cftc release schedule must be non-empty")

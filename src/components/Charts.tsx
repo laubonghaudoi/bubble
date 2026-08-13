@@ -72,10 +72,48 @@ export function resolveChartPalette():ChartPalette{
   return {...core,series};
 }
 
-type SeriesFileLike={observations:readonly Point[];label?:string};
-type PointsLike={points:readonly Point[];label?:string};
-export type ChartPoints=readonly Point[]|SeriesFileLike|PointsLike;
+/**
+ * Main-chart observations may carry SRF classification metadata in addition
+ * to the public numeric point envelope.  Classification fields are optional
+ * so old/partial artifacts degrade explicitly instead of being interpreted as
+ * non-technical zero use.
+ */
+export interface ChartPoint extends Point{
+  accepted_amount_usd_bn?:number;
+  alert_eligible_accepted_amount_usd_bn?:number;
+  exercise_accepted_amount_usd_bn?:number;
+  has_technical_exercise?:boolean;
+  technical_exercise?:boolean;
+  operation_count?:number;
+  exercise_operation_count?:number;
+  classification_complete?:boolean;
+}
+
+type SeriesFileLike={observations:readonly ChartPoint[];label?:string};
+type PointsLike={points:readonly ChartPoint[];label?:string};
+export type ChartPoints=readonly ChartPoint[]|SeriesFileLike|PointsLike;
 export type SeriesMap=Readonly<Record<string,ChartPoints>>;
+
+export type ReferenceLineTone='neutral'|'warning'|'danger'|'extreme'|'technical';
+export type ReferenceLineType='solid'|'dashed'|'dash-dot';
+
+export interface ReferenceLine{
+  id:string;
+  value:number;
+  label:string;
+  tone:ReferenceLineTone;
+  lineType:ReferenceLineType;
+}
+
+export type ChartDataStatus='CURRENT'|'LAST_GOOD'|'PARTIAL'|'UNAVAILABLE';
+
+export interface SrfAlertWindow{
+  positiveDays:number|null;
+  requiredPositiveDays:number;
+  windowDays:number;
+}
+
+type NormalizedChartPoint=ChartPoint&{value:number|null};
 
 export interface OverlayUnion{
   dates:string[];
@@ -93,14 +131,33 @@ export type SelectedSeries=readonly string[]|ReadonlySet<string>|Readonly<Record
 
 const isFiniteNumber=(value:unknown):value is number=>typeof value==='number'&&Number.isFinite(value);
 
-function orderedPoints(points:readonly Point[]):Point[]{
+function optionalFiniteNumber(value:unknown):number|undefined{
+  return isFiniteNumber(value)?value:undefined;
+}
+
+function optionalBoolean(value:unknown):boolean|undefined{
+  return typeof value==='boolean'?value:undefined;
+}
+
+function orderedPoints(points:readonly ChartPoint[]):NormalizedChartPoint[]{
   return points
     .filter(point=>typeof point.date==='string'&&point.date.length>0)
-    .map(point=>({date:point.date,value:isFiniteNumber(point.value)?point.value:null}))
+    .map(point=>({
+      date:point.date,
+      value:isFiniteNumber(point.value)?point.value:null,
+      accepted_amount_usd_bn:optionalFiniteNumber(point.accepted_amount_usd_bn),
+      alert_eligible_accepted_amount_usd_bn:optionalFiniteNumber(point.alert_eligible_accepted_amount_usd_bn),
+      exercise_accepted_amount_usd_bn:optionalFiniteNumber(point.exercise_accepted_amount_usd_bn),
+      has_technical_exercise:optionalBoolean(point.has_technical_exercise),
+      technical_exercise:optionalBoolean(point.technical_exercise),
+      operation_count:optionalFiniteNumber(point.operation_count),
+      exercise_operation_count:optionalFiniteNumber(point.exercise_operation_count),
+      classification_complete:optionalBoolean(point.classification_complete),
+    }))
     .sort((a,b)=>a.date.localeCompare(b.date));
 }
 
-function pointsFrom(value:ChartPoints):readonly Point[]{
+function pointsFrom(value:ChartPoints):readonly ChartPoint[]{
   if('observations' in value)return value.observations;
   if('points' in value)return value.points;
   return value;
@@ -137,7 +194,7 @@ export function buildOverlayUnion(input:SeriesMap):OverlayUnion{
 function normaliseOverlayData(input:OverlayData):OverlayUnion{
   if(!isAlignedOverlay(input))return buildOverlayUnion(input);
   const aligned='series' in input?input.series:input.values;
-  const reconstructed:Record<string,Point[]>={};
+  const reconstructed:Record<string,ChartPoint[]>={};
   for(const [id,values] of Object.entries(aligned)){
     reconstructed[id]=input.dates.map((date,index)=>({
       date,
@@ -197,7 +254,7 @@ function escapeHtml(value:string):string{
   })[char] as string);
 }
 
-type TooltipDatum={axisValue?:unknown;name?:unknown;value?:unknown;data?:unknown;seriesName?:unknown;color?:unknown};
+type TooltipDatum={axisValue?:unknown;name?:unknown;value?:unknown;data?:unknown;seriesName?:unknown;color?:unknown;dataIndex?:unknown};
 
 function tooltipValue(item:TooltipDatum):number|null{
   if(isFiniteNumber(item.value))return item.value;
@@ -215,11 +272,68 @@ function tooltipItems(params:unknown):TooltipDatum[]{
   return params&&typeof params==='object'?[params as TooltipDatum]:[];
 }
 
-function mainTooltipFormatter(params:unknown,unit:string):string{
+function srfMetadataComplete(point:NormalizedChartPoint):boolean{
+  if(point.classification_complete===false)return false;
+  return point.classification_complete===true||(
+    isFiniteNumber(point.accepted_amount_usd_bn)&&
+    isFiniteNumber(point.alert_eligible_accepted_amount_usd_bn)&&
+    isFiniteNumber(point.exercise_accepted_amount_usd_bn)&&
+    typeof point.has_technical_exercise==='boolean'&&
+    typeof point.technical_exercise==='boolean'
+  );
+}
+
+function srfCountingText(
+  point:NormalizedChartPoint,
+  alertWindow:SrfAlertWindow|undefined,
+):string{
+  if(!srfMetadataComplete(point))return 'UNKNOWN · CLASSIFICATION METADATA UNAVAILABLE';
+  const eligible=point.alert_eligible_accepted_amount_usd_bn!;
+  const technical=point.has_technical_exercise===true;
+  const dayState=eligible>0?'YES · COUNTS TOWARD SRF_RISING':technical
+    ?'NO · TECHNICAL EXERCISE EXCLUDED':'NO · NONTECHNICAL ACCEPTED AMOUNT IS ZERO';
+  if(!alertWindow)return `${dayState} · WINDOW COUNT UNAVAILABLE`;
+  const count=alertWindow.positiveDays==null?'UNKNOWN':String(alertWindow.positiveDays);
+  return `${dayState} · LATEST ${alertWindow.windowDays}-DAY COUNT ${count} · `+
+    `RULE ${alertWindow.requiredPositiveDays}-OF-${alertWindow.windowDays}`;
+}
+
+function srfTooltipRows(point:NormalizedChartPoint,alertWindow:SrfAlertWindow|undefined):string[]{
+  if(!srfMetadataComplete(point))return [
+    '<b>DEGRADED · SRF CLASSIFICATION METADATA UNAVAILABLE</b>',
+    'Technical versus nontechnical status is unknown; no alert marker is inferred.',
+  ];
+  const operationCount=isFiniteNumber(point.operation_count)?String(point.operation_count):'—';
+  const exerciseCount=isFiniteNumber(point.exercise_operation_count)?String(point.exercise_operation_count):'—';
+  const mode=point.technical_exercise?'TECHNICAL ONLY':point.has_technical_exercise?'MIXED':'NONTECHNICAL';
+  return [
+    `TOTAL ACCEPTED&nbsp;&nbsp;<b>${escapeHtml(formatMetricValue(point.accepted_amount_usd_bn,'USD bn'))}</b>`,
+    `ALERT ELIGIBLE&nbsp;&nbsp;<b>${escapeHtml(formatMetricValue(point.alert_eligible_accepted_amount_usd_bn,'USD bn'))}</b>`,
+    `TECHNICAL ACCEPTED&nbsp;&nbsp;<b>${escapeHtml(formatMetricValue(point.exercise_accepted_amount_usd_bn,'USD bn'))}</b>`,
+    `CLASSIFICATION&nbsp;&nbsp;<b>${mode}</b>`,
+    `OPERATIONS / EXERCISES&nbsp;&nbsp;<b>${operationCount} / ${exerciseCount}</b>`,
+    `COUNTS TOWARD RULE&nbsp;&nbsp;<b>${escapeHtml(srfCountingText(point,alertWindow))}</b>`,
+  ];
+}
+
+function mainTooltipFormatter(
+  params:unknown,
+  unit:string,
+  metricId:string,
+  points:readonly NormalizedChartPoint[],
+  alertWindow:SrfAlertWindow|undefined,
+  srfAnnotationsEnabled:boolean,
+):string{
   const item=tooltipItems(params)[0];
   if(!item)return '';
   const date=String(item.axisValue??item.name??'');
-  return `${escapeHtml(date)}<br><b>${escapeHtml(formatMetricValue(tooltipValue(item),unit))}</b>`;
+  const value=`<b>${escapeHtml(formatMetricValue(tooltipValue(item),unit))}</b>`;
+  if(metricId!=='srf_accepted'||!srfAnnotationsEnabled)return `${escapeHtml(date)}<br>${value}`;
+  const index=typeof item.dataIndex==='number'?item.dataIndex:points.findIndex(point=>point.date===date);
+  const point=index>=0?points[index]:undefined;
+  return [escapeHtml(date),value,...(point?srfTooltipRows(point,alertWindow):[
+    '<b>DEGRADED · SRF CLASSIFICATION METADATA UNAVAILABLE</b>',
+  ])].join('<br>');
 }
 
 function overlayTooltipFormatter(params:unknown):string{
@@ -232,11 +346,6 @@ function overlayTooltipFormatter(params:unknown):string{
     return [`${escapeHtml(String(item.seriesName??''))}&nbsp;&nbsp;<b>${escapeHtml(formatMetricValue(value,'percent'))}</b>`];
   });
   return [escapeHtml(date),...rows].join('<br>');
-}
-
-function signedThreshold(value:number):string{
-  const formatted=Number.isInteger(value)?String(value):value.toFixed(1);
-  return `${value>=0?'+':''}${formatted} bp`;
 }
 
 function niceBounds(values:readonly number[],targetSteps:number):{min:number;max:number;interval:number}|null{
@@ -256,19 +365,167 @@ function niceBounds(values:readonly number[],targetSteps:number):{min:number;max
   };
 }
 
+export interface ReferenceLineVisibility{
+  visible:ReferenceLine[];
+  outOfRange:ReferenceLine[];
+}
+
+/** Keep annotations inside the data-derived domain; never expand the y-axis. */
+export function referenceLineVisibility(
+  referenceLines:readonly ReferenceLine[],
+  bounds:{min:number;max:number}|null,
+):ReferenceLineVisibility{
+  const valid=referenceLines.filter(line=>isFiniteNumber(line.value));
+  if(!bounds)return {visible:[],outOfRange:valid};
+  return {
+    visible:valid.filter(line=>line.value>=bounds.min&&line.value<=bounds.max),
+    outOfRange:valid.filter(line=>line.value<bounds.min||line.value>bounds.max),
+  };
+}
+
+
+const REFERENCE_TONES:readonly ReferenceLineTone[]=['neutral','warning','danger','extreme','technical'];
+const REFERENCE_LINE_TYPES:readonly ReferenceLineType[]=['solid','dashed','dash-dot'];
+
+function isReferenceLine(line:ReferenceLine):boolean{
+  return typeof line.id==='string'&&line.id.length>0&&isFiniteNumber(line.value)&&
+    typeof line.label==='string'&&line.label.length>0&&
+    REFERENCE_TONES.includes(line.tone)&&
+    REFERENCE_LINE_TYPES.includes(line.lineType);
+}
+
+function normaliseReferenceLines(
+  referenceLines:readonly ReferenceLine[],
+):ReferenceLine[]{
+  const normalised=referenceLines.filter(isReferenceLine).map(line=>({...line}));
+  const ids=new Set<string>();
+  return normalised.filter(line=>{
+    if(ids.has(line.id))return false;
+    ids.add(line.id);
+    return true;
+  });
+}
+
+function referenceToneColour(tone:ReferenceLineTone,palette:ChartPalette):string{
+  if(tone==='warning')return palette.orange;
+  if(tone==='danger'||tone==='extreme')return palette.red;
+  if(tone==='technical')return palette.faint;
+  return palette.muted;
+}
+
+function echartsLineType(lineType:ReferenceLineType):'solid'|'dashed'|number[]{
+  if(lineType==='dash-dot')return [8,4,2,4];
+  return lineType;
+}
+
+type SrfMarkerKind='nontechnical'|'technical'|'mixed';
+
+interface SrfMarkerDatum{
+  coord:[string,number];
+  name:string;
+  markerKind:SrfMarkerKind;
+  symbol:'circle'|'diamond';
+  symbolSize:number;
+  itemStyle:Record<string,unknown>;
+}
+
+interface SrfAnnotationResult{
+  markers:SrfMarkerDatum[];
+  metadataComplete:boolean;
+  classifiedCount:number;
+}
+
+function srfAnnotations(
+  points:readonly NormalizedChartPoint[],
+  palette:ChartPalette,
+):SrfAnnotationResult{
+  const markers:SrfMarkerDatum[]=[];
+  let classifiedCount=0;
+  for(const point of points){
+    if(!isFiniteNumber(point.value)||!srfMetadataComplete(point))continue;
+    classifiedCount+=1;
+    const eligible=point.alert_eligible_accepted_amount_usd_bn!;
+    const hasTechnical=point.has_technical_exercise===true;
+    const technicalOnly=point.technical_exercise===true;
+    if(eligible>0){
+      const mixed=hasTechnical&&!technicalOnly;
+      markers.push({
+        coord:[point.date,point.value],
+        name:mixed?'MIXED · NONTECHNICAL USE COUNTS':'NONTECHNICAL POSITIVE USE',
+        markerKind:mixed?'mixed':'nontechnical',
+        symbol:'circle',symbolSize:mixed?10:8,
+        itemStyle:mixed
+          ?{color:palette.red,borderColor:palette.faint,borderWidth:2}
+          :{color:palette.red,borderColor:palette.red,borderWidth:1},
+      });
+    }else if(technicalOnly){
+      markers.push({
+        coord:[point.date,point.value],name:'TECHNICAL EXERCISE · EXCLUDED',markerKind:'technical',
+        symbol:'diamond',symbolSize:10,
+        itemStyle:{color:palette.faint,borderColor:palette.panel,borderWidth:1},
+      });
+    }
+  }
+  return {
+    markers,
+    metadataComplete:points.length>0&&classifiedCount===points.length,
+    classifiedCount,
+  };
+}
+
+function dataStatusDescription(status:ChartDataStatus,lastGood:boolean):string{
+  if(status==='PARTIAL')return '部分輸入可用；缺失值未被當作零。';
+  if(status==='UNAVAILABLE')return '目前輸入不可用。';
+  if(status==='LAST_GOOD'||lastGood)return '最後成功值，並非今日新值。';
+  return '';
+}
+
+function referenceLinesDescription(
+  lines:readonly ReferenceLine[],
+  visibility:ReferenceLineVisibility,
+  unit:string,
+):string{
+  if(lines.length===0)return '';
+  const visibleIds=new Set(visibility.visible.map(line=>line.id));
+  return `公式門檻：${lines.map(line=>
+    `${line.label}，數值 ${formatMetricValue(line.value,unit)}（${visibleIds.has(line.id)?'圖內可見':'超出目前圖域'}）`
+  ).join('；')}。`;
+}
+
+function srfAnnotationsDescription(
+  result:SrfAnnotationResult,
+  finitePointCount:number,
+  alertWindow:SrfAlertWindow|undefined,
+):string{
+  const kindCount=(kind:SrfMarkerKind)=>result.markers.filter(marker=>marker.markerKind===kind).length;
+  const markerText=`SRF 標註：非技術性 positive 紅點 ${kindCount('nontechnical')} 個，`+
+    `technical-only 灰色菱形 ${kindCount('technical')} 個，mixed 紅點灰框 ${kindCount('mixed')} 個。`;
+  const completeness=result.metadataComplete
+    ?'分類 metadata 完整。'
+    :`DEGRADED：只有 ${result.classifiedCount} / ${finitePointCount} 個有值日期具備完整分類 metadata；未知日期不推斷 marker。`;
+  const windowText=alertWindow
+    ?`SRF_RISING 最近 ${alertWindow.windowDays} 個 operation days 有 ${alertWindow.positiveDays==null?'未知':alertWindow.positiveDays} 個非技術性 positive；`+
+      `規則門檻 ${alertWindow.requiredPositiveDays}-of-${alertWindow.windowDays}。`
+    :'SRF_RISING 最新 rolling count 未提供。';
+  return `${markerText}${completeness}${windowText}`;
+}
+
 export interface MainChartOptionInput{
   metricId:string;
   label:string;
   unit:string;
   points:ChartPoints;
-  thresholdBp?:number;
-  referenceLines?:ReadonlyArray<{value:number;label:string}>;
+  referenceLines?:readonly ReferenceLine[];
   lastGood?:boolean;
+  dataStatus?:ChartDataStatus;
+  srfAlertWindow?:SrfAlertWindow;
+  srfAnnotationsEnabled?:boolean;
   palette?:ChartPalette;
 }
 
 export function buildMainChartOption({
-  metricId,label,unit,points,thresholdBp=3,referenceLines=[],lastGood=false,palette=FALLBACK_PALETTE,
+  metricId,label,unit,points,referenceLines=[],lastGood=false,dataStatus='CURRENT',
+  srfAlertWindow,srfAnnotationsEnabled=true,palette=FALLBACK_PALETTE,
 }:MainChartOptionInput):EChartsOption{
   const ordered=orderedPoints(pointsFrom(points));
   const dates=ordered.map(point=>point.date);
@@ -277,48 +534,75 @@ export function buildMainChartOption({
   const min=finiteValues.length?Math.min(...finiteValues):null;
   const max=finiteValues.length?Math.max(...finiteValues):null;
   const bounds=niceBounds(finiteValues,5);
+  const normalisedReferences=normaliseReferenceLines(referenceLines);
+  const referenceVisibility=referenceLineVisibility(normalisedReferences,bounds);
   let lastIndex=-1;
   for(let index=values.length-1;index>=0;index--){
     if(isFiniteNumber(values[index])){lastIndex=index;break;}
   }
   const markLines:Array<Record<string,unknown>>=[];
 
-  if(min!=null&&max!=null&&min<0&&max>0){
+  const hasExplicitZero=normalisedReferences.some(line=>line.value===0);
+  if(min!=null&&max!=null&&min<0&&max>0&&!hasExplicitZero){
     markLines.push({
+      id:'data-zero-baseline',
       yAxis:0,
       label:{show:false},
       lineStyle:{color:palette.zero,width:1,type:'solid'},
     });
   }
-  if(metricId==='sofr_iorb_spread_bp'&&isFiniteNumber(thresholdBp)&&bounds&&
-    thresholdBp>=bounds.min&&thresholdBp<=bounds.max){
+  for(const line of referenceVisibility.visible){
+    const colour=referenceToneColour(line.tone,palette);
     markLines.push({
-      yAxis:thresholdBp,
-      label:{show:true,formatter:`操作觀察線 ${signedThreshold(thresholdBp)}`,position:'insideEndTop',color:palette.threshold,fontSize:11},
-      lineStyle:{color:palette.threshold,width:1,type:'dashed'},
+      id:line.id,
+      name:line.label,
+      referenceTone:line.tone,
+      referenceLineType:line.lineType,
+      yAxis:line.value,
+      label:{show:true,formatter:line.label,position:'insideEndTop',color:colour,fontSize:11},
+      lineStyle:{
+        color:colour,
+        width:line.tone==='extreme'?1.6:line.tone==='neutral'?1:1.25,
+        type:echartsLineType(line.lineType),
+      },
     });
   }
-  if(bounds){
-    for(const line of referenceLines){
-      if(!isFiniteNumber(line.value)||line.value<bounds.min||line.value>bounds.max)continue;
-      markLines.push({
-        yAxis:line.value,
-        label:{show:true,formatter:line.label,position:'insideEndTop',color:palette.muted,fontSize:11},
-        lineStyle:{color:palette.muted,width:1,type:'dashed'},
-      });
-    }
-  }
 
-  const displayedValue=lastGood
+  const effectiveLastGood=lastGood||dataStatus==='LAST_GOOD';
+  const displayedValue=effectiveLastGood
     ?`最後成功觀察值為 ${formatMetricValue(values[lastIndex],unit)}；並非今日新值。`
     :`最新為 ${formatMetricValue(values[lastIndex],unit)}。`;
-  const description=finiteValues.length
+  const baseDescription=finiteValues.length
     ?`${label}，${dates[0]} 至 ${dates[dates.length-1]}，${finiteValues.length} 個觀察值，${displayedValue}`
     :`${label}暫無可用觀察值。`;
+  const statusText=dataStatusDescription(dataStatus,lastGood);
+  const referenceText=referenceLinesDescription(normalisedReferences,referenceVisibility,unit);
+  const srfResult=metricId==='srf_accepted'&&srfAnnotationsEnabled?srfAnnotations(ordered,palette):null;
+  const srfText=srfResult?srfAnnotationsDescription(srfResult,finiteValues.length,srfAlertWindow):'';
+  const description=[
+    baseDescription,
+    effectiveLastGood&&statusText.startsWith('最後成功')?'':statusText,
+    referenceText,
+    srfText,
+  ].filter(Boolean).join(' ');
+  const pointAnnotations=metricId==='srf_accepted'
+    ?srfResult?.markers??[]
+    :lastIndex>=0?[{
+      coord:[dates[lastIndex],values[lastIndex]],
+      symbol:'circle',symbolSize:6,itemStyle:{color:palette.main},
+    }]:[];
+  const degradedSrf=metricId==='srf_accepted'&&srfResult&&!srfResult.metadataComplete;
 
   return {
     animation:false,
     aria:{enabled:true,label:{description}},
+    graphic:degradedSrf?[{
+      type:'text',right:14,top:10,silent:true,z:10,
+      style:{
+        text:'DEGRADED · SRF CLASSIFICATION UNAVAILABLE',
+        fill:palette.faint,font:'10px DM Mono',backgroundColor:palette.panel,padding:[3,5],
+      },
+    }]:undefined,
     grid:{left:58,right:14,top:16,bottom:30,containLabel:false},
     tooltip:{
       trigger:'axis',
@@ -333,7 +617,7 @@ export function buildMainChartOption({
         lineStyle:{color:palette.muted,width:1,type:'dashed'},
         label:{show:false},
       },
-      formatter:(params:unknown)=>mainTooltipFormatter(params,unit),
+      formatter:(params:unknown)=>mainTooltipFormatter(params,unit,metricId,ordered,srfAlertWindow,srfAnnotationsEnabled),
     },
     xAxis:{
       type:'category',data:dates,boundaryGap:false,
@@ -362,10 +646,9 @@ export function buildMainChartOption({
       itemStyle:{color:palette.main},
       areaStyle:{color:palette.area},
       emphasis:{focus:'series'},
-      markPoint:lastIndex>=0?{
-        silent:true,symbol:'circle',symbolSize:6,label:{show:false},
-        itemStyle:{color:palette.main},
-        data:[{coord:[dates[lastIndex],values[lastIndex]]}],
+      markPoint:pointAnnotations.length?{
+        silent:metricId!=='srf_accepted',label:{show:false},
+        data:pointAnnotations,
       }:undefined,
       markLine:markLines.length?{silent:true,symbol:['none','none'],data:markLines}:undefined,
     }],
@@ -458,18 +741,20 @@ export interface MainMetricChartProps{
   label:string;
   unit:string;
   points:ChartPoints;
-  thresholdBp?:number;
-  referenceLines?:ReadonlyArray<{value:number;label:string}>;
+  referenceLines?:readonly ReferenceLine[];
   lastGood?:boolean;
+  dataStatus?:ChartDataStatus;
+  srfAlertWindow?:SrfAlertWindow;
+  srfAnnotationsEnabled?:boolean;
 }
 
 export function MainMetricChart({
-  metricId,label,unit,points,thresholdBp=3,referenceLines=[],lastGood=false,
+  metricId,label,unit,points,referenceLines=[],lastGood=false,dataStatus='CURRENT',srfAlertWindow,srfAnnotationsEnabled=true,
 }:MainMetricChartProps){
   const palette=useMemo(()=>resolveChartPalette(),[]);
   const option=useMemo(()=>buildMainChartOption({
-    metricId,label,unit,points,thresholdBp,referenceLines,lastGood,palette,
-  }),[metricId,label,unit,points,thresholdBp,referenceLines,lastGood,palette]);
+    metricId,label,unit,points,referenceLines,lastGood,dataStatus,srfAlertWindow,srfAnnotationsEnabled,palette,
+  }),[metricId,label,unit,points,referenceLines,lastGood,dataStatus,srfAlertWindow,srfAnnotationsEnabled,palette]);
   return <div className="metric-chart metric-chart--main" style={{width:'100%',height:'100%',minHeight:0}}>
     <ReactECharts option={option} notMerge lazyUpdate style={{width:'100%',height:'100%'}}/>
   </div>;

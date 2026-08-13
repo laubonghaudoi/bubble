@@ -11,9 +11,120 @@ import {
   SCHEMA_VERSION,
   type SeriesFile,
 } from './dashboard';
-import type { Availability, CatalogMetric, FundamentalCompanyDetail, Layer, ManualEvidenceRecord, Metric, Phase, Snapshot } from './types';
+import type { Availability, CatalogMetric, FormulaClause, FundamentalCompanyDetail, Layer, ManualEvidenceRecord, Metric, Phase, Snapshot, VideoP0Model } from './types';
 
 const NOW = '2026-08-12T17:32:49Z';
+
+const VIDEO_SOURCE_URL = 'https://www.youtube.com/watch?v=MrnjBdgQPLU';
+
+function videoClause(
+  clause_id: string,
+  order: number,
+  label: string,
+  metric: Metric | null,
+  operator: FormulaClause['operator'],
+  threshold: FormulaClause['threshold'],
+  threshold_unit: string | null,
+  current_value: FormulaClause['current_value'],
+  current_unit: string | null,
+  met: boolean | null,
+  sourceSegmentId: string | null,
+  evaluation_state: FormulaClause['evaluation_state'] = 'CURRENT',
+): FormulaClause {
+  return {
+    clause_id, order, label, metric_id: metric?.metric_id ?? null, operator,
+    threshold, threshold_unit, current_value, current_unit, met,
+    observation_date: metric?.observation_date ?? null,
+    released_at: metric?.released_at ?? null,
+    quality_status: metric?.quality.status ?? 'NOT_APPLICABLE',
+    freshness: metric?.quality.freshness ?? 'UNKNOWN',
+    evaluation_state,
+    basis: [
+      {
+        kind: 'VIDEO_SOURCE_RULE',
+        label: 'Cited video rule',
+        source_segment_id: sourceSegmentId,
+        note: 'The video supplies the editorial rule; the dashboard shows a separate operationalization.',
+      },
+      {
+        kind: metric ? 'DASHBOARD_OPERATIONALIZATION' : 'MANUAL_CONTEXT',
+        label: metric ? 'Dashboard operationalization' : 'Version-controlled crisis-context review',
+        source_segment_id: sourceSegmentId,
+        note: metric ? 'Threshold and measurement are explicit in the decision-model contract.' : 'No automatic news or API inference.',
+      },
+    ],
+    note: '',
+  };
+}
+
+export function makeVideoP0Model(metrics: Record<string, Metric>): VideoP0Model {
+  const spread = metrics.sofr_iorb_spread_bp;
+  const reserves = metrics.reserve_balances;
+  const tga = metrics.tga_daily;
+  const srf = metrics.srf_accepted;
+  const yellowClauses = [
+    videoClause('sofr_positive_streak', 1, 'SOFR−IORB positive streak', spread, '>=', 3, 'observations', 0, 'observations', false, 'yellow_red'),
+    videoClause('reserve_below_yellow', 2, 'Reserve balances below Yellow level', reserves, '<', 2900, 'USD bn', reserves.value, 'USD bn', false, 'yellow_red'),
+    videoClause('reserve_change_4w_negative', 3, 'Reserve balances 4W change below zero', reserves, '<', 0, 'USD bn', -100, 'USD bn', true, 'reserve_exit_1'),
+    videoClause('tga_near_1t', 4, 'TGA at operational floor', tga, '>=', 950, 'USD bn', tga.value, 'USD bn', true, 'yellow_red'),
+  ];
+  const redClauses = [
+    videoClause('sofr_spread_above_red', 1, 'SOFR−IORB above Red spread', spread, '>', 3, 'bp', spread.value, 'bp', false, 'yellow_red'),
+    videoClause('reserve_below_red', 2, 'Reserve balances below Red level', reserves, '<', 2800, 'USD bn', reserves.value, 'USD bn', false, 'yellow_red'),
+    videoClause('srf_positive_days', 3, 'SRF nontechnical positive days', srf, '>=', 2, 'days in latest 3 completed days', 0, 'days', false, 'yellow_red'),
+  ];
+  const extremeClauses = [
+    videoClause('reserve_below_extreme', 1, 'Reserve balances below Extreme level', reserves, '<', 2500, 'USD bn', reserves.value, 'USD bn', false, 'reserve_exit_2'),
+    videoClause('reserve_rapid_decline', 2, '4W decline at or below trailing 5Y p10', reserves, '<=', -200, 'USD bn', -100, 'USD bn', false, 'reserve_exit_2'),
+    videoClause('no_major_crisis', 3, 'No major crisis context', null, '=', 'NO_MAJOR_CRISIS', null, 'UNKNOWN', null, null, null, 'REVIEW_REQUIRED'),
+  ];
+  return {
+    model_id: 'henren778_p0_liquidity',
+    label: '影片 P0 黃／紅流動性警報',
+    enabled: true,
+    status: 'GREEN',
+    data_status: 'CURRENT',
+    confidence: 'HIGH',
+    availability_reason: null,
+    evaluated_at: NOW,
+    source: {
+      title: '一個月前全網喊AI泡沫要崩，我說鬼故事是洗盤不是葬禮，二波窗口鎖死7月底8月初！對賭：納指洗完近一成，道指標普齊創新高，美光單日暴拉18.4%！復盤釘死，二波打法五步三開關全套交付',
+      display_title: '一個月前全網喊 AI 泡沫要崩',
+      author: '一个狠人',
+      url: VIDEO_SOURCE_URL,
+      segments: [
+        { segment_id: 'yellow_red', label: 'Yellow / Red formula', start_seconds: 1380, end_seconds: 1440, timestamp_url: `${VIDEO_SOURCE_URL}&t=1380s` },
+        { segment_id: 'reserve_exit_1', label: 'Reserve exit context I', start_seconds: 1140, end_seconds: 1200, timestamp_url: `${VIDEO_SOURCE_URL}&t=1140s` },
+        { segment_id: 'reserve_exit_2', label: 'Reserve exit context II', start_seconds: 1560, end_seconds: 1620, timestamp_url: `${VIDEO_SOURCE_URL}&t=1560s` },
+      ],
+    },
+    thresholds: {
+      yellow: { spread_positive_bp: 0, positive_streak_observations: 3, reserve_usd_bn: 2900, reserve_change_4w_usd_bn: 0, tga_operational_floor_usd_bn: 950 },
+      red: { spread_bp: 3, reserve_usd_bn: 2800, srf_positive_days_required: 2, srf_window_completed_days: 3 },
+      extreme: { reserve_usd_bn: 2500, decline_percentile: 'TRAILING_5Y_P10' },
+      tga_source_target_usd_bn: 1000,
+    },
+    operationalizations: {
+      rapid_reserve_decline_rule: 'TRAILING_5Y_P10',
+      exclude_technical_srf_exercises: true,
+      srf_aggregate_same_day_operations: true,
+    },
+    crisis_context: { status: 'UNKNOWN', as_of: null, reviewed_at: null, reviewer: null, note: null },
+    formulas: {
+      yellow: { expression: 'PERSIST(S>0) ∧ R<2.9T ∧ ΔR4W<0 ∧ TGA≥0.95T', triggered: false, clauses: yellowClauses },
+      red: {
+        expression: '[(S>+3bp) ∧ R<2.8T] ∨ SRF↑', triggered: false, clauses: redClauses,
+        routes: [
+          { route_id: 'spread_and_reserves', label: 'Spread and reserves', expression: '(S>+3bp) ∧ R<2.8T', triggered: false, clauses: redClauses.slice(0, 2) },
+          { route_id: 'srf_2_of_3', label: 'SRF 2-of-3', expression: 'SRF↑', triggered: false, clauses: redClauses.slice(2) },
+        ],
+      },
+      extreme: { expression: 'R<2.5T ∧ RAPID_DECLINE ∧ NO_MAJOR_CRISIS', triggered: false, candidate: false, context_required: false, clauses: extremeClauses },
+    },
+    technical_flags: [],
+    notes: ['This is a liquidity-source model, not a structural top or trading recommendation.'],
+  };
+}
 
 export function makeManualEvidenceRecord(
   metricId: (typeof P3_MANUAL_IDS)[number] = 'ai_upstream_orders_backlog',
@@ -180,6 +291,38 @@ export function makeSnapshot(metricOverrides: Record<string, Partial<Metric>> = 
     ...P3_METRIC_IDS,
   ])];
   const metrics = Object.fromEntries(ids.map((id) => [id, makeMetric(id, metricOverrides[id])]));
+  metrics.sofr_iorb_spread_bp = makeMetric('sofr_iorb_spread_bp', {
+    value: 1,
+    unit: 'bp',
+    statistics: { latest: 1, positive_streak: 0 },
+    ...metricOverrides.sofr_iorb_spread_bp,
+  });
+  metrics.reserve_balances = makeMetric('reserve_balances', {
+    value: 3000,
+    unit: 'USD bn',
+    changes: { one_observation: -25, five_observations: -100, four_weeks: -100 },
+    statistics: { latest: 3000, change_4w: -100, trailing_5y_p10: -200 },
+    short_series: [{ date: '2026-08-04', value: 3025 }, { date: '2026-08-11', value: 3000 }],
+    ...metricOverrides.reserve_balances,
+  });
+  metrics.tga_daily = makeMetric('tga_daily', {
+    value: 997,
+    unit: 'USD bn',
+    short_series: [{ date: '2026-08-10', value: 980 }, { date: '2026-08-11', value: 997 }],
+    ...metricOverrides.tga_daily,
+  });
+  const srfShortSeries = [
+    { date: '2026-08-07', value: 0, accepted_amount_usd_bn: 0, alert_eligible_accepted_amount_usd_bn: 0, exercise_accepted_amount_usd_bn: 0, has_technical_exercise: false, technical_exercise: false, classification_complete: true as const },
+    { date: '2026-08-08', value: 0, accepted_amount_usd_bn: 0, alert_eligible_accepted_amount_usd_bn: 0, exercise_accepted_amount_usd_bn: 0, has_technical_exercise: false, technical_exercise: false, classification_complete: true as const },
+    { date: '2026-08-11', value: 0, accepted_amount_usd_bn: 0, alert_eligible_accepted_amount_usd_bn: 0, exercise_accepted_amount_usd_bn: 0, has_technical_exercise: false, technical_exercise: false, classification_complete: true as const },
+  ];
+  metrics.srf_accepted = makeMetric('srf_accepted', {
+    value: 0,
+    unit: 'USD bn',
+    statistics: { sample_size: 3, positive_nontechnical_latest_3: 0, nontechnical_positive_use_streak: 0 },
+    short_series: srfShortSeries,
+    ...metricOverrides.srf_accepted,
+  });
   P1_CFTC_CONFIG.forEach(({ id }, index) => {
     metrics[id] = makeMetric(id, {
       label: id.toUpperCase(),
@@ -465,6 +608,7 @@ export function makeSnapshot(metricOverrides: Record<string, Partial<Metric>> = 
       bullets: [{ metric_id: 'sofr_iorb_spread_bp', observation: '最新為 1 bp。', meaning: '融資成本略高。', alternative: '可能係結算日。', confirmation: '其他利差平穩。', judgment: '未足以證明壓力。', confidence: 'HIGH' }],
     },
     source_health: { ok: 11, stale: 0, error: 0, not_released_yet: 0, not_applicable: 0 },
+    decision_models: { p0_video_liquidity: makeVideoP0Model(metrics) },
     sources: {
       nyfed_rates: collectorSource('nyfed_rates', 'New York Fed rates'),
       fred_iorb: collectorSource('fred_iorb', 'FRED IORB'),

@@ -24,6 +24,7 @@ import {
   loadDashboardCore,
   loadRouteSeries,
   parseRoute,
+  parseRouteTarget,
   routeMetricIds,
   snapshotSeriesFallback,
   windowPoints,
@@ -32,10 +33,12 @@ import {
 import { jsonResponse, makeCatalog, makeManualEvidenceRecord, makeMetric, makeSeriesFile, makeSnapshot, makeSnapshotWithReviewedManualEvidence } from './test-fixtures';
 import type { FundamentalCompanyDetail, Metric, Snapshot } from './types';
 
-describe('v2 contract and configuration', () => {
-  it('hard-cuts to schema 2.0.0 and requires the locked assessment field', () => {
+describe('v2.1 contract and configuration', () => {
+  it('hard-cuts legacy schema 2.0.0 and requires the locked assessment field', () => {
     const valid = makeSnapshot();
+    expect(SCHEMA_VERSION).toBe('2.1.0');
     expect(isSnapshot(valid)).toBe(true);
+    expect(isSnapshot({ ...valid, schema_version: '2.0.0' })).toBe(false);
     expect(isSnapshot({ ...valid, schema_version: '1.0.0' })).toBe(false);
     const withoutAssessment = { ...valid } as Record<string, unknown>;
     delete withoutAssessment.overall_assessment;
@@ -259,6 +262,29 @@ describe('v2 contract and configuration', () => {
     expect(isSnapshot(synchronizedDegraded)).toBe(true);
   });
 
+  it('fails closed when the P0 video decision model is missing or tampered', () => {
+    const missingModel = structuredClone(makeSnapshot()) as unknown as Record<string, unknown>;
+    delete (missingModel.decision_models as Record<string, unknown>).p0_video_liquidity;
+    expect(isSnapshot(missingModel), 'missing decision model').toBe(false);
+
+    const tamperedThreshold = structuredClone(makeSnapshot());
+    tamperedThreshold.decision_models.p0_video_liquidity.thresholds.red.spread_bp = 4;
+    expect(isSnapshot(tamperedThreshold), 'threshold drift').toBe(false);
+
+    const inconsistentStatus = structuredClone(makeSnapshot());
+    inconsistentStatus.decision_models.p0_video_liquidity.status = 'RED';
+    expect(isSnapshot(inconsistentStatus), 'status does not match formula results').toBe(false);
+
+    const tamperedClause = structuredClone(makeSnapshot());
+    tamperedClause.decision_models.p0_video_liquidity.formulas.yellow.clauses[0].current_value = 99;
+    expect(isSnapshot(tamperedClause), 'clause no longer matches its metric').toBe(false);
+
+    const tamperedSource = structuredClone(makeSnapshot());
+    tamperedSource.decision_models.p0_video_liquidity.source.segments[0].timestamp_url =
+      'https://www.youtube.com/watch?v=MrnjBdgQPLU&t=1s';
+    expect(isSnapshot(tamperedSource), 'source timestamp drift').toBe(false);
+  });
+
   it('keeps tape order explicit and includes ON RRP and SRF', () => {
     const tape = TAPE_GROUPS.flatMap(({ ids }) => ids);
     expect(tape).toEqual(OVERVIEW_SERIES_IDS);
@@ -274,6 +300,18 @@ describe('v2 contract and configuration', () => {
     expect(parseRoute('#/provenance')).toBe('provenance');
     expect(parseRoute('#/provenance/')).toBe('provenance');
     expect(parseRoute('#/unknown')).toBe('overview');
+    expect(parseRouteTarget('#/provenance#p0-video-formulas')).toEqual({
+      route: 'provenance', section: 'p0-video-formulas', valid: true,
+    });
+    expect(parseRouteTarget('#/overview#p0-video-formulas')).toEqual({
+      route: 'overview', section: null, valid: false,
+    });
+    expect(parseRouteTarget('#/provenance#P0-video-formulas')).toEqual({
+      route: 'provenance', section: null, valid: false,
+    });
+    expect(parseRouteTarget('#/provenance#p0-video-formulas#extra')).toEqual({
+      route: 'provenance', section: null, valid: false,
+    });
   });
 
   it('selects route series from v2 manifest instead of loading everything', () => {
@@ -853,7 +891,7 @@ describe('route-lazy loading', () => {
     expect(getGlobalLatestDate(result.series)).toBe('2026-08-11');
   });
 
-  it('loads v2 core in parallel, keeps manifest failure nonfatal, and rejects v1 snapshot', async () => {
+  it('loads v2.1 core in parallel, keeps manifest failure nonfatal, and rejects a v2.0 runtime artifact', async () => {
     const snapshot = makeSnapshot();
     const catalog = makeCatalog();
     const ok = vi.fn(async (input: RequestInfo | URL) => String(input).endsWith('snapshot.json')
@@ -867,9 +905,9 @@ describe('route-lazy loading', () => {
     const noManifest = vi.fn(async (input: RequestInfo | URL) => String(input).endsWith('snapshot.json') ? jsonResponse(snapshot) : jsonResponse({}, 500)) as unknown as typeof fetch;
     await expect(loadDashboardCore('/', noManifest)).resolves.toMatchObject({ catalog: [], catalogError: expect.stringContaining('500') });
 
-    const v1 = vi.fn(async (input: RequestInfo | URL) => String(input).endsWith('snapshot.json')
-      ? jsonResponse({ ...snapshot, schema_version: '1.0.0' })
+    const legacyV2 = vi.fn(async (input: RequestInfo | URL) => String(input).endsWith('snapshot.json')
+      ? jsonResponse({ ...snapshot, schema_version: '2.0.0' })
       : jsonResponse({ schema_version: SCHEMA_VERSION, generated_at: snapshot.generated_at, metrics: catalog })) as unknown as typeof fetch;
-    await expect(loadDashboardCore('/', v1)).rejects.toThrow('Invalid v2 snapshot payload');
+    await expect(loadDashboardCore('/', legacyV2)).rejects.toThrow('Invalid v2 snapshot payload');
   });
 });

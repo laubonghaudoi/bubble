@@ -36,6 +36,20 @@ const snapshot = makeSnapshot({
   reserve_balances: { changes: { one_observation: 1, five_observations: 5, one_week: 2, four_weeks: 4 } },
 });
 const catalog = makeCatalog();
+const VIDEO_STATUS_CASES = [
+  ['GREEN', 'positive'],
+  ['YELLOW', 'warning'],
+  ['RED', 'negative'],
+  ['EXTREME_CONTEXT_REQUIRED', 'negative'],
+  ['EXTREME_CONFIRMED', 'negative'],
+  ['UNAVAILABLE', 'unavailable'],
+] as const;
+const VIDEO_DATA_STATUS_CASES = [
+  ['CURRENT', 'positive'],
+  ['LAST_GOOD', 'warning'],
+  ['PARTIAL', 'warning'],
+  ['UNAVAILABLE', 'unavailable'],
+] as const;
 
 function routeSeries(route: RouteId) {
   return {
@@ -69,7 +83,7 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe('v2 routed dashboard', () => {
+describe('v2.1 routed dashboard', () => {
   it('renders overview with ON RRP/SRF and frequency-aware changes, without NOT WIRED', async () => {
     render(<App />);
     expect(screen.getByRole('status')).toHaveTextContent('v2 snapshot');
@@ -87,6 +101,51 @@ describe('v2 routed dashboard', () => {
     expect(screen.getByRole('link', { name: '來源與方法 →' })).toHaveAttribute('href', '#/provenance');
     expect(window.localStorage.getItem('liq-theme')).toBeNull();
     expect(document.documentElement).not.toHaveAttribute('data-theme');
+  });
+
+  it.each(VIDEO_STATUS_CASES)('renders VIDEO P0 status %s with the exact %s tone', async (status, tone) => {
+    const statusSnapshot = structuredClone(snapshot);
+    statusSnapshot.decision_models.p0_video_liquidity.status = status;
+    statusSnapshot.decision_models.p0_video_liquidity.data_status = status === 'UNAVAILABLE' ? 'UNAVAILABLE' : 'CURRENT';
+    vi.mocked(loadDashboardCore).mockResolvedValueOnce({ snapshot: statusSnapshot, catalog, catalogError: null });
+
+    render(<App />);
+    const banner = await screen.findByRole('region', { name: new RegExp(`VIDEO P0 MODEL：${status}`) });
+    const statusLabel = within(banner).getByText(status.replaceAll('_', ' '), { selector: 'strong' });
+    expect(statusLabel.getAttribute('style')).toContain(`--status-color: var(--${tone})`);
+    expect(statusLabel.getAttribute('style')).toContain(`--status-fg: var(--${tone}-fg)`);
+  });
+
+  it.each(VIDEO_DATA_STATUS_CASES)('renders VIDEO P0 data status %s with the exact %s tone', async (dataStatus, tone) => {
+    const statusSnapshot = structuredClone(snapshot);
+    statusSnapshot.decision_models.p0_video_liquidity.data_status = dataStatus;
+    vi.mocked(loadDashboardCore).mockResolvedValueOnce({ snapshot: statusSnapshot, catalog, catalogError: null });
+
+    render(<App />);
+    const banner = await screen.findByRole('region', { name: new RegExp(`資料狀態 ${dataStatus}`) });
+    const dataLabel = within(banner).getByText(`DATA · ${dataStatus.replaceAll('_', '-')}`);
+    expect(dataLabel.getAttribute('style')).toContain(`--status-color: var(--${tone})`);
+    expect(dataLabel.getAttribute('style')).toContain(`--status-fg: var(--${tone}-fg)`);
+  });
+
+  it('shows the same four-value formula banner on Overview and Liquidity Fuel', async () => {
+    render(<App />);
+    let banner = await screen.findByRole('region', { name: /VIDEO P0 MODEL/ });
+    expect([...banner.querySelectorAll('dt')].map(({ textContent }) => textContent)).toEqual([
+      'SOFR−IORB', 'RESERVES', 'TGA', 'SRF · 2/3',
+    ]);
+    expect(within(banner).getByRole('link', { name: /睇黃色／紅色公式/ })).toHaveAttribute(
+      'href', '#/provenance#p0-video-formulas',
+    );
+
+    window.location.hash = '#/liquidity-fuel';
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+    await findRouteHeading('流動性燃料');
+    banner = screen.getByRole('region', { name: /VIDEO P0 MODEL/ });
+    expect([...banner.querySelectorAll('dt')].map(({ textContent }) => textContent)).toEqual([
+      'SOFR−IORB', 'RESERVES', 'TGA', 'SRF · 2/3',
+    ]);
+    expect(within(banner).getByText('DATA · CURRENT')).toBeVisible();
   });
 
   it('renders collector health, analysis contract, and source notices on a standalone route', async () => {
@@ -119,6 +178,31 @@ describe('v2 routed dashboard', () => {
     expect(within(provenance).getByRole('link', { name: /COT release schedule/ })).toHaveAttribute('href', 'https://www.cftc.gov/MarketReports/CommitmentsofTraders/ReleaseSchedule/index.htm');
     expect(within(provenance).getByRole('link', { name: /CFTC Web Policy/ })).toHaveAttribute('href', 'https://www.cftc.gov/WebPolicy/index.htm');
     expect(within(provenance).getByText(/No CFTC seal or logo is used/)).toBeVisible();
+  });
+
+  it('honours the formula deep link, focuses the panel, and exposes both Red routes', async () => {
+    window.history.replaceState(null, '', '/#/provenance#p0-video-formulas');
+    render(<App />);
+
+    const formula = await screen.findByRole('article', { name: 'P0 影片流動性公式' });
+    await waitFor(() => expect(formula).toHaveFocus());
+    expect(window.location.hash).toBe('#/provenance#p0-video-formulas');
+    expect(vi.mocked(loadRouteSeries)).toHaveBeenCalledWith(expect.any(String), 'provenance', snapshot, catalog);
+
+    expect(within(formula).getByLabelText('黃色警報：四項條件必須同時成立。')).toHaveTextContent('∧');
+    expect(within(formula).getByLabelText(/紅色警報/)).toHaveTextContent('∨');
+    expect(within(formula).getByLabelText(/極端條件/)).toHaveTextContent('∧');
+    expect(within(formula).getByText('Spread and reserves')).toBeVisible();
+    expect(within(formula).getByText('SRF 2-of-3')).toBeVisible();
+
+    const crisisClause = formula.querySelector<HTMLElement>('[data-clause-id="no_major_crisis"]');
+    expect(crisisClause).toHaveAttribute('data-clause-state', 'REVIEW REQUIRED');
+    expect(crisisClause).toHaveTextContent('REVIEW REQUIRED');
+    expect(within(formula).getByRole('link', { name: /Yellow \/ Red formula/ })).toHaveAttribute(
+      'href', snapshot.decision_models.p0_video_liquidity.source.segments[0].timestamp_url,
+    );
+    expect(formula).toHaveTextContent(/CapEx 共振判定/);
+    expect(formula).toHaveTextContent(/不提供投資或買賣建議/);
   });
 
   it('supports deep links, hash navigation, route focus, and a single primary route navigation', async () => {

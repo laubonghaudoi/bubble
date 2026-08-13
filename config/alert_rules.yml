@@ -1,4 +1,4 @@
-schema_version: "2.0.0"
+schema_version: "2.1.0"
 registry_kind: alert_rules
 
 alerts:
@@ -15,6 +15,60 @@ alerts:
       - reserve_balances_4w_decline
       - multiple_funding_spreads_worsening
     single_observation_can_trigger_stress: false
+
+  video_p0_model:
+    enabled: true
+    model_id: henren778_p0_liquidity
+    label: 影片 P0 黃／紅警報
+
+    source:
+      title: 一個月前全網喊AI泡沫要崩，我說鬼故事是洗盤不是葬禮，二波窗口鎖死7月底8月初！對賭：納指洗完近一成，道指標普齊創新高，美光單日暴拉18.4%！復盤釘死，二波打法五步三開關全套交付
+      display_title: 一個月前全網喊 AI 泡沫要崩
+      author: 一个狠人
+      url: https://www.youtube.com/watch?v=MrnjBdgQPLU
+      segments:
+        - segment_id: yellow_red
+          label: Yellow / Red formula
+          start_seconds: 1380
+          end_seconds: 1440
+          timestamp_url: https://www.youtube.com/watch?v=MrnjBdgQPLU&t=1380s
+        - segment_id: reserve_exit_1
+          label: Reserve exit context I
+          start_seconds: 1140
+          end_seconds: 1200
+          timestamp_url: https://www.youtube.com/watch?v=MrnjBdgQPLU&t=1140s
+        - segment_id: reserve_exit_2
+          label: Reserve exit context II
+          start_seconds: 1560
+          end_seconds: 1620
+          timestamp_url: https://www.youtube.com/watch?v=MrnjBdgQPLU&t=1560s
+
+    yellow:
+      spread_positive_bp: 0
+      positive_streak_observations: 3
+      reserve_below_usd_tn: 2.9
+      require_negative_reserve_change_4w: true
+      tga_near_1t_floor_usd_tn: 0.95
+      tga_source_target_usd_tn: 1.0
+
+    red:
+      sofr_iorb_bp: 3.0
+      reserve_below_usd_tn: 2.8
+      srf_window_completed_operation_days: 3
+      srf_positive_days_latest_3: 2
+      exclude_technical_exercises: true
+
+    extreme:
+      reserve_below_usd_tn: 2.5
+      rapid_decline_rule: trailing_5y_p10
+      crisis_context_required: true
+
+    crisis_context:
+      status: UNKNOWN
+      as_of: null
+      reviewed_at: null
+      reviewer: null
+      note: null
 
   srf:
     amount_field: accepted_amount

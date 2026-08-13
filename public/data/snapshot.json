@@ -31,6 +31,547 @@
     },
     "watch_triggered": false
   },
+  "decision_models": {
+    "p0_video_liquidity": {
+      "availability_reason": null,
+      "confidence": "LOW",
+      "crisis_context": {
+        "as_of": null,
+        "note": null,
+        "reviewed_at": null,
+        "reviewer": null,
+        "status": "UNKNOWN"
+      },
+      "data_status": "LAST_GOOD",
+      "enabled": true,
+      "evaluated_at": "2026-08-13T14:24:43.862717Z",
+      "formulas": {
+        "extreme": {
+          "candidate": false,
+          "clauses": [
+            {
+              "basis": [
+                {
+                  "kind": "VIDEO_SOURCE_RULE",
+                  "label": "SOURCE RULE",
+                  "note": "2.5T is the source model's extreme reserve line.",
+                  "source_segment_id": "reserve_exit_2"
+                },
+                {
+                  "kind": "DASHBOARD_OPERATIONALIZATION",
+                  "label": "OPERATIONALIZED",
+                  "note": "The dashboard evaluates the cited reserve level in USD bn.",
+                  "source_segment_id": "reserve_exit_2"
+                }
+              ],
+              "clause_id": "reserve_below_extreme",
+              "current_unit": "USD bn",
+              "current_value": 2993.349,
+              "evaluation_state": "LAST_GOOD",
+              "freshness": "LATE",
+              "label": "Reserve Balances < 2.5T",
+              "met": false,
+              "metric_id": "reserve_balances",
+              "note": "This threshold belongs to the cited source model, not all reserve regimes.",
+              "observation_date": "2026-08-05",
+              "operator": "<",
+              "order": 1,
+              "quality_status": "NOT_RELEASED_YET",
+              "released_at": null,
+              "threshold": 2500.0,
+              "threshold_unit": "USD bn"
+            },
+            {
+              "basis": [
+                {
+                  "kind": "VIDEO_SOURCE_RULE",
+                  "label": "SOURCE RULE",
+                  "note": "The source requires a rapid fall below 2.5T.",
+                  "source_segment_id": "reserve_exit_2"
+                },
+                {
+                  "kind": "DASHBOARD_OPERATIONALIZATION",
+                  "label": "OPERATIONALIZED",
+                  "note": "Rapid decline is operationalized as four-week change at or below trailing 5Y p10.",
+                  "source_segment_id": "reserve_exit_2"
+                }
+              ],
+              "clause_id": "reserve_rapid_decline",
+              "current_unit": "USD bn",
+              "current_value": -105.562,
+              "evaluation_state": "LAST_GOOD",
+              "freshness": "LATE",
+              "label": "Four-week decline ≤ trailing five-year p10",
+              "met": false,
+              "metric_id": "reserve_balances",
+              "note": "The current four-week change is compared with the precomputed trailing p10.",
+              "observation_date": "2026-08-05",
+              "operator": "<=",
+              "order": 2,
+              "quality_status": "NOT_RELEASED_YET",
+              "released_at": null,
+              "threshold": -194.943,
+              "threshold_unit": "USD bn"
+            },
+            {
+              "basis": [
+                {
+                  "kind": "VIDEO_SOURCE_RULE",
+                  "label": "SOURCE RULE",
+                  "note": "The source limits the extreme condition to an absence of major-crisis context.",
+                  "source_segment_id": "reserve_exit_2"
+                },
+                {
+                  "kind": "MANUAL_CONTEXT",
+                  "label": "MANUAL REVIEW",
+                  "note": "Crisis context must be supported by dated reviewer metadata.",
+                  "source_segment_id": null
+                }
+              ],
+              "clause_id": "no_major_crisis",
+              "current_unit": null,
+              "current_value": "UNKNOWN",
+              "evaluation_state": "REVIEW_REQUIRED",
+              "freshness": "UNKNOWN",
+              "label": "No major crisis or special-policy context",
+              "met": null,
+              "metric_id": null,
+              "note": "UNKNOWN never confirms or denies the manual context gate.",
+              "observation_date": null,
+              "operator": "=",
+              "order": 3,
+              "quality_status": "NOT_APPLICABLE",
+              "released_at": null,
+              "threshold": "NO_MAJOR_CRISIS",
+              "threshold_unit": null
+            }
+          ],
+          "context_required": false,
+          "expression": "RESERVES < 2.5T ∧ 4W DECLINE ≤ TRAILING 5Y P10 ∧ NO MAJOR CRISIS",
+          "triggered": false
+        },
+        "red": {
+          "clauses": [
+            {
+              "basis": [
+                {
+                  "kind": "VIDEO_SOURCE_RULE",
+                  "label": "SOURCE RULE",
+                  "note": "+3 bp is the source model's strict spread line.",
+                  "source_segment_id": "yellow_red"
+                },
+                {
+                  "kind": "DASHBOARD_OPERATIONALIZATION",
+                  "label": "OPERATIONALIZED",
+                  "note": "The dashboard evaluates the cited line as a strict greater-than comparison in bp.",
+                  "source_segment_id": "yellow_red"
+                }
+              ],
+              "clause_id": "sofr_spread_above_red",
+              "current_unit": "bp",
+              "current_value": -1.0,
+              "evaluation_state": "CURRENT",
+              "freshness": "FRESH",
+              "label": "SOFR−IORB > +3 bp",
+              "met": false,
+              "metric_id": "sofr_iorb_spread_bp",
+              "note": "Equality at +3 bp does not meet this strict greater-than clause.",
+              "observation_date": "2026-08-11",
+              "operator": ">",
+              "order": 1,
+              "quality_status": "OK",
+              "released_at": null,
+              "threshold": 3.0,
+              "threshold_unit": "bp"
+            },
+            {
+              "basis": [
+                {
+                  "kind": "VIDEO_SOURCE_RULE",
+                  "label": "SOURCE RULE",
+                  "note": "2.8T is the source model's red reserve confirmation line.",
+                  "source_segment_id": "yellow_red"
+                },
+                {
+                  "kind": "DASHBOARD_OPERATIONALIZATION",
+                  "label": "OPERATIONALIZED",
+                  "note": "The dashboard evaluates the cited reserve level in USD bn.",
+                  "source_segment_id": "yellow_red"
+                }
+              ],
+              "clause_id": "reserve_below_red",
+              "current_unit": "USD bn",
+              "current_value": 2993.349,
+              "evaluation_state": "LAST_GOOD",
+              "freshness": "LATE",
+              "label": "Reserve Balances < 2.8T",
+              "met": false,
+              "metric_id": "reserve_balances",
+              "note": "This source-model threshold is not a Federal Reserve official crisis line.",
+              "observation_date": "2026-08-05",
+              "operator": "<",
+              "order": 2,
+              "quality_status": "NOT_RELEASED_YET",
+              "released_at": null,
+              "threshold": 2800.0,
+              "threshold_unit": "USD bn"
+            },
+            {
+              "basis": [
+                {
+                  "kind": "VIDEO_SOURCE_RULE",
+                  "label": "SOURCE RULE",
+                  "note": "The source says SRF use suddenly rises.",
+                  "source_segment_id": "yellow_red"
+                },
+                {
+                  "kind": "DASHBOARD_OPERATIONALIZATION",
+                  "label": "OPERATIONALIZED",
+                  "note": "The dashboard requires nontechnical positive use on 2 of 3 completed days.",
+                  "source_segment_id": "yellow_red"
+                }
+              ],
+              "clause_id": "srf_positive_days",
+              "current_unit": "days",
+              "current_value": 1,
+              "evaluation_state": "CURRENT",
+              "freshness": "FRESH",
+              "label": "Nontechnical SRF positive on at least 2 of latest 3 operation days",
+              "met": false,
+              "metric_id": "srf_accepted",
+              "note": "Latest three completed operation days; technical-only exercises are excluded, while mixed days use only alert-eligible nontechnical accepted amount.",
+              "observation_date": "2026-08-12",
+              "operator": ">=",
+              "order": 3,
+              "quality_status": "OK",
+              "released_at": "2026-08-12T17:45:22Z",
+              "threshold": 2,
+              "threshold_unit": "days in latest 3 completed days"
+            }
+          ],
+          "expression": "[(SOFR−IORB > +3 bp) ∧ (RESERVES < 2.8T)] ∨ NONTECHNICAL SRF ↑",
+          "routes": [
+            {
+              "clauses": [
+                {
+                  "basis": [
+                    {
+                      "kind": "VIDEO_SOURCE_RULE",
+                      "label": "SOURCE RULE",
+                      "note": "+3 bp is the source model's strict spread line.",
+                      "source_segment_id": "yellow_red"
+                    },
+                    {
+                      "kind": "DASHBOARD_OPERATIONALIZATION",
+                      "label": "OPERATIONALIZED",
+                      "note": "The dashboard evaluates the cited line as a strict greater-than comparison in bp.",
+                      "source_segment_id": "yellow_red"
+                    }
+                  ],
+                  "clause_id": "sofr_spread_above_red",
+                  "current_unit": "bp",
+                  "current_value": -1.0,
+                  "evaluation_state": "CURRENT",
+                  "freshness": "FRESH",
+                  "label": "SOFR−IORB > +3 bp",
+                  "met": false,
+                  "metric_id": "sofr_iorb_spread_bp",
+                  "note": "Equality at +3 bp does not meet this strict greater-than clause.",
+                  "observation_date": "2026-08-11",
+                  "operator": ">",
+                  "order": 1,
+                  "quality_status": "OK",
+                  "released_at": null,
+                  "threshold": 3.0,
+                  "threshold_unit": "bp"
+                },
+                {
+                  "basis": [
+                    {
+                      "kind": "VIDEO_SOURCE_RULE",
+                      "label": "SOURCE RULE",
+                      "note": "2.8T is the source model's red reserve confirmation line.",
+                      "source_segment_id": "yellow_red"
+                    },
+                    {
+                      "kind": "DASHBOARD_OPERATIONALIZATION",
+                      "label": "OPERATIONALIZED",
+                      "note": "The dashboard evaluates the cited reserve level in USD bn.",
+                      "source_segment_id": "yellow_red"
+                    }
+                  ],
+                  "clause_id": "reserve_below_red",
+                  "current_unit": "USD bn",
+                  "current_value": 2993.349,
+                  "evaluation_state": "LAST_GOOD",
+                  "freshness": "LATE",
+                  "label": "Reserve Balances < 2.8T",
+                  "met": false,
+                  "metric_id": "reserve_balances",
+                  "note": "This source-model threshold is not a Federal Reserve official crisis line.",
+                  "observation_date": "2026-08-05",
+                  "operator": "<",
+                  "order": 2,
+                  "quality_status": "NOT_RELEASED_YET",
+                  "released_at": null,
+                  "threshold": 2800.0,
+                  "threshold_unit": "USD bn"
+                }
+              ],
+              "expression": "SOFR−IORB > +3 bp ∧ RESERVES < 2.8T",
+              "label": "ROUTE A · SPREAD + RESERVES",
+              "route_id": "spread_and_reserves",
+              "triggered": false
+            },
+            {
+              "clauses": [
+                {
+                  "basis": [
+                    {
+                      "kind": "VIDEO_SOURCE_RULE",
+                      "label": "SOURCE RULE",
+                      "note": "The source says SRF use suddenly rises.",
+                      "source_segment_id": "yellow_red"
+                    },
+                    {
+                      "kind": "DASHBOARD_OPERATIONALIZATION",
+                      "label": "OPERATIONALIZED",
+                      "note": "The dashboard requires nontechnical positive use on 2 of 3 completed days.",
+                      "source_segment_id": "yellow_red"
+                    }
+                  ],
+                  "clause_id": "srf_positive_days",
+                  "current_unit": "days",
+                  "current_value": 1,
+                  "evaluation_state": "CURRENT",
+                  "freshness": "FRESH",
+                  "label": "Nontechnical SRF positive on at least 2 of latest 3 operation days",
+                  "met": false,
+                  "metric_id": "srf_accepted",
+                  "note": "Latest three completed operation days; technical-only exercises are excluded, while mixed days use only alert-eligible nontechnical accepted amount.",
+                  "observation_date": "2026-08-12",
+                  "operator": ">=",
+                  "order": 3,
+                  "quality_status": "OK",
+                  "released_at": "2026-08-12T17:45:22Z",
+                  "threshold": 2,
+                  "threshold_unit": "days in latest 3 completed days"
+                }
+              ],
+              "expression": "NONTECHNICAL SRF POSITIVE ON ≥2 OF LATEST 3 DAYS",
+              "label": "ROUTE B · NONTECHNICAL SRF",
+              "route_id": "srf_2_of_3",
+              "triggered": false
+            }
+          ],
+          "triggered": false
+        },
+        "yellow": {
+          "clauses": [
+            {
+              "basis": [
+                {
+                  "kind": "VIDEO_SOURCE_RULE",
+                  "label": "SOURCE RULE",
+                  "note": "The source says the spread turns persistently positive.",
+                  "source_segment_id": "yellow_red"
+                },
+                {
+                  "kind": "DASHBOARD_OPERATIONALIZATION",
+                  "label": "OPERATIONALIZED",
+                  "note": "Persistence is operationalized as three valid observations.",
+                  "source_segment_id": "yellow_red"
+                }
+              ],
+              "clause_id": "sofr_positive_streak",
+              "current_unit": "observations",
+              "current_value": 0,
+              "evaluation_state": "CURRENT",
+              "freshness": "FRESH",
+              "label": "SOFR−IORB positive streak",
+              "met": false,
+              "metric_id": "sofr_iorb_spread_bp",
+              "note": "Three observations are a dashboard operationalization, not a quoted duration.",
+              "observation_date": "2026-08-11",
+              "operator": ">=",
+              "order": 1,
+              "quality_status": "OK",
+              "released_at": null,
+              "threshold": 3,
+              "threshold_unit": "observations"
+            },
+            {
+              "basis": [
+                {
+                  "kind": "VIDEO_SOURCE_RULE",
+                  "label": "SOURCE RULE",
+                  "note": "2.9T is the source model's yellow reserve threshold.",
+                  "source_segment_id": "yellow_red"
+                },
+                {
+                  "kind": "DASHBOARD_OPERATIONALIZATION",
+                  "label": "OPERATIONALIZED",
+                  "note": "The dashboard evaluates the cited reserve level in USD bn.",
+                  "source_segment_id": "yellow_red"
+                }
+              ],
+              "clause_id": "reserve_below_yellow",
+              "current_unit": "USD bn",
+              "current_value": 2993.349,
+              "evaluation_state": "LAST_GOOD",
+              "freshness": "LATE",
+              "label": "Reserve Balances < 2.9T",
+              "met": false,
+              "metric_id": "reserve_balances",
+              "note": "This source-model threshold is not a universal reserve-scarcity boundary.",
+              "observation_date": "2026-08-05",
+              "operator": "<",
+              "order": 2,
+              "quality_status": "NOT_RELEASED_YET",
+              "released_at": null,
+              "threshold": 2900.0,
+              "threshold_unit": "USD bn"
+            },
+            {
+              "basis": [
+                {
+                  "kind": "VIDEO_SOURCE_RULE",
+                  "label": "SOURCE RULE",
+                  "note": "The source describes reserves falling through 2.9T toward 2.8T.",
+                  "source_segment_id": "reserve_exit_1"
+                },
+                {
+                  "kind": "DASHBOARD_OPERATIONALIZATION",
+                  "label": "OPERATIONALIZED",
+                  "note": "The direction toward 2.8T is operationalized as a negative four-week change.",
+                  "source_segment_id": "reserve_exit_1"
+                }
+              ],
+              "clause_id": "reserve_change_4w_negative",
+              "current_unit": "USD bn",
+              "current_value": -105.562,
+              "evaluation_state": "LAST_GOOD",
+              "freshness": "LATE",
+              "label": "Four-week Reserve Balances change < 0",
+              "met": true,
+              "metric_id": "reserve_balances",
+              "note": "A negative change establishes direction only; it does not by itself mean stress.",
+              "observation_date": "2026-08-05",
+              "operator": "<",
+              "order": 3,
+              "quality_status": "NOT_RELEASED_YET",
+              "released_at": null,
+              "threshold": 0,
+              "threshold_unit": "USD bn"
+            },
+            {
+              "basis": [
+                {
+                  "kind": "VIDEO_SOURCE_RULE",
+                  "label": "SOURCE RULE",
+                  "note": "The source says TGA approaches 1T.",
+                  "source_segment_id": "yellow_red"
+                },
+                {
+                  "kind": "DASHBOARD_OPERATIONALIZATION",
+                  "label": "OPERATIONALIZED",
+                  "note": "The dashboard uses 0.95T as the one-sided operational floor.",
+                  "source_segment_id": "yellow_red"
+                }
+              ],
+              "clause_id": "tga_near_1t",
+              "current_unit": "USD bn",
+              "current_value": 997.33,
+              "evaluation_state": "CURRENT",
+              "freshness": "FRESH",
+              "label": "TGA near 1T operational floor",
+              "met": true,
+              "metric_id": "tga_daily",
+              "note": "Values above 1T still satisfy this one-sided proximity rule.",
+              "observation_date": "2026-08-11",
+              "operator": ">=",
+              "order": 4,
+              "quality_status": "OK",
+              "released_at": null,
+              "threshold": 950.0,
+              "threshold_unit": "USD bn"
+            }
+          ],
+          "expression": "PERSIST(SOFR−IORB > 0) ∧ RESERVES < 2.9T ∧ Δ4W RESERVES < 0 ∧ TGA ≥ 0.95T",
+          "triggered": false
+        }
+      },
+      "label": "影片 P0 黃／紅警報",
+      "model_id": "henren778_p0_liquidity",
+      "notes": [
+        "Video-model thresholds are source-specific reference rules, not universal reserve-scarcity laws.",
+        "This decision model does not replace the audited NORMAL/WATCH/ELEVATED/STRESS P0 engine.",
+        "At least one clause uses a last-good value because a new release is not yet available.",
+        "Technical-date flags lower confidence but do not suppress formula results."
+      ],
+      "operationalizations": {
+        "exclude_technical_exercises": true,
+        "positive_streak_observations": 3,
+        "rapid_reserve_decline_rule": "TRAILING_5Y_P10",
+        "srf_positive_days_latest_3": 2,
+        "srf_window_completed_operation_days": 3,
+        "tga_near_1t_floor_usd_bn": 950.0
+      },
+      "source": {
+        "author": "一个狠人",
+        "display_title": "一個月前全網喊 AI 泡沫要崩",
+        "segments": [
+          {
+            "end_seconds": 1440,
+            "label": "Yellow / Red formula",
+            "segment_id": "yellow_red",
+            "start_seconds": 1380,
+            "timestamp_url": "https://www.youtube.com/watch?v=MrnjBdgQPLU&t=1380s"
+          },
+          {
+            "end_seconds": 1200,
+            "label": "Reserve exit context I",
+            "segment_id": "reserve_exit_1",
+            "start_seconds": 1140,
+            "timestamp_url": "https://www.youtube.com/watch?v=MrnjBdgQPLU&t=1140s"
+          },
+          {
+            "end_seconds": 1620,
+            "label": "Reserve exit context II",
+            "segment_id": "reserve_exit_2",
+            "start_seconds": 1560,
+            "timestamp_url": "https://www.youtube.com/watch?v=MrnjBdgQPLU&t=1560s"
+          }
+        ],
+        "title": "一個月前全網喊AI泡沫要崩，我說鬼故事是洗盤不是葬禮，二波窗口鎖死7月底8月初！對賭：納指洗完近一成，道指標普齊創新高，美光單日暴拉18.4%！復盤釘死，二波打法五步三開關全套交付",
+        "url": "https://www.youtube.com/watch?v=MrnjBdgQPLU"
+      },
+      "status": "GREEN",
+      "technical_flags": [
+        "TREASURY_SETTLEMENT"
+      ],
+      "thresholds": {
+        "extreme": {
+          "decline_percentile": "TRAILING_5Y_P10",
+          "reserve_usd_bn": 2500.0
+        },
+        "red": {
+          "reserve_usd_bn": 2800.0,
+          "spread_bp": 3.0,
+          "srf_positive_days_required": 2,
+          "srf_window_completed_days": 3
+        },
+        "tga_source_target_usd_bn": 1000.0,
+        "yellow": {
+          "positive_streak_observations": 3,
+          "reserve_change_4w_usd_bn": 0,
+          "reserve_usd_bn": 2900.0,
+          "spread_positive_bp": 0.0,
+          "tga_operational_floor_usd_bn": 950.0
+        }
+      }
+    }
+  },
   "explanations": {
     "bullets": [
       {
@@ -45,7 +586,7 @@
     ],
     "headline": "P0 證據不足，今次不作中性推斷。"
   },
-  "generated_at": "2026-08-13T08:14:48.557860Z",
+  "generated_at": "2026-08-13T14:24:43.862717Z",
   "manual_ready_count": 3,
   "market_date": "2026-08-11",
   "metrics": {
@@ -330,7 +871,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-13T08:14:48.557860Z",
+          "retrieved_at": "2026-08-13T14:24:43.862717Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -338,7 +879,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-13T08:14:48.557860Z",
+          "retrieved_at": "2026-08-13T14:24:43.862717Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -348,7 +889,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-13T08:14:48.557860Z",
+        "last_attempt_at": "2026-08-13T14:24:43.862717Z",
         "last_success_at": "2026-08-13T08:14:48.557860Z",
         "sample_size": 498,
         "status": "OK"
@@ -446,7 +987,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-13T08:14:48.557860Z",
+        "retrieved_at": "2026-08-13T14:24:43.862717Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -464,7 +1005,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-13T08:14:48.557860Z",
+      "updated_at": "2026-08-13T14:24:43.862717Z",
       "value": -2.0
     },
     "cboe_skew_tail_risk_proxy": {
@@ -1799,7 +2340,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-13T08:14:48.557860Z",
+          "retrieved_at": "2026-08-13T14:24:43.862717Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -1807,7 +2348,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-13T08:14:48.557860Z",
+          "retrieved_at": "2026-08-13T14:24:43.862717Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -1817,7 +2358,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-13T08:14:48.557860Z",
+        "last_attempt_at": "2026-08-13T14:24:43.862717Z",
         "last_success_at": "2026-08-13T08:14:48.557860Z",
         "sample_size": 501,
         "status": "OK"
@@ -1915,7 +2456,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-13T08:14:48.557860Z",
+        "retrieved_at": "2026-08-13T14:24:43.862717Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -1933,7 +2474,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-13T08:14:48.557860Z",
+      "updated_at": "2026-08-13T14:24:43.862717Z",
       "value": -2.0
     },
     "fed_total_assets": {
@@ -3464,7 +4005,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-13T08:14:48.557860Z",
+          "retrieved_at": "2026-08-13T14:24:43.862717Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -3472,7 +4013,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-13T08:14:48.557860Z",
+          "retrieved_at": "2026-08-13T14:24:43.862717Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -3482,7 +4023,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-13T08:14:48.557860Z",
+        "last_attempt_at": "2026-08-13T14:24:43.862717Z",
         "last_success_at": "2026-08-13T08:14:48.557860Z",
         "sample_size": 501,
         "status": "OK"
@@ -3580,7 +4121,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-13T08:14:48.557860Z",
+        "retrieved_at": "2026-08-13T14:24:43.862717Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -3598,7 +4139,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-13T08:14:48.557860Z",
+      "updated_at": "2026-08-13T14:24:43.862717Z",
       "value": -2.0
     },
     "on_rrp_accepted": {
@@ -4279,7 +4820,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-13T08:14:48.557860Z",
+          "retrieved_at": "2026-08-13T14:24:43.862717Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -4287,7 +4828,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-13T08:14:48.557860Z",
+          "retrieved_at": "2026-08-13T14:24:43.862717Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -4297,7 +4838,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-13T08:14:48.557860Z",
+        "last_attempt_at": "2026-08-13T14:24:43.862717Z",
         "last_success_at": "2026-08-13T08:14:48.557860Z",
         "sample_size": 498,
         "status": "OK"
@@ -4395,7 +4936,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-13T08:14:48.557860Z",
+        "retrieved_at": "2026-08-13T14:24:43.862717Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -4413,7 +4954,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-13T08:14:48.557860Z",
+      "updated_at": "2026-08-13T14:24:43.862717Z",
       "value": -1.0
     },
     "spx_0dte_share": {
@@ -4584,6 +5125,7 @@
             "submitted_amount_usd_bn": 0.0
           }
         },
+        "classification_complete": true,
         "exercise_accepted_amount_usd_bn": 0.0,
         "exercise_operation_count": 0,
         "has_technical_exercise": false,
@@ -4640,91 +5182,223 @@
       "released_at": "2026-08-12T17:45:22Z",
       "short_series": [
         {
+          "accepted_amount_usd_bn": 0.101,
+          "alert_eligible_accepted_amount_usd_bn": 0.101,
+          "classification_complete": true,
           "date": "2026-07-14",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.101
         },
         {
+          "accepted_amount_usd_bn": 0.102,
+          "alert_eligible_accepted_amount_usd_bn": 0.102,
+          "classification_complete": true,
           "date": "2026-07-15",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.102
         },
         {
+          "accepted_amount_usd_bn": 0.0,
+          "alert_eligible_accepted_amount_usd_bn": 0.0,
+          "classification_complete": true,
           "date": "2026-07-16",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.0
         },
         {
+          "accepted_amount_usd_bn": 0.0,
+          "alert_eligible_accepted_amount_usd_bn": 0.0,
+          "classification_complete": true,
           "date": "2026-07-17",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.0
         },
         {
+          "accepted_amount_usd_bn": 0.0,
+          "alert_eligible_accepted_amount_usd_bn": 0.0,
+          "classification_complete": true,
           "date": "2026-07-20",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.0
         },
         {
+          "accepted_amount_usd_bn": 0.0,
+          "alert_eligible_accepted_amount_usd_bn": 0.0,
+          "classification_complete": true,
           "date": "2026-07-21",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.0
         },
         {
+          "accepted_amount_usd_bn": 0.0,
+          "alert_eligible_accepted_amount_usd_bn": 0.0,
+          "classification_complete": true,
           "date": "2026-07-22",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.0
         },
         {
+          "accepted_amount_usd_bn": 0.007,
+          "alert_eligible_accepted_amount_usd_bn": 0.007,
+          "classification_complete": true,
           "date": "2026-07-23",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.007
         },
         {
+          "accepted_amount_usd_bn": 0.001,
+          "alert_eligible_accepted_amount_usd_bn": 0.001,
+          "classification_complete": true,
           "date": "2026-07-24",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.001
         },
         {
+          "accepted_amount_usd_bn": 0.02,
+          "alert_eligible_accepted_amount_usd_bn": 0.02,
+          "classification_complete": true,
           "date": "2026-07-27",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.02
         },
         {
+          "accepted_amount_usd_bn": 0.009,
+          "alert_eligible_accepted_amount_usd_bn": 0.009,
+          "classification_complete": true,
           "date": "2026-07-28",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.009
         },
         {
+          "accepted_amount_usd_bn": 0.003,
+          "alert_eligible_accepted_amount_usd_bn": 0.003,
+          "classification_complete": true,
           "date": "2026-07-29",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.003
         },
         {
+          "accepted_amount_usd_bn": 0.008,
+          "alert_eligible_accepted_amount_usd_bn": 0.008,
+          "classification_complete": true,
           "date": "2026-07-30",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.008
         },
         {
+          "accepted_amount_usd_bn": 0.0,
+          "alert_eligible_accepted_amount_usd_bn": 0.0,
+          "classification_complete": true,
           "date": "2026-07-31",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.0
         },
         {
+          "accepted_amount_usd_bn": 0.0,
+          "alert_eligible_accepted_amount_usd_bn": 0.0,
+          "classification_complete": true,
           "date": "2026-08-03",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.0
         },
         {
+          "accepted_amount_usd_bn": 0.001,
+          "alert_eligible_accepted_amount_usd_bn": 0.001,
+          "classification_complete": true,
           "date": "2026-08-04",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.001
         },
         {
+          "accepted_amount_usd_bn": 0.001,
+          "alert_eligible_accepted_amount_usd_bn": 0.001,
+          "classification_complete": true,
           "date": "2026-08-05",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.001
         },
         {
+          "accepted_amount_usd_bn": 0.0,
+          "alert_eligible_accepted_amount_usd_bn": 0.0,
+          "classification_complete": true,
           "date": "2026-08-06",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.0
         },
         {
+          "accepted_amount_usd_bn": 0.0,
+          "alert_eligible_accepted_amount_usd_bn": 0.0,
+          "classification_complete": true,
           "date": "2026-08-07",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.0
         },
         {
+          "accepted_amount_usd_bn": 0.0,
+          "alert_eligible_accepted_amount_usd_bn": 0.0,
+          "classification_complete": true,
           "date": "2026-08-10",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.0
         },
         {
+          "accepted_amount_usd_bn": 0.1,
+          "alert_eligible_accepted_amount_usd_bn": 0.1,
+          "classification_complete": true,
           "date": "2026-08-11",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.1
         },
         {
+          "accepted_amount_usd_bn": 0.0,
+          "alert_eligible_accepted_amount_usd_bn": 0.0,
+          "classification_complete": true,
           "date": "2026-08-12",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
           "value": 0.0
         }
       ],
@@ -5360,7 +6034,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-13T08:14:48.557860Z",
+          "retrieved_at": "2026-08-13T14:24:43.862717Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -5368,7 +6042,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-13T08:14:48.557860Z",
+          "retrieved_at": "2026-08-13T14:24:43.862717Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -5378,7 +6052,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-13T08:14:48.557860Z",
+        "last_attempt_at": "2026-08-13T14:24:43.862717Z",
         "last_success_at": "2026-08-13T08:14:48.557860Z",
         "sample_size": 498,
         "status": "OK"
@@ -5476,7 +6150,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-13T08:14:48.557860Z",
+        "retrieved_at": "2026-08-13T14:24:43.862717Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -5494,7 +6168,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-13T08:14:48.557860Z",
+      "updated_at": "2026-08-13T14:24:43.862717Z",
       "value": -2.0
     },
     "trend_following_positioning_proxy": {
@@ -5633,8 +6307,8 @@
     }
   },
   "overall_assessment": "UNAVAILABLE",
-  "pipeline_updated_at": "2026-08-13T08:14:48.557860Z",
-  "schema_version": "2.0.0",
+  "pipeline_updated_at": "2026-08-13T14:24:43.862717Z",
+  "schema_version": "2.1.0",
   "source_health": {
     "error": 0,
     "not_applicable": 0,

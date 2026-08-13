@@ -212,7 +212,7 @@ def test_release_one_builds_complete_v2_contract_and_preserves_real_zero(tmp_pat
     validate_publication(
         publication.snapshot, publication.manifest, publication.series_by_id
     )
-    assert publication.snapshot["schema_version"] == "2.0.0"
+    assert publication.snapshot["schema_version"] == "2.1.0"
     assert CANONICAL_P0_METRIC_IDS <= publication.snapshot["metrics"].keys()
     assert len(publication.snapshot["sources"]) == 11
     assert sum(publication.snapshot["source_health"].values()) == 11
@@ -309,7 +309,7 @@ def test_failed_fred_fetch_preserves_last_good_and_redacts_api_key(tmp_path, mon
     (old / "series").mkdir(parents=True)
     stamp = "2026-08-11T20:00:00Z"
     (old / "snapshot.json").write_text(
-        json.dumps({"schema_version": "2.0.0", "generated_at": stamp, "pipeline_updated_at": stamp})
+        json.dumps({"schema_version": "2.1.0", "generated_at": stamp, "pipeline_updated_at": stamp})
     )
     (old / "series" / "iorb.json").write_text(
         json.dumps(
@@ -494,7 +494,7 @@ def test_stale_reserves_fail_closed_without_hiding_fresh_evidence_coverage(tmp_p
     (old / "snapshot.json").write_text(
         json.dumps(
             {
-                "schema_version": "2.0.0",
+                "schema_version": "2.1.0",
                 "generated_at": stamp,
                 "pipeline_updated_at": stamp,
             }
@@ -566,7 +566,7 @@ def test_stage_only_then_cross_parent_promotion_removes_v1_aliases(tmp_path):
 
     assert not stage.exists()
     assert not (output / "old-v1-alias.json").exists()
-    assert json.loads((output / "snapshot.json").read_text())["schema_version"] == "2.0.0"
+    assert json.loads((output / "snapshot.json").read_text())["schema_version"] == "2.1.0"
     assert not (output / "series" / "sofr_iorb_spread.json").exists()
     assert all(not (output / "series" / filename).exists() for filename in retired_cftc_files)
 
@@ -586,7 +586,7 @@ def test_load_stage_rejects_tampered_alerts_and_events(tmp_path):
     (events_stage / "events.json").write_text(
         json.dumps(
             {
-                "schema_version": "2.0.0",
+                    "schema_version": "2.1.0",
                 "generated_at": publication.snapshot["generated_at"],
                 "events": "not-a-list",
             }

@@ -22,15 +22,22 @@ import type {
   Point,
   QualityInfo,
   Snapshot,
+  SrfPoint,
   SourceHealthCounts,
   SwitchState,
+  VideoP0Model,
 } from './types';
 
 export type RouteId = 'overview' | 'liquidity-fuel' | 'market-ignition' | 'fundamental-exit' | 'provenance';
+export interface RouteTarget {
+  route: RouteId;
+  section: string | null;
+  valid: boolean;
+}
 export type RangeKey = '1M' | '8W' | '12W' | '3M' | '1Y' | 'MAX';
 
 export interface SeriesFile {
-  schema_version: '2.0.0';
+  schema_version: '2.1.0';
   metric_id: string;
   label: string;
   unit: string;
@@ -67,8 +74,7 @@ export interface ChangePresentation {
   value: number | null;
 }
 
-export const SCHEMA_VERSION = '2.0.0' as const;
-export const THRESHOLD_BP = 3;
+export const SCHEMA_VERSION = '2.1.0' as const;
 
 export const ROUTES = [
   { id: 'overview', href: '#/overview', label: '總覽' },
@@ -363,6 +369,17 @@ function isNullableDay(value: unknown): value is string | null {
 
 function isPoint(value: unknown): value is Point {
   return isRecord(value) && isIsoDay(value.date) && isNullableNumber(value.value);
+}
+
+function isSrfPoint(value: unknown): value is SrfPoint {
+  if (!isPoint(value) || !isRecord(value) || value.classification_complete !== true ||
+    !isFiniteNumber(value.accepted_amount_usd_bn) || value.accepted_amount_usd_bn < 0 ||
+    !isFiniteNumber(value.alert_eligible_accepted_amount_usd_bn) || value.alert_eligible_accepted_amount_usd_bn < 0 ||
+    !isFiniteNumber(value.exercise_accepted_amount_usd_bn) || value.exercise_accepted_amount_usd_bn < 0 ||
+    typeof value.has_technical_exercise !== 'boolean' || typeof value.technical_exercise !== 'boolean') return false;
+  return value.value === value.accepted_amount_usd_bn &&
+    Math.abs(value.alert_eligible_accepted_amount_usd_bn + value.exercise_accepted_amount_usd_bn - value.accepted_amount_usd_bn) <= 1e-9 &&
+    (!value.technical_exercise || (value.has_technical_exercise && value.alert_eligible_accepted_amount_usd_bn === 0));
 }
 
 function isFundamentalDirection(value: unknown): value is FundamentalDirection {
@@ -977,7 +994,9 @@ function isMetric(value: unknown, id?: string): value is Metric {
     isChanges(value.changes) && isStatistics(value.statistics) &&
     isQuality(value.quality) && isContext(value.context) &&
     isMetricSource(value.source) && isMethodology(value.methodology) &&
-    Array.isArray(value.short_series) && value.short_series.every(isPoint) &&
+    Array.isArray(value.short_series) && value.short_series.every(
+      value.metric_id === 'srf_accepted' ? isSrfPoint : isPoint,
+    ) &&
     (value.details === undefined || value.details === null || isRecord(value.details));
 }
 
@@ -1035,12 +1054,233 @@ function isSourceHealth(value: unknown): value is SourceHealthCounts {
     .every((key) => isNonnegativeInteger(value[key]));
 }
 
+const VIDEO_STATUSES = new Set([
+  'GREEN', 'YELLOW', 'RED', 'EXTREME_CONTEXT_REQUIRED',
+  'EXTREME_CONFIRMED', 'UNAVAILABLE',
+]);
+const VIDEO_DATA_STATUSES = new Set(['CURRENT', 'LAST_GOOD', 'PARTIAL', 'UNAVAILABLE']);
+const VIDEO_CONFIDENCE = new Set(['HIGH', 'MEDIUM', 'LOW', 'UNKNOWN']);
+const FORMULA_STATES = new Set(['CURRENT', 'LAST_GOOD', 'STALE', 'MISSING', 'DISABLED', 'REVIEW_REQUIRED']);
+const FORMULA_BASIS_KINDS = new Set(['VIDEO_SOURCE_RULE', 'DASHBOARD_OPERATIONALIZATION', 'MANUAL_CONTEXT']);
+const FORMULA_OPERATORS = new Set(['>', '>=', '<', '<=', '=']);
+
+function isFormulaValue(value: unknown): boolean {
+  return value === null || typeof value === 'string' || typeof value === 'boolean' || isFiniteNumber(value);
+}
+
+function formulaAnd(values: readonly (boolean | null)[]): boolean | null {
+  if (values.some((value) => value === false)) return false;
+  return values.some((value) => value === null) ? null : true;
+}
+
+function formulaOr(values: readonly (boolean | null)[]): boolean | null {
+  if (values.some((value) => value === true)) return true;
+  return values.some((value) => value === null) ? null : false;
+}
+
+function sameFormulaValue(left: unknown, right: unknown): boolean {
+  return left === right || (isFiniteNumber(left) && isFiniteNumber(right) && Math.abs(left - right) <= 1e-9);
+}
+
+function isVideoSourceUrl(value: unknown, startSeconds?: number): value is string {
+  if (typeof value !== 'string') return false;
+  try {
+    const url = new URL(value);
+    if (url.protocol !== 'https:' || url.hostname !== 'www.youtube.com' || url.username || url.password || url.port ||
+      url.pathname !== '/watch' || url.searchParams.get('v') !== 'MrnjBdgQPLU') return false;
+    if (startSeconds === undefined) return !url.searchParams.has('t') && !url.hash;
+    return url.searchParams.get('t') === `${startSeconds}s` && !url.hash;
+  } catch {
+    return false;
+  }
+}
+
+function isFormulaClause(value: unknown): boolean {
+  if (!isRecord(value) || !hasExactFields(value, [
+    'clause_id', 'order', 'label', 'metric_id', 'operator', 'threshold', 'threshold_unit',
+    'current_value', 'current_unit', 'met', 'observation_date', 'released_at',
+    'quality_status', 'freshness', 'evaluation_state', 'basis', 'note',
+  ]) || typeof value.clause_id !== 'string' || !isNonnegativeInteger(value.order) || value.order < 1 ||
+    typeof value.label !== 'string' || !isNullableString(value.metric_id) ||
+    typeof value.operator !== 'string' || !FORMULA_OPERATORS.has(value.operator) ||
+    !isFormulaValue(value.threshold) || !isNullableString(value.threshold_unit) ||
+    !isFormulaValue(value.current_value) || !isNullableString(value.current_unit) ||
+    !(value.met === null || typeof value.met === 'boolean') || !isNullableDay(value.observation_date) ||
+    !isNullableUtcTimestamp(value.released_at) || !isHealthStatus(value.quality_status) ||
+    !isFreshness(value.freshness) || typeof value.evaluation_state !== 'string' ||
+    !FORMULA_STATES.has(value.evaluation_state) || !Array.isArray(value.basis) || value.basis.length < 2 ||
+    typeof value.note !== 'string') return false;
+  const kinds = new Set<string>();
+  for (const basis of value.basis) {
+    if (!isRecord(basis) || !hasExactFields(basis, ['kind', 'label', 'source_segment_id', 'note']) ||
+      typeof basis.kind !== 'string' || !FORMULA_BASIS_KINDS.has(basis.kind) || kinds.has(basis.kind) ||
+      typeof basis.label !== 'string' || !basis.label || !isNullableString(basis.source_segment_id) ||
+      typeof basis.note !== 'string') return false;
+    kinds.add(basis.kind);
+  }
+  return kinds.has('VIDEO_SOURCE_RULE') &&
+    (value.metric_id === null ? kinds.has('MANUAL_CONTEXT') : kinds.has('DASHBOARD_OPERATIONALIZATION'));
+}
+
+function isVideoP0Model(value: unknown, metrics: Record<string, unknown>, generatedAt: string): value is VideoP0Model {
+  if (!isRecord(value) || !hasExactFields(value, [
+    'model_id', 'label', 'enabled', 'status', 'data_status', 'confidence', 'availability_reason',
+    'evaluated_at', 'source', 'thresholds', 'operationalizations', 'crisis_context',
+    'formulas', 'technical_flags', 'notes',
+  ]) || value.model_id !== 'henren778_p0_liquidity' || typeof value.label !== 'string' ||
+    typeof value.enabled !== 'boolean' || typeof value.status !== 'string' || !VIDEO_STATUSES.has(value.status) ||
+    typeof value.data_status !== 'string' || !VIDEO_DATA_STATUSES.has(value.data_status) ||
+    typeof value.confidence !== 'string' || !VIDEO_CONFIDENCE.has(value.confidence) ||
+    !isNullableString(value.availability_reason) || !isIsoTimestamp(value.evaluated_at) || value.evaluated_at > generatedAt ||
+    !Array.isArray(value.technical_flags) || !value.technical_flags.every((item) => typeof item === 'string' && item.length > 0) ||
+    !Array.isArray(value.notes) || !value.notes.every((item) => typeof item === 'string' && item.length > 0)) return false;
+
+  const source = value.source;
+  if (!isRecord(source) || !hasExactFields(source, ['title', 'display_title', 'author', 'url', 'segments']) ||
+    typeof source.title !== 'string' || !source.title || typeof source.display_title !== 'string' || !source.display_title ||
+    typeof source.author !== 'string' || !source.author || !isVideoSourceUrl(source.url) || !Array.isArray(source.segments)) return false;
+  const expectedSegments: Array<[string, number, number]> = [
+    ['yellow_red', 1380, 1440], ['reserve_exit_1', 1140, 1200], ['reserve_exit_2', 1560, 1620],
+  ];
+  if (source.segments.length !== expectedSegments.length || !source.segments.every((segment, index) => {
+    const expected = expectedSegments[index];
+    return isRecord(segment) && hasExactFields(segment, ['segment_id', 'label', 'start_seconds', 'end_seconds', 'timestamp_url']) &&
+      segment.segment_id === expected[0] && typeof segment.label === 'string' && segment.label.length > 0 &&
+      segment.start_seconds === expected[1] && segment.end_seconds === expected[2] &&
+      isVideoSourceUrl(segment.timestamp_url, expected[1]);
+  })) return false;
+
+  const thresholds = value.thresholds;
+  if (!isRecord(thresholds) || !hasExactFields(thresholds, ['yellow', 'red', 'extreme', 'tga_source_target_usd_bn']) ||
+    !isRecord(thresholds.yellow) || !isRecord(thresholds.red) || !isRecord(thresholds.extreme) ||
+    !hasExactFields(thresholds.yellow, ['spread_positive_bp', 'positive_streak_observations', 'reserve_usd_bn', 'reserve_change_4w_usd_bn', 'tga_operational_floor_usd_bn']) ||
+    !hasExactFields(thresholds.red, ['spread_bp', 'reserve_usd_bn', 'srf_positive_days_required', 'srf_window_completed_days']) ||
+    !hasExactFields(thresholds.extreme, ['reserve_usd_bn', 'decline_percentile']) ||
+    thresholds.yellow.spread_positive_bp !== 0 || thresholds.yellow.positive_streak_observations !== 3 || thresholds.yellow.reserve_usd_bn !== 2900 ||
+    thresholds.yellow.reserve_change_4w_usd_bn !== 0 || thresholds.yellow.tga_operational_floor_usd_bn !== 950 ||
+    thresholds.red.spread_bp !== 3 || thresholds.red.reserve_usd_bn !== 2800 ||
+    thresholds.red.srf_positive_days_required !== 2 || thresholds.red.srf_window_completed_days !== 3 ||
+    thresholds.extreme.reserve_usd_bn !== 2500 || thresholds.extreme.decline_percentile !== 'TRAILING_5Y_P10' ||
+    thresholds.tga_source_target_usd_bn !== 1000) return false;
+
+  const context = value.crisis_context;
+  if (!isRecord(context) || !hasExactFields(context, ['status', 'as_of', 'reviewed_at', 'reviewer', 'note']) ||
+    !['UNKNOWN', 'MAJOR_CRISIS_PRESENT', 'NO_MAJOR_CRISIS'].includes(String(context.status))) return false;
+  if (context.status === 'UNKNOWN') {
+    if ([context.as_of, context.reviewed_at, context.reviewer, context.note].some((item) => item !== null)) return false;
+  } else if (!isIsoDay(context.as_of) || !isNullableUtcTimestamp(context.reviewed_at) || context.reviewed_at === null ||
+    typeof context.reviewer !== 'string' || !context.reviewer || typeof context.note !== 'string' || !context.note) return false;
+
+  if (!isRecord(value.operationalizations) || Object.values(value.operationalizations).some((item) =>
+    !(typeof item === 'string' || typeof item === 'boolean' || isFiniteNumber(item)))) return false;
+  const formulas = value.formulas;
+  if (!isRecord(formulas) || !hasExactFields(formulas, ['yellow', 'red', 'extreme'])) return false;
+  const yellow = formulas.yellow;
+  const red = formulas.red;
+  const extreme = formulas.extreme;
+  if (!isRecord(yellow) || !hasExactFields(yellow, ['expression', 'triggered', 'clauses']) ||
+    !isRecord(red) || !hasExactFields(red, ['expression', 'triggered', 'clauses', 'routes']) ||
+    !isRecord(extreme) || !hasExactFields(extreme, ['expression', 'triggered', 'clauses', 'candidate', 'context_required']) ||
+    typeof yellow.expression !== 'string' || typeof red.expression !== 'string' || typeof extreme.expression !== 'string' ||
+    !(yellow.triggered === null || typeof yellow.triggered === 'boolean') ||
+    !(red.triggered === null || typeof red.triggered === 'boolean') ||
+    !(extreme.triggered === null || typeof extreme.triggered === 'boolean') ||
+    !(extreme.candidate === null || typeof extreme.candidate === 'boolean') ||
+    typeof extreme.context_required !== 'boolean' || !Array.isArray(yellow.clauses) || !Array.isArray(red.clauses) ||
+    !Array.isArray(extreme.clauses) || !Array.isArray(red.routes)) return false;
+
+  const expectedIds = {
+    yellow: ['sofr_positive_streak', 'reserve_below_yellow', 'reserve_change_4w_negative', 'tga_near_1t'],
+    red: ['sofr_spread_above_red', 'reserve_below_red', 'srf_positive_days'],
+    extreme: ['reserve_below_extreme', 'reserve_rapid_decline', 'no_major_crisis'],
+  } as const;
+  for (const [key, clauses] of Object.entries({ yellow: yellow.clauses, red: red.clauses, extreme: extreme.clauses })) {
+    const ids = expectedIds[key as keyof typeof expectedIds];
+    if (clauses.length !== ids.length || !clauses.every((clause, index) => isFormulaClause(clause) &&
+      (clause as Record<string, unknown>).clause_id === ids[index] && (clause as Record<string, unknown>).order === index + 1)) return false;
+  }
+  const allClauses = [...yellow.clauses, ...red.clauses, ...extreme.clauses] as Array<Record<string, unknown>>;
+  if (new Set(allClauses.map(({ clause_id }) => clause_id)).size !== allClauses.length) return false;
+
+  const metricExpectations: Record<string, { metric: string | null; operator: string; threshold: unknown; thresholdUnit: string | null; current: () => unknown }> = {
+    sofr_positive_streak: { metric: 'sofr_iorb_spread_bp', operator: '>=', threshold: 3, thresholdUnit: 'observations', current: () => (metrics.sofr_iorb_spread_bp as Metric).statistics.positive_streak },
+    reserve_below_yellow: { metric: 'reserve_balances', operator: '<', threshold: 2900, thresholdUnit: 'USD bn', current: () => (metrics.reserve_balances as Metric).value },
+    reserve_change_4w_negative: { metric: 'reserve_balances', operator: '<', threshold: 0, thresholdUnit: 'USD bn', current: () => (metrics.reserve_balances as Metric).statistics.change_4w },
+    tga_near_1t: { metric: 'tga_daily', operator: '>=', threshold: 950, thresholdUnit: 'USD bn', current: () => (metrics.tga_daily as Metric).value },
+    sofr_spread_above_red: { metric: 'sofr_iorb_spread_bp', operator: '>', threshold: 3, thresholdUnit: 'bp', current: () => (metrics.sofr_iorb_spread_bp as Metric).value },
+    reserve_below_red: { metric: 'reserve_balances', operator: '<', threshold: 2800, thresholdUnit: 'USD bn', current: () => (metrics.reserve_balances as Metric).value },
+    srf_positive_days: { metric: 'srf_accepted', operator: '>=', threshold: 2, thresholdUnit: 'days in latest 3 completed days', current: () => (metrics.srf_accepted as Metric).statistics.positive_nontechnical_latest_3 },
+    reserve_below_extreme: { metric: 'reserve_balances', operator: '<', threshold: 2500, thresholdUnit: 'USD bn', current: () => (metrics.reserve_balances as Metric).value },
+    reserve_rapid_decline: { metric: 'reserve_balances', operator: '<=', threshold: (metrics.reserve_balances as Metric).statistics.trailing_5y_p10, thresholdUnit: 'USD bn', current: () => (metrics.reserve_balances as Metric).statistics.change_4w },
+    no_major_crisis: { metric: null, operator: '=', threshold: 'NO_MAJOR_CRISIS', thresholdUnit: null, current: () => context.status },
+  };
+  for (const clause of allClauses) {
+    const expected = metricExpectations[String(clause.clause_id)];
+    if (!expected || clause.metric_id !== expected.metric || clause.operator !== expected.operator ||
+      !sameFormulaValue(clause.threshold, expected.threshold) || clause.threshold_unit !== expected.thresholdUnit ||
+      !sameFormulaValue(clause.current_value, expected.current())) return false;
+    if (expected.metric !== null) {
+      const metric = metrics[expected.metric] as Metric;
+      if (clause.observation_date !== metric.observation_date || clause.released_at !== metric.released_at ||
+        clause.quality_status !== metric.quality.status || clause.freshness !== metric.quality.freshness) return false;
+      const evaluable = (metric.quality.status === 'OK' && ['FRESH', 'LATE'].includes(metric.quality.freshness)) ||
+        (metric.quality.status === 'NOT_RELEASED_YET' && clause.current_value !== null);
+      const expectedState = evaluable
+        ? metric.quality.freshness === 'FRESH' && metric.quality.status === 'OK' ? 'CURRENT' : 'LAST_GOOD'
+        : metric.quality.status === 'STALE' ? 'STALE' : 'MISSING';
+      if (clause.evaluation_state !== expectedState) return false;
+      if (!evaluable || clause.current_value === null || clause.threshold === null) {
+        if (clause.met !== null) return false;
+      } else {
+        const left = clause.current_value as number;
+        const right = clause.threshold as number;
+        const expectedMet = clause.operator === '>' ? left > right
+          : clause.operator === '>=' ? left >= right
+            : clause.operator === '<' ? left < right
+              : clause.operator === '<=' ? left <= right
+                : left === right;
+        if (clause.met !== expectedMet) return false;
+      }
+    } else {
+      const expectedMet = context.status === 'UNKNOWN' ? null : context.status === 'NO_MAJOR_CRISIS';
+      if (clause.met !== expectedMet || clause.evaluation_state !== (expectedMet === null ? 'REVIEW_REQUIRED' : 'CURRENT') ||
+        clause.observation_date !== context.as_of || clause.released_at !== context.reviewed_at) return false;
+    }
+  }
+
+  const yellowResult = formulaAnd((yellow.clauses as Array<Record<string, unknown>>).map(({ met }) => met as boolean | null));
+  const spreadRoute = formulaAnd((red.clauses as Array<Record<string, unknown>>).slice(0, 2).map(({ met }) => met as boolean | null));
+  const srfRoute = (red.clauses as Array<Record<string, unknown>>)[2].met as boolean | null;
+  const redResult = formulaOr([spreadRoute, srfRoute]);
+  const extremeCandidate = formulaAnd((extreme.clauses as Array<Record<string, unknown>>).slice(0, 2).map(({ met }) => met as boolean | null));
+  const extremeResult = formulaAnd([extremeCandidate, (extreme.clauses as Array<Record<string, unknown>>)[2].met as boolean | null]);
+  if (yellow.triggered !== yellowResult || red.triggered !== redResult || extreme.candidate !== extremeCandidate ||
+    extreme.triggered !== extremeResult || extreme.context_required !== (extremeCandidate === true && context.status === 'UNKNOWN') ||
+    red.routes.length !== 2 || !red.routes.every((route) => isRecord(route)) ||
+    (red.routes[0] as Record<string, unknown>).triggered !== spreadRoute ||
+    (red.routes[1] as Record<string, unknown>).triggered !== srfRoute) return false;
+
+  if (!value.enabled) return value.status === 'UNAVAILABLE' && value.data_status === 'UNAVAILABLE' &&
+    value.confidence === 'UNKNOWN' && value.availability_reason === 'DISABLED' &&
+    [yellowResult, redResult, extremeCandidate].every((result) => result === null);
+  let expectedStatus: string;
+  if (extremeCandidate === null && context.status !== 'MAJOR_CRISIS_PRESENT') expectedStatus = 'UNAVAILABLE';
+  else if (extremeCandidate && context.status === 'UNKNOWN') expectedStatus = 'EXTREME_CONTEXT_REQUIRED';
+  else if (extremeCandidate && context.status === 'NO_MAJOR_CRISIS') expectedStatus = 'EXTREME_CONFIRMED';
+  else if (redResult === null) expectedStatus = 'UNAVAILABLE';
+  else if (redResult) expectedStatus = 'RED';
+  else if (yellowResult === null) expectedStatus = 'UNAVAILABLE';
+  else expectedStatus = yellowResult ? 'YELLOW' : 'GREEN';
+  return value.status === expectedStatus &&
+    (expectedStatus === 'UNAVAILABLE' ? value.data_status === 'UNAVAILABLE' && value.availability_reason !== null : value.availability_reason === null);
+}
+
 export function isSnapshot(value: unknown): value is Snapshot {
   if (!isRecord(value) || value.schema_version !== SCHEMA_VERSION ||
     !isIsoTimestamp(value.generated_at) || !isIsoTimestamp(value.pipeline_updated_at) ||
     !isNullableDay(value.market_date) || !isNullableString(value.overall_assessment) ||
     !isRecord(value.switches) || !isRecord(value.metrics) ||
-    !isRecord(value.sources) || !isSourceHealth(value.source_health) ||
+    !isRecord(value.sources) || !isSourceHealth(value.source_health) || !isRecord(value.decision_models) ||
     !Array.isArray(value.technical_context) || !Array.isArray(value.alerts) || !isRecord(value.explanations)) return false;
 
   const switches = value.switches as Record<string, unknown>;
@@ -1071,6 +1311,8 @@ export function isSnapshot(value: unknown): value is Snapshot {
   if (!Object.entries(metrics).every(([id, metric]) => isMetric(metric, id))) return false;
   if (![...OVERVIEW_SERIES_IDS, ...CONFIRMATION_SPREAD_IDS, ...P1_CFTC_CONFIG.map(({ id }) => id), ...P1_RIGHTS_GATED_IDS, ...P2_SERIES_IDS, ...P3_METRIC_IDS]
     .every((id) => isMetric(metrics[id], id))) return false;
+  if (!hasExactFields(value.decision_models, ['p0_video_liquidity']) ||
+    !isVideoP0Model(value.decision_models.p0_video_liquidity, metrics, value.generated_at as string)) return false;
   if (!isP2MetricContract(metrics)) return false;
   if (!isP3MetricContract(metrics, value.generated_at as string)) return false;
   const p3Capex = metrics[P3_AUTOMATED_IDS[0]] as Metric;
@@ -1239,7 +1481,7 @@ function isSeriesFile(value: unknown, id: string): value is SeriesFile {
     isAvailability(value.availability) && isQuality(value.quality) &&
     isNullableDay(value.observation_date) && isNullableTimestamp(value.released_at) &&
     isNullableTimestamp(value.updated_at) && isMetricSource(value.source) &&
-    Array.isArray(value.observations) && value.observations.every(isPoint);
+    Array.isArray(value.observations) && value.observations.every(id === 'srf_accepted' ? isSrfPoint : isPoint);
   if (!valid) return false;
   const series = value as unknown as SeriesFile;
   if ((P3_AUTOMATED_IDS as readonly string[]).includes(id)) {
@@ -1291,9 +1533,24 @@ async function fetchJson(url: string, fetcher: typeof fetch): Promise<unknown> {
   return response.json();
 }
 
+export function parseRouteTarget(hash: string): RouteTarget {
+  const raw = hash.replace(/^#\/?/, '');
+  const [routePart, sectionPart, ...extra] = raw.split('#');
+  const candidate = routePart.replace(/\/$/, '');
+  const route = ROUTES.some(({ id }) => id === candidate)
+    ? candidate as RouteId
+    : 'overview';
+  const section = sectionPart && /^[a-z][a-z0-9-]*$/.test(sectionPart)
+    ? sectionPart
+    : null;
+  const valid = route === candidate && extra.length === 0 &&
+    (!sectionPart || section !== null) &&
+    (!section || route === 'provenance');
+  return { route, section: valid ? section : null, valid };
+}
+
 export function parseRoute(hash: string): RouteId {
-  const candidate = hash.replace(/^#\/?/, '').replace(/\/$/, '');
-  return ROUTES.some(({ id }) => id === candidate) ? candidate as RouteId : 'overview';
+  return parseRouteTarget(hash).route;
 }
 
 export function routeMetricIds(route: RouteId, catalog: readonly CatalogMetric[], snapshot: Snapshot): string[] {

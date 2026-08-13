@@ -1,4 +1,4 @@
-"""Schema 2.0.0 enums and validation helpers for the data-pipeline contract.
+"""Schema 2.1.0 enums and validation helpers for the data-pipeline contract.
 
 This module is intentionally independent of collectors and snapshot builders so
 future releases can adopt the contract incrementally without mutating v1 data.
@@ -15,7 +15,7 @@ from urllib.parse import unquote, urlsplit
 from zoneinfo import ZoneInfo
 
 
-SCHEMA_VERSION = "2.0.0"
+SCHEMA_VERSION = "2.1.0"
 P1_BLOCK_IDS = (
     "volatility_term_structure",
     "trend_positioning",
@@ -2098,7 +2098,7 @@ class Freshness(StrEnum):
 
 
 class ContractValidationError(ValueError):
-    """Raised when a schema 2.0.0 record violates the canonical contract."""
+    """Raised when a schema 2.1.0 record violates the canonical contract."""
 
 
 def _require_mapping(value: Any, path: str) -> Mapping[str, Any]:
@@ -2195,6 +2195,594 @@ def _validate_point(value: Any, path: str) -> None:
     if point.get("date") is None:
         raise ContractValidationError(f"{path}.date must be an ISO date")
     _validate_nullable_number(point.get("value"), f"{path}.value")
+
+
+def _validate_srf_point(value: Any, path: str) -> None:
+    point = _require_mapping(value, path)
+    _validate_point(point, path)
+    for field in (
+        "accepted_amount_usd_bn",
+        "alert_eligible_accepted_amount_usd_bn",
+        "exercise_accepted_amount_usd_bn",
+    ):
+        amount = point.get(field)
+        if (
+            isinstance(amount, bool)
+            or not isinstance(amount, (int, float))
+            or not math.isfinite(float(amount))
+            or amount < 0
+        ):
+            raise ContractValidationError(f"{path}.{field} must be finite and non-negative")
+    for field in ("has_technical_exercise", "technical_exercise"):
+        if not isinstance(point.get(field), bool):
+            raise ContractValidationError(f"{path}.{field} must be boolean")
+    if point.get("classification_complete") is not True:
+        raise ContractValidationError(f"{path}.classification_complete must be true")
+    accepted = float(point["accepted_amount_usd_bn"])
+    eligible = float(point["alert_eligible_accepted_amount_usd_bn"])
+    exercise = float(point["exercise_accepted_amount_usd_bn"])
+    if point.get("value") != point.get("accepted_amount_usd_bn"):
+        raise ContractValidationError(f"{path}.value must equal accepted amount")
+    if abs((eligible + exercise) - accepted) > 1e-9:
+        raise ContractValidationError(f"{path} eligible and exercise amounts must reconcile")
+    if point["technical_exercise"] and (
+        not point["has_technical_exercise"] or eligible != 0
+    ):
+        raise ContractValidationError(
+            f"{path} technical-only classification does not reconcile"
+        )
+
+
+VIDEO_P0_STATUS = frozenset(
+    {
+        "GREEN",
+        "YELLOW",
+        "RED",
+        "EXTREME_CONTEXT_REQUIRED",
+        "EXTREME_CONFIRMED",
+        "UNAVAILABLE",
+    }
+)
+VIDEO_P0_DATA_STATUS = frozenset(
+    {"CURRENT", "LAST_GOOD", "PARTIAL", "UNAVAILABLE"}
+)
+VIDEO_P0_CONFIDENCE = frozenset({"HIGH", "MEDIUM", "LOW", "UNKNOWN"})
+VIDEO_P0_EVALUATION_STATES = frozenset(
+    {"CURRENT", "LAST_GOOD", "STALE", "MISSING", "DISABLED", "REVIEW_REQUIRED"}
+)
+VIDEO_P0_OPERATORS = frozenset({">", ">=", "<", "<=", "="})
+VIDEO_P0_CLAUSE_IDS = {
+    "yellow": (
+        "sofr_positive_streak",
+        "reserve_below_yellow",
+        "reserve_change_4w_negative",
+        "tga_near_1t",
+    ),
+    "red": (
+        "sofr_spread_above_red",
+        "reserve_below_red",
+        "srf_positive_days",
+    ),
+    "extreme": (
+        "reserve_below_extreme",
+        "reserve_rapid_decline",
+        "no_major_crisis",
+    ),
+}
+VIDEO_P0_SOURCE_URL = "https://www.youtube.com/watch?v=MrnjBdgQPLU"
+VIDEO_P0_SOURCE_TITLE = (
+    "一個月前全網喊AI泡沫要崩，我說鬼故事是洗盤不是葬禮，二波窗口鎖死7月底8月初！"
+    "對賭：納指洗完近一成，道指標普齊創新高，美光單日暴拉18.4%！復盤釘死，"
+    "二波打法五步三開關全套交付"
+)
+
+
+def _require_exact_fields(
+    value: Mapping[str, Any], expected: set[str] | frozenset[str], path: str
+) -> None:
+    actual = set(value)
+    if actual != set(expected):
+        missing = sorted(set(expected) - actual)
+        extra = sorted(actual - set(expected))
+        details = []
+        if missing:
+            details.append("missing " + ", ".join(missing))
+        if extra:
+            details.append("unexpected " + ", ".join(extra))
+        raise ContractValidationError(f"{path} fields are invalid: {'; '.join(details)}")
+
+
+def _validate_formula_scalar(value: Any, path: str) -> None:
+    if value is None or isinstance(value, (str, bool)):
+        return
+    if not isinstance(value, (int, float)) or not math.isfinite(float(value)):
+        raise ContractValidationError(
+            f"{path} must be a finite number, string, boolean, or null"
+        )
+
+
+def _tri_and(values: list[bool | None]) -> bool | None:
+    if False in values:
+        return False
+    return None if None in values else True
+
+
+def _tri_or(values: list[bool | None]) -> bool | None:
+    if True in values:
+        return True
+    return None if None in values else False
+
+
+def _same_scalar(left: Any, right: Any) -> bool:
+    if isinstance(left, bool) or isinstance(right, bool):
+        return left is right
+    if isinstance(left, (int, float)) and isinstance(right, (int, float)):
+        return math.isfinite(float(left)) and math.isfinite(float(right)) and math.isclose(
+            float(left), float(right), abs_tol=1e-9
+        )
+    return left == right
+
+
+def _evaluate_operator(left: Any, operator: str, right: Any) -> bool:
+    if isinstance(left, bool) or isinstance(right, bool):
+        if operator != "=":
+            raise ContractValidationError("boolean formula values only support =")
+        return left is right
+    if operator == "=":
+        return left == right
+    if (
+        not isinstance(left, (int, float))
+        or isinstance(left, bool)
+        or not isinstance(right, (int, float))
+        or isinstance(right, bool)
+    ):
+        raise ContractValidationError("ordered formula comparison requires numeric values")
+    return {
+        ">": left > right,
+        ">=": left >= right,
+        "<": left < right,
+        "<=": left <= right,
+    }[operator]
+
+
+def _validate_video_source(model: Mapping[str, Any]) -> None:
+    source = _require_mapping(model.get("source"), "decision model.source")
+    _require_exact_fields(
+        source, {"title", "display_title", "author", "url", "segments"},
+        "decision model.source",
+    )
+    if (
+        source.get("title") != VIDEO_P0_SOURCE_TITLE
+        or source.get("author") != "一个狠人"
+        or source.get("url") != VIDEO_P0_SOURCE_URL
+        or not isinstance(source.get("display_title"), str)
+        or not source["display_title"].strip()
+    ):
+        raise ContractValidationError("decision model source does not match the audited video")
+    expected_segments = (
+        ("yellow_red", 1380, 1440),
+        ("reserve_exit_1", 1140, 1200),
+        ("reserve_exit_2", 1560, 1620),
+    )
+    segments = source.get("segments")
+    if not isinstance(segments, list) or len(segments) != len(expected_segments):
+        raise ContractValidationError("decision model source.segments must contain three entries")
+    for index, (segment, expected) in enumerate(zip(segments, expected_segments, strict=True)):
+        path = f"decision model.source.segments[{index}]"
+        segment = _require_mapping(segment, path)
+        _require_exact_fields(
+            segment,
+            {"segment_id", "label", "start_seconds", "end_seconds", "timestamp_url"},
+            path,
+        )
+        segment_id, start, end = expected
+        if (
+            segment.get("segment_id") != segment_id
+            or segment.get("start_seconds") != start
+            or segment.get("end_seconds") != end
+            or segment.get("timestamp_url") != f"{VIDEO_P0_SOURCE_URL}&t={start}s"
+            or not isinstance(segment.get("label"), str)
+            or not segment["label"].strip()
+        ):
+            raise ContractValidationError(f"{path} does not match the audited segment")
+
+
+def _formula_metric_expectations(
+    metrics: Mapping[str, Any],
+) -> dict[str, tuple[str | None, str, Any, str | None, Any]]:
+    spread = _require_mapping(metrics.get("sofr_iorb_spread_bp"), "spread metric")
+    reserve = _require_mapping(metrics.get("reserve_balances"), "reserve metric")
+    tga = _require_mapping(metrics.get("tga_daily"), "TGA metric")
+    srf = _require_mapping(metrics.get("srf_accepted"), "SRF metric")
+    reserve_stats = _require_mapping(reserve.get("statistics"), "reserve statistics")
+    spread_stats = _require_mapping(spread.get("statistics"), "spread statistics")
+    srf_stats = _require_mapping(srf.get("statistics"), "SRF statistics")
+    return {
+        "sofr_positive_streak": (
+            "sofr_iorb_spread_bp", ">=", 3, "observations",
+            spread_stats.get("positive_streak"),
+        ),
+        "reserve_below_yellow": (
+            "reserve_balances", "<", 2900, "USD bn", reserve.get("value")
+        ),
+        "reserve_change_4w_negative": (
+            "reserve_balances", "<", 0, "USD bn", reserve_stats.get("change_4w")
+        ),
+        "tga_near_1t": ("tga_daily", ">=", 950, "USD bn", tga.get("value")),
+        "sofr_spread_above_red": (
+            "sofr_iorb_spread_bp", ">", 3, "bp", spread.get("value")
+        ),
+        "reserve_below_red": (
+            "reserve_balances", "<", 2800, "USD bn", reserve.get("value")
+        ),
+        "srf_positive_days": (
+            "srf_accepted", ">=", 2, "days in latest 3 completed days",
+            srf_stats.get("positive_nontechnical_latest_3"),
+        ),
+        "reserve_below_extreme": (
+            "reserve_balances", "<", 2500, "USD bn", reserve.get("value")
+        ),
+        "reserve_rapid_decline": (
+            "reserve_balances", "<=", reserve_stats.get("trailing_5y_p10"),
+            "USD bn", reserve_stats.get("change_4w"),
+        ),
+    }
+
+
+def _validate_formula_clause(
+    clause: Any,
+    *,
+    expected_id: str,
+    expected_order: int,
+    metrics: Mapping[str, Any],
+    context: Mapping[str, Any],
+    disabled: bool,
+) -> Mapping[str, Any]:
+    path = f"decision model clause {expected_id}"
+    clause = _require_mapping(clause, path)
+    _require_exact_fields(
+        clause,
+        {
+            "clause_id", "order", "label", "metric_id", "operator", "threshold",
+            "threshold_unit", "current_value", "current_unit", "met",
+            "observation_date", "released_at", "quality_status", "freshness",
+            "evaluation_state", "basis", "note",
+        },
+        path,
+    )
+    if clause.get("clause_id") != expected_id or clause.get("order") != expected_order:
+        raise ContractValidationError(f"{path} ID/order does not match the stable contract")
+    if not isinstance(clause.get("label"), str) or not clause["label"].strip():
+        raise ContractValidationError(f"{path}.label must be non-empty")
+    if clause.get("operator") not in VIDEO_P0_OPERATORS:
+        raise ContractValidationError(f"{path}.operator is invalid")
+    _validate_formula_scalar(clause.get("threshold"), f"{path}.threshold")
+    _validate_formula_scalar(clause.get("current_value"), f"{path}.current_value")
+    _validate_optional_string(clause.get("threshold_unit"), f"{path}.threshold_unit")
+    _validate_optional_string(clause.get("current_unit"), f"{path}.current_unit")
+    if clause.get("met") is not None and not isinstance(clause.get("met"), bool):
+        raise ContractValidationError(f"{path}.met must be boolean or null")
+    _validate_optional_date(clause.get("observation_date"), f"{path}.observation_date")
+    _validate_optional_utc_datetime(clause.get("released_at"), f"{path}.released_at")
+    _require_enum(Health, clause.get("quality_status"), f"{path}.quality_status")
+    _require_enum(Freshness, clause.get("freshness"), f"{path}.freshness")
+    if clause.get("evaluation_state") not in VIDEO_P0_EVALUATION_STATES:
+        raise ContractValidationError(f"{path}.evaluation_state is invalid")
+    if not isinstance(clause.get("note"), str):
+        raise ContractValidationError(f"{path}.note must be a string")
+    basis = clause.get("basis")
+    if not isinstance(basis, list) or len(basis) != 2:
+        raise ContractValidationError(f"{path}.basis must contain two provenance records")
+    kinds = []
+    for index, item in enumerate(basis):
+        item = _require_mapping(item, f"{path}.basis[{index}]")
+        _require_exact_fields(
+            item, {"kind", "label", "source_segment_id", "note"},
+            f"{path}.basis[{index}]",
+        )
+        if item.get("kind") not in {
+            "VIDEO_SOURCE_RULE", "DASHBOARD_OPERATIONALIZATION", "MANUAL_CONTEXT"
+        } or item.get("kind") in kinds:
+            raise ContractValidationError(f"{path}.basis kind is invalid or duplicated")
+        kinds.append(item["kind"])
+        _require_nonempty_string(item.get("label"), f"{path}.basis[{index}].label")
+        _validate_optional_string(
+            item.get("source_segment_id"), f"{path}.basis[{index}].source_segment_id"
+        )
+        if not isinstance(item.get("note"), str):
+            raise ContractValidationError(f"{path}.basis[{index}].note must be a string")
+    if "VIDEO_SOURCE_RULE" not in kinds or (
+        expected_id == "no_major_crisis"
+        and "MANUAL_CONTEXT" not in kinds
+    ) or (
+        expected_id != "no_major_crisis"
+        and "DASHBOARD_OPERATIONALIZATION" not in kinds
+    ):
+        raise ContractValidationError(f"{path}.basis does not preserve both source layers")
+
+    if disabled:
+        if clause.get("met") is not None or clause.get("evaluation_state") != "DISABLED":
+            raise ContractValidationError(f"{path} must be unknown/disabled")
+        return clause
+
+    if expected_id == "no_major_crisis":
+        expected_current = context.get("status")
+        expected_met = None if expected_current == "UNKNOWN" else expected_current == "NO_MAJOR_CRISIS"
+        if (
+            clause.get("metric_id") is not None
+            or clause.get("operator") != "="
+            or clause.get("threshold") != "NO_MAJOR_CRISIS"
+            or clause.get("threshold_unit") is not None
+            or clause.get("current_value") != expected_current
+            or clause.get("current_unit") is not None
+            or clause.get("met") is not expected_met
+            or clause.get("observation_date") != context.get("as_of")
+            or clause.get("released_at") != context.get("reviewed_at")
+            or clause.get("evaluation_state")
+            != ("REVIEW_REQUIRED" if expected_met is None else "CURRENT")
+        ):
+            raise ContractValidationError(f"{path} does not reconcile with crisis context")
+        return clause
+
+    expected = _formula_metric_expectations(metrics)[expected_id]
+    metric_id, operator, threshold, threshold_unit, current = expected
+    metric = _require_mapping(metrics.get(metric_id), f"metric {metric_id}")
+    quality = _require_mapping(metric.get("quality"), f"metric {metric_id}.quality")
+    if (
+        clause.get("metric_id") != metric_id
+        or clause.get("operator") != operator
+        or not _same_scalar(clause.get("threshold"), threshold)
+        or clause.get("threshold_unit") != threshold_unit
+        or not _same_scalar(clause.get("current_value"), current)
+        or clause.get("observation_date") != metric.get("observation_date")
+        or clause.get("released_at") != metric.get("released_at")
+        or clause.get("quality_status") != quality.get("status")
+        or clause.get("freshness") != quality.get("freshness")
+    ):
+        raise ContractValidationError(f"{path} does not reconcile with its metric/threshold")
+    status = quality.get("status")
+    freshness = quality.get("freshness")
+    usable = current is not None and (
+        (status == "OK" and freshness in {"FRESH", "LATE"})
+        or status == "NOT_RELEASED_YET"
+    )
+    expected_state = (
+        "MISSING" if current is None
+        else "CURRENT" if usable and status == "OK" and freshness == "FRESH"
+        else "LAST_GOOD" if usable
+        else "STALE" if status == "STALE" or freshness == "STALE"
+        else "MISSING"
+    )
+    if expected_id == "srf_positive_days" and usable and (
+        not isinstance(quality.get("sample_size"), int)
+        or quality.get("sample_size") < 3
+    ):
+        expected_state = "MISSING"
+        usable = False
+    if clause.get("evaluation_state") != expected_state:
+        raise ContractValidationError(f"{path}.evaluation_state does not match quality")
+    expected_met = (
+        _evaluate_operator(current, operator, threshold)
+        if usable and threshold is not None
+        else None
+    )
+    if clause.get("met") is not expected_met:
+        raise ContractValidationError(f"{path}.met does not reconcile")
+    return clause
+
+
+def _validate_video_p0_model(
+    value: Any, *, metrics: Mapping[str, Any], generated_at: str
+) -> None:
+    path = "snapshot.decision_models.p0_video_liquidity"
+    model = _require_mapping(value, path)
+    _require_exact_fields(
+        model,
+        {
+            "model_id", "label", "enabled", "status", "data_status", "confidence",
+            "availability_reason", "evaluated_at", "source", "thresholds",
+            "operationalizations", "crisis_context", "formulas", "technical_flags",
+            "notes",
+        },
+        path,
+    )
+    if model.get("model_id") != "henren778_p0_liquidity":
+        raise ContractValidationError(f"{path}.model_id is invalid")
+    _require_nonempty_string(model.get("label"), f"{path}.label")
+    if not isinstance(model.get("enabled"), bool):
+        raise ContractValidationError(f"{path}.enabled must be boolean")
+    if model.get("status") not in VIDEO_P0_STATUS:
+        raise ContractValidationError(f"{path}.status is invalid")
+    if model.get("data_status") not in VIDEO_P0_DATA_STATUS:
+        raise ContractValidationError(f"{path}.data_status is invalid")
+    if model.get("confidence") not in VIDEO_P0_CONFIDENCE:
+        raise ContractValidationError(f"{path}.confidence is invalid")
+    _validate_optional_string(model.get("availability_reason"), f"{path}.availability_reason")
+    _validate_required_utc_datetime(model.get("evaluated_at"), f"{path}.evaluated_at")
+    if model.get("evaluated_at") != generated_at:
+        raise ContractValidationError(f"{path}.evaluated_at must equal snapshot.generated_at")
+    _validate_video_source(model)
+
+    thresholds = _require_mapping(model.get("thresholds"), f"{path}.thresholds")
+    _require_exact_fields(
+        thresholds, {"yellow", "red", "extreme", "tga_source_target_usd_bn"},
+        f"{path}.thresholds",
+    )
+    yellow_thresholds = _require_mapping(thresholds.get("yellow"), f"{path}.thresholds.yellow")
+    red_thresholds = _require_mapping(thresholds.get("red"), f"{path}.thresholds.red")
+    extreme_thresholds = _require_mapping(thresholds.get("extreme"), f"{path}.thresholds.extreme")
+    _require_exact_fields(
+        yellow_thresholds,
+        {"spread_positive_bp", "positive_streak_observations", "reserve_usd_bn", "reserve_change_4w_usd_bn", "tga_operational_floor_usd_bn"},
+        f"{path}.thresholds.yellow",
+    )
+    _require_exact_fields(
+        red_thresholds,
+        {"spread_bp", "reserve_usd_bn", "srf_positive_days_required", "srf_window_completed_days"},
+        f"{path}.thresholds.red",
+    )
+    _require_exact_fields(
+        extreme_thresholds, {"reserve_usd_bn", "decline_percentile"},
+        f"{path}.thresholds.extreme",
+    )
+    expected_thresholds = {
+        "spread_positive_bp": (yellow_thresholds.get("spread_positive_bp"), 0),
+        "positive_streak_observations": (yellow_thresholds.get("positive_streak_observations"), 3),
+        "yellow_reserve": (yellow_thresholds.get("reserve_usd_bn"), 2900),
+        "reserve_change": (yellow_thresholds.get("reserve_change_4w_usd_bn"), 0),
+        "tga_floor": (yellow_thresholds.get("tga_operational_floor_usd_bn"), 950),
+        "red_spread": (red_thresholds.get("spread_bp"), 3),
+        "red_reserve": (red_thresholds.get("reserve_usd_bn"), 2800),
+        "srf_required": (red_thresholds.get("srf_positive_days_required"), 2),
+        "srf_window": (red_thresholds.get("srf_window_completed_days"), 3),
+        "extreme_reserve": (extreme_thresholds.get("reserve_usd_bn"), 2500),
+        "tga_target": (thresholds.get("tga_source_target_usd_bn"), 1000),
+    }
+    for field, (actual, expected) in expected_thresholds.items():
+        if not _same_scalar(actual, expected):
+            raise ContractValidationError(f"{path}.thresholds {field} is invalid")
+    if extreme_thresholds.get("decline_percentile") != "TRAILING_5Y_P10":
+        raise ContractValidationError(f"{path}.thresholds.extreme decline percentile is invalid")
+    operationalizations = _require_mapping(
+        model.get("operationalizations"), f"{path}.operationalizations"
+    )
+    for key, item in operationalizations.items():
+        _require_nonempty_string(key, f"{path}.operationalizations key")
+        if not isinstance(item, (str, bool, int, float)) or (
+            isinstance(item, float) and not math.isfinite(item)
+        ):
+            raise ContractValidationError(f"{path}.operationalizations.{key} is invalid")
+
+    context = _require_mapping(model.get("crisis_context"), f"{path}.crisis_context")
+    _require_exact_fields(
+        context, {"status", "as_of", "reviewed_at", "reviewer", "note"},
+        f"{path}.crisis_context",
+    )
+    if context.get("status") not in {
+        "UNKNOWN", "MAJOR_CRISIS_PRESENT", "NO_MAJOR_CRISIS"
+    }:
+        raise ContractValidationError(f"{path}.crisis_context.status is invalid")
+    if context.get("status") == "UNKNOWN":
+        if any(context.get(field) is not None for field in ("as_of", "reviewed_at", "reviewer", "note")):
+            raise ContractValidationError(f"{path}.crisis_context UNKNOWN metadata must be null")
+    else:
+        _validate_optional_date(context.get("as_of"), f"{path}.crisis_context.as_of")
+        _validate_required_utc_datetime(context.get("reviewed_at"), f"{path}.crisis_context.reviewed_at")
+        _require_nonempty_string(context.get("reviewer"), f"{path}.crisis_context.reviewer")
+        _require_nonempty_string(context.get("note"), f"{path}.crisis_context.note")
+
+    formulas = _require_mapping(model.get("formulas"), f"{path}.formulas")
+    _require_exact_fields(formulas, {"yellow", "red", "extreme"}, f"{path}.formulas")
+    disabled = model.get("enabled") is False
+    validated: dict[str, list[Mapping[str, Any]]] = {}
+    for formula_id, ids in VIDEO_P0_CLAUSE_IDS.items():
+        formula = _require_mapping(formulas.get(formula_id), f"{path}.formulas.{formula_id}")
+        expected_fields = {"expression", "triggered", "clauses"}
+        if formula_id == "red":
+            expected_fields.add("routes")
+        if formula_id == "extreme":
+            expected_fields |= {"candidate", "context_required"}
+        _require_exact_fields(formula, expected_fields, f"{path}.formulas.{formula_id}")
+        _require_nonempty_string(formula.get("expression"), f"{path}.formulas.{formula_id}.expression")
+        if formula.get("triggered") is not None and not isinstance(formula.get("triggered"), bool):
+            raise ContractValidationError(f"{path}.formulas.{formula_id}.triggered is invalid")
+        clauses = formula.get("clauses")
+        if not isinstance(clauses, list) or len(clauses) != len(ids):
+            raise ContractValidationError(f"{path}.formulas.{formula_id}.clauses length is invalid")
+        validated[formula_id] = [
+            _validate_formula_clause(
+                clause,
+                expected_id=clause_id,
+                expected_order=index + 1,
+                metrics=metrics,
+                context=context,
+                disabled=disabled,
+            )
+            for index, (clause, clause_id) in enumerate(zip(clauses, ids, strict=True))
+        ]
+    all_ids = [clause["clause_id"] for clauses in validated.values() for clause in clauses]
+    if len(all_ids) != len(set(all_ids)):
+        raise ContractValidationError(f"{path} contains duplicate clause IDs")
+
+    yellow = formulas["yellow"]
+    red = formulas["red"]
+    extreme = formulas["extreme"]
+    yellow_result = _tri_and([clause["met"] for clause in validated["yellow"]])
+    route_a = _tri_and([clause["met"] for clause in validated["red"][:2]])
+    route_b = validated["red"][2]["met"]
+    red_result = _tri_or([route_a, route_b])
+    candidate = _tri_and([clause["met"] for clause in validated["extreme"][:2]])
+    extreme_result = _tri_and([candidate, validated["extreme"][2]["met"]])
+    routes = red.get("routes")
+    if not isinstance(routes, list) or len(routes) != 2:
+        raise ContractValidationError(f"{path}.formulas.red.routes must contain two routes")
+    expected_route_ids = ("spread_and_reserves", "srf_2_of_3")
+    expected_route_clauses = (validated["red"][:2], validated["red"][2:])
+    for index, route in enumerate(routes):
+        route = _require_mapping(route, f"{path}.formulas.red.routes[{index}]")
+        _require_exact_fields(
+            route, {"route_id", "label", "expression", "triggered", "clauses"},
+            f"{path}.formulas.red.routes[{index}]",
+        )
+        if (
+            route.get("route_id") != expected_route_ids[index]
+            or route.get("triggered") != (route_a if index == 0 else route_b)
+            or route.get("clauses") != expected_route_clauses[index]
+            or not isinstance(route.get("label"), str)
+            or not route["label"].strip()
+            or not isinstance(route.get("expression"), str)
+            or not route["expression"].strip()
+        ):
+            raise ContractValidationError(f"{path}.formulas.red route does not reconcile")
+    if (
+        yellow.get("triggered") != yellow_result
+        or red.get("triggered") != red_result
+        or extreme.get("candidate") != candidate
+        or extreme.get("triggered") != extreme_result
+        or extreme.get("context_required")
+        is not (candidate is True and context.get("status") == "UNKNOWN")
+    ):
+        raise ContractValidationError(f"{path} formula truth values do not reconcile")
+
+    if disabled:
+        if (
+            model.get("status") != "UNAVAILABLE"
+            or model.get("data_status") != "UNAVAILABLE"
+            or model.get("confidence") != "UNKNOWN"
+            or model.get("availability_reason") != "DISABLED"
+            or any(value is not None for value in (yellow_result, red_result, candidate))
+        ):
+            raise ContractValidationError(f"{path} disabled model must fail closed")
+    else:
+        if candidate is None and context.get("status") != "MAJOR_CRISIS_PRESENT":
+            expected_status = "UNAVAILABLE"
+        elif candidate is True and context.get("status") == "UNKNOWN":
+            expected_status = "EXTREME_CONTEXT_REQUIRED"
+        elif candidate is True and context.get("status") == "NO_MAJOR_CRISIS":
+            expected_status = "EXTREME_CONFIRMED"
+        elif red_result is None:
+            expected_status = "UNAVAILABLE"
+        elif red_result is True:
+            expected_status = "RED"
+        elif yellow_result is None:
+            expected_status = "UNAVAILABLE"
+        else:
+            expected_status = "YELLOW" if yellow_result else "GREEN"
+        if model.get("status") != expected_status:
+            raise ContractValidationError(f"{path}.status does not reconcile with formula priority")
+        if expected_status == "UNAVAILABLE":
+            if model.get("data_status") != "UNAVAILABLE" or not model.get("availability_reason"):
+                raise ContractValidationError(f"{path} unavailable model must include a reason")
+        elif model.get("availability_reason") is not None:
+            raise ContractValidationError(f"{path} available model cannot include an availability reason")
+    if not isinstance(model.get("technical_flags"), list) or not all(
+        isinstance(item, str) and item for item in model["technical_flags"]
+    ):
+        raise ContractValidationError(f"{path}.technical_flags must be a string list")
+    if not isinstance(model.get("notes"), list) or not all(
+        isinstance(item, str) and item for item in model["notes"]
+    ):
+        raise ContractValidationError(f"{path}.notes must be a non-empty string list")
 
 
 def validate_metric_record(metric: Mapping[str, Any]) -> None:
@@ -2347,6 +2935,8 @@ def validate_metric_record(metric: Mapping[str, Any]) -> None:
         raise ContractValidationError("metric.short_series must be a list")
     for index, point in enumerate(short_series):
         _validate_point(point, f"metric.short_series[{index}]")
+        if metric.get("metric_id") == "srf_accepted":
+            _validate_srf_point(point, f"metric.short_series[{index}]")
 
 
 def _validate_evidence_block(value: Any, path: str) -> None:
@@ -2419,7 +3009,7 @@ def _validate_collector_source(value: Any, path: str) -> None:
 
 
 def validate_snapshot(snapshot: Mapping[str, Any]) -> None:
-    """Validate the schema 2.0.0 snapshot envelope and all metric records."""
+    """Validate the schema 2.1.0 snapshot envelope and all metric records."""
 
     snapshot = _require_mapping(snapshot, "snapshot")
     if snapshot.get("schema_version") != SCHEMA_VERSION:
@@ -2457,7 +3047,6 @@ def validate_snapshot(snapshot: Mapping[str, Any]) -> None:
             raise ContractValidationError(
                 f"snapshot metric key {metric_id!r} does not match metric_id"
             )
-
     market_switch = switches["market_ignition"]
     if market_switch.get("mode") != "EVIDENCE_ONLY":
         raise ContractValidationError("market_ignition.mode must be EVIDENCE_ONLY")
@@ -2911,6 +3500,17 @@ def validate_snapshot(snapshot: Mapping[str, Any]) -> None:
         _validate_collector_source(source, f"snapshot.sources.{source_id}")
     _validate_p2_collector_sources(snapshot, metrics, sources)
     _validate_p3_snapshot(snapshot, metrics, sources)
+    decision_models = _require_mapping(
+        snapshot.get("decision_models"), "snapshot.decision_models"
+    )
+    _require_exact_fields(
+        decision_models, {"p0_video_liquidity"}, "snapshot.decision_models"
+    )
+    _validate_video_p0_model(
+        decision_models.get("p0_video_liquidity"),
+        metrics=metrics,
+        generated_at=snapshot["generated_at"],
+    )
 
     source_health = _require_mapping(
         snapshot.get("source_health"), "snapshot.source_health"
@@ -3065,6 +3665,8 @@ def validate_series_file(series: Mapping[str, Any]) -> None:
     previous: str | None = None
     for index, point in enumerate(observations):
         _validate_point(point, f"series.observations[{index}]")
+        if series.get("metric_id") == "srf_accepted":
+            _validate_srf_point(point, f"series.observations[{index}]")
         day = point["date"]
         if previous is not None and day <= previous:
             raise ContractValidationError(
@@ -3296,10 +3898,24 @@ def validate_publication(
                 )
         if metric_id == "nonfinancial_equities_gdp_proxy":
             _validate_p2_macro_artifacts(snapshot_metric, series)
-        normalized_observations = [
-            {"date": point["date"], "value": point["value"]}
-            for point in series["observations"]
-        ]
+        normalized_observations = []
+        for point in series["observations"]:
+            normalized = {"date": point["date"], "value": point["value"]}
+            if metric_id == "srf_accepted":
+                normalized.update(
+                    {
+                        field: point[field]
+                        for field in (
+                            "accepted_amount_usd_bn",
+                            "alert_eligible_accepted_amount_usd_bn",
+                            "exercise_accepted_amount_usd_bn",
+                            "has_technical_exercise",
+                            "technical_exercise",
+                            "classification_complete",
+                        )
+                    }
+                )
+            normalized_observations.append(normalized)
         expected_short_series = normalized_observations[-22:]
         if snapshot_metric.get("short_series") != expected_short_series:
             raise ContractValidationError(
