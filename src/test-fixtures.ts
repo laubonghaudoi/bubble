@@ -11,7 +11,7 @@ import {
   SCHEMA_VERSION,
   type SeriesFile,
 } from './dashboard';
-import type { Availability, CatalogMetric, FormulaClause, FundamentalCompanyDetail, Layer, ManualEvidenceRecord, Metric, Phase, Snapshot, VideoP0Model } from './types';
+import type { Availability, CatalogMetric, FormulaClause, FormulaNotationItem, FundamentalCompanyDetail, Layer, ManualEvidenceRecord, Metric, Phase, Snapshot, VideoP0Model } from './types';
 
 const NOW = '2026-08-12T17:32:49Z';
 
@@ -55,6 +55,38 @@ function videoClause(
     ],
     note: '',
   };
+}
+
+function videoNotation(): FormulaNotationItem[] {
+  const mathematical = (key: string, symbol_tex: string, label: string, definition: string, unit: string | null): FormulaNotationItem => ({
+    key, symbol_tex, label, definition, unit, source_kind: 'MATHEMATICAL_NOTATION', note: '共用數學符號。',
+  });
+  return [
+    mathematical('evaluation_time', 't', '評估時間', '今次模型使用最新可用資料組合嘅評估時間。', null),
+    mathematical('spread', 's_t', 'SOFR−IORB 利差', '最新 SOFR 減 IORB 利差。', 'bp'),
+    mathematical('positive_streak', 'n_t^{+}', '連續正值', 'SOFR−IORB 連續大於零嘅有效觀察值數量。', 'observations'),
+    mathematical('reserves', 'r_t', '銀行準備金', '最新 Reserve Balances。', 'USD trillion'),
+    mathematical('reserve_change_4w', '\\Delta_{4w}r_t', '準備金四星期變化', '最新準備金減四星期前準備金。', 'USD trillion'),
+    mathematical('tga', 'g_t', 'TGA', '最新 Treasury General Account balance。', 'USD trillion'),
+    mathematical('srf_positive_days', 'u_t', 'SRF 正使用日數', '最近三個已完成 operation days 入面非技術性正使用日數。', '0–3 days'),
+    mathematical('reserve_decline_p10', 'q_{0.10,t}^{(5y)}', '五年第十百分位', '過去五年四星期準備金變化嘅第十百分位。', 'USD trillion'),
+    mathematical('crisis_context', 'c_t', '危機背景', '重大危機或特殊政策背景；一代表存在，零代表不存在。', '0 / 1 / unknown'),
+    mathematical('logical_and', '\\land', '而且', '全部條件都要成立。', null),
+    mathematical('logical_or', '\\lor', '或者', '任何一條路徑成立即可。', null),
+    mathematical('logical_iff', '\\iff', '當且僅當', '左邊狀態等價於右邊條件。', null),
+    mathematical('extreme_candidate', 'E_t^{\\mathrm{candidate}}', '極端候選', '數值條件成立，但背景尚未確認。', null),
+    mathematical('extreme_confirmed', 'E_t^{\\mathrm{confirmed}}', '極端確認', '數值同人工背景條件全部成立。', null),
+    { key: 'source_spread_red', symbol_tex: 's_t>3\\,\\mathrm{bp}', label: '+3 bp', definition: '影片提出嘅 Red 利差門檻。', unit: 'bp', source_kind: 'VIDEO_SOURCE_RULE', note: '影片來源規則。' },
+    { key: 'source_reserves_yellow', symbol_tex: 'r_t<2.9', label: '2.9T', definition: '影片提出嘅 Yellow 準備金門檻。', unit: 'USD trillion', source_kind: 'VIDEO_SOURCE_RULE', note: '影片來源規則。' },
+    { key: 'source_reserves_red', symbol_tex: 'r_t<2.8', label: '2.8T', definition: '影片提出嘅 Red 準備金門檻。', unit: 'USD trillion', source_kind: 'VIDEO_SOURCE_RULE', note: '影片來源規則。' },
+    { key: 'source_reserves_extreme', symbol_tex: 'r_t<2.5', label: '2.5T', definition: '影片提出嘅 Extreme 準備金門檻。', unit: 'USD trillion', source_kind: 'VIDEO_SOURCE_RULE', note: '影片來源規則。' },
+    { key: 'source_tga_target', symbol_tex: 'g_t\\to1', label: 'TGA 向 1T', definition: '影片描述 TGA 向一萬億美元靠攏。', unit: 'USD trillion', source_kind: 'VIDEO_SOURCE_RULE', note: '方向性來源規則。' },
+    { key: 'op_positive_streak', symbol_tex: 'n_t^+\\ge3', label: '連續三次', definition: '將連續轉正操作化為至少三個有效觀察值。', unit: 'observations', source_kind: 'DASHBOARD_OPERATIONALIZATION', note: '並非影片逐字門檻。' },
+    { key: 'op_tga_floor', symbol_tex: 'g_t\\ge0.95', label: 'TGA 0.95T', definition: '將向 1T 靠攏操作化為至少 0.95T。', unit: 'USD trillion', source_kind: 'DASHBOARD_OPERATIONALIZATION', note: '並非影片逐字門檻。' },
+    { key: 'op_srf_2_of_3', symbol_tex: 'u_t\\ge2', label: 'SRF 2-of-3', definition: '最近三個完成日最少兩日有非技術性正使用。', unit: 'days', source_kind: 'DASHBOARD_OPERATIONALIZATION', note: '用嚟降低單日噪音。' },
+    { key: 'op_rapid_decline', symbol_tex: '\\Delta_{4w}r_t\\le q_{0.10,t}^{(5y)}', label: '五年 p10', definition: '將快速下跌操作化為四星期變化落入五年最差 10%。', unit: 'USD trillion', source_kind: 'DASHBOARD_OPERATIONALIZATION', note: '統計操作化。' },
+    { key: 'manual_crisis_context', symbol_tex: 'c_t=0', label: '危機背景覆核', definition: '人工確認當時並非重大危機或特殊政策扭曲。', unit: null, source_kind: 'MANUAL_CONTEXT', note: '不以新聞或 API 自動推斷。' },
+  ];
 }
 
 export function makeVideoP0Model(metrics: Record<string, Metric>): VideoP0Model {
@@ -110,16 +142,30 @@ export function makeVideoP0Model(metrics: Record<string, Metric>): VideoP0Model 
       srf_aggregate_same_day_operations: true,
     },
     crisis_context: { status: 'UNKNOWN', as_of: null, reviewed_at: null, reviewer: null, note: null },
+    notation: videoNotation(),
     formulas: {
-      yellow: { expression: 'PERSIST(S>0) ∧ R<2.9T ∧ ΔR4W<0 ∧ TGA≥0.95T', triggered: false, clauses: yellowClauses },
+      yellow: {
+        expression: 'PERSIST(S>0) ∧ R<2.9T ∧ ΔR4W<0 ∧ TGA≥0.95T',
+        display_tex: '\\operatorname{YELLOW}_{t} \\iff (n_t^+ \\ge 3) \\land (r_t < 2.9) \\land (\\Delta_{4w}r_t < 0) \\land (g_t \\ge 0.95)',
+        plain_language: 'SOFR−IORB 已連續至少三個有效觀察值為正，而且準備金跌穿 2.9T、四星期方向繼續向下，同時 TGA 已升至至少 0.95T，四項必須同時成立。',
+        triggered: false, clauses: yellowClauses,
+      },
       red: {
-        expression: '[(S>+3bp) ∧ R<2.8T] ∨ SRF↑', triggered: false, clauses: redClauses,
+        expression: '[(S>+3bp) ∧ R<2.8T] ∨ SRF↑',
+        display_tex: '\\operatorname{RED}_{t} \\iff \\underbrace{(s_t > 3) \\land (r_t < 2.8)}_{\\text{Route A}} \\lor \\underbrace{(u_t \\ge 2)}_{\\text{Route B}}',
+        plain_language: '紅色警報有兩條獨立路徑。Route A 要 SOFR−IORB 高過 +3 bp，而且準備金跌穿 2.8T；Route B 則係最近三個已完成 operation days 入面，至少兩日出現非技術性 SRF 正使用。任何一條路徑成立即可。',
+        triggered: false, clauses: redClauses,
         routes: [
           { route_id: 'spread_and_reserves', label: 'Spread and reserves', expression: '(S>+3bp) ∧ R<2.8T', triggered: false, clauses: redClauses.slice(0, 2) },
           { route_id: 'srf_2_of_3', label: 'SRF 2-of-3', expression: 'SRF↑', triggered: false, clauses: redClauses.slice(2) },
         ],
       },
-      extreme: { expression: 'R<2.5T ∧ RAPID_DECLINE ∧ NO_MAJOR_CRISIS', triggered: false, candidate: false, context_required: false, clauses: extremeClauses },
+      extreme: {
+        expression: 'R<2.5T ∧ RAPID_DECLINE ∧ NO_MAJOR_CRISIS',
+        display_tex: '\\begin{aligned}E_t^{\\mathrm{candidate}} &\\iff (r_t < 2.5) \\land (\\Delta_{4w}r_t \\le q_{0.10,t}^{(5y)}) \\\\ E_t^{\\mathrm{confirmed}} &\\iff E_t^{\\mathrm{candidate}} \\land (c_t = 0)\\end{aligned}',
+        plain_language: '數值候選：準備金低過 2.5T，而且四星期跌幅落入過去五年最差 10% 區域。\n完整確認：再人工確認當時並非重大危機或特殊政策扭曲。',
+        triggered: false, candidate: false, context_required: false, clauses: extremeClauses,
+      },
     },
     technical_flags: [],
     notes: ['This is a liquidity-source model, not a structural top or trading recommendation.'],

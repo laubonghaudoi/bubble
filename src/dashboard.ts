@@ -37,7 +37,7 @@ export interface RouteTarget {
 export type RangeKey = '1M' | '8W' | '12W' | '3M' | '1Y' | 'MAX';
 
 export interface SeriesFile {
-  schema_version: '2.1.0';
+  schema_version: '2.2.0';
   metric_id: string;
   label: string;
   unit: string;
@@ -74,7 +74,7 @@ export interface ChangePresentation {
   value: number | null;
 }
 
-export const SCHEMA_VERSION = '2.1.0' as const;
+export const SCHEMA_VERSION = '2.2.0' as const;
 
 export const ROUTES = [
   { id: 'overview', href: '#/overview', label: '總覽' },
@@ -1062,6 +1062,14 @@ const VIDEO_DATA_STATUSES = new Set(['CURRENT', 'LAST_GOOD', 'PARTIAL', 'UNAVAIL
 const VIDEO_CONFIDENCE = new Set(['HIGH', 'MEDIUM', 'LOW', 'UNKNOWN']);
 const FORMULA_STATES = new Set(['CURRENT', 'LAST_GOOD', 'STALE', 'MISSING', 'DISABLED', 'REVIEW_REQUIRED']);
 const FORMULA_BASIS_KINDS = new Set(['VIDEO_SOURCE_RULE', 'DASHBOARD_OPERATIONALIZATION', 'MANUAL_CONTEXT']);
+const FORMULA_NOTATION_KINDS = new Set([...FORMULA_BASIS_KINDS, 'MATHEMATICAL_NOTATION']);
+const FORMULA_NOTATION_KEYS = [
+  'evaluation_time', 'spread', 'positive_streak', 'reserves', 'reserve_change_4w', 'tga',
+  'srf_positive_days', 'reserve_decline_p10', 'crisis_context', 'logical_and', 'logical_or',
+  'logical_iff', 'extreme_candidate', 'extreme_confirmed', 'source_spread_red',
+  'source_reserves_yellow', 'source_reserves_red', 'source_reserves_extreme', 'source_tga_target',
+  'op_positive_streak', 'op_tga_floor', 'op_srf_2_of_3', 'op_rapid_decline', 'manual_crisis_context',
+] as const;
 const FORMULA_OPERATORS = new Set(['>', '>=', '<', '<=', '=']);
 
 function isFormulaValue(value: unknown): boolean {
@@ -1080,6 +1088,18 @@ function formulaOr(values: readonly (boolean | null)[]): boolean | null {
 
 function sameFormulaValue(left: unknown, right: unknown): boolean {
   return left === right || (isFiniteNumber(left) && isFiniteNumber(right) && Math.abs(left - right) <= 1e-9);
+}
+
+function sameContractValue(left: unknown, right: unknown): boolean {
+  if (left === right) return true;
+  if (Array.isArray(left) && Array.isArray(right)) {
+    return left.length === right.length && left.every((item, index) => sameContractValue(item, right[index]));
+  }
+  if (!isRecord(left) || !isRecord(right)) return false;
+  const leftKeys = Object.keys(left).sort();
+  const rightKeys = Object.keys(right).sort();
+  return leftKeys.length === rightKeys.length && leftKeys.every((key, index) =>
+    key === rightKeys[index] && sameContractValue(left[key], right[key]));
 }
 
 function isVideoSourceUrl(value: unknown, startSeconds?: number): value is string {
@@ -1122,10 +1142,22 @@ function isFormulaClause(value: unknown): boolean {
     (value.metric_id === null ? kinds.has('MANUAL_CONTEXT') : kinds.has('DASHBOARD_OPERATIONALIZATION'));
 }
 
+function isFormulaNotation(value: unknown): boolean {
+  return isRecord(value) && hasExactFields(value, [
+    'key', 'symbol_tex', 'label', 'definition', 'unit', 'source_kind', 'note',
+  ]) && typeof value.key === 'string' && value.key.trim().length > 0 &&
+    typeof value.symbol_tex === 'string' && value.symbol_tex.trim().length > 0 &&
+    typeof value.label === 'string' && value.label.trim().length > 0 &&
+    typeof value.definition === 'string' && value.definition.trim().length > 0 &&
+    isNullableString(value.unit) && (value.unit === null || value.unit.trim().length > 0) &&
+    typeof value.source_kind === 'string' && FORMULA_NOTATION_KINDS.has(value.source_kind) &&
+    typeof value.note === 'string' && value.note.trim().length > 0;
+}
+
 function isVideoP0Model(value: unknown, metrics: Record<string, unknown>, generatedAt: string): value is VideoP0Model {
   if (!isRecord(value) || !hasExactFields(value, [
     'model_id', 'label', 'enabled', 'status', 'data_status', 'confidence', 'availability_reason',
-    'evaluated_at', 'source', 'thresholds', 'operationalizations', 'crisis_context',
+    'evaluated_at', 'source', 'thresholds', 'operationalizations', 'crisis_context', 'notation',
     'formulas', 'technical_flags', 'notes',
   ]) || value.model_id !== 'henren778_p0_liquidity' || typeof value.label !== 'string' ||
     typeof value.enabled !== 'boolean' || typeof value.status !== 'string' || !VIDEO_STATUSES.has(value.status) ||
@@ -1133,7 +1165,14 @@ function isVideoP0Model(value: unknown, metrics: Record<string, unknown>, genera
     typeof value.confidence !== 'string' || !VIDEO_CONFIDENCE.has(value.confidence) ||
     !isNullableString(value.availability_reason) || !isIsoTimestamp(value.evaluated_at) || value.evaluated_at > generatedAt ||
     !Array.isArray(value.technical_flags) || !value.technical_flags.every((item) => typeof item === 'string' && item.length > 0) ||
-    !Array.isArray(value.notes) || !value.notes.every((item) => typeof item === 'string' && item.length > 0)) return false;
+    !Array.isArray(value.notes) || !value.notes.every((item) => typeof item === 'string' && item.length > 0) ||
+    !Array.isArray(value.notation) || value.notation.length !== FORMULA_NOTATION_KEYS.length ||
+    !value.notation.every((item, index) => isFormulaNotation(item) &&
+      (item as Record<string, unknown>).key === FORMULA_NOTATION_KEYS[index] &&
+      (item as Record<string, unknown>).source_kind === (index < 14 ? 'MATHEMATICAL_NOTATION'
+        : index < 19 ? 'VIDEO_SOURCE_RULE'
+          : index < 23 ? 'DASHBOARD_OPERATIONALIZATION'
+            : 'MANUAL_CONTEXT'))) return false;
 
   const source = value.source;
   if (!isRecord(source) || !hasExactFields(source, ['title', 'display_title', 'author', 'url', 'segments']) ||
@@ -1178,10 +1217,12 @@ function isVideoP0Model(value: unknown, metrics: Record<string, unknown>, genera
   const yellow = formulas.yellow;
   const red = formulas.red;
   const extreme = formulas.extreme;
-  if (!isRecord(yellow) || !hasExactFields(yellow, ['expression', 'triggered', 'clauses']) ||
-    !isRecord(red) || !hasExactFields(red, ['expression', 'triggered', 'clauses', 'routes']) ||
-    !isRecord(extreme) || !hasExactFields(extreme, ['expression', 'triggered', 'clauses', 'candidate', 'context_required']) ||
-    typeof yellow.expression !== 'string' || typeof red.expression !== 'string' || typeof extreme.expression !== 'string' ||
+  if (!isRecord(yellow) || !hasExactFields(yellow, ['expression', 'display_tex', 'plain_language', 'triggered', 'clauses']) ||
+    !isRecord(red) || !hasExactFields(red, ['expression', 'display_tex', 'plain_language', 'triggered', 'clauses', 'routes']) ||
+    !isRecord(extreme) || !hasExactFields(extreme, ['expression', 'display_tex', 'plain_language', 'triggered', 'clauses', 'candidate', 'context_required']) ||
+    typeof yellow.expression !== 'string' || !yellow.expression.trim() || typeof yellow.display_tex !== 'string' || !yellow.display_tex.trim() || typeof yellow.plain_language !== 'string' || !yellow.plain_language.trim() ||
+    typeof red.expression !== 'string' || !red.expression.trim() || typeof red.display_tex !== 'string' || !red.display_tex.trim() || typeof red.plain_language !== 'string' || !red.plain_language.trim() ||
+    typeof extreme.expression !== 'string' || !extreme.expression.trim() || typeof extreme.display_tex !== 'string' || !extreme.display_tex.trim() || typeof extreme.plain_language !== 'string' || !extreme.plain_language.trim() ||
     !(yellow.triggered === null || typeof yellow.triggered === 'boolean') ||
     !(red.triggered === null || typeof red.triggered === 'boolean') ||
     !(extreme.triggered === null || typeof extreme.triggered === 'boolean') ||
@@ -1256,7 +1297,15 @@ function isVideoP0Model(value: unknown, metrics: Record<string, unknown>, genera
   const extremeResult = formulaAnd([extremeCandidate, (extreme.clauses as Array<Record<string, unknown>>)[2].met as boolean | null]);
   if (yellow.triggered !== yellowResult || red.triggered !== redResult || extreme.candidate !== extremeCandidate ||
     extreme.triggered !== extremeResult || extreme.context_required !== (extremeCandidate === true && context.status === 'UNKNOWN') ||
-    red.routes.length !== 2 || !red.routes.every((route) => isRecord(route)) ||
+    red.routes.length !== 2 || !red.routes.every((route) => isRecord(route) &&
+      hasExactFields(route, ['route_id', 'label', 'expression', 'triggered', 'clauses']) &&
+      typeof route.route_id === 'string' && route.route_id.length > 0 && typeof route.label === 'string' && route.label.trim().length > 0 &&
+      typeof route.expression === 'string' && route.expression.trim().length > 0 &&
+      (route.triggered === null || typeof route.triggered === 'boolean') && Array.isArray(route.clauses)) ||
+    (red.routes[0] as Record<string, unknown>).route_id !== 'spread_and_reserves' ||
+    (red.routes[1] as Record<string, unknown>).route_id !== 'srf_2_of_3' ||
+    !sameContractValue((red.routes[0] as Record<string, unknown>).clauses, (red.clauses as unknown[]).slice(0, 2)) ||
+    !sameContractValue((red.routes[1] as Record<string, unknown>).clauses, (red.clauses as unknown[]).slice(2)) ||
     (red.routes[0] as Record<string, unknown>).triggered !== spreadRoute ||
     (red.routes[1] as Record<string, unknown>).triggered !== srfRoute) return false;
 

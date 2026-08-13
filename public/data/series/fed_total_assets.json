@@ -1268,7 +1268,7 @@
     "status": "NOT_RELEASED_YET"
   },
   "released_at": null,
-  "schema_version": "2.1.0",
+  "schema_version": "2.2.0",
   "source": {
     "name": "Federal Reserve Economic Data API, reviewed government-origin series",
     "retrieved_at": "2026-08-13T14:29:22.922601Z",

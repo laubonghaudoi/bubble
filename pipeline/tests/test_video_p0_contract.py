@@ -1,4 +1,4 @@
-"""Adversarial publication checks for the schema 2.1 video P0 model."""
+"""Adversarial publication checks for the schema 2.2 video P0 model."""
 
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ def _clause(snapshot, formula: str, clause_id: str):
 def test_generated_model_is_independent_from_audited_overall_and_alerts(publication):
     snapshot = publication.snapshot
     model = _model(snapshot)
-    assert snapshot["schema_version"] == "2.1.0"
+    assert snapshot["schema_version"] == "2.2.0"
     assert model["model_id"] == "henren778_p0_liquidity"
     assert snapshot["overall_assessment"] == snapshot["switches"]["liquidity_fuel"]["assessment"]
     assert publication.alerts["alerts"] == snapshot["alerts"]
@@ -93,6 +93,48 @@ def test_generated_model_is_independent_from_audited_overall_and_alerts(publicat
             ),
             "ID/order",
         ),
+        (
+            lambda snapshot: _model(snapshot)["formulas"]["yellow"].pop(
+                "display_tex"
+            ),
+            "display_tex",
+        ),
+        (
+            lambda snapshot: _model(snapshot)["formulas"]["yellow"].update(
+                display_tex=r"\operatorname{TAMPERED}"
+            ),
+            "presentation does not reconcile",
+        ),
+        (
+            lambda snapshot: _model(snapshot)["formulas"]["red"].update(
+                plain_language="Tampered but non-empty."
+            ),
+            "presentation does not reconcile",
+        ),
+        (
+            lambda snapshot: _model(snapshot)["notation"][1].update(
+                key=_model(snapshot)["notation"][0]["key"]
+            ),
+            "duplicate keys",
+        ),
+        (
+            lambda snapshot: _model(snapshot)["notation"][0].update(
+                source_kind="VIDEO_SOURCE_RULE"
+            ),
+            "source_kind",
+        ),
+        (
+            lambda snapshot: _model(snapshot)["notation"][0].update(
+                definition="Tampered but non-empty."
+            ),
+            "notation content does not reconcile",
+        ),
+        (
+            lambda snapshot: _model(snapshot)["formulas"]["red"]["routes"][0].update(
+                display_tex="A"
+            ),
+            "unexpected display_tex",
+        ),
     ],
 )
 def test_snapshot_model_tampering_fails_closed(publication, mutation, message):
@@ -102,10 +144,10 @@ def test_snapshot_model_tampering_fails_closed(publication, mutation, message):
         validate_snapshot(snapshot)
 
 
-def test_schema_2_0_snapshot_is_hard_cut(publication):
+def test_schema_2_1_snapshot_is_hard_cut(publication):
     snapshot = deepcopy(publication.snapshot)
-    snapshot["schema_version"] = "2.0.0"
-    with pytest.raises(ContractValidationError, match="2.1.0"):
+    snapshot["schema_version"] = "2.1.0"
+    with pytest.raises(ContractValidationError, match="2.2.0"):
         validate_snapshot(snapshot)
 
 

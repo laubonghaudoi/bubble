@@ -1,4 +1,4 @@
-"""Phased orchestration for the schema 2.1.0 static publication.
+"""Phased orchestration for the schema 2.2.0 static publication.
 
 The module deliberately keeps collection, transformation, contract validation,
 staging, and promotion as separate operations.  GitHub Actions can therefore

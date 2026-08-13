@@ -862,7 +862,7 @@
     "status": "OK"
   },
   "released_at": "2026-07-30T15:07:52Z",
-  "schema_version": "2.1.0",
+  "schema_version": "2.2.0",
   "source": {
     "name": "Federal Reserve Economic Data API, reviewed government-origin series",
     "retrieved_at": "2026-08-13T14:29:22.922601Z",

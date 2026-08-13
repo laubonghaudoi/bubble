@@ -1,4 +1,4 @@
-"""Command-line entry point for staged schema 2.1.0 publication."""
+"""Command-line entry point for staged schema 2.2.0 publication."""
 
 from __future__ import annotations
 

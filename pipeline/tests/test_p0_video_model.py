@@ -7,6 +7,7 @@ from dataclasses import replace
 import pytest
 
 from pipeline.config import ConfigValidationError, load_config_bundle, validate_config_bundle
+from pipeline.contracts import VIDEO_P0_NOTATION_KEYS
 from pipeline.rules.p0_video_model import evaluate_video_p0_model
 
 
@@ -123,7 +124,7 @@ def test_config_loads_exact_audited_video_model_and_reserve_zones():
     model = bundle.alert_rules["alerts"]["video_p0_model"]
     source = model["source"]
 
-    assert bundle.alert_rules["schema_version"] == "2.1.0"
+    assert bundle.alert_rules["schema_version"] == "2.2.0"
     assert model["yellow"] == {
         "spread_positive_bp": 0,
         "positive_streak_observations": 3,
@@ -261,6 +262,7 @@ def test_green_model_is_json_serializable_and_every_clause_has_dual_provenance()
         "thresholds",
         "operationalizations",
         "crisis_context",
+        "notation",
         "formulas",
         "technical_flags",
         "notes",
@@ -276,6 +278,85 @@ def test_green_model_is_json_serializable_and_every_clause_has_dual_provenance()
                 if item["metric_id"] is None
                 else "DASHBOARD_OPERATIONALIZATION" in kinds
             )
+
+
+def test_formula_presentation_has_three_top_level_tex_blocks_and_complete_notation():
+    model = evaluate()
+
+    assert tuple(item["key"] for item in model["notation"]) == VIDEO_P0_NOTATION_KEYS
+    assert len({item["key"] for item in model["notation"]}) == 24
+    assert {
+        item["source_kind"] for item in model["notation"]
+    } == {
+        "MATHEMATICAL_NOTATION",
+        "VIDEO_SOURCE_RULE",
+        "DASHBOARD_OPERATIONALIZATION",
+        "MANUAL_CONTEXT",
+    }
+    for formula_id in ("yellow", "red", "extreme"):
+        formula = model["formulas"][formula_id]
+        assert formula["display_tex"].startswith(r"\begin{aligned}")
+        assert formula["display_tex"].endswith(r"\end{aligned}")
+        assert formula["plain_language"].strip()
+    assert "數值候選：" in model["formulas"]["extreme"]["plain_language"]
+    assert "\n完整確認：" in model["formulas"]["extreme"]["plain_language"]
+    assert set(model["formulas"]["red"]["routes"][0]) == {
+        "route_id", "label", "expression", "triggered", "clauses"
+    }
+    assert set(model["formulas"]["red"]["routes"][1]) == {
+        "route_id", "label", "expression", "triggered", "clauses"
+    }
+
+
+def test_config_threshold_mutation_propagates_to_clauses_text_tex_and_notation():
+    config = video_config()
+    config["yellow"].update(
+        positive_streak_observations=4,
+        reserve_below_usd_tn=2.85,
+        tga_near_1t_floor_usd_tn=0.93,
+        tga_source_target_usd_tn=0.99,
+    )
+    config["red"].update(
+        sofr_iorb_bp=4.25,
+        reserve_below_usd_tn=2.75,
+        srf_window_completed_operation_days=4,
+        srf_positive_days_latest_3=3,
+    )
+    config["extreme"]["reserve_below_usd_tn"] = 2.45
+    model = evaluate(
+        config=config,
+        srf_recent_operation_days=[srf_day("2026-08-06"), *zero_srf()],
+    )
+    formulas = model["formulas"]
+    notation = {item["key"]: item for item in model["notation"]}
+
+    assert clause(model, "yellow", "sofr_positive_streak")["threshold"] == 4
+    assert clause(model, "yellow", "reserve_below_yellow")["threshold"] == 2850
+    assert clause(model, "yellow", "tga_near_1t")["threshold"] == 930
+    assert clause(model, "red", "sofr_spread_above_red")["threshold"] == 4.25
+    assert clause(model, "red", "reserve_below_red")["threshold"] == 2750
+    assert clause(model, "red", "srf_positive_days")["threshold"] == 3
+    assert clause(model, "extreme", "reserve_below_extreme")["threshold"] == 2450
+
+    assert "POSITIVE STREAK ≥ 4" in formulas["yellow"]["expression"]
+    assert "RESERVES < 2.85T" in formulas["yellow"]["expression"]
+    assert r"n_t^{+}\ge 4" in formulas["yellow"]["display_tex"]
+    assert r"r_t<2.85" in formulas["yellow"]["display_tex"]
+    assert r"g_t\ge 0.93" in formulas["yellow"]["display_tex"]
+    assert "+4.25 bp" in formulas["red"]["plain_language"]
+    assert r"s_t>4.25" in formulas["red"]["display_tex"]
+    assert r"r_t<2.75" in formulas["red"]["display_tex"]
+    assert r"u_t\ge 3" in formulas["red"]["display_tex"]
+    assert "LATEST 4 DAYS" in formulas["red"]["routes"][1]["expression"]
+    assert r"r_t<2.45" in formulas["extreme"]["display_tex"]
+
+    assert notation["source_reserves_yellow"]["symbol_tex"] == "r_t<2.85"
+    assert notation["source_spread_red"]["symbol_tex"] == r"s_t>4.25\,\mathrm{bp}"
+    assert notation["source_tga_target"]["symbol_tex"] == r"g_t\to 0.99"
+    assert notation["op_positive_streak"]["symbol_tex"] == r"n_t^{+}\ge 4"
+    assert notation["op_tga_floor"]["symbol_tex"] == r"g_t\ge 0.93"
+    assert notation["op_srf_2_of_3"]["symbol_tex"] == r"u_t\ge 3"
+    assert "最近 4 個" in notation["op_srf_2_of_3"]["definition"]
 
 
 def test_yellow_formula_and_strict_boundaries():

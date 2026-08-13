@@ -3976,7 +3976,7 @@
     "status": "OK"
   },
   "released_at": "2026-08-12T17:15:30Z",
-  "schema_version": "2.1.0",
+  "schema_version": "2.2.0",
   "source": {
     "name": "Federal Reserve Bank of New York Markets Data API",
     "retrieved_at": "2026-08-13T14:29:22.922601Z",

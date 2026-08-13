@@ -1,4 +1,4 @@
-"""Schema 2.1.0 enums and validation helpers for the data-pipeline contract.
+"""Schema 2.2.0 enums and validation helpers for the data-pipeline contract.
 
 This module is intentionally independent of collectors and snapshot builders so
 future releases can adopt the contract incrementally without mutating v1 data.
@@ -15,7 +15,7 @@ from urllib.parse import unquote, urlsplit
 from zoneinfo import ZoneInfo
 
 
-SCHEMA_VERSION = "2.1.0"
+SCHEMA_VERSION = "2.2.0"
 P1_BLOCK_IDS = (
     "volatility_term_structure",
     "trend_positioning",
@@ -2098,7 +2098,7 @@ class Freshness(StrEnum):
 
 
 class ContractValidationError(ValueError):
-    """Raised when a schema 2.1.0 record violates the canonical contract."""
+    """Raised when a schema 2.2.0 record violates the canonical contract."""
 
 
 def _require_mapping(value: Any, path: str) -> Mapping[str, Any]:
@@ -2268,6 +2268,41 @@ VIDEO_P0_CLAUSE_IDS = {
         "reserve_rapid_decline",
         "no_major_crisis",
     ),
+}
+VIDEO_P0_NOTATION_KEYS = (
+    "evaluation_time",
+    "spread",
+    "positive_streak",
+    "reserves",
+    "reserve_change_4w",
+    "tga",
+    "srf_positive_days",
+    "reserve_decline_p10",
+    "crisis_context",
+    "logical_and",
+    "logical_or",
+    "logical_iff",
+    "extreme_candidate",
+    "extreme_confirmed",
+    "source_spread_red",
+    "source_reserves_yellow",
+    "source_reserves_red",
+    "source_reserves_extreme",
+    "source_tga_target",
+    "op_positive_streak",
+    "op_tga_floor",
+    "op_srf_2_of_3",
+    "op_rapid_decline",
+    "manual_crisis_context",
+)
+VIDEO_P0_NOTATION_KINDS = {
+    **{key: "MATHEMATICAL_NOTATION" for key in VIDEO_P0_NOTATION_KEYS[:14]},
+    **{key: "VIDEO_SOURCE_RULE" for key in VIDEO_P0_NOTATION_KEYS[14:19]},
+    **{
+        key: "DASHBOARD_OPERATIONALIZATION"
+        for key in VIDEO_P0_NOTATION_KEYS[19:23]
+    },
+    "manual_crisis_context": "MANUAL_CONTEXT",
 }
 VIDEO_P0_SOURCE_URL = "https://www.youtube.com/watch?v=MrnjBdgQPLU"
 VIDEO_P0_SOURCE_TITLE = (
@@ -2571,6 +2606,45 @@ def _validate_formula_clause(
     return clause
 
 
+def _validate_video_p0_notation(value: Any, path: str) -> None:
+    if not isinstance(value, list) or len(value) != len(VIDEO_P0_NOTATION_KEYS):
+        raise ContractValidationError(
+            f"{path} must contain exactly {len(VIDEO_P0_NOTATION_KEYS)} entries"
+        )
+    keys: list[str] = []
+    for index, item in enumerate(value):
+        item_path = f"{path}[{index}]"
+        item = _require_mapping(item, item_path)
+        _require_exact_fields(
+            item,
+            {
+                "key",
+                "symbol_tex",
+                "label",
+                "definition",
+                "unit",
+                "source_kind",
+                "note",
+            },
+            item_path,
+        )
+        key = item.get("key")
+        _require_nonempty_string(key, f"{item_path}.key")
+        assert isinstance(key, str)
+        keys.append(key)
+        for field in ("symbol_tex", "label", "definition", "note"):
+            _require_nonempty_string(item.get(field), f"{item_path}.{field}")
+        unit = item.get("unit")
+        if unit is not None:
+            _require_nonempty_string(unit, f"{item_path}.unit")
+        if item.get("source_kind") != VIDEO_P0_NOTATION_KINDS.get(key):
+            raise ContractValidationError(f"{item_path}.source_kind is invalid")
+    if tuple(keys) != VIDEO_P0_NOTATION_KEYS:
+        if len(keys) != len(set(keys)):
+            raise ContractValidationError(f"{path} contains duplicate keys")
+        raise ContractValidationError(f"{path} keys or order are invalid")
+
+
 def _validate_video_p0_model(
     value: Any, *, metrics: Mapping[str, Any], generated_at: str
 ) -> None:
@@ -2581,8 +2655,8 @@ def _validate_video_p0_model(
         {
             "model_id", "label", "enabled", "status", "data_status", "confidence",
             "availability_reason", "evaluated_at", "source", "thresholds",
-            "operationalizations", "crisis_context", "formulas", "technical_flags",
-            "notes",
+            "operationalizations", "crisis_context", "notation", "formulas",
+            "technical_flags", "notes",
         },
         path,
     )
@@ -2643,6 +2717,22 @@ def _validate_video_p0_model(
             raise ContractValidationError(f"{path}.thresholds {field} is invalid")
     if extreme_thresholds.get("decline_percentile") != "TRAILING_5Y_P10":
         raise ContractValidationError(f"{path}.thresholds.extreme decline percentile is invalid")
+    # Import lazily to keep this collector-independent contract module usable by
+    # pipeline.config while making the published presentation auditable against
+    # the same canonical builder used by the evaluator.
+    from pipeline.rules.p0_video_model import build_video_p0_formula_presentation
+
+    presentation = build_video_p0_formula_presentation(
+        streak_required=int(yellow_thresholds["positive_streak_observations"]),
+        yellow_reserve_tn=float(yellow_thresholds["reserve_usd_bn"]) / 1000,
+        red_reserve_tn=float(red_thresholds["reserve_usd_bn"]) / 1000,
+        extreme_reserve_tn=float(extreme_thresholds["reserve_usd_bn"]) / 1000,
+        tga_floor_tn=float(yellow_thresholds["tga_operational_floor_usd_bn"]) / 1000,
+        tga_target_tn=float(thresholds["tga_source_target_usd_bn"]) / 1000,
+        spread_threshold=float(red_thresholds["spread_bp"]),
+        srf_required=int(red_thresholds["srf_positive_days_required"]),
+        srf_window=int(red_thresholds["srf_window_completed_days"]),
+    )
     operationalizations = _require_mapping(
         model.get("operationalizations"), f"{path}.operationalizations"
     )
@@ -2671,19 +2761,35 @@ def _validate_video_p0_model(
         _require_nonempty_string(context.get("reviewer"), f"{path}.crisis_context.reviewer")
         _require_nonempty_string(context.get("note"), f"{path}.crisis_context.note")
 
+    _validate_video_p0_notation(model.get("notation"), f"{path}.notation")
+    if model.get("notation") != presentation["notation"]:
+        raise ContractValidationError(f"{path}.notation content does not reconcile")
+
     formulas = _require_mapping(model.get("formulas"), f"{path}.formulas")
     _require_exact_fields(formulas, {"yellow", "red", "extreme"}, f"{path}.formulas")
     disabled = model.get("enabled") is False
     validated: dict[str, list[Mapping[str, Any]]] = {}
     for formula_id, ids in VIDEO_P0_CLAUSE_IDS.items():
         formula = _require_mapping(formulas.get(formula_id), f"{path}.formulas.{formula_id}")
-        expected_fields = {"expression", "triggered", "clauses"}
+        expected_fields = {
+            "expression", "display_tex", "plain_language", "triggered", "clauses"
+        }
         if formula_id == "red":
             expected_fields.add("routes")
         if formula_id == "extreme":
             expected_fields |= {"candidate", "context_required"}
         _require_exact_fields(formula, expected_fields, f"{path}.formulas.{formula_id}")
         _require_nonempty_string(formula.get("expression"), f"{path}.formulas.{formula_id}.expression")
+        _require_nonempty_string(formula.get("display_tex"), f"{path}.formulas.{formula_id}.display_tex")
+        _require_nonempty_string(formula.get("plain_language"), f"{path}.formulas.{formula_id}.plain_language")
+        expected_presentation = presentation[formula_id]
+        if any(
+            formula.get(field) != expected_presentation[field]
+            for field in ("expression", "display_tex", "plain_language")
+        ):
+            raise ContractValidationError(
+                f"{path}.formulas.{formula_id} presentation does not reconcile"
+            )
         if formula.get("triggered") is not None and not isinstance(formula.get("triggered"), bool):
             raise ContractValidationError(f"{path}.formulas.{formula_id}.triggered is invalid")
         clauses = formula.get("clauses")
@@ -2732,6 +2838,10 @@ def _validate_video_p0_model(
             or not route["label"].strip()
             or not isinstance(route.get("expression"), str)
             or not route["expression"].strip()
+            or route.get("expression")
+            != presentation["red"][
+                "route_a_expression" if index == 0 else "route_b_expression"
+            ]
         ):
             raise ContractValidationError(f"{path}.formulas.red route does not reconcile")
     if (
@@ -3009,7 +3119,7 @@ def _validate_collector_source(value: Any, path: str) -> None:
 
 
 def validate_snapshot(snapshot: Mapping[str, Any]) -> None:
-    """Validate the schema 2.1.0 snapshot envelope and all metric records."""
+    """Validate the schema 2.2.0 snapshot envelope and all metric records."""
 
     snapshot = _require_mapping(snapshot, "snapshot")
     if snapshot.get("schema_version") != SCHEMA_VERSION:

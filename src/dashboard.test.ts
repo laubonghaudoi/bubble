@@ -33,11 +33,12 @@ import {
 import { jsonResponse, makeCatalog, makeManualEvidenceRecord, makeMetric, makeSeriesFile, makeSnapshot, makeSnapshotWithReviewedManualEvidence } from './test-fixtures';
 import type { FundamentalCompanyDetail, Metric, Snapshot } from './types';
 
-describe('v2.1 contract and configuration', () => {
-  it('hard-cuts legacy schema 2.0.0 and requires the locked assessment field', () => {
+describe('v2.2 contract and configuration', () => {
+  it('hard-cuts legacy schemas and requires the locked assessment field', () => {
     const valid = makeSnapshot();
-    expect(SCHEMA_VERSION).toBe('2.1.0');
+    expect(SCHEMA_VERSION).toBe('2.2.0');
     expect(isSnapshot(valid)).toBe(true);
+    expect(isSnapshot({ ...valid, schema_version: '2.1.0' })).toBe(false);
     expect(isSnapshot({ ...valid, schema_version: '2.0.0' })).toBe(false);
     expect(isSnapshot({ ...valid, schema_version: '1.0.0' })).toBe(false);
     const withoutAssessment = { ...valid } as Record<string, unknown>;
@@ -283,6 +284,26 @@ describe('v2.1 contract and configuration', () => {
     tamperedSource.decision_models.p0_video_liquidity.source.segments[0].timestamp_url =
       'https://www.youtube.com/watch?v=MrnjBdgQPLU&t=1s';
     expect(isSnapshot(tamperedSource), 'source timestamp drift').toBe(false);
+
+    const missingDisplayTex = structuredClone(makeSnapshot());
+    delete (missingDisplayTex.decision_models.p0_video_liquidity.formulas.yellow as Partial<typeof missingDisplayTex.decision_models.p0_video_liquidity.formulas.yellow>).display_tex;
+    expect(isSnapshot(missingDisplayTex), 'missing display TeX').toBe(false);
+
+    const extraRouteField = structuredClone(makeSnapshot()) as unknown as Record<string, unknown>;
+    const route = (((extraRouteField.decision_models as Record<string, unknown>).p0_video_liquidity as Record<string, unknown>).formulas as Record<string, unknown>);
+    ((route.red as Record<string, unknown>).routes as Array<Record<string, unknown>>)[0].display_tex = 'not allowed';
+    expect(isSnapshot(extraRouteField), 'route must keep its compact exact shape').toBe(false);
+
+    const duplicateNotation = structuredClone(makeSnapshot());
+    duplicateNotation.decision_models.p0_video_liquidity.notation[1].key = duplicateNotation.decision_models.p0_video_liquidity.notation[0].key;
+    expect(isSnapshot(duplicateNotation), 'notation keys must be complete, ordered, and unique').toBe(false);
+
+    const widenedBasisKind = structuredClone(makeSnapshot()) as unknown as Record<string, unknown>;
+    const model = ((widenedBasisKind.decision_models as Record<string, unknown>).p0_video_liquidity as Record<string, unknown>);
+    const formulas = model.formulas as Record<string, unknown>;
+    const clauses = (formulas.yellow as Record<string, unknown>).clauses as Array<Record<string, unknown>>;
+    ((clauses[0].basis as Array<Record<string, unknown>>)[0]).kind = 'MATHEMATICAL_NOTATION';
+    expect(isSnapshot(widenedBasisKind), 'notation kind must not widen clause provenance').toBe(false);
   });
 
   it('keeps tape order explicit and includes ON RRP and SRF', () => {
@@ -891,7 +912,7 @@ describe('route-lazy loading', () => {
     expect(getGlobalLatestDate(result.series)).toBe('2026-08-11');
   });
 
-  it('loads v2.1 core in parallel, keeps manifest failure nonfatal, and rejects a v2.0 runtime artifact', async () => {
+  it('loads v2.2 core in parallel, keeps manifest failure nonfatal, and rejects a v2.1 runtime artifact', async () => {
     const snapshot = makeSnapshot();
     const catalog = makeCatalog();
     const ok = vi.fn(async (input: RequestInfo | URL) => String(input).endsWith('snapshot.json')
@@ -906,7 +927,7 @@ describe('route-lazy loading', () => {
     await expect(loadDashboardCore('/', noManifest)).resolves.toMatchObject({ catalog: [], catalogError: expect.stringContaining('500') });
 
     const legacyV2 = vi.fn(async (input: RequestInfo | URL) => String(input).endsWith('snapshot.json')
-      ? jsonResponse({ ...snapshot, schema_version: '2.0.0' })
+      ? jsonResponse({ ...snapshot, schema_version: '2.1.0' })
       : jsonResponse({ schema_version: SCHEMA_VERSION, generated_at: snapshot.generated_at, metrics: catalog })) as unknown as typeof fetch;
     await expect(loadDashboardCore('/', legacyV2)).rejects.toThrow('Invalid v2 snapshot payload');
   });

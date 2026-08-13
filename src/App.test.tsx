@@ -83,7 +83,7 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe('v2.1 routed dashboard', () => {
+describe('v2.2 routed dashboard', () => {
   it('renders overview with ON RRP/SRF and frequency-aware changes, without NOT WIRED', async () => {
     render(<App />);
     expect(screen.getByRole('status')).toHaveTextContent('v2 snapshot');
@@ -189,11 +189,32 @@ describe('v2.1 routed dashboard', () => {
     expect(window.location.hash).toBe('#/provenance#p0-video-formulas');
     expect(vi.mocked(loadRouteSeries)).toHaveBeenCalledWith(expect.any(String), 'provenance', snapshot, catalog);
 
-    expect(within(formula).getByLabelText('黃色警報：四項條件必須同時成立。')).toHaveTextContent('∧');
-    expect(within(formula).getByLabelText(/紅色警報/)).toHaveTextContent('∨');
-    expect(within(formula).getByLabelText(/極端條件/)).toHaveTextContent('∧');
-    expect(within(formula).getByText('Spread and reserves')).toBeVisible();
-    expect(within(formula).getByText('SRF 2-of-3')).toBeVisible();
+    await waitFor(() => expect(formula.querySelectorAll('.latex-formula.is-display[data-render-state="rendered"]')).toHaveLength(3));
+    expect(formula.querySelectorAll('.latex-formula.is-display .katex')).toHaveLength(3);
+    expect(formula.querySelectorAll('.latex-formula.is-display math')).toHaveLength(3);
+    expect(formula.querySelectorAll('.formula-route .latex-formula')).toHaveLength(0);
+
+    const yellowFormula = formula.querySelector<HTMLElement>('[data-formula-id="yellow"]');
+    const redFormula = formula.querySelector<HTMLElement>('[data-formula-id="red"]');
+    const extremeFormula = formula.querySelector<HTMLElement>('[data-formula-id="extreme"]');
+    expect(yellowFormula).toHaveAttribute('aria-describedby', 'formula-yellow-reading');
+    expect(redFormula).toHaveAttribute('aria-describedby', 'formula-red-reading');
+    expect(extremeFormula).toHaveAttribute('aria-describedby', 'formula-extreme-reading');
+    expect(document.getElementById('formula-yellow-reading')).toHaveTextContent('四項必須同時成立');
+    expect(document.getElementById('formula-red-reading')).toHaveTextContent('任何一條路徑成立即可');
+    expect(document.getElementById('formula-extreme-reading')).toHaveTextContent('數值候選');
+    expect(document.getElementById('formula-extreme-reading')).toHaveTextContent('完整確認');
+
+    expect(formula.querySelectorAll('[data-notation-key]')).toHaveLength(24);
+    expect([...formula.querySelectorAll('[data-notation-kind]')].map((item) => item.getAttribute('data-notation-kind'))).toEqual([
+      'MATHEMATICAL_NOTATION',
+      'VIDEO_SOURCE_RULE',
+      'DASHBOARD_OPERATIONALIZATION',
+      'MANUAL_CONTEXT',
+    ]);
+    await waitFor(() => expect(formula.querySelector('[data-formula-id="notation-logical_and"] .katex')).toBeInTheDocument());
+    expect(within(formula).getByRole('heading', { name: 'Spread and reserves', level: 4 })).toBeVisible();
+    expect(within(formula).getByRole('heading', { name: 'SRF 2-of-3', level: 4 })).toBeVisible();
 
     const crisisClause = formula.querySelector<HTMLElement>('[data-clause-id="no_major_crisis"]');
     expect(crisisClause).toHaveAttribute('data-clause-state', 'REVIEW REQUIRED');
@@ -203,6 +224,20 @@ describe('v2.1 routed dashboard', () => {
     );
     expect(formula).toHaveTextContent(/CapEx 共振判定/);
     expect(formula).toHaveTextContent(/不提供投資或買賣建議/);
+  });
+
+  it('falls back to the auditable expression when KaTeX rejects pipeline TeX', async () => {
+    window.history.replaceState(null, '', '/#/provenance#p0-video-formulas');
+    const invalidFormulaSnapshot = structuredClone(snapshot);
+    invalidFormulaSnapshot.decision_models.p0_video_liquidity.formulas.yellow.display_tex = '\\definitelyNotAKatexCommand{';
+    vi.mocked(loadDashboardCore).mockResolvedValueOnce({ snapshot: invalidFormulaSnapshot, catalog, catalogError: null });
+
+    render(<App />);
+    const panel = await screen.findByRole('article', { name: 'P0 影片流動性公式' });
+    const yellowFormula = panel.querySelector<HTMLElement>('[data-formula-id="yellow"]');
+    await waitFor(() => expect(yellowFormula).toHaveAttribute('data-render-error', 'true'));
+    expect(yellowFormula).toHaveTextContent(invalidFormulaSnapshot.decision_models.p0_video_liquidity.formulas.yellow.expression);
+    expect(yellowFormula?.querySelector('.katex')).not.toBeInTheDocument();
   });
 
   it('supports deep links, hash navigation, route focus, and a single primary route navigation', async () => {

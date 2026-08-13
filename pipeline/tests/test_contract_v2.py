@@ -24,6 +24,7 @@ from pipeline.contracts import (
     validate_series_file,
     validate_snapshot,
 )
+from pipeline.rules.p0_video_model import build_video_p0_formula_presentation
 
 
 FIXTURE = Path(__file__).parent / "fixtures" / "snapshot_v2_minimal.json"
@@ -507,7 +508,7 @@ def fixture_snapshot():
         "not_applicable": 0,
     }
     # The compact fixture is for the pre-video metric/switch contract.  Build a
-    # deliberately disabled required 2.1 decision model so those tests can keep
+    # deliberately disabled required 2.2 decision model so those tests can keep
     # exercising their original axis while the model itself has dedicated
     # rule/contract tests.
     metric_template = snapshot["metrics"]["on_rrp_accepted"]
@@ -550,6 +551,17 @@ def fixture_snapshot():
     yellow = [clauses[key] for key in ("sofr_positive_streak", "reserve_below_yellow", "reserve_change_4w_negative", "tga_near_1t")]
     red = [clauses[key] for key in ("sofr_spread_above_red", "reserve_below_red", "srf_positive_days")]
     extreme = [clauses[key] for key in ("reserve_below_extreme", "reserve_rapid_decline", "no_major_crisis")]
+    presentation = build_video_p0_formula_presentation(
+        streak_required=3,
+        yellow_reserve_tn=2.9,
+        red_reserve_tn=2.8,
+        extreme_reserve_tn=2.5,
+        tga_floor_tn=0.95,
+        tga_target_tn=1.0,
+        spread_threshold=3.0,
+        srf_required=2,
+        srf_window=3,
+    )
     video_url = "https://www.youtube.com/watch?v=MrnjBdgQPLU"
     snapshot["decision_models"] = {"p0_video_liquidity": {
         "model_id": "henren778_p0_liquidity", "label": "影片 P0 黃／紅流動性警報",
@@ -569,13 +581,14 @@ def fixture_snapshot():
         },
         "operationalizations": {"exclude_technical_srf_exercises": True},
         "crisis_context": {"status": "UNKNOWN", "as_of": None, "reviewed_at": None, "reviewer": None, "note": None},
+        "notation": presentation["notation"],
         "formulas": {
-            "yellow": {"expression": "YELLOW", "triggered": None, "clauses": yellow},
-            "red": {"expression": "RED", "triggered": None, "clauses": red, "routes": [
-                {"route_id": "spread_and_reserves", "label": "Route A", "expression": "A", "triggered": None, "clauses": red[:2]},
-                {"route_id": "srf_2_of_3", "label": "Route B", "expression": "B", "triggered": None, "clauses": red[2:]},
+            "yellow": {"expression": presentation["yellow"]["expression"], "display_tex": presentation["yellow"]["display_tex"], "plain_language": presentation["yellow"]["plain_language"], "triggered": None, "clauses": yellow},
+            "red": {"expression": presentation["red"]["expression"], "display_tex": presentation["red"]["display_tex"], "plain_language": presentation["red"]["plain_language"], "triggered": None, "clauses": red, "routes": [
+                {"route_id": "spread_and_reserves", "label": "Route A", "expression": presentation["red"]["route_a_expression"], "triggered": None, "clauses": red[:2]},
+                {"route_id": "srf_2_of_3", "label": "Route B", "expression": presentation["red"]["route_b_expression"], "triggered": None, "clauses": red[2:]},
             ]},
-            "extreme": {"expression": "EXTREME", "triggered": None, "candidate": None, "context_required": False, "clauses": extreme},
+            "extreme": {"expression": presentation["extreme"]["expression"], "display_tex": presentation["extreme"]["display_tex"], "plain_language": presentation["extreme"]["plain_language"], "triggered": None, "candidate": None, "context_required": False, "clauses": extreme},
         },
         "technical_flags": [], "notes": ["Disabled fixture."],
     }}
@@ -584,8 +597,8 @@ def fixture_snapshot():
 
 def test_loads_schema_2_registry_bundle_and_canonical_p0_ids():
     bundle = load_config_bundle()
-    assert bundle.metric_registry["schema_version"] == "2.1.0"
-    assert bundle.source_registry["schema_version"] == "2.1.0"
+    assert bundle.metric_registry["schema_version"] == "2.2.0"
+    assert bundle.source_registry["schema_version"] == "2.2.0"
     assert CANONICAL_P0_METRIC_IDS <= bundle.metrics_by_id.keys()
 
 
@@ -666,7 +679,7 @@ def test_statistics_are_numeric_or_null_and_attempt_time_is_utc():
 def test_publication_contract_hard_cuts_v1_and_cross_checks_all_metric_ids():
     snapshot = fixture_snapshot()
     manifest = {
-        "schema_version": "2.1.0",
+        "schema_version": "2.2.0",
         "generated_at": snapshot["generated_at"],
         "metrics": [
             {
@@ -711,7 +724,7 @@ def test_publication_contract_hard_cuts_v1_and_cross_checks_all_metric_ids():
     }
     series = {
         metric_id: {
-            "schema_version": "2.1.0",
+            "schema_version": "2.2.0",
             "metric_id": metric_id,
             "label": metric["label"],
             "unit": metric["unit"],
@@ -748,7 +761,7 @@ def test_series_contract_requires_sorted_unique_real_dates():
     snapshot = fixture_snapshot()
     metric = snapshot["metrics"]["on_rrp_accepted"]
     series = {
-        "schema_version": "2.1.0",
+        "schema_version": "2.2.0",
         "metric_id": metric["metric_id"],
         "label": metric["label"],
         "unit": metric["unit"],
@@ -769,7 +782,7 @@ def test_series_contract_requires_sorted_unique_real_dates():
 def test_publication_cross_checks_contract_critical_metric_fields():
     snapshot = fixture_snapshot()
     manifest = {
-        "schema_version": "2.1.0",
+        "schema_version": "2.2.0",
         "generated_at": snapshot["generated_at"],
         "metrics": [],
     }
@@ -789,7 +802,7 @@ def test_publication_cross_checks_contract_critical_metric_fields():
             }
         )
         series[metric_id] = {
-            "schema_version": "2.1.0",
+            "schema_version": "2.2.0",
             "metric_id": metric_id,
             "label": metric["label"],
             "unit": metric["unit"],
@@ -828,7 +841,7 @@ def test_publication_cross_checks_contract_critical_metric_fields():
 def test_publication_rejects_internally_mixed_switches_and_timestamps():
     snapshot = fixture_snapshot()
     manifest = {
-        "schema_version": "2.1.0",
+        "schema_version": "2.2.0",
         "generated_at": snapshot["generated_at"],
         "metrics": [],
     }
@@ -848,7 +861,7 @@ def test_publication_rejects_internally_mixed_switches_and_timestamps():
             }
         )
         series[metric_id] = {
-            "schema_version": "2.1.0",
+            "schema_version": "2.2.0",
             "metric_id": metric_id,
             "label": metric["label"],
             "unit": metric["unit"],
@@ -884,7 +897,7 @@ def test_standalone_alerts_and_events_require_v2_shapes():
     with pytest.raises(ContractValidationError, match="events must be a list"):
         validate_events_file(
             {
-                "schema_version": "2.1.0",
+                "schema_version": "2.2.0",
                 "generated_at": "2026-08-12T20:00:00Z",
                 "events": "not-a-list",
             }

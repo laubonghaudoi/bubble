@@ -30,25 +30,27 @@ python -m pipeline.update --mode incremental --group daily
 python -m pytest pipeline/tests
 ```
 
-Production log 會以 `pipeline-health-<run-id>` artifact 保存 14 日。Workflow 將完整 schema `2.1.0` output 留喺獨立 stage，Python 同 frontend gates 全過先 atomic promote。檢查 HTTP content type、必要 JSON keys/CSV columns、date、unit、duplicate observations 同 source as-of。HTML error page、空 200 response 或 schema drift 必須 fail closed，唔可以當正常空 series。
+Production log 會以 `pipeline-health-<run-id>` artifact 保存 14 日。Workflow 將完整 schema `2.2.0` output 留喺獨立 stage，Python 同 frontend gates 全過先 atomic promote。檢查 HTTP content type、必要 JSON keys/CSV columns、date、unit、duplicate observations 同 source as-of。HTML error page、空 200 response 或 schema drift 必須 fail closed，唔可以當正常空 series。
 
 Collector 失敗時 pipeline 應保留 last-good observations：有歷史值用 `STALE`，完全冇可用值用 `ERROR`，並保存 `last_success_at`、`last_attempt_at` 同 `failure_reason`。唔好用零代替缺失。
 
-## Schema `2.0.0` 或 P0 decision model 被拒絕
+## Schema `2.1.0` 或更舊版本／P0 decision model 被拒絕
 
-Schema `2.1.0` 係 hard cut。Code、config、staged publication 同 frontend 必須同版；舊 `2.0.0` snapshot 唔會由 compatibility shim 載入。最少檢查：
+Schema `2.2.0` 係 hard cut。Code、config、staged publication 同 frontend 必須同版；`2.1.0` 或更舊 snapshot 唔會由 compatibility shim 載入。最少檢查：
 
 ```bash
 jq -r '.schema_version' public/data/{snapshot,manifest,alerts,events}.json
 jq -r '(.decision_models // {}) | keys[]' public/data/snapshot.json
 ```
 
-- 四個 top-level artifact 同所有 `series/*.json` 必須係 `2.1.0`；Form 4 ledger 有自己獨立 schema，唔好用全域 search/replace 改版本；
+- 四個 top-level artifact 同所有 `series/*.json` 必須係 `2.2.0`；Form 4 ledger 有自己獨立 schema，唔好用全域 search/replace 改版本；
 - `snapshot.decision_models` 必須恰好有 `p0_video_liquidity`，唔可以缺失或加入未註冊 model；
-- model `evaluated_at` 必須等於 snapshot `generated_at`；source segments、thresholds、clauses、route truth values、status、data status 同 confidence 必須通過 contract 重算；
+- 黃／紅／極端頂層 formula 必須各自有 `expression`、`display_tex`、`plain_language`、`triggered` 同 `clauses`；Red Route A/B 仍只用 route expression、truth value 同 clauses；
+- model-level `notation` 必須包含完整固定 key、冇重複，並分清 `VIDEO_SOURCE_RULE`、`DASHBOARD_OPERATIONALIZATION`、`MANUAL_CONTEXT` 同純邏輯符號用嘅 `MATHEMATICAL_NOTATION`；
+- model `evaluated_at` 必須等於 snapshot `generated_at`；source segments、thresholds、TeX、plain language、notation、clauses、route truth values、status、data status 同 confidence 必須通過 contract 重算；
 - SRF full／short observations 必須帶完整 technical／nontechnical classification fields，未知分類唔可以默認為 `false`。
 
-如果 checkout 仲係 `2.0.0` generated data，應重跑相應 update group／production workflow，等 pipeline 重新生成完整 stage，再通過 Python、frontend 同 publication gates。唔好只改 `schema_version`，亦唔好手加 `decision_models`；咁做會令 model、metrics、manifest 同 timestamps 失去一致性，而且 contract 應該繼續 fail closed。
+如果 checkout 仲係 `2.1.0` 或更舊 generated data，應重跑相應 update group／production workflow，等 pipeline 重新生成完整 stage，再通過 Python、frontend 同 publication gates。唔好只改 `schema_version`，亦唔好手加 `decision_models`；咁做會令 model、metrics、manifest 同 timestamps 失去一致性，而且 contract 應該繼續 fail closed。
 
 ## H.4.1 顯示 `NOT_RELEASED_YET`
 
@@ -138,12 +140,29 @@ Generated-data push 使用 repository `GITHUB_TOKEN`，按 GitHub 官方規則�
 - project path 前綴由 Vite base 處理，唔好新增 server rewrite；
 - 檢查 `upload-pages-artifact` 同 `deploy-pages` steps。
 
+## KaTeX 公式冇顯示／解釋同結果唔一致
+
+先檢查 publication contract，而唔係喺 React hardcode 另一條公式：
+
+```bash
+jq '.decision_models.p0_video_liquidity
+  | {formulas, notation}' public/data/snapshot.json
+```
+
+- 黃／紅／極端頂層 formula 都要有非空 `display_tex`、`plain_language` 同 audit fallback `expression`；呢三者、clauses 同 chart reference 必須由同一套 config threshold 生成；
+- Red Route A/B 只保留 route expression、truth value 同 clause table；頁面只會渲染三個頂層正式公式，唔應該因為 route 冇 `display_tex` 而報 contract error；
+- `notation` 要覆蓋所有公式變數、邏輯符號同規則來源。影片明言門檻用 `VIDEO_SOURCE_RULE`；dashboard 為重現而設定嘅 persistence、floor、2-of-3 window 或 trailing percentile 用 `DASHBOARD_OPERATIONALIZATION`；危機背景 `c_t` 用 `MANUAL_CONTEXT`；`∧`／`∨`／`⇔` 等純符號用 `MATHEMATICAL_NOTATION`；
+- KaTeX 正常時會同時產生 `.katex` 視覺 HTML 同 MathML，公式用 `aria-describedby` 連結相應粵文讀法。只見 fallback 時，檢查 browser console、KaTeX module/CSS/font request 同 `data-render-error`；TeX parse 或 lazy-load 失敗應只降級至 `expression`，唔應該令 formula card 或整頁消失；
+- 唔好為咗令 KaTeX 成功而將 `throwOnError` 關閉、開啟 `trust`，或者用 auto-render 掃描整頁。應修正 pipeline 產生嘅 TeX，再重新生成完整 schema `2.2.0` stage。
+
+KaTeX 只係表示層。`+3 bp`、`2.9/2.8/2.5T` 同 TGA 朝向 `1T` 可以係 source rule；`n≥3`、`g≥0.95T`、最近三日最少兩日 SRF 正值同 trailing-5y p10 係 dashboard operationalization；危機背景係 manual context。畫面同文件必須保留呢啲標籤，唔可以用正式排版暗示全部門檻都係學術定律或由原來源逐字定義。
+
 ## Frontend 顯示完整 error state
 
 先檢查 `public/data/snapshot.json`：
 
-- `schema_version` 必須係 `2.1.0`；`2.0.0` 會被 hard reject，唔會顯示舊 dashboard；
-- `decision_models` 必須恰好包含完整 `p0_video_liquidity`，而且 status／formula／threshold／timestamp 要同 metrics 對得上；
+- `schema_version` 必須係 `2.2.0`；`2.1.0` 或更舊版本會被 hard reject，唔會顯示舊 dashboard；
+- `decision_models` 必須恰好包含完整 `p0_video_liquidity`，而且 status／formula expression／TeX／plain language／notation／threshold／timestamp 要同 metrics 對得上；
 - snapshot counts 要同 metrics availability/health 相符；
 - source health counts 要同 collector source records 相符；
 - required P0 metric IDs、source fields、12 methodology fields、statistics、timestamps 同 `short_series` 都要存在。

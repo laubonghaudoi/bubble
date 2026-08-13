@@ -1,4 +1,4 @@
-schema_version: "2.1.0"
+schema_version: "2.2.0"
 registry_kind: nyfed_operational_readiness
 reviewed_at: "2026-08-12"
 calendar_source_url: https://www.newyorkfed.org/markets/operational-readiness

@@ -1,4 +1,4 @@
-schema_version: "2.1.0"
+schema_version: "2.2.0"
 registry_kind: source
 
 # A collector may make a request only when enabled, network_eligible, and both

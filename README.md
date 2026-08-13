@@ -1,6 +1,6 @@
 # 美元流動性監測
 
-一個以 React/Vite 建立、由 GitHub Pages 托管嘅靜態美元流動性儀錶板。瀏覽器只讀取已發布嘅 schema `2.1.0` JSON；第三方 fetch、schema validation、金融計算、freshness 判斷同粵文解釋全部喺 Python pipeline 完成。
+一個以 React/Vite 建立、由 GitHub Pages 托管嘅靜態美元流動性儀錶板。瀏覽器只讀取已發布嘅 schema `2.2.0` JSON；第三方 fetch、schema validation、金融計算、freshness 判斷同粵文解釋全部喺 Python pipeline 完成。
 
 網站固定使用 Bloomberg editorial 配色，冇 dark-mode 或 theme switch。
 
@@ -40,11 +40,15 @@ npm run build
 
 可用 group：`all`、`daily`、`h41`、`weekly`、`monthly`、`quarterly`、`manual`。`daily` 會處理 P0 同最新已完成 SEC Form 4 daily indexes；`weekly` 同時處理 H.4.1、CFTC TFF positioning 同 45 日 Form 4 index reconciliation；`monthly`／`quarterly` 會重查 government-origin equities/GDP exact-quarter proxy；`quarterly` 亦會原子更新四間 hyperscaler 嘅 SEC Company Facts CapEx。所有 group 都會先驗證 reviewed manual CSV，`manual` group可安全重建人工 evidence。
 
-## Schema 2.1.0 contract
+## Schema 2.2.0 contract
 
 `public/data/` 係一次過發布嘅完整 artifact set，包括 `snapshot.json`、`manifest.json`、`alerts.json`、`events.json`、`series/*.json`，以及 privacy-minimized `ledgers/sec_form4/`。Pipeline 先喺 staging directory 完成 fetch、normalize、transform、ledger hash/privacy allowlist 同 contract validation，全部成功先用 directory promotion 取代 live data；任何一步失敗都保留上一版完整資料。Raw SEC submissions 只可以留喺私有 Actions cache，永遠唔可以進入 public artifact。
 
-`2.1.0` 係 hard cut，唔係向後兼容提示。Python publication contract 同 frontend loader 都會拒絕 `2.0.0` snapshot；唔會忽略新欄位、補預設門檻，或者靜默退回舊模型。`snapshot.decision_models` 必須只包含完整嘅 `p0_video_liquidity`：模型狀態、資料狀態、信心、影片來源段落、黃／紅／極端門檻、operationalizations、formula clauses、兩條紅色路徑、crisis context 同 technical flags 都要存在，並同 snapshot metric value、quality、freshness、timestamps 同公式真值逐項對得上。缺少、額外、過期或被手改嘅 model data 都會 fail closed。
+`2.2.0` 係 hard cut，唔係向後兼容提示。Python publication contract 同 frontend loader 都會拒絕 `2.1.0` 或更舊 snapshot；唔會忽略新欄位、補預設門檻，或者靜默退回舊模型。`snapshot.decision_models` 必須只包含完整嘅 `p0_video_liquidity`：模型狀態、資料狀態、信心、影片來源段落、黃／紅／極端門檻、operationalizations、formula clauses、兩條紅色路徑、crisis context、notation 同 technical flags 都要存在，並同 snapshot metric value、quality、freshness、timestamps 同公式真值逐項對得上。缺少、額外、過期或被手改嘅 model data 都會 fail closed。
+
+黃／紅／極端三個頂層 formula evaluation 都必須同時提供可審核嘅純文字 `expression`、由同一套 config threshold 生成嘅 `display_tex`、粵文 `plain_language` 同即時 `clauses`；Red Route A/B 保留 route expression、truth value 同 clauses，唔重複另一套正式公式。Model-level `notation` 必須用唯一 key 完整定義公式變數、邏輯符號、source rule、dashboard operationalization 同 manual context。`VIDEO_SOURCE_RULE` 只表示影片明言嘅規則或門檻，`DASHBOARD_OPERATIONALIZATION` 係為咗可重現而訂嘅 persistence、floor、rolling-window 或 percentile 實作，`MANUAL_CONTEXT` 只用於危機背景判斷；純數學符號另標記為 `MATHEMATICAL_NOTATION`，唔會混入 evidence provenance。
+
+Frontend 只將 `display_tex` 交畀 KaTeX，並同時輸出視覺 HTML 同可存取 MathML；粵文讀法會用 accessible description 同相應公式連結。TeX parse、module 或 stylesheet 載入失敗時，公式會顯示 pipeline 提供嘅 `expression` fallback，而唔會令成個 panel 消失。KaTeX 只改善表示方式，唔會將 source-specific rule、dashboard operationalization 或人工 crisis context 包裝成學術定律，亦唔會改變任何 formula outcome、P0 overall、switch 或 alerts。
 
 `p0_video_liquidity` 係對影片公式嘅獨立、可審核 decision model；唔會改寫既有 P0 `overall_assessment`、switch 或 alerts。SRF full series 同 snapshot fallback 亦必須保留 technical／nontechnical classification metadata，缺失分類唔可以當作非技術性零使用。
 
@@ -72,7 +76,7 @@ npm run build
 - weekday daily、Thursday H.4.1、weekly、monthly、quarterly UTC cron；
 - `workflow_dispatch`：可揀明確 group。
 
-Workflow 依序執行：核對 reviewed P3 filing metadata → fetch → validate/transform → 寫入獨立 schema `2.1.0` stage → Python tests → 喺臨時 workspace 用同一份 code 加 staged data 跑 frontend tests/build → atomic promote 完整 stage → commit generated `public/data` → push → Pages deploy。所有 gates 通過前，version-controlled `public/data` 都唔會被逐檔覆蓋。任何 metadata、data push 或 contract failure都會停止 deployment，唔會靜默略過。
+Workflow 依序執行：核對 reviewed P3 filing metadata → fetch → validate/transform → 寫入獨立 schema `2.2.0` stage → Python tests → 喺臨時 workspace 用同一份 code 加 staged data 跑 frontend tests/build → atomic promote 完整 stage → commit generated `public/data` → push → Pages deploy。所有 gates 通過前，version-controlled `public/data` 都唔會被逐檔覆蓋。任何 metadata、data push 或 contract failure都會停止 deployment，唔會靜默略過。
 
 Generated-data push 使用本次 job 嘅 repository `GITHUB_TOKEN`。按 [GitHub 官方觸發規則](https://docs.github.com/en/actions/concepts/security/github_token)，由呢個 token 造成嘅 push event 唔會建立另一個 workflow run，因此唔會形成 recursive data-commit loop。原本個 run 會喺 push 成功後直接上載已驗證嘅 `dist` 並部署 Pages；concurrency group 亦確保同一時間只得一個 production writer/deployer。唔好改用 PAT 或 GitHub App token，除非同時另外設計 recursion guard。
 

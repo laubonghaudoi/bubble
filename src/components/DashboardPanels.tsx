@@ -13,6 +13,7 @@ import type {
   FundamentalCompanyDetail,
   FundamentalSeriesPoint,
   FormulaClause,
+  FormulaNotationItem,
   HealthStatus,
   ManualEvidenceRecord,
   Metric,
@@ -55,6 +56,7 @@ import {
   type ReferenceLine,
   type SrfAlertWindow,
 } from './Charts';
+import { LatexFormula } from './LatexFormula';
 
 const TAPE_IDS = TAPE_GROUPS.flatMap(({ ids }) => [...ids]);
 const BALANCE_IDS = ['fed_total_assets', 'reserve_balances', 'tga_daily', 'tga_weekly_h41'] as const;
@@ -165,16 +167,72 @@ function formulaOutcome(value: boolean | null) {
   return value == null ? 'UNKNOWN' : value ? 'TRIGGERED' : 'NOT TRIGGERED';
 }
 
-function formulaAria(kind: 'yellow' | 'red' | 'red-route-a' | 'red-route-b' | 'extreme') {
-  if (kind === 'yellow') return '黃色警報：四項條件必須同時成立。';
-  if (kind === 'red') return '紅色警報：利差與準備金條件同時成立，或者非技術性常備回購使用條件成立。';
-  if (kind === 'red-route-a') return '紅色路徑 A：利差條件與準備金條件必須同時成立。';
-  if (kind === 'red-route-b') return '紅色路徑 B：非技術性常備回購使用條件可以獨立成立。';
-  return '極端條件：準備金、快速下跌和重大危機背景三項條件必須同時成立，其中危機背景需要人工覆核。';
+function FormulaExpression({
+  formulaId,
+  expression,
+  displayTex,
+  plainLanguage,
+}: {
+  formulaId: string;
+  expression: string;
+  displayTex: string;
+  plainLanguage: string;
+}) {
+  const readingId = `formula-${formulaId}-reading`;
+  return (
+    <div className="formula-presentation">
+      <LatexFormula tex={displayTex} fallback={expression} describedBy={readingId} formulaId={formulaId} />
+      <p className="formula-reading" id={readingId}><strong>讀法：</strong>{plainLanguage}</p>
+    </div>
+  );
 }
 
-function FormulaExpression({ expression, ariaLabel }: { expression: string; ariaLabel: string }) {
-  return <p className="formula-expression" aria-label={ariaLabel}><span aria-hidden="true">{expression}</span></p>;
+const NOTATION_GROUPS: Array<{
+  kind: FormulaNotationItem['source_kind'];
+  label: string;
+}> = [
+  { kind: 'MATHEMATICAL_NOTATION', label: 'SYMBOLS / 數學符號' },
+  { kind: 'VIDEO_SOURCE_RULE', label: 'SOURCE RULE / 影片門檻' },
+  { kind: 'DASHBOARD_OPERATIONALIZATION', label: 'OPERATIONALIZED / 儀表板定義' },
+  { kind: 'MANUAL_CONTEXT', label: 'MANUAL CONTEXT / 人工背景' },
+];
+
+function FormulaNotation({ notation }: { notation: readonly FormulaNotationItem[] }) {
+  return (
+    <section className="formula-notation" aria-labelledby="formula-notation-title">
+      <div className="formula-notation-head">
+        <div><div className="provenance-kicker">NOTATION</div><h3 id="formula-notation-title">符號與規則來源</h3></div>
+        <p>公式講邏輯；符號表分清影片原則、儀表板操作化同人工背景。</p>
+      </div>
+      {NOTATION_GROUPS.map(({ kind, label }) => {
+        const items = notation.filter((item) => item.source_kind === kind);
+        if (!items.length) return null;
+        return (
+          <section className="formula-notation-group" data-notation-kind={kind} key={kind} aria-labelledby={`notation-${kind}`}>
+            <h4 id={`notation-${kind}`}>{label}</h4>
+            <dl className="formula-notation-grid">
+              {items.map((item) => {
+                const descriptionId = `notation-${item.key}-description`;
+                return (
+                  <div className="formula-notation-item" data-notation-key={item.key} key={item.key}>
+                    <dt>
+                      <LatexFormula tex={item.symbol_tex} fallback={item.symbol_tex} describedBy={descriptionId} displayMode={false} formulaId={`notation-${item.key}`} />
+                      <strong>{item.label}</strong>
+                    </dt>
+                    <dd id={descriptionId}>
+                      <span>{item.definition}</span>
+                      {item.unit ? <small>{item.unit}</small> : null}
+                      {item.note ? <p>{item.note}</p> : null}
+                    </dd>
+                  </div>
+                );
+              })}
+            </dl>
+          </section>
+        );
+      })}
+    </section>
+  );
 }
 
 function FormulaClauseList({ clauses }: { clauses: readonly FormulaClause[] }) {
@@ -229,7 +287,6 @@ function P0VideoFormulaPanel({ model }: { model: VideoP0Model }) {
   const yellow = model.formulas.yellow;
   const red = model.formulas.red;
   const extreme = model.formulas.extreme;
-  const redRoutes = red.routes.length ? red.routes : [{ route_id: 'red-combined', label: 'RED ROUTES', expression: red.expression, triggered: red.triggered, clauses: red.clauses }];
   return (
     <article id="p0-video-formulas" className="provenance-panel p0-formula-panel" tabIndex={-1} aria-label="P0 影片流動性公式">
       <header className="formula-panel-head">
@@ -237,23 +294,25 @@ function P0VideoFormulaPanel({ model }: { model: VideoP0Model }) {
         <div className="formula-model-state"><strong style={statusStyle(model.status)}>CURRENT · {model.status.replaceAll('_', ' ')}</strong><small style={statusStyle(model.data_status)}>DATA · {model.data_status.replaceAll('_', '-')}</small></div>
       </header>
 
+      <FormulaNotation notation={model.notation} />
+
       <section className="formula-card is-yellow" aria-labelledby="formula-yellow-title">
         <div className="formula-card-head"><h3 id="formula-yellow-title">YELLOW</h3><span>{formulaOutcome(yellow.triggered)}</span></div>
-        <FormulaExpression expression={yellow.expression} ariaLabel={formulaAria('yellow')} />
+        <FormulaExpression formulaId="yellow" expression={yellow.expression} displayTex={yellow.display_tex} plainLanguage={yellow.plain_language} />
         <FormulaClauseList clauses={yellow.clauses} />
       </section>
 
       <section className="formula-card is-red" aria-labelledby="formula-red-title">
         <div className="formula-card-head"><h3 id="formula-red-title">RED · TWO INDEPENDENT ROUTES</h3><span>{formulaOutcome(red.triggered)}</span></div>
-        <FormulaExpression expression={red.expression} ariaLabel={formulaAria('red')} />
+        <FormulaExpression formulaId="red" expression={red.expression} displayTex={red.display_tex} plainLanguage={red.plain_language} />
         <div className="formula-route-list">
-          {redRoutes.map((route, index) => <section className="formula-route" key={route.route_id}><div className="formula-route-head"><h4>{route.label}</h4><span>{formulaOutcome(route.triggered)}</span></div><FormulaExpression expression={route.expression} ariaLabel={formulaAria(index === 0 ? 'red-route-a' : 'red-route-b')} /><FormulaClauseList clauses={route.clauses} /></section>)}
+          {red.routes.map((route) => <section className="formula-route" key={route.route_id}><div className="formula-route-head"><h4>{route.label}</h4><span>{formulaOutcome(route.triggered)}</span></div><FormulaClauseList clauses={route.clauses} /></section>)}
         </div>
       </section>
 
       <section className="formula-card is-extreme" aria-labelledby="formula-extreme-title">
         <div className="formula-card-head"><h3 id="formula-extreme-title">EXTREME · CONTEXT REQUIRED</h3><span>CANDIDATE {formulaOutcome(extreme.candidate)}</span></div>
-        <FormulaExpression expression={extreme.expression} ariaLabel={formulaAria('extreme')} />
+        <FormulaExpression formulaId="extreme" expression={extreme.expression} displayTex={extreme.display_tex} plainLanguage={extreme.plain_language} />
         <FormulaClauseList clauses={extreme.clauses} />
       </section>
 

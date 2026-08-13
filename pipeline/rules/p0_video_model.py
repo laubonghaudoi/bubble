@@ -33,6 +33,339 @@ _METRIC_IDS = {
 _CONFIDENCE = ("LOW", "MEDIUM", "HIGH")
 
 
+def _display_number(value: float | int) -> str:
+    """Format a configured threshold for stable plain-text and TeX display."""
+
+    numeric = float(value)
+    return str(int(numeric)) if numeric.is_integer() else format(numeric, ".12g")
+
+
+def build_video_p0_formula_presentation(
+    *,
+    streak_required: int,
+    yellow_reserve_tn: float,
+    red_reserve_tn: float,
+    extreme_reserve_tn: float,
+    tga_floor_tn: float,
+    tga_target_tn: float,
+    spread_threshold: float,
+    srf_required: int,
+    srf_window: int,
+) -> dict[str, Any]:
+    """Build every human-readable formula surface from the evaluated config."""
+
+    values = {
+        "streak": _display_number(streak_required),
+        "yellow_reserve": _display_number(yellow_reserve_tn),
+        "red_reserve": _display_number(red_reserve_tn),
+        "extreme_reserve": _display_number(extreme_reserve_tn),
+        "tga_floor": _display_number(tga_floor_tn),
+        "tga_target": _display_number(tga_target_tn),
+        "spread": _display_number(spread_threshold),
+        "srf_required": _display_number(srf_required),
+        "srf_window": _display_number(srf_window),
+    }
+
+    yellow_expression = (
+        f"POSITIVE STREAK ≥ {values['streak']} ∧ "
+        f"RESERVES < {values['yellow_reserve']}T ∧ "
+        f"Δ4W RESERVES < 0 ∧ TGA ≥ {values['tga_floor']}T"
+    )
+    red_route_a_expression = (
+        f"SOFR−IORB > +{values['spread']} bp ∧ "
+        f"RESERVES < {values['red_reserve']}T"
+    )
+    red_route_b_expression = (
+        "NONTECHNICAL SRF POSITIVE ON "
+        f"≥{values['srf_required']} OF LATEST {values['srf_window']} DAYS"
+    )
+    red_expression = f"[{red_route_a_expression}] ∨ [{red_route_b_expression}]"
+    extreme_expression = (
+        f"RESERVES < {values['extreme_reserve']}T ∧ "
+        "4W DECLINE ≤ TRAILING 5Y P10 ∧ NO MAJOR CRISIS"
+    )
+
+    yellow_tex = (
+        r"\begin{aligned}\operatorname{YELLOW}_{t}\iff{}&"
+        rf"(n_t^{{+}}\ge {values['streak']})"
+        rf"\\&\land(r_t<{values['yellow_reserve']})"
+        r"\\&\land(\Delta_{4\mathrm{w}}r_t<0)"
+        rf"\\&\land(g_t\ge {values['tga_floor']})\end{{aligned}}"
+    )
+    red_tex = (
+        r"\begin{aligned}\operatorname{RED}_{t}\iff{}&"
+        rf"\underbrace{{(s_t>{values['spread']})\land"
+        rf"(r_t<{values['red_reserve']})}}_{{\text{{Route A}}}}"
+        rf"\\&\lor\underbrace{{(u_t\ge {values['srf_required']})}}"
+        r"_{\text{Route B}}\end{aligned}"
+    )
+    extreme_tex = (
+        r"\begin{aligned}E_t^{\mathrm{candidate}}\iff{}&"
+        rf"(r_t<{values['extreme_reserve']})\land"
+        r"(\Delta_{4\mathrm{w}}r_t\le q_{0.10,t}^{(5\mathrm{y})})"
+        r"\\E_t^{\mathrm{confirmed}}\iff{}&"
+        r"E_t^{\mathrm{candidate}}\land(c_t=0)\end{aligned}"
+    )
+
+    notation = [
+        {
+            "key": "evaluation_time",
+            "symbol_tex": "t",
+            "label": "模型評估時間",
+            "definition": "今次模型採用最新可用資料組合嘅評估時間。",
+            "unit": None,
+            "source_kind": "MATHEMATICAL_NOTATION",
+            "note": "各 series 嘅 observation date 可以唔同。",
+        },
+        {
+            "key": "spread",
+            "symbol_tex": "s_t",
+            "label": "SOFR−IORB 利差",
+            "definition": "最新可用嘅 SOFR 減 IORB 利差。",
+            "unit": "bp",
+            "source_kind": "MATHEMATICAL_NOTATION",
+            "note": "正值表示 SOFR 高過 IORB。",
+        },
+        {
+            "key": "positive_streak",
+            "symbol_tex": "n_t^{+}",
+            "label": "連續正值 observations",
+            "definition": "SOFR−IORB 連續大於零嘅有效 observations 數量。",
+            "unit": "observations",
+            "source_kind": "MATHEMATICAL_NOTATION",
+            "note": "只計可用 observations。",
+        },
+        {
+            "key": "reserves",
+            "symbol_tex": "r_t",
+            "label": "Reserve Balances",
+            "definition": "最新銀行 Reserve Balances。",
+            "unit": "USD trillion",
+            "source_kind": "MATHEMATICAL_NOTATION",
+            "note": "條件計算層以 USD bn 儲存。",
+        },
+        {
+            "key": "reserve_change_4w",
+            "symbol_tex": r"\Delta_{4\mathrm{w}}r_t",
+            "label": "準備金四星期變化",
+            "definition": "最新準備金相對四星期前嘅變化。",
+            "unit": "USD trillion",
+            "source_kind": "MATHEMATICAL_NOTATION",
+            "note": "即今次準備金減四星期前準備金。",
+        },
+        {
+            "key": "tga",
+            "symbol_tex": "g_t",
+            "label": "Treasury General Account",
+            "definition": "最新 Treasury General Account balance。",
+            "unit": "USD trillion",
+            "source_kind": "MATHEMATICAL_NOTATION",
+            "note": "條件計算層以 USD bn 儲存。",
+        },
+        {
+            "key": "srf_positive_days",
+            "symbol_tex": "u_t",
+            "label": "非技術性 SRF 正使用日數",
+            "definition": (
+                f"最近 {values['srf_window']} 個 completed operation days 入面，"
+                "非技術性 SRF 正使用嘅日數。"
+            ),
+            "unit": f"0–{values['srf_window']} days",
+            "source_kind": "MATHEMATICAL_NOTATION",
+            "note": "技術測試 exercise 不計入。",
+        },
+        {
+            "key": "reserve_decline_p10",
+            "symbol_tex": r"q_{0.10,t}^{(5\mathrm{y})}",
+            "label": "五年準備金變化第十百分位",
+            "definition": "過去五年四星期準備金變化嘅第十百分位。",
+            "unit": "USD trillion",
+            "source_kind": "MATHEMATICAL_NOTATION",
+            "note": "作為快速下跌嘅操作化比較線。",
+        },
+        {
+            "key": "crisis_context",
+            "symbol_tex": "c_t",
+            "label": "危機／特殊政策背景",
+            "definition": "人工覆核當時有冇重大危機或特殊政策扭曲。",
+            "unit": None,
+            "source_kind": "MATHEMATICAL_NOTATION",
+            "note": "1＝存在；0＝不存在；未知＝待覆核。",
+        },
+        {
+            "key": "logical_and",
+            "symbol_tex": r"\land",
+            "label": "而且",
+            "definition": "全部條件都要成立。",
+            "unit": None,
+            "source_kind": "MATHEMATICAL_NOTATION",
+            "note": "邏輯 AND。",
+        },
+        {
+            "key": "logical_or",
+            "symbol_tex": r"\lor",
+            "label": "或者",
+            "definition": "任何一條路徑成立即可。",
+            "unit": None,
+            "source_kind": "MATHEMATICAL_NOTATION",
+            "note": "邏輯 OR。",
+        },
+        {
+            "key": "logical_iff",
+            "symbol_tex": r"\iff",
+            "label": "當且僅當",
+            "definition": "左邊狀態等價於右邊條件。",
+            "unit": None,
+            "source_kind": "MATHEMATICAL_NOTATION",
+            "note": "雙向邏輯等價。",
+        },
+        {
+            "key": "extreme_candidate",
+            "symbol_tex": r"E_t^{\mathrm{candidate}}",
+            "label": "極端候選",
+            "definition": "數值條件成立，但危機背景未必已確認。",
+            "unit": None,
+            "source_kind": "MATHEMATICAL_NOTATION",
+            "note": "候選唔等同完整確認。",
+        },
+        {
+            "key": "extreme_confirmed",
+            "symbol_tex": r"E_t^{\mathrm{confirmed}}",
+            "label": "極端確認",
+            "definition": "數值條件同人工背景覆核都成立。",
+            "unit": None,
+            "source_kind": "MATHEMATICAL_NOTATION",
+            "note": "要求 c_t=0。",
+        },
+        {
+            "key": "source_spread_red",
+            "symbol_tex": rf"s_t>{values['spread']}\,\mathrm{{bp}}",
+            "label": "紅色利差門檻",
+            "definition": f"SOFR−IORB 嚴格高過 +{values['spread']} bp。",
+            "unit": "bp",
+            "source_kind": "VIDEO_SOURCE_RULE",
+            "note": "影片來源門檻；等於門檻並不成立。",
+        },
+        {
+            "key": "source_reserves_yellow",
+            "symbol_tex": rf"r_t<{values['yellow_reserve']}",
+            "label": "黃色準備金門檻",
+            "definition": f"Reserve Balances 跌穿 {values['yellow_reserve']}T。",
+            "unit": "USD trillion",
+            "source_kind": "VIDEO_SOURCE_RULE",
+            "note": "影片來源門檻，唔係通用稀缺界線。",
+        },
+        {
+            "key": "source_reserves_red",
+            "symbol_tex": rf"r_t<{values['red_reserve']}",
+            "label": "紅色準備金門檻",
+            "definition": f"Reserve Balances 跌穿 {values['red_reserve']}T。",
+            "unit": "USD trillion",
+            "source_kind": "VIDEO_SOURCE_RULE",
+            "note": "影片來源門檻，唔係官方危機線。",
+        },
+        {
+            "key": "source_reserves_extreme",
+            "symbol_tex": rf"r_t<{values['extreme_reserve']}",
+            "label": "極端準備金門檻",
+            "definition": f"Reserve Balances 跌穿 {values['extreme_reserve']}T。",
+            "unit": "USD trillion",
+            "source_kind": "VIDEO_SOURCE_RULE",
+            "note": "影片來源門檻，需配合快速下跌同背景覆核。",
+        },
+        {
+            "key": "source_tga_target",
+            "symbol_tex": rf"g_t\to {values['tga_target']}",
+            "label": "TGA 向目標靠攏",
+            "definition": f"影片描述 TGA 向 {values['tga_target']}T 靠攏。",
+            "unit": "USD trillion",
+            "source_kind": "VIDEO_SOURCE_RULE",
+            "note": "影片提供方向同目標，冇指定 dashboard floor。",
+        },
+        {
+            "key": "op_positive_streak",
+            "symbol_tex": rf"n_t^{{+}}\ge {values['streak']}",
+            "label": "持續正值操作化",
+            "definition": f"持續轉正定義為至少 {values['streak']} 個有效 observations。",
+            "unit": "observations",
+            "source_kind": "DASHBOARD_OPERATIONALIZATION",
+            "note": "呢個數量由 dashboard 定義，唔係影片逐字指定。",
+        },
+        {
+            "key": "op_tga_floor",
+            "symbol_tex": rf"g_t\ge {values['tga_floor']}",
+            "label": "TGA proximity floor",
+            "definition": f"向 {values['tga_target']}T 靠攏操作化為至少 {values['tga_floor']}T。",
+            "unit": "USD trillion",
+            "source_kind": "DASHBOARD_OPERATIONALIZATION",
+            "note": "單邊 floor；高過目標仍符合。",
+        },
+        {
+            "key": "op_srf_2_of_3",
+            "symbol_tex": rf"u_t\ge {values['srf_required']}",
+            "label": "SRF 多日確認",
+            "definition": (
+                f"最近 {values['srf_window']} 個 completed operation days 入面，"
+                f"至少 {values['srf_required']} 日出現非技術性正使用。"
+            ),
+            "unit": "days",
+            "source_kind": "DASHBOARD_OPERATIONALIZATION",
+            "note": "用多日確認減少單日噪音。",
+        },
+        {
+            "key": "op_rapid_decline",
+            "symbol_tex": r"\Delta_{4\mathrm{w}}r_t\le q_{0.10,t}^{(5\mathrm{y})}",
+            "label": "快速下跌操作化",
+            "definition": "四星期變化落入 trailing-five-year 第十百分位或以下。",
+            "unit": "USD trillion",
+            "source_kind": "DASHBOARD_OPERATIONALIZATION",
+            "note": "用 trailing 5Y p10 定義影片所講嘅快速下跌。",
+        },
+        {
+            "key": "manual_crisis_context",
+            "symbol_tex": "c_t=0",
+            "label": "危機背景人工覆核",
+            "definition": "完整確認要求人工判定冇重大危機或特殊政策扭曲。",
+            "unit": None,
+            "source_kind": "MANUAL_CONTEXT",
+            "note": "UNKNOWN 只會要求覆核，唔會自動通過或否決。",
+        },
+    ]
+
+    return {
+        "yellow": {
+            "expression": yellow_expression,
+            "display_tex": yellow_tex,
+            "plain_language": (
+                f"SOFR−IORB 已連續至少 {values['streak']} 個有效觀察值為正，而且準備金"
+                f"跌穿 {values['yellow_reserve']}T、四星期方向繼續向下，同時 TGA 已升至至少 "
+                f"{values['tga_floor']}T，四項必須同時成立。"
+            ),
+        },
+        "red": {
+            "expression": red_expression,
+            "display_tex": red_tex,
+            "plain_language": (
+                f"紅色警報有兩條獨立路徑。Route A 要 SOFR−IORB 高過 +{values['spread']} bp，"
+                f"而且準備金跌穿 {values['red_reserve']}T；Route B 則係最近 {values['srf_window']} 個"
+                f"已完成 operation days 入面至少 {values['srf_required']} 日出現非技術性 SRF "
+                "正使用。任何一條路徑成立即可。"
+            ),
+            "route_a_expression": red_route_a_expression,
+            "route_b_expression": red_route_b_expression,
+        },
+        "extreme": {
+            "expression": extreme_expression,
+            "display_tex": extreme_tex,
+            "plain_language": (
+                f"數值候選：準備金低過 {values['extreme_reserve']}T，而且四星期跌幅落入過去"
+                "五年最差 10% 區域。\n完整確認：再人工確認當時並非重大危機或特殊政策扭曲。"
+            ),
+        },
+        "notation": notation,
+    }
+
+
 @dataclass(frozen=True)
 class _Evidence:
     quality_status: str
@@ -381,8 +714,8 @@ def _srf_clause(
         )
 
     note = (
-        "Latest three completed operation days; technical-only exercises are excluded, "
-        "while mixed days use only alert-eligible nontechnical accepted amount."
+        f"Latest {window_days} completed operation days; technical-only exercises are "
+        "excluded, while mixed days use only alert-eligible nontechnical accepted amount."
     )
     if not classification_complete:
         note += " One or more daily rows lack complete technical classification."
@@ -391,7 +724,10 @@ def _srf_clause(
     clause = _clause(
         clause_id="srf_positive_days",
         order=3,
-        label="Nontechnical SRF positive on at least 2 of latest 3 operation days",
+        label=(
+            f"Nontechnical SRF positive on at least {required_positive_days} of latest "
+            f"{window_days} operation days"
+        ),
         metric_id=_METRIC_IDS["srf"],
         operator=">=",
         threshold=required_positive_days,
@@ -411,7 +747,8 @@ def _srf_clause(
                 "DASHBOARD_OPERATIONALIZATION",
                 "OPERATIONALIZED",
                 "yellow_red",
-                "The dashboard requires nontechnical positive use on 2 of 3 completed days.",
+                "The dashboard requires nontechnical positive use on "
+                f"{required_positive_days} of {window_days} completed days.",
             ),
         ),
         note=note,
@@ -493,16 +830,39 @@ def evaluate_video_p0_model(
     assert isinstance(context_value, Mapping)
     context = dict(context_value)
 
-    yellow_reserve_bn = round(float(yellow_config["reserve_below_usd_tn"]) * 1000, 6)
-    red_reserve_bn = round(float(red_config["reserve_below_usd_tn"]) * 1000, 6)
-    extreme_reserve_bn = round(float(extreme_config["reserve_below_usd_tn"]) * 1000, 6)
-    tga_floor_bn = round(float(yellow_config["tga_near_1t_floor_usd_tn"]) * 1000, 6)
-    tga_target_bn = round(float(yellow_config["tga_source_target_usd_tn"]) * 1000, 6)
+    yellow_reserve_tn = float(yellow_config["reserve_below_usd_tn"])
+    red_reserve_tn = float(red_config["reserve_below_usd_tn"])
+    extreme_reserve_tn = float(extreme_config["reserve_below_usd_tn"])
+    tga_floor_tn = float(yellow_config["tga_near_1t_floor_usd_tn"])
+    tga_target_tn = float(yellow_config["tga_source_target_usd_tn"])
+    yellow_reserve_bn = round(yellow_reserve_tn * 1000, 6)
+    red_reserve_bn = round(red_reserve_tn * 1000, 6)
+    extreme_reserve_bn = round(extreme_reserve_tn * 1000, 6)
+    tga_floor_bn = round(tga_floor_tn * 1000, 6)
+    tga_target_bn = round(tga_target_tn * 1000, 6)
     streak_required = int(yellow_config["positive_streak_observations"])
     positive_spread_line = float(yellow_config["spread_positive_bp"])
     spread_threshold = float(red_config["sofr_iorb_bp"])
     srf_window = int(red_config["srf_window_completed_operation_days"])
     srf_required = int(red_config["srf_positive_days_latest_3"])
+    presentation = build_video_p0_formula_presentation(
+        streak_required=streak_required,
+        yellow_reserve_tn=yellow_reserve_tn,
+        red_reserve_tn=red_reserve_tn,
+        extreme_reserve_tn=extreme_reserve_tn,
+        tga_floor_tn=tga_floor_tn,
+        tga_target_tn=tga_target_tn,
+        spread_threshold=spread_threshold,
+        srf_required=srf_required,
+        srf_window=srf_window,
+    )
+    streak_text = _display_number(streak_required)
+    yellow_reserve_text = _display_number(yellow_reserve_tn)
+    red_reserve_text = _display_number(red_reserve_tn)
+    extreme_reserve_text = _display_number(extreme_reserve_tn)
+    tga_floor_text = _display_number(tga_floor_tn)
+    tga_target_text = _display_number(tga_target_tn)
+    spread_threshold_text = _display_number(spread_threshold)
 
     spread_evidence = _quality_record(
         metric_quality, _METRIC_IDS["spread"], value_present=spread is not None
@@ -557,15 +917,18 @@ def evaluate_video_p0_model(
                 "DASHBOARD_OPERATIONALIZATION",
                 "OPERATIONALIZED",
                 "yellow_red",
-                "Persistence is operationalized as three valid observations.",
+                f"Persistence is operationalized as {streak_text} valid observations.",
             ),
         ),
-        note="Three observations are a dashboard operationalization, not a quoted duration.",
+        note=(
+            f"{streak_text} observations are a dashboard operationalization, not a quoted "
+            "duration."
+        ),
     )
     yellow_reserve = _numeric_clause(
         clause_id="reserve_below_yellow",
         order=2,
-        label="Reserve Balances < 2.9T",
+        label=f"Reserve Balances < {yellow_reserve_text}T",
         metric_id=_METRIC_IDS["reserves"],
         operator="<",
         threshold=yellow_reserve_bn,
@@ -579,7 +942,7 @@ def evaluate_video_p0_model(
                 "VIDEO_SOURCE_RULE",
                 "SOURCE RULE",
                 "yellow_red",
-                "2.9T is the source model's yellow reserve threshold.",
+                f"{yellow_reserve_text}T is the source model's yellow reserve threshold.",
             ),
             _basis(
                 "DASHBOARD_OPERATIONALIZATION",
@@ -607,13 +970,15 @@ def evaluate_video_p0_model(
                 "VIDEO_SOURCE_RULE",
                 "SOURCE RULE",
                 "reserve_exit_1",
-                "The source describes reserves falling through 2.9T toward 2.8T.",
+                "The source describes reserves falling through "
+                f"{yellow_reserve_text}T toward {red_reserve_text}T.",
             ),
             _basis(
                 "DASHBOARD_OPERATIONALIZATION",
                 "OPERATIONALIZED",
                 "reserve_exit_1",
-                "The direction toward 2.8T is operationalized as a negative four-week change.",
+                f"The direction toward {red_reserve_text}T is operationalized as a negative "
+                "four-week change.",
             ),
         ),
         note="A negative change establishes direction only; it does not by itself mean stress.",
@@ -621,7 +986,7 @@ def evaluate_video_p0_model(
     yellow_tga = _numeric_clause(
         clause_id="tga_near_1t",
         order=4,
-        label="TGA near 1T operational floor",
+        label=f"TGA near {tga_target_text}T operational floor",
         metric_id=_METRIC_IDS["tga"],
         operator=">=",
         threshold=tga_floor_bn,
@@ -635,16 +1000,18 @@ def evaluate_video_p0_model(
                 "VIDEO_SOURCE_RULE",
                 "SOURCE RULE",
                 "yellow_red",
-                "The source says TGA approaches 1T.",
+                f"The source says TGA approaches {tga_target_text}T.",
             ),
             _basis(
                 "DASHBOARD_OPERATIONALIZATION",
                 "OPERATIONALIZED",
                 "yellow_red",
-                "The dashboard uses 0.95T as the one-sided operational floor.",
+                f"The dashboard uses {tga_floor_text}T as the one-sided operational floor.",
             ),
         ),
-        note="Values above 1T still satisfy this one-sided proximity rule.",
+        note=(
+            f"Values above {tga_target_text}T still satisfy this one-sided proximity rule."
+        ),
     )
     yellow_clauses = [yellow_streak, yellow_reserve, yellow_change, yellow_tga]
     yellow_triggered = _tri_and([clause["met"] for clause in yellow_clauses])
@@ -652,7 +1019,7 @@ def evaluate_video_p0_model(
     red_spread = _numeric_clause(
         clause_id="sofr_spread_above_red",
         order=1,
-        label="SOFR−IORB > +3 bp",
+        label=f"SOFR−IORB > +{spread_threshold_text} bp",
         metric_id=_METRIC_IDS["spread"],
         operator=">",
         threshold=spread_threshold,
@@ -666,7 +1033,7 @@ def evaluate_video_p0_model(
                 "VIDEO_SOURCE_RULE",
                 "SOURCE RULE",
                 "yellow_red",
-                "+3 bp is the source model's strict spread line.",
+                f"+{spread_threshold_text} bp is the source model's strict spread line.",
             ),
             _basis(
                 "DASHBOARD_OPERATIONALIZATION",
@@ -675,12 +1042,15 @@ def evaluate_video_p0_model(
                 "The dashboard evaluates the cited line as a strict greater-than comparison in bp.",
             ),
         ),
-        note="Equality at +3 bp does not meet this strict greater-than clause.",
+        note=(
+            f"Equality at +{spread_threshold_text} bp does not meet this strict "
+            "greater-than clause."
+        ),
     )
     red_reserve = _numeric_clause(
         clause_id="reserve_below_red",
         order=2,
-        label="Reserve Balances < 2.8T",
+        label=f"Reserve Balances < {red_reserve_text}T",
         metric_id=_METRIC_IDS["reserves"],
         operator="<",
         threshold=red_reserve_bn,
@@ -694,7 +1064,7 @@ def evaluate_video_p0_model(
                 "VIDEO_SOURCE_RULE",
                 "SOURCE RULE",
                 "yellow_red",
-                "2.8T is the source model's red reserve confirmation line.",
+                f"{red_reserve_text}T is the source model's red reserve confirmation line.",
             ),
             _basis(
                 "DASHBOARD_OPERATIONALIZATION",
@@ -719,7 +1089,7 @@ def evaluate_video_p0_model(
     extreme_reserve = _numeric_clause(
         clause_id="reserve_below_extreme",
         order=1,
-        label="Reserve Balances < 2.5T",
+        label=f"Reserve Balances < {extreme_reserve_text}T",
         metric_id=_METRIC_IDS["reserves"],
         operator="<",
         threshold=extreme_reserve_bn,
@@ -733,7 +1103,7 @@ def evaluate_video_p0_model(
                 "VIDEO_SOURCE_RULE",
                 "SOURCE RULE",
                 "reserve_exit_2",
-                "2.5T is the source model's extreme reserve line.",
+                f"{extreme_reserve_text}T is the source model's extreme reserve line.",
             ),
             _basis(
                 "DASHBOARD_OPERATIONALIZATION",
@@ -767,7 +1137,7 @@ def evaluate_video_p0_model(
                 "VIDEO_SOURCE_RULE",
                 "SOURCE RULE",
                 "reserve_exit_2",
-                "The source requires a rapid fall below 2.5T.",
+                f"The source requires a rapid fall below {extreme_reserve_text}T.",
             ),
             _basis(
                 "DASHBOARD_OPERATIONALIZATION",
@@ -951,44 +1321,42 @@ def evaluate_video_p0_model(
             "exclude_technical_exercises": True,
         },
         "crisis_context": context,
+        "notation": presentation["notation"],
         "formulas": {
             "yellow": {
-                "expression": (
-                    "PERSIST(SOFR−IORB > 0) ∧ RESERVES < 2.9T ∧ "
-                    "Δ4W RESERVES < 0 ∧ TGA ≥ 0.95T"
-                ),
+                "expression": presentation["yellow"]["expression"],
+                "display_tex": presentation["yellow"]["display_tex"],
+                "plain_language": presentation["yellow"]["plain_language"],
                 "triggered": yellow_triggered,
                 "clauses": yellow_clauses,
             },
             "red": {
-                "expression": (
-                    "[(SOFR−IORB > +3 bp) ∧ (RESERVES < 2.8T)] "
-                    "∨ NONTECHNICAL SRF ↑"
-                ),
+                "expression": presentation["red"]["expression"],
+                "display_tex": presentation["red"]["display_tex"],
+                "plain_language": presentation["red"]["plain_language"],
                 "triggered": red_triggered,
                 "clauses": red_clauses,
                 "routes": [
                     {
                         "route_id": "spread_and_reserves",
                         "label": "ROUTE A · SPREAD + RESERVES",
-                        "expression": "SOFR−IORB > +3 bp ∧ RESERVES < 2.8T",
+                        "expression": presentation["red"]["route_a_expression"],
                         "triggered": route_a_triggered,
                         "clauses": [red_spread, red_reserve],
                     },
                     {
                         "route_id": "srf_2_of_3",
                         "label": "ROUTE B · NONTECHNICAL SRF",
-                        "expression": "NONTECHNICAL SRF POSITIVE ON ≥2 OF LATEST 3 DAYS",
+                        "expression": presentation["red"]["route_b_expression"],
                         "triggered": route_b_triggered,
                         "clauses": [srf_clause],
                     },
                 ],
             },
             "extreme": {
-                "expression": (
-                    "RESERVES < 2.5T ∧ 4W DECLINE ≤ TRAILING 5Y P10 "
-                    "∧ NO MAJOR CRISIS"
-                ),
+                "expression": presentation["extreme"]["expression"],
+                "display_tex": presentation["extreme"]["display_tex"],
+                "plain_language": presentation["extreme"]["plain_language"],
                 "triggered": extreme_triggered,
                 "clauses": extreme_clauses,
                 "candidate": extreme_candidate,

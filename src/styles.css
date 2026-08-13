@@ -2367,6 +2367,7 @@ a:focus-visible,
   display: grid;
   align-content: start;
   gap: 12px;
+  min-width: 0;
   scroll-margin-top: 16px;
 }
 
@@ -2462,10 +2463,155 @@ a:focus-visible,
   white-space: nowrap;
 }
 
-.formula-expression {
-  margin: 7px 0 10px;
+.formula-presentation {
+  min-width: 0;
+  margin: 8px 0 12px;
+}
+
+.latex-formula {
+  max-width: 100%;
   color: var(--ink);
+}
+
+.latex-formula.is-display {
+  min-height: 34px;
+  padding: 7px 0 5px;
+  overflow-x: auto;
+  overflow-y: hidden;
   font: 500 clamp(14px, 1.1vw, 19px)/1.45 'DM Mono', monospace;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+}
+
+.latex-formula.is-display .katex-display {
+  min-width: max-content;
+  margin: 0;
+  text-align: left;
+}
+
+.latex-formula.is-display .katex-display > .katex {
+  text-align: left;
+}
+
+.latex-formula.is-inline {
+  display: inline-block;
+  min-width: 30px;
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+.latex-formula[data-render-error="true"] {
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  overflow-wrap: anywhere;
+}
+
+.formula-reading {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.65;
+  white-space: pre-line;
+}
+
+.formula-reading strong {
+  color: var(--ink2);
+  font-weight: 700;
+}
+
+.formula-notation {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.formula-notation-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.formula-notation-head h3 {
+  margin: 6px 0 0;
+  color: var(--ink);
+  font-size: 17px;
+}
+
+.formula-notation-head p {
+  max-width: 500px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.5;
+  text-align: right;
+}
+
+.formula-notation-group {
+  min-width: 0;
+}
+
+.formula-notation-group > h4 {
+  margin: 0 0 6px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--line);
+  color: var(--faint);
+  font: 700 9px 'DM Mono', monospace;
+  letter-spacing: .08em;
+}
+
+.formula-notation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  background: var(--rowline);
+}
+
+.formula-notation-item {
+  min-width: 0;
+  padding: 9px 10px;
+  background: var(--panel);
+}
+
+.formula-notation-item dt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--ink);
+}
+
+.formula-notation-item dt strong {
+  min-width: 0;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.formula-notation-item dd {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.formula-notation-item small {
+  display: block;
+  margin-top: 5px;
+  color: var(--faint);
+  font: 8.5px 'DM Mono', monospace;
+  text-transform: uppercase;
+}
+
+.formula-notation-item p {
+  margin: 5px 0 0;
+  color: var(--faint);
+  font-size: 9px;
+  line-height: 1.5;
   overflow-wrap: anywhere;
 }
 
@@ -2528,11 +2674,6 @@ a:focus-visible,
   min-width: 0;
   padding-top: 9px;
   border-top: 1px solid color-mix(in srgb, var(--negative) 45%, transparent);
-}
-
-.formula-route .formula-expression {
-  margin: 5px 0 7px;
-  font-size: 13px;
 }
 
 .formula-source {
@@ -3179,6 +3320,21 @@ a:focus-visible,
   }
 }
 
+@media (max-width: 1100px) {
+  .formula-notation-head {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .formula-notation-head p {
+    text-align: left;
+  }
+
+  .formula-notation-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .p0-formula-panel {
     order: -1;
@@ -3198,11 +3354,23 @@ a:focus-visible,
     grid-template-columns: minmax(0, 1fr) auto;
   }
 
-  .formula-clause-status,
+  .formula-clause-label,
   .formula-clause-meta,
   .formula-clause-note {
     grid-column: 1 / -1;
     text-align: left;
+  }
+
+  .formula-clause-value {
+    min-width: 0;
+    text-align: left;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .formula-clause-status {
+    grid-column: 2;
+    text-align: right;
   }
 
   .formula-source {

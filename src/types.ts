@@ -305,6 +305,7 @@ export type FormulaSourceKind =
   | 'VIDEO_SOURCE_RULE'
   | 'DASHBOARD_OPERATIONALIZATION'
   | 'MANUAL_CONTEXT';
+export type FormulaNotationKind = FormulaSourceKind | 'MATHEMATICAL_NOTATION';
 export type FormulaEvaluationState =
   | 'CURRENT'
   | 'LAST_GOOD'
@@ -342,13 +343,28 @@ export interface FormulaClause {
 
 export interface FormulaEvaluation {
   expression: string;
+  display_tex: string;
+  plain_language: string;
   triggered: boolean | null;
   clauses: FormulaClause[];
 }
 
-export interface FormulaRoute extends FormulaEvaluation {
+export interface FormulaRoute {
   route_id: string;
   label: string;
+  expression: string;
+  triggered: boolean | null;
+  clauses: FormulaClause[];
+}
+
+export interface FormulaNotationItem {
+  key: string;
+  symbol_tex: string;
+  label: string;
+  definition: string;
+  unit: string | null;
+  source_kind: FormulaNotationKind;
+  note: string;
 }
 
 export interface VideoSourceSegment {
@@ -407,6 +423,7 @@ export interface VideoP0Model {
   thresholds: VideoP0Thresholds;
   operationalizations: Record<string, string | number | boolean>;
   crisis_context: VideoP0CrisisContext;
+  notation: FormulaNotationItem[];
   formulas: {
     yellow: FormulaEvaluation;
     red: FormulaEvaluation & { routes: FormulaRoute[] };
@@ -420,7 +437,7 @@ export interface VideoP0Model {
 }
 
 export interface Snapshot {
-  schema_version: '2.1.0';
+  schema_version: '2.2.0';
   generated_at: string;
   pipeline_updated_at: string;
   market_date: string | null;
