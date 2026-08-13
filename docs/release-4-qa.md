@@ -28,7 +28,12 @@ Baseline commit: `ca5e317`
 
 ## Deployment and live verification
 
-- Phase commit／generated-data commit／Actions run／Pages deployment：pending。
-- Live schema、five P3 series、source state、manual-ready cards、route interactions、console/network同three-viewport responsive QA：pending。
+- Phase commit `6f319b6` 嘅 [Actions run `31656976405`](https://github.com/laubonghaudoi/bubble/actions/runs/31656976405) 全部gates成功：SEC metadata dry-run、fetch/stage、Python `436 passed`、Vitest `39 passed`、TypeScript／Vite build、atomic promote、generated-data push同Pages deploy。npm audit為0 vulnerabilities。
+- Generated-data commit `09d1957`由`github-actions[bot]`建立，parent為phase commit；Pages deployment `5880113239`成功。Live snapshot、manifest、40條series、index同兩個assets共47/47同Pages artifact逐byte一致；44個data files同bot commit零差異。
+- Live schema`2.0.0`、40 metrics／40 series、11個automated sources全為`OK/FRESH`。P3維持`2/4 / LOW / assessment:null`；CapEx `165.05` USD bn、YoY acceleration `+6.580022pp`、breadth `2/4`、12個quarters、finance-lease breadth `3/4`。三項manual metrics全部`MANUAL_READY / null / 0 observations`。
+- 四間公司latest cash CapEx獨立重算：Alphabet `44.924` + Amazon `54.208` + Meta `30.116` + Microsoft `35.802` = `165.05`。Company-level direct SEC accession、form、accepted timestamp、tag、fiscal context同quarterization provenance全部通過contract。
+- 五個retired P3 aliases（`hyperscaler_capex`、`capex_acceleration`、`upstream_backlog`、`prepayments`、`take_or_pay`）全部HTTP 404。P0保持`NEUTRAL 4/4 / MEDIUM`；P1保持`1/4 / LOW / assessment:null`；P2同所有既有數值、series、switches及解讀保持不變，只刷新operational timestamps並清除非P0誤繼承嘅Treasury technical flags。
+- Live browser喺1440×1000、1024×1000、390×844重新通過：新asset `index-DiobXzHU.js`、五條P3 series全部200；routes、back/forward、route focus、ranges、overlay、drawers、focus trap／Escape／restore、11-source provenance同legal notices正常；零console warning/error，冇page-level overflow。
+- 獨立manual disclosure [run `31657324716`](https://github.com/laubonghaudoi/bubble/actions/runs/31657324716)成功，建立唯一由`github-actions[bot]`持有嘅 [P3 review queue issue #2](https://github.com/laubonghaudoi/bubble/issues/2)；workflow只讀SEC metadata，冇抽取或發布數字。
 
-final result: pending deployment
+final result: passed

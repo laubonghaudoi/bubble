@@ -1044,15 +1044,15 @@ GitHub cron 用 UTC，亦可能延遲；collector 必須依 source as-of 判斷�
 
 ### 全局完成
 
-- [ ] `NOT WIRED` 全部轉成可審核狀態；
-- [ ] `null != 0`；
-- [ ] source health 正確；
-- [ ] 所有自動數據有 as-of／updated-at／source；
-- [ ] 所有免費 proxy 不冒充原數據；
-- [ ] GitHub Pages 無 server dependency；
-- [ ] GitHub Actions 無付費 API／未授權 secret；
-- [ ] README 說明本地重跑、更新排程、人工 CSV 及 troubleshooting；
-- [ ] CI tests 與 production build 通過。
+- [x] `NOT WIRED` 全部轉成可審核狀態；
+- [x] `null != 0`；
+- [x] source health 正確；
+- [x] 所有自動數據有 as-of／updated-at／source；
+- [x] 所有免費 proxy 不冒充原數據；
+- [x] GitHub Pages 無 server dependency；
+- [x] GitHub Actions 無付費 API／未授權 secret；
+- [x] README 說明本地重跑、更新排程、人工 CSV 及 troubleshooting；
+- [x] CI tests 與 production build 通過。
 
 ---
 
