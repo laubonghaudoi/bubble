@@ -78,7 +78,7 @@ The browser console result was `[]`. Direct formula deep-link focus passed. At 3
 - `npm audit --omit=dev`: zero vulnerabilities.
 - `git diff --check`: passed; schema, pipeline, package/lockfile, types, KaTeX component and `public/data` remain unchanged.
 
-Deployment and live verification remain `PENDING` in `docs/release-8-qa.md`; they are not inferred from the local pass.
+Deployment and live verification subsequently passed and are recorded with exact commit, workflow, asset and data identities in `docs/release-8-qa.md`.
 
 ## Release 7 historical baseline
 
@@ -88,6 +88,6 @@ The historical Release 7 Provenance contract used `660px / fluid` desktop rails 
 
 ## Current acceptance boundary
 
-The available screenshots, comparison composites, six-width responsive measurements, console result, deep-link check and full local gates are sufficient to pass the requested local presentation delta. Release readiness is not yet established: commit identity, workflow execution, Pages assets, live route behavior and data parity remain pending.
+The screenshots, comparison composites, six-width responsive measurements, console result, deep-link check and full local gates pass the requested presentation delta. The matching six-width Pages matrix, live focus/count/contrast checks and byte-identical asset/data verification close the release boundary; exact identities are recorded in `docs/release-8-qa.md`.
 
 final result: passed
