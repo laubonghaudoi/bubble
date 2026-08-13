@@ -294,27 +294,29 @@ function P0VideoFormulaPanel({ model }: { model: VideoP0Model }) {
         <div className="formula-model-state"><strong style={statusStyle(model.status)}>CURRENT · {model.status.replaceAll('_', ' ')}</strong><small style={statusStyle(model.data_status)}>DATA · {model.data_status.replaceAll('_', '-')}</small></div>
       </header>
 
+      <div className="formula-card-grid">
+        <section className="formula-card is-yellow" aria-labelledby="formula-yellow-title">
+          <div className="formula-card-head"><h3 id="formula-yellow-title">YELLOW</h3><span>{formulaOutcome(yellow.triggered)}</span></div>
+          <FormulaExpression formulaId="yellow" expression={yellow.expression} displayTex={yellow.display_tex} plainLanguage={yellow.plain_language} />
+          <FormulaClauseList clauses={yellow.clauses} />
+        </section>
+
+        <section className="formula-card is-red" aria-labelledby="formula-red-title">
+          <div className="formula-card-head"><h3 id="formula-red-title">RED · TWO INDEPENDENT ROUTES</h3><span>{formulaOutcome(red.triggered)}</span></div>
+          <FormulaExpression formulaId="red" expression={red.expression} displayTex={red.display_tex} plainLanguage={red.plain_language} />
+          <div className="formula-route-list">
+            {red.routes.map((route) => <section className="formula-route" key={route.route_id}><div className="formula-route-head"><h4>{route.label}</h4><span>{formulaOutcome(route.triggered)}</span></div><FormulaClauseList clauses={route.clauses} /></section>)}
+          </div>
+        </section>
+
+        <section className="formula-card is-extreme" aria-labelledby="formula-extreme-title">
+          <div className="formula-card-head"><h3 id="formula-extreme-title">EXTREME · CONTEXT REQUIRED</h3><span>CANDIDATE {formulaOutcome(extreme.candidate)}</span></div>
+          <FormulaExpression formulaId="extreme" expression={extreme.expression} displayTex={extreme.display_tex} plainLanguage={extreme.plain_language} />
+          <FormulaClauseList clauses={extreme.clauses} />
+        </section>
+      </div>
+
       <FormulaNotation notation={model.notation} />
-
-      <section className="formula-card is-yellow" aria-labelledby="formula-yellow-title">
-        <div className="formula-card-head"><h3 id="formula-yellow-title">YELLOW</h3><span>{formulaOutcome(yellow.triggered)}</span></div>
-        <FormulaExpression formulaId="yellow" expression={yellow.expression} displayTex={yellow.display_tex} plainLanguage={yellow.plain_language} />
-        <FormulaClauseList clauses={yellow.clauses} />
-      </section>
-
-      <section className="formula-card is-red" aria-labelledby="formula-red-title">
-        <div className="formula-card-head"><h3 id="formula-red-title">RED · TWO INDEPENDENT ROUTES</h3><span>{formulaOutcome(red.triggered)}</span></div>
-        <FormulaExpression formulaId="red" expression={red.expression} displayTex={red.display_tex} plainLanguage={red.plain_language} />
-        <div className="formula-route-list">
-          {red.routes.map((route) => <section className="formula-route" key={route.route_id}><div className="formula-route-head"><h4>{route.label}</h4><span>{formulaOutcome(route.triggered)}</span></div><FormulaClauseList clauses={route.clauses} /></section>)}
-        </div>
-      </section>
-
-      <section className="formula-card is-extreme" aria-labelledby="formula-extreme-title">
-        <div className="formula-card-head"><h3 id="formula-extreme-title">EXTREME · CONTEXT REQUIRED</h3><span>CANDIDATE {formulaOutcome(extreme.candidate)}</span></div>
-        <FormulaExpression formulaId="extreme" expression={extreme.expression} displayTex={extreme.display_tex} plainLanguage={extreme.plain_language} />
-        <FormulaClauseList clauses={extreme.clauses} />
-      </section>
 
       <section className="formula-source" aria-labelledby="formula-source-title">
         <div><div className="provenance-kicker" id="formula-source-title">SOURCE MODEL</div><a href={model.source.url} target="_blank" rel="noreferrer">YouTube · {model.source.display_title || model.source.title} ↗</a></div>
@@ -322,7 +324,6 @@ function P0VideoFormulaPanel({ model }: { model: VideoP0Model }) {
       </section>
       {model.technical_flags.length ? <p className="formula-technical-flags"><strong>TECHNICAL FLAGS</strong>{model.technical_flags.join(' · ')}</p> : null}
       {model.notes.length ? <ul className="formula-notes">{model.notes.map((note) => <li key={note}>{note}</li>)}</ul> : null}
-      <div className="formula-contract-note"><span className="provenance-kicker">ANALYSIS CONTRACT</span><strong>訊號唔係結論。</strong><p>以上係對影片 P0 門檻嘅可審核重現；Dashboard 操作化項目有獨立標記，現有 NORMAL／WATCH／ELEVATED／STRESS engine 繼續獨立運作。</p><p>RED 並未包含雲端企業 CapEx 共振判定；本面板不提供投資或買賣建議。</p></div>
     </article>
   );
 }
@@ -345,20 +346,18 @@ function StatusBar({ snapshot, route, onOpenSources }: { snapshot: Snapshot; rou
   const p0Assessment = snapshot.overall_assessment ?? snapshot.switches.liquidity_fuel.assessment ?? snapshot.switches.liquidity_fuel.mode;
   const healthTone = health.error > 0 ? 'var(--negative)' : health.stale > 0 || health.not_released_yet > 0 ? 'var(--warning)' : 'var(--positive)';
   return (
-    <>
-      <header className="status-bar">
-        <div className="brand"><span className="brand-mark">USD·LIQ</span><span className="brand-divider" aria-hidden="true" /><h1 className="brand-title">美元流動性監測</h1></div>
-        <div className="status-cluster">
-          <span className="status-item">MKT <strong>{snapshot.market_date ?? '—'}</strong></span>
-          <span className="status-item">UPD <strong>{formatUpdateTimestamp(snapshot.pipeline_updated_at)}</strong></span>
-          <button className="status-item source-status" onClick={onOpenSources} type="button" aria-label="查看來源與健康狀態">
-            SRC <strong>{health.ok}/{total}</strong><span className="health-dot" style={{ '--health-color': healthTone } as CSSProperties} aria-hidden="true" />
-          </button>
-          <span className="overall-pill" style={statusStyle(p0Assessment)}>{String(p0Assessment).toUpperCase()}</span>
-        </div>
-      </header>
+    <header className="status-bar">
+      <div className="brand"><span className="brand-mark">USD·LIQ</span><span className="brand-divider" aria-hidden="true" /><h1 className="brand-title">美元流動性監測</h1></div>
       <RouteNav route={route} />
-    </>
+      <div className="status-cluster">
+        <span className="status-item">MKT <strong>{snapshot.market_date ?? '—'}</strong></span>
+        <span className="status-item">UPD <strong>{formatUpdateTimestamp(snapshot.pipeline_updated_at)}</strong></span>
+        <button className="status-item source-status" onClick={onOpenSources} type="button" aria-label="查看來源與健康狀態">
+          SRC <strong>{health.ok}/{total}</strong><span className="health-dot" style={{ '--health-color': healthTone } as CSSProperties} aria-hidden="true" />
+        </button>
+        <span className="overall-pill" style={statusStyle(p0Assessment)}>{String(p0Assessment).toUpperCase()}</span>
+      </div>
+    </header>
   );
 }
 
@@ -366,8 +365,7 @@ function LiveTape({ snapshot, series, selected, onSelect }: { snapshot: Snapshot
   const activeCount = TAPE_IDS.filter((id) => ['ACTIVE_FREE', 'ACTIVE_PROXY'].includes(snapshot.metrics[id]?.availability)).length;
   return (
     <section className="panel tape-panel" aria-labelledby="live-tape-title">
-      <div className="panel-header" id="live-tape-title"><span>LIVE TAPE</span><span>{activeCount} ACTIVE</span></div>
-      <div className="tape-head" aria-hidden="true"><span>METRIC</span><span>TREND</span><span>LAST</span><span>CHANGE</span></div>
+      <div className="tape-head"><span id="live-tape-title">LIVE TAPE · {activeCount}</span><span aria-hidden="true">TREND</span><span aria-hidden="true">LAST</span><span aria-hidden="true">CHANGE</span></div>
       <div className="tape-scroll">
         {TAPE_GROUPS.map((group) => (
           <div className="tape-group" key={group.label}>
@@ -781,7 +779,7 @@ function OverviewPage(props: Pick<DashboardProps, 'snapshot' | 'series' | 'main'
 function LiquidityPage(props: Pick<DashboardProps, 'snapshot' | 'series' | 'main' | 'range' | 'overlay' | 'onMain' | 'onRange' | 'onOverlay' | 'onDrawer'>) {
   const value = props.snapshot.switches.liquidity_fuel;
   const model = props.snapshot.decision_models.p0_video_liquidity;
-  return <main className="detail-page"><header className="detail-hero"><div><span className="detail-number">01</span><h2 className="route-heading" data-route-heading tabIndex={-1}>流動性燃料</h2><p>{value.summary}</p></div><div className="detail-assessment" style={statusStyle(value.assessment ?? value.mode)}><span>P0 ASSESSMENT</span><strong>{value.assessment ?? '未能評估'}</strong><small>CONFIDENCE {value.confidence.toUpperCase()}</small></div></header><P0VideoBanner model={model} metrics={props.snapshot.metrics} /><ConfirmationGrid snapshot={props.snapshot} onMain={props.onMain} onMetric={props.onDrawer} /><ChartPanel snapshot={props.snapshot} series={props.series} main={props.main} range={props.range} overlay={props.overlay} tabs={LIQUIDITY_MAIN_TABS} onMain={props.onMain} onRange={props.onRange} onOverlay={props.onOverlay} /><EvidenceBlocks value={value} /></main>;
+  return <main className="detail-page liquidity-page"><header className="detail-hero"><div><span className="detail-number">01</span><h2 className="route-heading" data-route-heading tabIndex={-1}>流動性燃料</h2><p>{value.summary}</p></div><div className="detail-assessment" style={statusStyle(value.assessment ?? value.mode)}><span>P0 ASSESSMENT</span><strong>{value.assessment ?? '未能評估'}</strong><small>CONFIDENCE {value.confidence.toUpperCase()}</small></div></header><P0VideoBanner model={model} metrics={props.snapshot.metrics} /><ConfirmationGrid snapshot={props.snapshot} onMain={props.onMain} onMetric={props.onDrawer} /><ChartPanel snapshot={props.snapshot} series={props.series} main={props.main} range={props.range} overlay={props.overlay} tabs={LIQUIDITY_MAIN_TABS} onMain={props.onMain} onRange={props.onRange} onOverlay={props.onOverlay} /><EvidenceBlocks value={value} /></main>;
 }
 
 function percentageChange(value: number | null | undefined) {
@@ -862,6 +860,16 @@ function FundamentalCapexPanel({ snapshot, series, onMetric }: { snapshot: Snaps
         </table>
       </div>
 
+    </section>
+  );
+}
+
+function FundamentalCompanyPanel({ snapshot }: { snapshot: Snapshot }) {
+  const capex = snapshot.metrics[P3_AUTOMATED_IDS[0]];
+  const details = capex?.details?.fundamental;
+  return (
+    <section className="phase-section fundamental-company-section" aria-labelledby="fundamental-company-title">
+      <div className="detail-section-head"><span id="fundamental-company-title">P3 · COMPANY / FILING EVIDENCE</span><b>{details?.companies.length ?? 0} REVIEWED COMPANIES</b></div>
       <div className="fundamental-company-grid" aria-label="Latest company CapEx, mappings and filing provenance">
         {details?.companies.map((company) => <FundamentalCompanyCard company={company} key={company.company_id} />)}
       </div>
@@ -897,12 +905,13 @@ function FundamentalManualPanel({ snapshot, onMetric }: { snapshot: Snapshot; on
 function FundamentalExitPage({ snapshot, series, catalogError, onMetric }: { snapshot: Snapshot; series: SeriesMap; catalogError: string; onMetric: (id: string) => void }) {
   const value = snapshot.switches.fundamental_exit;
   return (
-    <main className="detail-page">
+    <main className="detail-page fundamental-exit-page">
       <header className="detail-hero"><div><span className="detail-number">03</span><h2 className="route-heading" data-route-heading tabIndex={-1}>基本面逃生門</h2><p>{value.summary}</p></div><div className="detail-assessment is-evidence-only" style={statusStyle('UNKNOWN')}><span>EVIDENCE ONLY</span><strong>{value.available_blocks}/{value.total_blocks} AVAILABLE</strong><small>DIRECTION + CONFIDENCE {value.confidence.toUpperCase()} · NO WATCH/STRESS</small></div></header>
       {catalogError ? <div className="inline-error" role="status">Manifest 暫時不可用：{catalogError}</div> : null}
-      <EvidenceBlocks value={value} evidenceOnly label="Fundamental Exit evidence coverage" />
-      <FundamentalCapexPanel snapshot={snapshot} series={series} onMetric={onMetric} />
-      <FundamentalManualPanel snapshot={snapshot} onMetric={onMetric} />
+      <div className="fundamental-desktop-grid">
+        <div className="fundamental-main-column"><FundamentalCapexPanel snapshot={snapshot} series={series} onMetric={onMetric} /></div>
+        <div className="fundamental-evidence-column"><FundamentalCompanyPanel snapshot={snapshot} /><FundamentalManualPanel snapshot={snapshot} onMetric={onMetric} /></div>
+      </div>
     </main>
   );
 }
@@ -911,17 +920,16 @@ function PhasePage({ route, snapshot, catalogError, series, range, onRange, onMe
   if (route === 'fundamental-exit') return <FundamentalExitPage snapshot={snapshot} series={series} catalogError={catalogError} onMetric={onMetric} />;
   const value = snapshot.switches.market_ignition;
   return (
-    <main className="detail-page">
+    <main className="detail-page market-ignition-page">
       <header className="detail-hero">
         <div><span className="detail-number">02</span><h2 className="route-heading" data-route-heading tabIndex={-1}>市場引信</h2><p>{value.summary}</p></div>
         <div className="detail-assessment is-evidence-only" style={statusStyle('UNKNOWN')}><span>EVIDENCE ONLY</span><strong>{value.available_blocks}/{value.total_blocks} AVAILABLE</strong><small>DIRECTION + CONFIDENCE · NO WATCH/STRESS</small></div>
       </header>
       {catalogError ? <div className="inline-error" role="status">Manifest 暫時不可用：{catalogError}</div> : null}
       <>
-        <EvidenceBlocks value={value} evidenceOnly label="Market Ignition evidence coverage" />
         <CftcPositioningPanel snapshot={snapshot} series={series} range={range} onRange={onRange} onMetric={onMetric} />
-        <RightsGatedInterfaces snapshot={snapshot} onMetric={onMetric} />
         <FragilityPanel snapshot={snapshot} series={series} range={range} onMetric={onMetric} />
+        <RightsGatedInterfaces snapshot={snapshot} onMetric={onMetric} />
         <P2RightsHeld snapshot={snapshot} onMetric={onMetric} />
       </>
     </main>
@@ -948,21 +956,23 @@ function ProvenancePage({ snapshot }: { snapshot: Snapshot }) {
   return (
     <main className="provenance-page">
       <h2 className="route-heading sr-only" data-route-heading tabIndex={-1}>來源與方法</h2>
-      <section className="provenance-grid" aria-label="來源、健康狀態與分析聲明">
-        <article className="provenance-panel">
-          <div className="provenance-kicker">PROVENANCE · COLLECTOR HEALTH</div>
-          {Object.entries(snapshot.sources).map(([id, source]) => <div className="source-row" key={id}><div className="source-main">{source.url ? <a className="source-link" href={source.url} target="_blank" rel="noreferrer">{source.name} ↗</a> : <strong>{source.name}</strong>}<span className="source-meta">{source.observation_date ?? '—'} · {FRESHNESS_LABELS[source.freshness]}</span></div><span className="source-quality">{source.tier ?? '—'}</span><Badge status={source.status} label={healthText(source.status)} /></div>)}
-        </article>
+      <section className="provenance-grid" aria-label="來源、健康狀態與公式說明">
+        <div className="provenance-side">
+          <article className="provenance-panel">
+            <div className="provenance-kicker">PROVENANCE · COLLECTOR HEALTH</div>
+            {Object.entries(snapshot.sources).map(([id, source]) => <div className="source-row" key={id}><div className="source-main">{source.url ? <a className="source-link" href={source.url} target="_blank" rel="noreferrer">{source.name} ↗</a> : <strong>{source.name}</strong>}<span className="source-meta">{source.observation_date ?? '—'} · {FRESHNESS_LABELS[source.freshness]}</span></div><span className="source-quality">{source.tier ?? '—'}</span><Badge status={source.status} label={healthText(source.status)} /></div>)}
+          </article>
+          <article className="provenance-panel source-notices" aria-labelledby="source-notices-title">
+            <div className="provenance-kicker" id="source-notices-title">LEGAL · SOURCE NOTICES</div>
+            <p><strong>FRED® API.</strong> This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. By using this dashboard, users agree to be bound by the <a href="https://fred.stlouisfed.org/docs/api/terms_of_use.html" target="_blank" rel="noreferrer">FRED® API Terms of Use ↗</a>. Only reviewed government-origin series are enabled; a FRED API key does not grant third-party data rights.</p>
+            <p><strong>New York Fed reference rates.</strong> The SOFR, EFFR, OBFR, TGCR and BGCR data are subject to the <a href="https://www.newyorkfed.org/privacy/termsofuse.html" target="_blank" rel="noreferrer">Terms of Use posted at newyorkfed.org ↗</a>. The New York Fed is not responsible for publication of these data by Bubble USD Liquidity Dashboard, does not sanction or endorse this republication, and has no liability for your use. Bubble USD Liquidity Dashboard is not affiliated with the New York Fed. The New York Fed does not sanction, endorse, or recommend any products or services offered by Bubble USD Liquidity Dashboard. © 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org.</p>
+            <CftcLegalNotice />
+            <SecLegalNotice />
+            <SecCompanyFactsLegalNotice />
+            <p><strong>Privacy.</strong> This static dashboard does not provide accounts and does not intentionally collect personal information, analytics, or cookies.</p>
+          </article>
+        </div>
         <P0VideoFormulaPanel model={snapshot.decision_models.p0_video_liquidity} />
-        <article className="provenance-panel source-notices" aria-labelledby="source-notices-title">
-          <div className="provenance-kicker" id="source-notices-title">LEGAL · SOURCE NOTICES</div>
-          <p><strong>FRED® API.</strong> This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. By using this dashboard, users agree to be bound by the <a href="https://fred.stlouisfed.org/docs/api/terms_of_use.html" target="_blank" rel="noreferrer">FRED® API Terms of Use ↗</a>. Only reviewed government-origin series are enabled; a FRED API key does not grant third-party data rights.</p>
-          <p><strong>New York Fed reference rates.</strong> The SOFR, EFFR, OBFR, TGCR and BGCR data are subject to the <a href="https://www.newyorkfed.org/privacy/termsofuse.html" target="_blank" rel="noreferrer">Terms of Use posted at newyorkfed.org ↗</a>. The New York Fed is not responsible for publication of these data by Bubble USD Liquidity Dashboard, does not sanction or endorse this republication, and has no liability for your use. Bubble USD Liquidity Dashboard is not affiliated with the New York Fed. The New York Fed does not sanction, endorse, or recommend any products or services offered by Bubble USD Liquidity Dashboard. © 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org.</p>
-          <CftcLegalNotice />
-          <SecLegalNotice />
-          <SecCompanyFactsLegalNotice />
-          <p><strong>Privacy.</strong> This static dashboard does not provide accounts and does not intentionally collect personal information, analytics, or cookies.</p>
-        </article>
       </section>
     </main>
   );

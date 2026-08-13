@@ -140,6 +140,27 @@ Generated-data push 使用 repository `GITHUB_TOKEN`，按 GitHub 官方規則�
 - project path 前綴由 Vite base 處理，唔好新增 server rewrite；
 - 檢查 `upload-pages-artifact` 同 `deploy-pages` steps。
 
+## Responsive 版面有空白、重疊或 document overflow
+
+先用 browser 開五條 hash route，並以實際 `window.innerWidth/innerHeight` 記錄 `1440×1000`、`1024×1000`、`768×1000` 同 `390×844`；browser screenshot 有時會扣除 scrollbar 像素，所以 overflow 判斷應以 DOM measurement 為準：
+
+```js
+({
+  clientWidth: document.documentElement.clientWidth,
+  scrollWidth: document.documentElement.scrollWidth,
+  clientHeight: document.documentElement.clientHeight,
+  scrollHeight: document.documentElement.scrollHeight,
+})
+```
+
+- 所有 viewport 都要有 `scrollWidth <= clientWidth`；只可以由 `.route-nav`、`.video-p0-banner` 或 `.latex-formula.is-display` 自身處理必要嘅水平 scroll；
+- `1000px` 以上 Overview 係固定 viewport 三欄，只容許 tape／read rail 內部垂直 scroll；`999px` 或以下先改用單欄 document flow；
+- Overview chart 留有大片底部空白時，檢查 `.chart-panel` grid rows、`.main-chart`／`.overlay-chart` client height，同 ECharts resize 有冇跟 container 更新；唔好用固定 canvas 高度掩蓋 grid slot 錯位；
+- toolbar、range controls、status cluster 或 footer 被截時，先檢查 flex/grid wrap 同 `min-width: 0`，唔好用 `body { overflow-x: hidden }` 當成修復；
+- 可見 UI 字體不得低於 `11px`，普通文字 contrast 要至少 `4.5:1`。審計時排除 `.sr-only`、KaTeX 隱藏 MathML tree 同數學上下標。
+
+Header 應只有一個 `.route-nav`，而且 DOM 次序係 brand → navigation → status cluster。LIVE TAPE 亦只應有一個合併 header；如果見到舊式兩層 masthead 或獨立 panel/tape 雙 header，通常係舊 CSS/JS asset cache，應先核對 live `index.html` 所引用嘅 hashed JS/CSS 同本次 deploy artifact。
+
 ## KaTeX 公式冇顯示／解釋同結果唔一致
 
 先檢查 publication contract，而唔係喺 React hardcode 另一條公式：
@@ -156,6 +177,8 @@ jq '.decision_models.p0_video_liquidity
 - 唔好為咗令 KaTeX 成功而將 `throwOnError` 關閉、開啟 `trust`，或者用 auto-render 掃描整頁。應修正 pipeline 產生嘅 TeX，再重新生成完整 schema `2.2.0` stage。
 
 KaTeX 只係表示層。`+3 bp`、`2.9/2.8/2.5T` 同 TGA 朝向 `1T` 可以係 source rule；`n≥3`、`g≥0.95T`、最近三日最少兩日 SRF 正值同 trailing-5y p10 係 dashboard operationalization；危機背景係 manual context。畫面同文件必須保留呢啲標籤，唔可以用正式排版暗示全部門檻都係學術定律或由原來源逐字定義。
+
+公式頁嘅固定次序係 Yellow／Red／Extreme 三張頂層 card → notation → source/model notes；Red Route A/B 只顯示 outcome 同 clauses。畫面已移除舊 `ANALYSIS CONTRACT` 卡；研究用途／非投資建議聲明保留喺全站 footer，唔應因為 formula panel 搵唔到 `ANALYSIS CONTRACT` 而當成載入錯誤。
 
 ## Frontend 顯示完整 error state
 
@@ -174,8 +197,9 @@ Manifest 失敗只應令 methodology/catalog 部分降級；snapshot schema 或 
 ```bash
 python -m pytest pipeline/tests
 npm test
+npx tsc --noEmit
 npm run build
 git diff --check
 ```
 
-部署後再開五條 hash route，驗證 P0 formula panel、chart threshold／SRF marker、source/methodology drawers、JSON data paths、console/network errors，同 live deployment commit。
+部署後再開五條 hash route同 formula deep link，驗證 merged masthead/tape header、document overflow、chart sizing、P0 formula panel、chart threshold／SRF marker、source/methodology drawers、JSON data paths、console/network errors，同 live deployment commit／hashed assets。

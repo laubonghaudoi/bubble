@@ -600,7 +600,7 @@ export function buildMainChartOption({
       type:'text',right:14,top:10,silent:true,z:10,
       style:{
         text:'DEGRADED · SRF CLASSIFICATION UNAVAILABLE',
-        fill:palette.faint,font:'10px DM Mono',backgroundColor:palette.panel,padding:[3,5],
+        fill:palette.faint,font:'11px DM Mono',backgroundColor:palette.panel,padding:[3,5],
       },
     }]:undefined,
     grid:{left:58,right:14,top:16,bottom:30,containLabel:false},

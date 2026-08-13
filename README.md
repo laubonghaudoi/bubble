@@ -12,7 +12,19 @@ GitHub Pages 使用 hash routing，所以 project subpath 同直接開頁都唔�
 - `#/liquidity-fuel`：P0 美元流動性燃料；
 - `#/market-ignition`：P1/P2 市場放大器同脆弱度；
 - `#/fundamental-exit`：P3 CapEx 同產業需求；
-- `#/provenance`：collector 健康狀態、分析 contract、來源授權同法律聲明。
+- `#/provenance`：collector 健康狀態、公式／notation、來源授權同法律聲明；
+- `#/provenance#p0-video-formulas`：直接開啟並聚焦 P0 黃／紅／Extreme 公式。
+
+## Responsive 版面 contract
+
+介面採用單一 Bloomberg-style masthead：品牌、五頁 hash navigation 同市場／更新／來源狀態同處一行；footer 保留全站「只供研究，並非投資建議」聲明。Overview 將 LIVE TAPE 標題同 `TREND / LAST / CHANGE` 合併成一個 header，避免重複佔用垂直空間。
+
+- `1440px` 或以上：Overview 係固定 viewport 三欄，左 rail 介乎 `400–460px`、中間 chart 流體伸縮、右 rail 介乎 `380–476px`；頁面本身唔應有水平或垂直 scroll，較長 tape／read rail 只喺自身捲動；
+- `1000–1439px`：維持 compact 三欄，左右 rail 會收窄，toolbar 可 wrap，但 document 不可水平溢出；
+- `999px` 或以下：Overview 同 detail route 改為單欄 document flow，可以垂直捲動；route navigation、P0 banner 同長公式可喺各自 container 水平捲動，但 document 本身不可水平溢出；
+- 所有可見 UI 文字以 `11px` 為下限，普通文字 contrast 至少 `4.5:1`。`.sr-only`、KaTeX 隱藏 MathML tree 同數學上下標不屬於視覺字體下限審計。
+
+Liquidity Fuel 保留 8 個主指標 tabs 同 6 個 range controls；chart 要隨可用 viewport 高度伸展，唔可以喺 canvas 下方留出大段空白。Provenance 桌面版左邊係 collector／legal notices，右邊依次係三張頂層公式卡、notation、source/model notes；畫面唔再另設 `ANALYSIS CONTRACT` 卡，研究用途聲明由全站 footer 保留。
 
 ## 本地設定
 
@@ -35,6 +47,7 @@ python -m pip install -r pipeline/requirements.txt
 python -m pipeline.update --mode incremental --group all
 python -m pytest pipeline/tests
 npm test
+npx tsc --noEmit
 npm run build
 ```
 
@@ -130,5 +143,7 @@ P3 Fundamental Exit 係獨立 evidence-only 頁面，唔會改變 P0 overall、P
 - [故障排查](docs/troubleshooting.md)
 - [Release 4 QA紀錄](docs/release-4-qa.md)
 - [Release 5 QA紀錄](docs/release-5-qa.md)
+- [Release 6 QA紀錄](docs/release-6-qa.md)
+- [Release 7 QA紀錄（responsive redesign）](docs/release-7-qa.md)
 
 本工具只供研究，唔提供投資建議。操作門檻、相關性及 proxy 指標唔代表因果，單一 metric 亦唔足以證明危機、泡沫轉折或資產方向。

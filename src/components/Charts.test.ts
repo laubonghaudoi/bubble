@@ -222,6 +222,7 @@ describe('chart option builders',()=>{
 
     expect(option.series[0].markPoint).toBeUndefined();
     expect(option.graphic[0].style.text).toBe('DEGRADED · SRF CLASSIFICATION UNAVAILABLE');
+    expect(option.graphic[0].style.font).toBe('11px DM Mono');
     expect(option.aria.label.description).toContain('DEGRADED');
     expect(option.aria.label.description).toContain('未知日期不推斷 marker');
     expect(tooltip).toContain('DEGRADED · SRF CLASSIFICATION METADATA UNAVAILABLE');

@@ -85,7 +85,7 @@ afterEach(() => {
 
 describe('v2.2 routed dashboard', () => {
   it('renders overview with ON RRP/SRF and frequency-aware changes, without NOT WIRED', async () => {
-    render(<App />);
+    const { container } = render(<App />);
     expect(screen.getByRole('status')).toHaveTextContent('v2 snapshot');
     await screen.findByText('USD·LIQ');
     expect(screen.getByText('ON RRP')).toBeVisible();
@@ -99,6 +99,21 @@ describe('v2.2 routed dashboard', () => {
     expect(screen.getByText('REGIME WINDOW')).toBeVisible();
     expect(screen.queryByText('PROVENANCE · COLLECTOR HEALTH')).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: '來源與方法 →' })).toHaveAttribute('href', '#/provenance');
+    const statusBar = container.querySelector<HTMLElement>('.status-bar');
+    expect(statusBar).toBeInTheDocument();
+    expect([...statusBar!.children].map((item) => item.className)).toEqual([
+      'brand', 'route-nav', 'status-cluster',
+    ]);
+    expect(statusBar!.querySelectorAll('.route-nav')).toHaveLength(1);
+    expect(container.querySelectorAll('.route-nav')).toHaveLength(1);
+
+    const tapeHead = container.querySelector<HTMLElement>('.tape-panel > .tape-head');
+    expect(tapeHead).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'LIVE TAPE · 13' })).getByText('LIVE TAPE · 13')).toHaveAttribute('id', 'live-tape-title');
+    expect([...tapeHead!.children].map(({ textContent }) => textContent)).toEqual([
+      'LIVE TAPE · 13', 'TREND', 'LAST', 'CHANGE',
+    ]);
+    expect(container.querySelector('.tape-panel > .panel-header')).not.toBeInTheDocument();
     expect(window.localStorage.getItem('liq-theme')).toBeNull();
     expect(document.documentElement).not.toHaveAttribute('data-theme');
   });
@@ -148,7 +163,7 @@ describe('v2.2 routed dashboard', () => {
     expect(within(banner).getByText('DATA · CURRENT')).toBeVisible();
   });
 
-  it('renders collector health, analysis contract, and source notices on a standalone route', async () => {
+  it('renders collector health and source notices in a dedicated provenance side column', async () => {
     window.history.replaceState(null, '', '/#/provenance');
     render(<App />);
     const heading = await findRouteHeading('來源與方法');
@@ -159,11 +174,18 @@ describe('v2.2 routed dashboard', () => {
     expect(navLink).toHaveAttribute('aria-current', 'page');
     expect(vi.mocked(loadRouteSeries)).toHaveBeenCalledWith(expect.any(String), 'provenance', snapshot, catalog);
 
-    const provenance = screen.getByRole('region', { name: '來源、健康狀態與分析聲明' });
+    const provenance = screen.getByRole('region', { name: '來源、健康狀態與公式說明' });
+    expect([...provenance.children].map((item) => item.className)).toEqual([
+      'provenance-side', 'provenance-panel p0-formula-panel',
+    ]);
+    const provenanceSide = provenance.querySelector<HTMLElement>('.provenance-side');
+    expect(provenanceSide).toBeInTheDocument();
+    expect(provenanceSide!.querySelector('.source-notices')).toBeInTheDocument();
     expect(provenance.querySelectorAll('.source-row')).toHaveLength(Object.keys(snapshot.sources).length);
     expect(within(provenance).getByText('PROVENANCE · COLLECTOR HEALTH')).toBeVisible();
-    expect(within(provenance).getByText('ANALYSIS CONTRACT')).toBeVisible();
-    expect(within(provenance).getByText('訊號唔係結論。')).toBeVisible();
+    expect(within(provenance).queryByText('ANALYSIS CONTRACT')).not.toBeInTheDocument();
+    expect(within(provenance).queryByText('訊號唔係結論。')).not.toBeInTheDocument();
+    expect(screen.queryByText('ANALYSIS CONTRACT')).not.toBeInTheDocument();
     expect(within(provenance).getByText(/uses the FRED® API but is not endorsed/)).toBeVisible();
     expect(within(provenance).getByRole('link', { name: /FRED® API Terms of Use/ })).toHaveAttribute(
       'href',
@@ -194,6 +216,15 @@ describe('v2.2 routed dashboard', () => {
     expect(formula.querySelectorAll('.latex-formula.is-display math')).toHaveLength(3);
     expect(formula.querySelectorAll('.formula-route .latex-formula')).toHaveLength(0);
 
+    const cardGrid = formula.querySelector<HTMLElement>(':scope > .formula-card-grid');
+    const notation = formula.querySelector<HTMLElement>(':scope > .formula-notation');
+    expect(cardGrid).toBeInTheDocument();
+    expect([...cardGrid!.children].map((item) => item.className)).toEqual([
+      'formula-card is-yellow', 'formula-card is-red', 'formula-card is-extreme',
+    ]);
+    expect(notation).toBeInTheDocument();
+    expect(cardGrid!.compareDocumentPosition(notation!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
     const yellowFormula = formula.querySelector<HTMLElement>('[data-formula-id="yellow"]');
     const redFormula = formula.querySelector<HTMLElement>('[data-formula-id="red"]');
     const extremeFormula = formula.querySelector<HTMLElement>('[data-formula-id="extreme"]');
@@ -222,8 +253,9 @@ describe('v2.2 routed dashboard', () => {
     expect(within(formula).getByRole('link', { name: /Yellow \/ Red formula/ })).toHaveAttribute(
       'href', snapshot.decision_models.p0_video_liquidity.source.segments[0].timestamp_url,
     );
-    expect(formula).toHaveTextContent(/CapEx 共振判定/);
-    expect(formula).toHaveTextContent(/不提供投資或買賣建議/);
+    expect(formula).not.toHaveTextContent(/CapEx 共振判定/);
+    expect(formula).not.toHaveTextContent(/不提供投資或買賣建議/);
+    expect(screen.queryByText('ANALYSIS CONTRACT')).not.toBeInTheDocument();
   });
 
   it('falls back to the auditable expression when KaTeX rejects pipeline TeX', async () => {
@@ -251,6 +283,11 @@ describe('v2.2 routed dashboard', () => {
     expect(screen.queryByRole('region', { name: '三個監測開關' })).not.toBeInTheDocument();
 
     const navigation = screen.getByRole('navigation', { name: 'Dashboard 頁面' });
+    const statusBar = container.querySelector<HTMLElement>('.status-bar');
+    expect(statusBar).toContainElement(navigation);
+    expect([...statusBar!.children].map((item) => item.className)).toEqual([
+      'brand', 'route-nav', 'status-cluster',
+    ]);
     expect(within(navigation).getAllByRole('link').map((link) => link.getAttribute('href'))).toEqual([
       '#/overview',
       '#/liquidity-fuel',
@@ -284,18 +321,18 @@ describe('v2.2 routed dashboard', () => {
     await findRouteHeading('市場引信');
 
     expect(snapshot.switches.market_ignition.assessment).toBeNull();
-    const coverage = screen.getByRole('region', { name: /Market Ignition evidence coverage/ });
-    expect(coverage).toHaveTextContent('1/4 AVAILABLE');
-    expect(coverage.querySelectorAll('.evidence-card')).toHaveLength(4);
-    expect(coverage).toHaveTextContent('MIXED');
-    expect(coverage).toHaveTextContent('CONFIDENCE LOW');
-    expect(coverage).toHaveTextContent('UNAVAILABLE · CONFIDENCE UNKNOWN · NOT AN IMPLIED NEUTRAL');
-    const directions = [...coverage.querySelectorAll<HTMLElement>('.evidence-direction b')].map(({ textContent }) => textContent);
-    expect(directions).toEqual(['UNKNOWN', 'MIXED', 'UNKNOWN', 'UNKNOWN']);
-    expect(directions.join(' ')).not.toMatch(/WATCH|STRESS|NEUTRAL/);
+    const assessment = container.querySelector<HTMLElement>('.market-ignition-page .detail-assessment');
+    expect(assessment).toHaveTextContent('EVIDENCE ONLY');
+    expect(assessment).toHaveTextContent('1/4 AVAILABLE');
+    expect(assessment).toHaveTextContent('DIRECTION + CONFIDENCE · NO WATCH/STRESS');
+    expect(container.querySelector('.market-ignition-page > .evidence-section')).not.toBeInTheDocument();
 
     const cftc = screen.getByRole('region', { name: 'P1 · CFTC TFF FUTURES ONLY' });
     expect(cftc.querySelectorAll('.cftc-card')).toHaveLength(4);
+    const fragility = screen.getByRole('region', { name: 'P2 · BUBBLE / FRAGILITY CONTEXT' });
+    const rightsGated = screen.getByRole('region', { name: 'P1 · RIGHTS-GATED PROVIDER INTERFACES' });
+    expect(cftc.compareDocumentPosition(fragility) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(fragility.compareDocumentPosition(rightsGated) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(within(cftc).getAllByText('E-MINI S&P 500')).toHaveLength(2);
     expect(within(cftc).getAllByText('NASDAQ-100 CONSOLIDATED')).toHaveLength(2);
     expect(within(cftc).getAllByText('ASSET MANAGER / INSTITUTIONAL')).toHaveLength(2);
@@ -326,7 +363,7 @@ describe('v2.2 routed dashboard', () => {
     const { container } = render(<App />);
     await findRouteHeading('市場引信');
 
-    const p1 = screen.getByRole('region', { name: /Market Ignition evidence coverage/ });
+    const p1 = container.querySelector<HTMLElement>('.market-ignition-page .detail-assessment');
     expect(p1).toHaveTextContent('1/4 AVAILABLE');
     expect(snapshot.switches.market_ignition.assessment).toBeNull();
     expect(snapshot.overall_assessment).toBe(snapshot.switches.liquidity_fuel.assessment);
@@ -414,13 +451,10 @@ describe('v2.2 routed dashboard', () => {
 
     expect(snapshot.switches.fundamental_exit.assessment).toBeNull();
     expect(snapshot.overall_assessment).toBe(snapshot.switches.liquidity_fuel.assessment);
-    const coverage = screen.getByRole('region', { name: /Fundamental Exit evidence coverage/ });
+    const coverage = container.querySelector<HTMLElement>('.fundamental-exit-page .detail-assessment');
     expect(coverage).toHaveTextContent('2/4 AVAILABLE');
-    expect(coverage.querySelectorAll('.evidence-card')).toHaveLength(4);
-    expect([...coverage.querySelectorAll<HTMLElement>('.evidence-direction b')].map(({ textContent }) => textContent)).toEqual([
-      'DECELERATING', 'UNKNOWN', 'UNKNOWN', 'MIXED',
-    ]);
-    expect(coverage.querySelector('.badge-watch, .badge-stress')).toBeNull();
+    expect(coverage).toHaveTextContent('DIRECTION + CONFIDENCE LOW · NO WATCH/STRESS');
+    expect(container.querySelector('.fundamental-exit-page > .evidence-section')).not.toBeInTheDocument();
 
     const capex = screen.getByRole('region', { name: 'P3 · HYPERSCALER CASH CAPEX' });
     expect(capex).toHaveTextContent('2/2 AUTOMATED METRICS ACTIVE');
@@ -441,14 +475,21 @@ describe('v2.2 routed dashboard', () => {
 
     const companies = container.querySelectorAll('.fundamental-company');
     expect(companies).toHaveLength(4);
-    expect(capex).toHaveTextContent('MSFT');
-    expect(capex).toHaveTextContent('GOOGL');
-    expect(capex).toHaveTextContent('AMZN');
-    expect(capex).toHaveTextContent('META');
-    expect(capex).toHaveTextContent('us-gaap:PaymentsToAcquireProductiveAssets');
-    expect(capex).toHaveTextContent('Separate from cash CapEx');
-    expect(capex).toHaveTextContent(/Cash CapEx 同 finance-lease/);
-    expect(within(capex).getAllByRole('link', { name: /10-[QK].*↗/ })).toHaveLength(4);
+    const desktopGrid = container.querySelector<HTMLElement>('.fundamental-desktop-grid');
+    expect([...desktopGrid!.children].map((item) => item.className)).toEqual([
+      'fundamental-main-column', 'fundamental-evidence-column',
+    ]);
+    expect(desktopGrid!.querySelector('.fundamental-main-column')).toContainElement(capex);
+    const companyEvidence = screen.getByRole('region', { name: 'P3 · COMPANY / FILING EVIDENCE' });
+    expect(desktopGrid!.querySelector('.fundamental-evidence-column')).toContainElement(companyEvidence);
+    expect(companyEvidence).toHaveTextContent('MSFT');
+    expect(companyEvidence).toHaveTextContent('GOOGL');
+    expect(companyEvidence).toHaveTextContent('AMZN');
+    expect(companyEvidence).toHaveTextContent('META');
+    expect(companyEvidence).toHaveTextContent('us-gaap:PaymentsToAcquireProductiveAssets');
+    expect(companyEvidence).toHaveTextContent('Separate from cash CapEx');
+    expect(companyEvidence).toHaveTextContent(/Cash CapEx 同 finance-lease/);
+    expect(within(companyEvidence).getAllByRole('link', { name: /10-[QK].*↗/ })).toHaveLength(4);
 
     const manual = screen.getByRole('region', { name: 'P3 · MANUAL / PUBLIC FILING' });
     expect(manual.querySelectorAll('.fundamental-manual-card')).toHaveLength(3);
@@ -476,9 +517,9 @@ describe('v2.2 routed dashboard', () => {
     render(<App />);
     await findRouteHeading('基本面逃生門');
 
-    const coverage = screen.getByRole('region', { name: /Fundamental Exit evidence coverage/ });
+    const coverage = document.querySelector<HTMLElement>('.fundamental-exit-page .detail-assessment');
     expect(coverage).toHaveTextContent('3/4 AVAILABLE');
-    expect(coverage).toHaveTextContent('CONFIDENCE MEDIUM');
+    expect(coverage).toHaveTextContent('DIRECTION + CONFIDENCE MEDIUM · NO WATCH/STRESS');
     const manual = screen.getByRole('region', { name: 'P3 · MANUAL / PUBLIC FILING' });
     const orders = manual.querySelector<HTMLElement>('[data-metric-id="ai_upstream_orders_backlog"]')!;
     expect(orders).toHaveTextContent('MANUAL / PUBLIC FILING');
@@ -529,7 +570,9 @@ describe('v2.2 routed dashboard', () => {
     render(<App />);
     await findRouteHeading('基本面逃生門');
 
-    expect(screen.getByRole('region', { name: /Fundamental Exit evidence coverage/ })).toHaveTextContent('2/4 AVAILABLE');
+    const coverage = document.querySelector<HTMLElement>('.fundamental-exit-page .detail-assessment');
+    expect(coverage).toHaveTextContent('2/4 AVAILABLE');
+    expect(coverage).toHaveTextContent('DIRECTION + CONFIDENCE LOW · NO WATCH/STRESS');
     const orders = screen.getByRole('region', { name: 'P3 · MANUAL / PUBLIC FILING' })
       .querySelector<HTMLElement>('[data-metric-id="ai_upstream_orders_backlog"]')!;
     expect(orders).toHaveAttribute('data-value-state', 'last-good');

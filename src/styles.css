@@ -20,7 +20,7 @@
   --neutral: #767676;
   --neutral-fg: #1c1c1c;
   --unavailable: #b3b3b3;
-  --unavailable-fg: #767676;
+  --unavailable-fg: #545454;
   --status-high-contrast-fg: #000000;
   --bg: var(--surface);
   --panel: var(--white);
@@ -40,7 +40,7 @@
   --body: #3c3c3c;
   --muted: #545454;
   --dim: #545454;
-  --faint: var(--gray);
+  --faint: var(--muted);
   --unavail: var(--unavailable-fg);
   --accent: var(--action);
   --accent2: var(--black);
@@ -91,7 +91,6 @@ html {
 
 body {
   margin: 0;
-  overflow-x: hidden;
   background: var(--bg);
   color: var(--ink);
   font-family: 'Noto Sans HK', sans-serif;
@@ -163,14 +162,13 @@ a:focus-visible,
 .app-shell {
   width: 100%;
   min-width: 0;
-  overflow-x: clip;
   background: var(--bg);
   color: var(--ink);
 }
 
 .deck {
   display: grid;
-  grid-template-rows: 46px 30px minmax(0, 1fr) 28px;
+  grid-template-rows: 54px minmax(0, 1fr) 34px;
   gap: 1px;
   width: 100%;
   height: 100vh;
@@ -182,10 +180,13 @@ a:focus-visible,
 
 .route-nav {
   display: flex;
+  align-self: stretch;
   align-items: stretch;
+  flex: 0 1 auto;
   min-width: 0;
+  margin-left: 22px;
   overflow-x: auto;
-  background: var(--charcoal);
+  background: transparent;
   scrollbar-width: none;
 }
 
@@ -196,11 +197,11 @@ a:focus-visible,
 .route-link {
   display: inline-flex;
   align-items: center;
-  padding: 0 14px;
+  padding: 0 15px;
   border-right: 1px solid #3c3c3c;
   color: var(--mid);
-  font: 11px 'DM Mono', monospace;
-  letter-spacing: 0.06em;
+  font: 14px 'DM Mono', monospace;
+  letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
@@ -211,7 +212,7 @@ a:focus-visible,
 }
 
 .route-link.is-active {
-  box-shadow: inset 0 -2px var(--orange);
+  box-shadow: inset 0 -3px var(--orange);
 }
 
 .series-live-region {
@@ -238,7 +239,7 @@ a:focus-visible,
   display: flex;
   align-items: center;
   min-width: 0;
-  padding: 0 14px;
+  padding: 0 16px;
   overflow: hidden;
   background: var(--black);
   color: var(--white);
@@ -254,13 +255,13 @@ a:focus-visible,
 
 .brand-mark {
   color: var(--orange);
-  font: 500 14px 'DM Mono', monospace;
-  letter-spacing: 0.14em;
+  font: 500 17px 'DM Mono', monospace;
+  letter-spacing: 0.08em;
 }
 
 .brand-divider {
   width: 1px;
-  height: 16px;
+  height: 20px;
   margin: 0 14px;
   flex: 0 0 auto;
   background: var(--gray);
@@ -270,19 +271,19 @@ a:focus-visible,
   margin: 0;
   overflow: hidden;
   color: var(--white);
-  font: 500 14px 'DM Mono', monospace;
-  letter-spacing: 0.02em;
+  font: 500 17px 'DM Mono', monospace;
+  letter-spacing: 0.01em;
   text-overflow: ellipsis;
 }
 
 .status-cluster {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
   min-width: 0;
   margin-left: auto;
   color: var(--mid);
-  font: 11.5px 'DM Mono', monospace;
+  font: 14px 'DM Mono', monospace;
   white-space: nowrap;
 }
 
@@ -308,8 +309,8 @@ a:focus-visible,
 }
 
 .health-dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   margin-left: 2px;
   flex: 0 0 auto;
   background: var(--health-color, var(--accent));
@@ -317,10 +318,12 @@ a:focus-visible,
 }
 
 .overall-pill {
-  padding: 3px 8px;
+  padding: 4px 10px;
   border: 1px solid var(--status-color, var(--unavail));
   color: var(--status-color, var(--unavail));
   line-height: 1.25;
+  font-size: 13px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -340,8 +343,9 @@ a:focus-visible,
   align-items: center;
   gap: 18px;
   min-width: 0;
-  min-height: 54px;
-  padding: 6px 12px;
+  height: 56px;
+  min-height: 56px;
+  padding: 0 14px;
   overflow-x: auto;
   border: 1px solid var(--line);
   border-left: 4px solid var(--status-color, var(--line));
@@ -350,7 +354,7 @@ a:focus-visible,
 }
 
 .detail-page > .video-p0-banner {
-  margin-top: 12px;
+  margin-top: 1px;
 }
 
 .video-p0-banner-state {
@@ -364,13 +368,13 @@ a:focus-visible,
 
 .video-p0-banner-state > span {
   color: var(--muted);
-  font-size: 10px;
-  letter-spacing: .11em;
+  font-size: 12px;
+  letter-spacing: .08em;
 }
 
 .video-p0-banner-state > strong {
   color: var(--status-fg, var(--status-high-contrast-fg));
-  font-size: 12px;
+  font-size: 16px;
   letter-spacing: .04em;
   text-align: right;
 }
@@ -378,8 +382,8 @@ a:focus-visible,
 .video-p0-banner-state > small {
   grid-column: 1 / -1;
   color: var(--status-fg, var(--status-high-contrast-fg));
-  font-size: 8.5px;
-  letter-spacing: .05em;
+  font-size: 12px;
+  letter-spacing: .04em;
 }
 
 .video-p0-values {
@@ -396,7 +400,7 @@ a:focus-visible,
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 2px 7px;
   min-width: 0;
-  padding: 3px 8px;
+  padding: 5px 10px;
   background: var(--panel);
 }
 
@@ -411,13 +415,13 @@ a:focus-visible,
 .video-p0-values dt {
   overflow: hidden;
   color: var(--faint);
-  font-size: 8.5px;
+  font-size: 12px;
   text-overflow: ellipsis;
 }
 
 .video-p0-values dd {
   color: var(--ink);
-  font-size: 11px;
+  font-size: 18px;
   font-weight: 500;
   text-align: right;
 }
@@ -425,19 +429,19 @@ a:focus-visible,
 .video-p0-values small {
   grid-column: 1 / -1;
   color: var(--warning-fg);
-  font-size: 7.5px;
+  font-size: 11px;
 }
 
 .video-p0-link {
   min-width: max-content;
   color: var(--action);
-  font: 11px 'DM Mono', monospace;
+  font: 15px 'DM Mono', monospace;
   white-space: nowrap;
 }
 
 .body-grid {
   display: grid;
-  grid-template-columns: minmax(334px, 400px) minmax(320px, 1fr) minmax(250px, 352px);
+  grid-template-columns: minmax(400px, 460px) minmax(320px, 1fr) minmax(380px, 476px);
   gap: 1px;
   min-width: 0;
   min-height: 0;
@@ -457,8 +461,8 @@ a:focus-visible,
   padding: 8px 12px 7px;
   border-bottom: 1px solid var(--line);
   color: var(--muted);
-  font: 11px 'DM Mono', monospace;
-  letter-spacing: 0.14em;
+  font: 13px 'DM Mono', monospace;
+  letter-spacing: 0.08em;
 }
 
 .panel-header > :last-child:not(:first-child) {
@@ -474,8 +478,8 @@ a:focus-visible,
 .tape-head,
 .tape-row {
   display: grid;
-  grid-template-columns: minmax(110px, 1fr) 48px 72px 56px;
-  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) 70px 100px 96px;
+  gap: 10px;
   align-items: center;
   min-width: 0;
   padding-right: 12px;
@@ -483,13 +487,14 @@ a:focus-visible,
 }
 
 .tape-head {
-  min-height: 29px;
-  padding-top: 5px;
-  padding-bottom: 5px;
+  height: 30px;
+  min-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
   border-bottom: 1px solid var(--line);
   color: var(--faint);
-  font: 11px 'DM Mono', monospace;
-  letter-spacing: 0.08em;
+  font: 13px 'DM Mono', monospace;
+  letter-spacing: 0.06em;
 }
 
 .tape-head > :nth-child(3),
@@ -510,20 +515,20 @@ a:focus-visible,
 .tape-group-title,
 .tape-group > h3 {
   margin: 0;
-  padding: 7px 12px 5px;
+  padding: 4px 12px;
   border-bottom: 1px solid var(--line);
   background: var(--sub);
   color: var(--accent);
-  font: 11px 'DM Mono', monospace;
-  letter-spacing: 0.12em;
+  font: 13px 'DM Mono', monospace;
+  letter-spacing: 0.06em;
 }
 
 .tape-row {
   width: 100%;
-  height: 37px;
+  height: 34px;
   border: 0;
   border-bottom: 1px solid var(--rowline);
-  border-left: 2px solid transparent;
+  border-left: 3px solid transparent;
   background: transparent;
   color: var(--ink);
   cursor: pointer;
@@ -545,15 +550,15 @@ a:focus-visible,
   min-width: 0;
   overflow: hidden;
   color: var(--ink2);
-  font: 13px 'DM Mono', monospace;
+  font: 15px 'DM Mono', monospace;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .sparkline {
   display: block;
-  width: 48px;
-  height: 19px;
+  width: 70px;
+  height: 22px;
   overflow: visible;
 }
 
@@ -584,7 +589,7 @@ a:focus-visible,
 .tape-value {
   overflow: hidden;
   color: var(--ink);
-  font: 500 13.5px 'DM Mono', monospace;
+  font: 500 16px 'DM Mono', monospace;
   text-align: right;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -594,7 +599,7 @@ a:focus-visible,
 .tape-delta {
   overflow: hidden;
   color: var(--muted);
-  font: 13px 'DM Mono', monospace;
+  font: 15px 'DM Mono', monospace;
   text-align: right;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -614,8 +619,8 @@ a:focus-visible,
 .tape-delta small,
 .balance-delta small {
   color: var(--faint);
-  font-size: 9px;
-  letter-spacing: 0.05em;
+  font-size: 11px;
+  letter-spacing: 0.04em;
 }
 
 .tape-label {
@@ -628,7 +633,7 @@ a:focus-visible,
   padding: 1px 3px;
   background: var(--black);
   color: var(--white);
-  font: 8px 'DM Mono', monospace;
+  font: 11px 'DM Mono', monospace;
   letter-spacing: 0.04em;
 }
 
@@ -640,7 +645,7 @@ a:focus-visible,
   border: 1px solid var(--warning);
   background: var(--warnbg);
   color: var(--warning-fg);
-  font: 700 7.5px/1.15 'DM Mono', monospace;
+  font: 700 11px/1.15 'DM Mono', monospace;
   letter-spacing: 0.035em;
   white-space: nowrap;
 }
@@ -742,7 +747,7 @@ a:focus-visible,
 
 .range-caption {
   color: var(--faint);
-  font: 9px/1 'DM Mono', monospace;
+  font: 12px/1 'DM Mono', monospace;
   letter-spacing: .04em;
   white-space: nowrap;
 }
@@ -757,7 +762,7 @@ a:focus-visible,
   background: transparent;
   color: var(--muted);
   cursor: pointer;
-  font: 12px 'DM Mono', monospace;
+  font: 14px 'DM Mono', monospace;
   white-space: nowrap;
 }
 
@@ -776,9 +781,9 @@ a:focus-visible,
 
 .readout {
   display: grid;
-  grid-template-columns: minmax(210px, 1fr) auto auto;
+  grid-template-columns: minmax(240px, 1fr) auto auto;
   align-items: flex-end;
-  gap: 14px;
+  gap: 20px;
   min-width: 0;
   padding: 8px 14px 9px;
   border-bottom: 1px solid var(--line);
@@ -799,8 +804,8 @@ a:focus-visible,
 .readout-label {
   overflow: hidden;
   color: var(--muted);
-  font: 11px 'DM Mono', monospace;
-  letter-spacing: 0.14em;
+  font: 13px 'DM Mono', monospace;
+  letter-spacing: 0.08em;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -809,7 +814,7 @@ a:focus-visible,
   margin-top: 2px;
   overflow: hidden;
   color: var(--ink);
-  font: 500 32px/1.1 'DM Mono', monospace;
+  font: 500 52px/1.05 'DM Mono', monospace;
   letter-spacing: -0.03em;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -817,14 +822,14 @@ a:focus-visible,
 
 .readout-delta {
   padding-bottom: 4px;
-  font: 14px 'DM Mono', monospace;
+  font: 18px 'DM Mono', monospace;
   white-space: nowrap;
 }
 
 .readout-meta {
   padding-bottom: 3px;
   color: var(--faint);
-  font: 11.5px 'DM Mono', monospace;
+  font: 13px/1.5 'DM Mono', monospace;
   text-align: right;
   white-space: nowrap;
 }
@@ -855,7 +860,7 @@ a:focus-visible,
 .chart-reference-note {
   margin: -7px 14px 7px 58px;
   color: var(--muted);
-  font: 10.5px/1.35 'DM Mono', monospace;
+  font: 13px/1.45 'DM Mono', monospace;
 }
 
 .chart-tooltip {
@@ -881,8 +886,8 @@ a:focus-visible,
 .overlay-title {
   margin-right: 4px;
   color: var(--muted);
-  font: 11px 'DM Mono', monospace;
-  letter-spacing: 0.14em;
+  font: 13px 'DM Mono', monospace;
+  letter-spacing: 0.08em;
 }
 
 .overlay-toggle {
@@ -894,7 +899,7 @@ a:focus-visible,
   background: transparent;
   color: var(--series-color, var(--muted));
   cursor: pointer;
-  font: 12px 'DM Mono', monospace;
+  font: 14px 'DM Mono', monospace;
 }
 
 .overlay-toggle strong {
@@ -946,8 +951,8 @@ a:focus-visible,
 .balance-kicker,
 .not-wired-kicker {
   color: var(--accent);
-  font: 11px 'DM Mono', monospace;
-  letter-spacing: 0.14em;
+  font: 13px 'DM Mono', monospace;
+  letter-spacing: 0.08em;
 }
 
 .balance-kicker,
@@ -958,9 +963,9 @@ a:focus-visible,
 .read-headline {
   margin: 7px 0 0;
   color: var(--ink);
-  font-size: 17.5px;
+  font-size: 21px;
   font-weight: 700;
-  line-height: 1.55;
+  line-height: 1.4;
 }
 
 .read-bullets {
@@ -974,8 +979,8 @@ a:focus-visible,
   margin-top: 10px;
   padding-left: 20px;
   color: var(--body);
-  font-size: 13.5px;
-  line-height: 1.6;
+  font-size: 15px;
+  line-height: 1.55;
 }
 
 .read-index {
@@ -1027,12 +1032,12 @@ a:focus-visible,
 
 .balance-row-head {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto 52px;
+  grid-template-columns: minmax(0, 1fr) auto 100px;
   align-items: baseline;
   gap: 6px;
   min-width: 0;
   color: var(--dim);
-  font: 12px 'DM Mono', monospace;
+  font: 14px 'DM Mono', monospace;
 }
 
 .balance-label {
@@ -1043,7 +1048,7 @@ a:focus-visible,
 
 .balance-value {
   color: var(--ink);
-  font-size: 13.5px;
+  font-size: 16px;
   font-weight: 500;
   white-space: nowrap;
 }
@@ -1084,7 +1089,7 @@ a:focus-visible,
 .balance-meta {
   margin-top: 3px;
   color: var(--faint);
-  font: 11px 'DM Mono', monospace;
+  font: 12px 'DM Mono', monospace;
 }
 
 .not-wired-section {
@@ -1146,7 +1151,7 @@ a:focus-visible,
   gap: 8px;
   margin-bottom: 6px;
   color: var(--muted);
-  font: 10.5px 'DM Mono', monospace;
+  font: 13px 'DM Mono', monospace;
   letter-spacing: 0.08em;
 }
 
@@ -1163,7 +1168,7 @@ a:focus-visible,
 .detail-page {
   min-width: 0;
   min-height: 0;
-  padding: 18px;
+  padding: 0;
   overflow-y: auto;
   background: var(--surface);
 }
@@ -1173,8 +1178,9 @@ a:focus-visible,
   grid-template-columns: minmax(0, 1fr) minmax(220px, 330px);
   gap: 24px;
   align-items: stretch;
-  padding: 20px 22px;
-  border: 1px solid var(--line);
+  padding: 16px 20px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
   background: var(--white);
 }
 
@@ -1187,14 +1193,14 @@ a:focus-visible,
   position: absolute;
   top: 3px;
   left: 0;
-  color: var(--orange);
+  color: var(--warning-fg);
   font: 500 24px 'DM Mono', monospace;
 }
 
 .route-heading {
   margin: 0;
   color: var(--ink);
-  font-size: 28px;
+  font-size: 32px;
   line-height: 1.25;
 }
 
@@ -1211,8 +1217,8 @@ a:focus-visible,
   max-width: 66ch;
   margin: 8px 0 0;
   color: var(--muted);
-  font-size: 14px;
-  line-height: 1.65;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 .detail-assessment {
@@ -1227,14 +1233,14 @@ a:focus-visible,
 .detail-assessment span,
 .detail-assessment small {
   color: var(--muted);
-  font: 10.5px 'DM Mono', monospace;
-  letter-spacing: 0.1em;
+  font: 13px 'DM Mono', monospace;
+  letter-spacing: 0.08em;
 }
 
 .detail-assessment strong {
   margin: 5px 0;
   color: var(--status-fg, var(--ink));
-  font-size: 20px;
+  font-size: 26px;
 }
 
 .confirmation-section,
@@ -1251,8 +1257,8 @@ a:focus-visible,
   align-items: baseline;
   gap: 12px;
   color: var(--accent);
-  font: 11px 'DM Mono', monospace;
-  letter-spacing: 0.12em;
+  font: 13px 'DM Mono', monospace;
+  letter-spacing: 0.08em;
 }
 
 .detail-section-head b {
@@ -1294,7 +1300,7 @@ a:focus-visible,
 .metric-card-main > span {
   overflow: hidden;
   color: var(--muted);
-  font: 10.5px 'DM Mono', monospace;
+  font: 14px 'DM Mono', monospace;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1302,29 +1308,66 @@ a:focus-visible,
 .metric-card-main strong {
   margin-top: auto;
   color: var(--ink);
-  font: 500 22px 'DM Mono', monospace;
+  font: 500 30px 'DM Mono', monospace;
+  white-space: nowrap;
 }
 
 .metric-card-main small {
-  font: 11px 'DM Mono', monospace;
+  margin-top: 2px;
+  font: 15px 'DM Mono', monospace;
+  white-space: nowrap;
 }
 
 .metric-card-main .last-good-tag {
   margin-top: 4px;
-  font: 700 7.5px/1.15 'DM Mono', monospace;
+  font: 700 11px/1.15 'DM Mono', monospace;
 }
 
 .metric-method {
   padding: 6px 10px;
   border-top: 1px solid var(--rowline);
   color: var(--action);
-  font: 10px 'DM Mono', monospace;
+  font: 11px 'DM Mono', monospace;
 }
 
 .detail-page > .chart-panel {
-  min-height: 610px;
+  min-height: max(610px, calc(100dvh - 294px));
   margin-top: 12px;
   border: 1px solid var(--line);
+}
+
+.liquidity-page > .confirmation-section,
+.liquidity-page > .chart-panel,
+.liquidity-page > .evidence-section,
+.market-ignition-page > .phase-section {
+  margin-top: 1px;
+  border: 0;
+}
+
+.fundamental-desktop-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(400px, 640px);
+  gap: 1px;
+  min-width: 0;
+  margin-top: 1px;
+  background: var(--line);
+}
+
+.fundamental-main-column,
+.fundamental-evidence-column {
+  display: grid;
+  align-content: start;
+  gap: 1px;
+  min-width: 0;
+  background: var(--line);
+}
+
+.fundamental-desktop-grid > .phase-section,
+.fundamental-main-column > .phase-section,
+.fundamental-evidence-column > .phase-section {
+  min-width: 0;
+  margin-top: 0;
+  border: 0;
 }
 
 .evidence-grid {
@@ -1391,7 +1434,7 @@ a:focus-visible,
 .evidence-direction small,
 .evidence-availability {
   color: var(--faint);
-  font: 9px 'DM Mono', monospace;
+  font: 11px 'DM Mono', monospace;
   letter-spacing: 0.06em;
 }
 
@@ -1477,7 +1520,7 @@ a:focus-visible,
   display: block;
   margin-top: 3px;
   color: var(--muted);
-  font: 10px 'DM Mono', monospace;
+  font: 12px 'DM Mono', monospace;
 }
 
 .cftc-badges {
@@ -1502,12 +1545,12 @@ a:focus-visible,
 
 .cftc-readout small {
   color: var(--faint);
-  font: 9px 'DM Mono', monospace;
+  font: 12px 'DM Mono', monospace;
 }
 
 .cftc-readout strong {
   color: var(--ink);
-  font: 500 25px 'DM Mono', monospace;
+  font: 500 40px/1 'DM Mono', monospace;
 }
 
 .cftc-readout > span {
@@ -1515,7 +1558,7 @@ a:focus-visible,
   padding: 3px 6px;
   border: 1px solid var(--action);
   color: var(--action);
-  font: 700 10px 'DM Mono', monospace;
+  font: 700 12px 'DM Mono', monospace;
 }
 
 .cftc-card .sparkline {
@@ -1544,7 +1587,7 @@ a:focus-visible,
 .rights-gate-card p b {
   display: block;
   color: var(--faint);
-  font: 9px 'DM Mono', monospace;
+  font: 12px 'DM Mono', monospace;
   letter-spacing: 0.05em;
 }
 
@@ -1570,13 +1613,13 @@ a:focus-visible,
   overflow-wrap: anywhere;
   background: var(--surface);
   color: var(--muted);
-  font: 9.5px/1.45 'DM Mono', monospace;
+  font: 12px/1.5 'DM Mono', monospace;
 }
 
 .rights-null {
   display: block;
   padding: 8px 10px 0;
-  color: var(--mid);
+  color: var(--unavail);
   font: 500 28px 'DM Mono', monospace;
 }
 
@@ -1600,7 +1643,7 @@ a:focus-visible,
 
 .fragility-contract strong {
   color: var(--action);
-  font: 700 10px 'DM Mono', monospace;
+  font: 700 11px 'DM Mono', monospace;
   letter-spacing: 0.08em;
 }
 
@@ -1644,7 +1687,7 @@ a:focus-visible,
   display: block;
   margin-top: 3px;
   color: var(--muted);
-  font: 10px 'DM Mono', monospace;
+  font: 12px 'DM Mono', monospace;
 }
 
 .fragility-readout {
@@ -1662,18 +1705,18 @@ a:focus-visible,
 
 .fragility-readout small {
   color: var(--faint);
-  font: 9px 'DM Mono', monospace;
+  font: 12px 'DM Mono', monospace;
 }
 
 .fragility-readout strong {
   color: var(--ink);
-  font: 500 25px 'DM Mono', monospace;
+  font: 500 40px/1 'DM Mono', monospace;
 }
 
 .fragility-readout > span {
   margin: 0 0 3px auto;
   color: var(--action);
-  font: 700 9.5px 'DM Mono', monospace;
+  font: 700 12px 'DM Mono', monospace;
   text-align: right;
 }
 
@@ -1709,7 +1752,7 @@ a:focus-visible,
 .form4-audit-grid dt {
   display: block;
   color: var(--faint);
-  font: 9px 'DM Mono', monospace;
+  font: 11px 'DM Mono', monospace;
   letter-spacing: 0.05em;
 }
 
@@ -1726,7 +1769,7 @@ a:focus-visible,
   display: block;
   margin-top: 3px;
   color: var(--muted);
-  font: 8.5px/1.35 'DM Mono', monospace;
+  font: 11px/1.4 'DM Mono', monospace;
 }
 
 .fragility-dates {
@@ -1746,7 +1789,7 @@ a:focus-visible,
 .fragility-dates dd {
   margin: 3px 0 0;
   color: var(--muted);
-  font: 9.5px/1.45 'DM Mono', monospace;
+  font: 11px/1.45 'DM Mono', monospace;
   overflow-wrap: anywhere;
 }
 
@@ -1763,7 +1806,7 @@ a:focus-visible,
   display: block;
   margin-bottom: 3px;
   color: var(--warning-fg);
-  font: 700 9px 'DM Mono', monospace;
+  font: 700 11px 'DM Mono', monospace;
   letter-spacing: 0.05em;
 }
 
@@ -1776,7 +1819,7 @@ a:focus-visible,
   border-collapse: collapse;
   background: var(--white);
   color: var(--ink2);
-  font: 10.5px 'DM Mono', monospace;
+  font: 14px 'DM Mono', monospace;
   table-layout: fixed;
 }
 
@@ -1784,7 +1827,7 @@ a:focus-visible,
   padding: 8px;
   border-top: 1px solid var(--line);
   color: var(--faint);
-  font: 9px 'DM Mono', monospace;
+  font: 12px 'DM Mono', monospace;
   letter-spacing: 0.05em;
   text-align: left;
 }
@@ -1802,7 +1845,7 @@ a:focus-visible,
 
 .form4-count-table thead th {
   color: var(--faint);
-  font-size: 8.5px;
+  font-size: 12px;
 }
 
 .form4-dollar-grid {
@@ -1823,7 +1866,7 @@ a:focus-visible,
 .form4-dollar-grid span,
 .form4-dollar-grid small {
   color: var(--faint);
-  font: 8.5px/1.4 'DM Mono', monospace;
+  font: 11px/1.4 'DM Mono', monospace;
 }
 
 .form4-dollar-grid strong {
@@ -1845,7 +1888,7 @@ a:focus-visible,
 
 .fundamental-contract strong {
   color: var(--action);
-  font: 700 10px 'DM Mono', monospace;
+  font: 700 11px 'DM Mono', monospace;
   letter-spacing: 0.08em;
 }
 
@@ -1876,13 +1919,14 @@ a:focus-visible,
 
 .fundamental-aggregate-readout small {
   color: var(--faint);
-  font: 9px 'DM Mono', monospace;
+  font: 12px 'DM Mono', monospace;
   letter-spacing: 0.06em;
 }
 
 .fundamental-aggregate-readout strong {
   color: var(--ink);
-  font: 500 28px 'DM Mono', monospace;
+  font: 500 56px/1 'DM Mono', monospace;
+  letter-spacing: -0.03em;
 }
 
 .fundamental-aggregate-readout > span {
@@ -1890,13 +1934,13 @@ a:focus-visible,
   padding: 4px 7px;
   border: 1px solid var(--action);
   color: var(--action);
-  font: 700 10px 'DM Mono', monospace;
+  font: 700 12px 'DM Mono', monospace;
 }
 
 .fundamental-aggregate > .sparkline {
   display: block;
   width: calc(100% - 24px);
-  height: 52px;
+  height: 120px;
   margin: 0 12px 10px;
 }
 
@@ -1920,7 +1964,7 @@ a:focus-visible,
 .fundamental-company-values dt,
 .fundamental-mapping dt {
   color: var(--faint);
-  font: 9px 'DM Mono', monospace;
+  font: 12px 'DM Mono', monospace;
   letter-spacing: 0.05em;
 }
 
@@ -1938,7 +1982,7 @@ a:focus-visible,
   display: block;
   margin-top: 3px;
   color: var(--muted);
-  font: 8.5px/1.35 'DM Mono', monospace;
+  font: 11px/1.4 'DM Mono', monospace;
 }
 
 .fundamental-method-actions {
@@ -1967,13 +2011,13 @@ a:focus-visible,
   min-width: 760px;
   border-collapse: collapse;
   color: var(--ink2);
-  font: 10.5px 'DM Mono', monospace;
+  font: 14px 'DM Mono', monospace;
 }
 
 .fundamental-history caption {
   padding: 8px;
   color: var(--faint);
-  font: 9px 'DM Mono', monospace;
+  font: 12px 'DM Mono', monospace;
   letter-spacing: 0.07em;
   text-align: left;
 }
@@ -1992,7 +2036,7 @@ a:focus-visible,
 
 .fundamental-history thead th {
   color: var(--faint);
-  font-size: 8.5px;
+  font-size: 12px;
 }
 
 .fundamental-company-grid {
@@ -2027,7 +2071,7 @@ a:focus-visible,
   display: block;
   margin-top: 3px;
   color: var(--muted);
-  font: 10px 'DM Mono', monospace;
+  font: 12px 'DM Mono', monospace;
 }
 
 .fundamental-company-head .badge,
@@ -2082,7 +2126,7 @@ a:focus-visible,
 
 .fundamental-caveats strong {
   color: var(--warning-fg);
-  font: 700 9px 'DM Mono', monospace;
+  font: 700 11px 'DM Mono', monospace;
   letter-spacing: 0.06em;
 }
 
@@ -2136,7 +2180,7 @@ a:focus-visible,
 .manual-paraphrase b,
 .manual-review-note b {
   color: var(--faint);
-  font: 8.5px 'DM Mono', monospace;
+  font: 11px 'DM Mono', monospace;
   letter-spacing: 0.05em;
 }
 
@@ -2182,7 +2226,7 @@ a:focus-visible,
 
 .manual-record-value > small {
   color: var(--muted);
-  font: 9px 'DM Mono', monospace;
+  font: 11px 'DM Mono', monospace;
 }
 
 .manual-record dl {
@@ -2195,7 +2239,7 @@ a:focus-visible,
 .manual-record dd {
   margin: 2px 0 0;
   color: var(--muted);
-  font: 9px/1.45 'DM Mono', monospace;
+  font: 11px/1.45 'DM Mono', monospace;
   overflow-wrap: anywhere;
 }
 
@@ -2218,7 +2262,7 @@ a:focus-visible,
 .fundamental-manual-card p b {
   display: block;
   color: var(--faint);
-  font: 9px 'DM Mono', monospace;
+  font: 11px 'DM Mono', monospace;
   letter-spacing: 0.05em;
 }
 
@@ -2254,16 +2298,18 @@ a:focus-visible,
   align-items: center;
   gap: 14px;
   min-width: 0;
-  padding: 0 14px;
+  height: 34px;
+  min-height: 34px;
+  padding: 0 16px;
   overflow: hidden;
-  background: var(--charcoal);
-  color: var(--mid);
-  font: 11.5px 'DM Mono', monospace;
+  background: var(--white);
+  color: var(--muted);
+  font: 14px 'DM Mono', monospace;
   white-space: nowrap;
 }
 
 .footer-ticker strong {
-  color: var(--white);
+  color: var(--ink);
   font-weight: 500;
 }
 
@@ -2274,13 +2320,13 @@ a:focus-visible,
 }
 
 .footer-actions a:first-child {
-  color: var(--white);
+  color: var(--action);
 }
 
 .footer-action {
   border: 0;
   background: transparent;
-  color: var(--white);
+  color: var(--action);
   cursor: pointer;
   font: inherit;
   padding: 0;
@@ -2300,27 +2346,25 @@ a:focus-visible,
 
 .provenance-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(560px, 660px) minmax(0, 1fr);
   gap: 1px;
   width: 100%;
-  max-width: 1600px;
-  margin: 1px auto 0;
-  padding: 26px 14px 40px;
-  border: 1px solid var(--line);
+  margin: 0;
+  padding: 0;
+  border: 0;
   background: var(--line);
 }
 
 .provenance-panel {
   min-width: 0;
-  padding: 18px 20px 22px;
+  padding: 14px 18px 18px;
   background: var(--panel);
 }
 
-.provenance-kicker,
-.contract-kicker {
+.provenance-kicker {
   color: var(--accent);
   font: 12px 'DM Mono', monospace;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.08em;
 }
 
 .source-row {
@@ -2341,7 +2385,7 @@ a:focus-visible,
   display: block;
   overflow: hidden;
   color: var(--ink2);
-  font: 14.5px 'DM Mono', monospace;
+  font: 500 16px 'DM Mono', monospace;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -2351,7 +2395,7 @@ a:focus-visible,
   margin-top: 3px;
   overflow: hidden;
   color: var(--faint);
-  font: 12.5px 'DM Mono', monospace;
+  font: 13px 'DM Mono', monospace;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -2366,16 +2410,34 @@ a:focus-visible,
 .p0-formula-panel {
   display: grid;
   align-content: start;
-  gap: 12px;
+  gap: 0;
   min-width: 0;
   scroll-margin-top: 16px;
+}
+
+.provenance-side {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--line);
+}
+
+.formula-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  min-width: 0;
+  background: var(--rowline);
 }
 
 .formula-panel-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 14px;
+  gap: 20px;
+  padding: 12px 2px;
+  border-bottom: 1px solid var(--line);
 }
 
 .formula-panel-title {
@@ -2388,7 +2450,7 @@ a:focus-visible,
 .formula-panel-head p {
   margin: 5px 0 0;
   color: var(--faint);
-  font: 9px 'DM Mono', monospace;
+  font: 13px 'DM Mono', monospace;
   letter-spacing: .04em;
 }
 
@@ -2406,38 +2468,32 @@ a:focus-visible,
   padding: 5px 8px;
   border: 1px solid var(--status-color, var(--line));
   color: var(--status-fg, var(--status-high-contrast-fg));
-  font: 500 10px/1.35 'DM Mono', monospace;
+  font: 500 13px/1.35 'DM Mono', monospace;
   overflow-wrap: anywhere;
 }
 
 .formula-model-state small {
   padding: 3px 6px;
-  font-size: 8.5px;
+  font-size: 13px;
 }
 
 .formula-card {
   min-width: 0;
-  padding: 13px 14px;
-  border-left: 4px solid var(--formula-tone);
-  background: var(--formula-bg);
+  padding: 14px 18px 16px;
+  border-top: 4px solid var(--formula-tone);
+  background: var(--panel);
 }
 
 .formula-card.is-yellow {
   --formula-tone: var(--warning);
-  --formula-bg: var(--warnbg);
 }
 
 .formula-card.is-red {
   --formula-tone: var(--negative);
-  --formula-bg: var(--badbg);
 }
 
 .formula-card.is-extreme {
   --formula-tone: var(--negative-fg);
-  --formula-bg: var(--surface);
-  border-top: 1px solid var(--negative-fg);
-  border-right: 1px solid var(--negative-fg);
-  border-bottom: 1px solid var(--negative-fg);
 }
 
 .formula-card-head,
@@ -2447,20 +2503,31 @@ a:focus-visible,
   gap: 10px;
 }
 
+.formula-card-head {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .formula-card-head h3,
 .formula-route-head h4 {
   margin: 0;
   color: var(--ink);
-  font: 700 11px 'DM Mono', monospace;
-  letter-spacing: .09em;
+  font: 500 17px 'DM Mono', monospace;
+  letter-spacing: .04em;
 }
 
 .formula-card-head > span,
 .formula-route-head > span {
   margin-left: auto;
   color: var(--status-high-contrast-fg);
-  font: 500 9px 'DM Mono', monospace;
+  font: 500 12px 'DM Mono', monospace;
   white-space: nowrap;
+}
+
+.formula-card-head > span {
+  margin-left: 0;
+  white-space: normal;
 }
 
 .formula-presentation {
@@ -2478,7 +2545,7 @@ a:focus-visible,
   padding: 7px 0 5px;
   overflow-x: auto;
   overflow-y: hidden;
-  font: 500 clamp(14px, 1.1vw, 19px)/1.45 'DM Mono', monospace;
+  font: 500 15px/1.6 'DM Mono', monospace;
   overscroll-behavior-inline: contain;
   scrollbar-width: thin;
 }
@@ -2498,6 +2565,7 @@ a:focus-visible,
   min-width: 30px;
   overflow: hidden;
   vertical-align: middle;
+  font-size: 15px;
 }
 
 .latex-formula[data-render-error="true"] {
@@ -2509,8 +2577,8 @@ a:focus-visible,
 .formula-reading {
   margin: 6px 0 0;
   color: var(--muted);
-  font-size: 11.5px;
-  line-height: 1.65;
+  font-size: 15px;
+  line-height: 1.55;
   white-space: pre-line;
 }
 
@@ -2524,6 +2592,7 @@ a:focus-visible,
   gap: 12px;
   min-width: 0;
   padding: 14px;
+  margin: 16px 20px 0;
   border: 1px solid var(--line);
   background: var(--surface);
 }
@@ -2545,7 +2614,7 @@ a:focus-visible,
   max-width: 500px;
   margin: 0;
   color: var(--muted);
-  font-size: 10.5px;
+  font-size: 13px;
   line-height: 1.5;
   text-align: right;
 }
@@ -2559,7 +2628,7 @@ a:focus-visible,
   padding-bottom: 5px;
   border-bottom: 1px solid var(--line);
   color: var(--faint);
-  font: 700 9px 'DM Mono', monospace;
+  font: 700 11px 'DM Mono', monospace;
   letter-spacing: .08em;
 }
 
@@ -2587,14 +2656,14 @@ a:focus-visible,
 
 .formula-notation-item dt strong {
   min-width: 0;
-  font-size: 11px;
+  font-size: 15px;
   overflow-wrap: anywhere;
 }
 
 .formula-notation-item dd {
   margin: 5px 0 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 14px;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
@@ -2603,14 +2672,14 @@ a:focus-visible,
   display: block;
   margin-top: 5px;
   color: var(--faint);
-  font: 8.5px 'DM Mono', monospace;
+  font: 11px 'DM Mono', monospace;
   text-transform: uppercase;
 }
 
 .formula-notation-item p {
   margin: 5px 0 0;
   color: var(--faint);
-  font-size: 9px;
+  font-size: 11px;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
@@ -2623,7 +2692,7 @@ a:focus-visible,
 
 .formula-clause {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(120px, auto) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 5px 10px;
   align-items: center;
   min-width: 0;
@@ -2634,21 +2703,23 @@ a:focus-visible,
 .formula-clause-label {
   min-width: 0;
   color: var(--ink2);
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.35;
 }
 
 .formula-clause-value {
+  grid-column: 1 / -1;
   color: var(--ink);
-  font: 500 11.5px 'DM Mono', monospace;
-  text-align: right;
-  white-space: nowrap;
+  font: 500 15px 'DM Mono', monospace;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .formula-clause-status {
   min-width: 78px;
   color: var(--status-fg, var(--status-high-contrast-fg));
-  font: 700 9px 'DM Mono', monospace;
+  font: 700 12px 'DM Mono', monospace;
   text-align: right;
   white-space: nowrap;
 }
@@ -2657,7 +2728,8 @@ a:focus-visible,
 .formula-clause-note {
   grid-column: 1 / -1;
   color: var(--faint);
-  font: 8.5px/1.4 'DM Mono', monospace;
+  font: 12px/1.4 'DM Mono', monospace;
+  overflow-wrap: anywhere;
 }
 
 .formula-clause-note {
@@ -2680,6 +2752,7 @@ a:focus-visible,
   display: grid;
   grid-template-columns: minmax(180px, 1fr) minmax(0, 1.4fr);
   gap: 12px;
+  margin: 14px 20px 0;
   padding: 11px 12px;
   border: 1px solid var(--line);
   background: var(--surface);
@@ -2690,7 +2763,7 @@ a:focus-visible,
   display: block;
   margin-top: 4px;
   color: var(--action);
-  font: 10px/1.5 'DM Mono', monospace;
+  font: 15px/1.5 'DM Mono', monospace;
   overflow-wrap: anywhere;
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -2702,49 +2775,40 @@ a:focus-visible,
 
 .formula-technical-flags,
 .formula-notes {
-  margin: 0;
+  margin: 12px 20px 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.55;
 }
 
 .formula-technical-flags strong {
   margin-right: 7px;
   color: var(--warning-fg);
-  font: 700 9px 'DM Mono', monospace;
+  font: 700 11px 'DM Mono', monospace;
 }
 
 .formula-notes {
   padding-left: 18px;
 }
 
-.formula-contract-note {
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.formula-contract-note > strong {
-  color: var(--ink);
-}
-
-.formula-contract-note p {
-  margin: 4px 0 0;
-}
-
 .source-notices {
-  grid-column: 1 / -1;
-  border-top: 1px solid var(--line);
+  column-count: 2;
+  column-gap: 22px;
+  border-top: 0;
+}
+
+.source-notices .provenance-kicker {
+  display: block;
+  column-span: all;
 }
 
 .source-notices p {
-  max-width: 1200px;
+  max-width: none;
   margin: 10px 0 0;
   color: var(--body);
-  font-size: 12.5px;
-  line-height: 1.65;
+  font-size: 13.5px;
+  line-height: 1.5;
+  break-inside: avoid;
 }
 
 .source-notices strong {
@@ -2775,49 +2839,6 @@ a:focus-visible,
   color: var(--action);
   text-decoration: underline;
   text-underline-offset: 2px;
-}
-
-.analysis-contract > p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 15.5px;
-  line-height: 1.85;
-}
-
-.contract-legend {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1px;
-  margin-top: 18px;
-  background: var(--line);
-}
-
-.contract-item {
-  min-width: 0;
-  padding: 10px 12px;
-  background: var(--panel);
-}
-
-.contract-item-head {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  color: var(--ink2);
-  font: 13px 'DM Mono', monospace;
-}
-
-.contract-swatch {
-  width: 8px;
-  height: 8px;
-  flex: 0 0 auto;
-  background: var(--legend-color, var(--unavail));
-}
-
-.contract-item p {
-  margin: 4px 0 0;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.5;
 }
 
 .badge {
@@ -2860,7 +2881,7 @@ a:focus-visible,
 
 .timestamp-grid dt {
   color: var(--faint);
-  font: 9.5px 'DM Mono', monospace;
+  font: 11px 'DM Mono', monospace;
   letter-spacing: 0.06em;
 }
 
@@ -2868,7 +2889,7 @@ a:focus-visible,
   margin: 4px 0 0;
   overflow-wrap: anywhere;
   color: var(--ink2);
-  font: 10.5px/1.4 'DM Mono', monospace;
+  font: 11px/1.4 'DM Mono', monospace;
 }
 
 .attempt-status {
@@ -2889,7 +2910,7 @@ a:focus-visible,
 .drawer-statistics h3,
 .drawer-statistics dt {
   color: var(--faint);
-  font: 9.5px 'DM Mono', monospace;
+  font: 11px 'DM Mono', monospace;
   letter-spacing: 0.06em;
 }
 
@@ -2897,7 +2918,7 @@ a:focus-visible,
   margin: 4px 0 0;
   overflow-wrap: anywhere;
   color: var(--ink2);
-  font: 10.5px/1.4 'DM Mono', monospace;
+  font: 11px/1.4 'DM Mono', monospace;
 }
 
 .drawer-statistics {
@@ -2927,7 +2948,7 @@ a:focus-visible,
 .drawer-statistics dd {
   margin: 0;
   color: var(--ink2);
-  font: 10.5px/1.4 'DM Mono', monospace;
+  font: 11px/1.4 'DM Mono', monospace;
   font-variant-numeric: tabular-nums;
 }
 
@@ -2943,7 +2964,7 @@ a:focus-visible,
   display: block;
   margin-bottom: 3px;
   color: var(--faint);
-  font: 9.5px 'DM Mono', monospace;
+  font: 11px 'DM Mono', monospace;
   letter-spacing: 0.08em;
 }
 
@@ -3026,7 +3047,7 @@ a:focus-visible,
   flex: 0 0 auto;
   color: var(--warning-fg);
   font: 500 11px 'DM Mono', monospace;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
 }
 
 .state-screen {
@@ -3103,7 +3124,7 @@ a:focus-visible,
 .drawer-kicker {
   color: var(--accent);
   font: 11px 'DM Mono', monospace;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.08em;
 }
 
 .drawer h2 {
@@ -3167,7 +3188,7 @@ a:focus-visible,
   margin-top: 22px;
   color: var(--accent);
   font: 11px 'DM Mono', monospace;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.08em;
 }
 
 .drawer-def dd,
@@ -3178,7 +3199,7 @@ a:focus-visible,
   line-height: 1.75;
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 1599px) {
   .readout {
     grid-template-columns: minmax(150px, 1fr) auto;
   }
@@ -3189,17 +3210,99 @@ a:focus-visible,
   }
 }
 
-@media (max-width: 1023px) {
+@media (min-width: 1000px) and (max-width: 1439px) {
+  .brand-mark,
+  .brand-title {
+    font-size: 15px;
+  }
+
+  .brand-divider {
+    height: 16px;
+    margin-right: 9px;
+    margin-left: 9px;
+  }
+
+  .route-nav {
+    margin-left: 10px;
+  }
+
+  .route-link {
+    padding-right: 10px;
+    padding-left: 10px;
+    font-size: 12px;
+  }
+
+  .status-cluster {
+    gap: 10px;
+    font-size: 12px;
+  }
+
+  .overall-pill {
+    padding-right: 7px;
+    padding-left: 7px;
+    font-size: 11px;
+  }
+
+  .body-grid {
+    grid-template-columns: minmax(280px, 0.9fr) minmax(300px, 1.15fr) minmax(270px, 0.9fr);
+  }
+
+  .fundamental-desktop-grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.85fr);
+  }
+
+  .fundamental-company-grid,
+  .fundamental-manual-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tape-head,
+  .tape-row {
+    grid-template-columns: minmax(0, 1fr) 46px 70px 70px;
+    gap: 5px;
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .tape-label,
+  .metric-delta,
+  .tape-delta {
+    font-size: 13px;
+  }
+
+  .metric-value,
+  .tape-value {
+    font-size: 14px;
+  }
+
+  .sparkline {
+    width: 46px;
+  }
+
+  .readout-value {
+    font-size: 40px;
+  }
+
+  .read-headline {
+    font-size: 18px;
+  }
+
+  .read-bullet {
+    font-size: 13px;
+  }
+
+  .balance-row-head {
+    grid-template-columns: minmax(0, 1fr) auto 76px;
+  }
+}
+
+@media (max-width: 1279px) {
   .provenance-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
 @media (max-width: 999px) {
-  .app-shell {
-    overflow-x: hidden;
-  }
-
   .deck {
     display: grid;
     grid-template-rows: auto;
@@ -3218,15 +3321,19 @@ a:focus-visible,
   }
 
   .status-cluster {
-    width: 100%;
-    margin-top: 9px;
-    margin-left: 0;
+    order: 3;
+    width: auto;
+    margin-top: 0;
+    margin-left: auto;
     gap: 8px 16px;
     flex-wrap: wrap;
   }
 
   .route-nav {
+    order: 2;
+    width: 100%;
     min-height: 34px;
+    margin-left: 0;
   }
 
   .body-grid {
@@ -3249,6 +3356,10 @@ a:focus-visible,
   }
 
   .detail-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fundamental-desktop-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -3329,17 +3440,9 @@ a:focus-visible,
   .formula-notation-head p {
     text-align: left;
   }
-
-  .formula-notation-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 @media (max-width: 768px) {
-  .p0-formula-panel {
-    order: -1;
-  }
-
   .formula-panel-head {
     flex-direction: column;
   }
@@ -3350,11 +3453,11 @@ a:focus-visible,
     text-align: left;
   }
 
-  .formula-clause {
-    grid-template-columns: minmax(0, 1fr) auto;
+  .formula-card-grid,
+  .formula-notation-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .formula-clause-label,
   .formula-clause-meta,
   .formula-clause-note {
     grid-column: 1 / -1;
@@ -3369,12 +3472,17 @@ a:focus-visible,
   }
 
   .formula-clause-status {
+    grid-row: 1;
     grid-column: 2;
     text-align: right;
   }
 
   .formula-source {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .source-notices {
+    column-count: 1;
   }
 }
 
@@ -3388,7 +3496,7 @@ a:focus-visible,
 
   .route-link {
     padding: 0 10px;
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .brand {
@@ -3581,15 +3689,24 @@ a:focus-visible,
   }
 
   .balance-row-head {
-    grid-template-columns: minmax(0, 1fr) auto 48px;
+    grid-template-columns: minmax(0, 1fr) auto 64px;
     gap: 4px;
+  }
+
+  .balance-delta {
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+    line-height: 1.05;
   }
 
   .footer-ticker {
     align-items: flex-start;
     gap: 5px;
+    height: auto;
     padding: 8px 12px;
     flex-direction: column;
+    flex-wrap: nowrap;
   }
 
   .footer-actions {
@@ -3628,10 +3745,6 @@ a:focus-visible,
   .source-meta {
     white-space: normal;
     overflow-wrap: anywhere;
-  }
-
-  .contract-legend {
-    grid-template-columns: minmax(0, 1fr);
   }
 
   .drawer {
