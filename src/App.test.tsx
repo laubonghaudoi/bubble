@@ -83,22 +83,43 @@ describe('v2 routed dashboard', () => {
     expect(screen.getByRole('button', { name: '8W' })).toBeVisible();
     expect(screen.getByRole('button', { name: '12W' })).toBeVisible();
     expect(screen.getByText('REGIME WINDOW')).toBeVisible();
-    expect(screen.getByText(/uses the FRED® API but is not endorsed/)).toBeVisible();
-    expect(screen.getByRole('link', { name: /FRED® API Terms of Use/ })).toHaveAttribute(
+    expect(screen.queryByText('PROVENANCE · COLLECTOR HEALTH')).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '來源與方法 →' })).toHaveAttribute('href', '#/provenance');
+    expect(window.localStorage.getItem('liq-theme')).toBeNull();
+    expect(document.documentElement).not.toHaveAttribute('data-theme');
+  });
+
+  it('renders collector health, analysis contract, and source notices on a standalone route', async () => {
+    window.history.replaceState(null, '', '/#/provenance');
+    const { container } = render(<App />);
+    const heading = await findRouteHeading('來源與方法');
+    await waitFor(() => expect(heading).toHaveFocus());
+
+    const navLink = screen.getByRole('link', { name: '來源與方法' });
+    expect(navLink).toHaveAttribute('href', '#/provenance');
+    expect(navLink).toHaveAttribute('aria-current', 'page');
+    expect(container.querySelector('.switch-strip')).toBeNull();
+    expect(vi.mocked(loadRouteSeries)).toHaveBeenCalledWith(expect.any(String), 'provenance', snapshot, catalog);
+
+    const provenance = screen.getByRole('region', { name: '來源、健康狀態與分析聲明' });
+    expect(provenance.querySelectorAll('.source-row')).toHaveLength(Object.keys(snapshot.sources).length);
+    expect(within(provenance).getByText('PROVENANCE · COLLECTOR HEALTH')).toBeVisible();
+    expect(within(provenance).getByText('ANALYSIS CONTRACT')).toBeVisible();
+    expect(within(provenance).getByText('訊號唔係結論。')).toBeVisible();
+    expect(within(provenance).getByText(/uses the FRED® API but is not endorsed/)).toBeVisible();
+    expect(within(provenance).getByRole('link', { name: /FRED® API Terms of Use/ })).toHaveAttribute(
       'href',
       'https://fred.stlouisfed.org/docs/api/terms_of_use.html',
     );
-    expect(screen.getByText(/New York Fed is not responsible for publication/)).toBeVisible();
-    expect(screen.getByText(/is not affiliated with the New York Fed/)).toBeVisible();
-    expect(screen.getByText(/does not sanction, endorse, or recommend/)).toBeVisible();
-    expect(screen.getByText(/Positions are measured as of Tuesday and normally released Friday/)).toBeVisible();
-    expect(screen.getByText(/neither is “CTA exposure”/)).toBeVisible();
-    expect(screen.getByRole('link', { name: /official TFF Futures Only dataset/ })).toHaveAttribute('href', 'https://publicreporting.cftc.gov/Commitments-of-Traders/TFF-Futures-Only/gpe5-46if');
-    expect(screen.getByRole('link', { name: /COT release schedule/ })).toHaveAttribute('href', 'https://www.cftc.gov/MarketReports/CommitmentsofTraders/ReleaseSchedule/index.htm');
-    expect(screen.getByRole('link', { name: /CFTC Web Policy/ })).toHaveAttribute('href', 'https://www.cftc.gov/WebPolicy/index.htm');
-    expect(screen.getByText(/No CFTC seal or logo is used/)).toBeVisible();
-    expect(window.localStorage.getItem('liq-theme')).toBeNull();
-    expect(document.documentElement).not.toHaveAttribute('data-theme');
+    expect(within(provenance).getByText(/New York Fed is not responsible for publication/)).toBeVisible();
+    expect(within(provenance).getByText(/is not affiliated with the New York Fed/)).toBeVisible();
+    expect(within(provenance).getByText(/does not sanction, endorse, or recommend/)).toBeVisible();
+    expect(within(provenance).getByText(/Positions are measured as of Tuesday and normally released Friday/)).toBeVisible();
+    expect(within(provenance).getByText(/neither is “CTA exposure”/)).toBeVisible();
+    expect(within(provenance).getByRole('link', { name: /official TFF Futures Only dataset/ })).toHaveAttribute('href', 'https://publicreporting.cftc.gov/Commitments-of-Traders/TFF-Futures-Only/gpe5-46if');
+    expect(within(provenance).getByRole('link', { name: /COT release schedule/ })).toHaveAttribute('href', 'https://www.cftc.gov/MarketReports/CommitmentsofTraders/ReleaseSchedule/index.htm');
+    expect(within(provenance).getByRole('link', { name: /CFTC Web Policy/ })).toHaveAttribute('href', 'https://www.cftc.gov/WebPolicy/index.htm');
+    expect(within(provenance).getByText(/No CFTC seal or logo is used/)).toBeVisible();
   });
 
   it('supports deep links, hash navigation, route focus, and switch-card arrow navigation', async () => {

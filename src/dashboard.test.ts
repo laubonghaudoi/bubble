@@ -273,6 +273,8 @@ describe('v2 contract and configuration', () => {
     expect(parseRoute('#/overview')).toBe('overview');
     expect(parseRoute('#/liquidity-fuel')).toBe('liquidity-fuel');
     expect(parseRoute('#/market-ignition/')).toBe('market-ignition');
+    expect(parseRoute('#/provenance')).toBe('provenance');
+    expect(parseRoute('#/provenance/')).toBe('provenance');
     expect(parseRoute('#/unknown')).toBe('overview');
   });
 
@@ -286,6 +288,7 @@ describe('v2 contract and configuration', () => {
       ...P2_SERIES_IDS,
     ]);
     expect(routeMetricIds('fundamental-exit', catalog, snapshot)).toEqual(P3_METRIC_IDS);
+    expect(routeMetricIds('provenance', catalog, snapshot)).toEqual([]);
     expect(routeMetricIds('market-ignition', [], snapshot)).toEqual([
       ...P1_CFTC_CONFIG.map(({ id }) => id),
       ...P1_RIGHTS_GATED_IDS,

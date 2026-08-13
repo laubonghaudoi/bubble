@@ -11,7 +11,8 @@ GitHub Pages 使用 hash routing，所以 project subpath 同直接開頁都唔�
 - `#/overview`：總覽；
 - `#/liquidity-fuel`：P0 美元流動性燃料；
 - `#/market-ignition`：P1/P2 市場放大器同脆弱度；
-- `#/fundamental-exit`：P3 CapEx 同產業需求。
+- `#/fundamental-exit`：P3 CapEx 同產業需求；
+- `#/provenance`：collector 健康狀態、分析 contract、來源授權同法律聲明。
 
 ## 本地設定
 

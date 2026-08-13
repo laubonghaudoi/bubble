@@ -116,7 +116,7 @@ Generated-data push 使用 repository `GITHUB_TOKEN`，按 GitHub 官方規則�
 
 - Settings → Pages → Source 必須係 GitHub Actions；
 - 確認 `npm run build` 已產生 `dist`；
-- 所有頁面應用 hash route：`#/overview`、`#/liquidity-fuel`、`#/market-ignition`、`#/fundamental-exit`；
+- 所有頁面應用 hash route：`#/overview`、`#/liquidity-fuel`、`#/market-ignition`、`#/fundamental-exit`、`#/provenance`；
 - project path 前綴由 Vite base 處理，唔好新增 server rewrite；
 - 檢查 `upload-pages-artifact` 同 `deploy-pages` steps。
 

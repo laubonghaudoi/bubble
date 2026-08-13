@@ -698,8 +698,8 @@ function PhasePage({ route, snapshot, catalogError, series, range, onRange, onMe
   );
 }
 
-function FooterTicker({ snapshotUrl, onSources }: { snapshotUrl: string; onSources: () => void }) {
-  return <footer className="footer-ticker"><strong>USD LIQUIDITY / OPEN MONITOR</strong><span>只供研究，並非投資建議</span><span className="footer-actions"><a href={snapshotUrl} download="snapshot.json">下載 JSON ↓</a><button className="footer-action" type="button" onClick={onSources}>來源與方法 →</button></span></footer>;
+function FooterTicker({ snapshotUrl }: { snapshotUrl: string }) {
+  return <footer className="footer-ticker"><strong>USD LIQUIDITY / OPEN MONITOR</strong><span>只供研究，並非投資建議</span><span className="footer-actions"><a href={snapshotUrl} download="snapshot.json">下載 JSON ↓</a><a className="footer-action" href="#/provenance">來源與方法 →</a></span></footer>;
 }
 
 function CftcLegalNotice() {
@@ -714,27 +714,30 @@ function SecCompanyFactsLegalNotice() {
   return <p className="sec-companyfacts-legal-notice"><strong>SEC Company Facts / filings.</strong> Hyperscaler cash CapEx uses the SEC’s <a href="https://www.sec.gov/search-filings/edgar-application-programming-interfaces" target="_blank" rel="noreferrer">official EDGAR APIs ↗</a> and linked 10-Q／10-K filings. Company-specific XBRL tags, filing accessions and quarterization methods are disclosed; cash payments are never silently combined with finance-lease additions. Manual demand evidence publishes only reviewed short paraphrases with public filing links. No SEC seal or logo is used, and the dashboard does not imply SEC affiliation or endorsement.</p>;
 }
 
-function Provenance({ snapshot }: { snapshot: Snapshot }) {
+function ProvenancePage({ snapshot }: { snapshot: Snapshot }) {
   return (
-    <section className="provenance-grid">
-      <article className="provenance-panel">
-        <div className="provenance-kicker">PROVENANCE · COLLECTOR HEALTH</div>
-        {Object.entries(snapshot.sources).map(([id, source]) => <div className="source-row" key={id}><div className="source-main">{source.url ? <a className="source-link" href={source.url} target="_blank" rel="noreferrer">{source.name} ↗</a> : <strong>{source.name}</strong>}<span className="source-meta">{source.observation_date ?? '—'} · {FRESHNESS_LABELS[source.freshness]}</span></div><span className="source-quality">{source.tier ?? '—'}</span><Badge status={source.status} label={healthText(source.status)} /></div>)}
-      </article>
-      <article className="provenance-panel analysis-contract">
-        <div className="provenance-kicker">ANALYSIS CONTRACT</div><h2>訊號唔係結論。</h2>
-        <p>Overview 嘅總體判讀只代表 P0 流動性燃料；P1–P3 只報 evidence coverage、方向同信心。+{THRESHOLD_BP} bp 係可配置操作門檻，技術日只降低信心。</p>
-      </article>
-      <article className="provenance-panel source-notices" aria-labelledby="source-notices-title">
-        <div className="provenance-kicker" id="source-notices-title">LEGAL · SOURCE NOTICES</div>
-        <p><strong>FRED® API.</strong> This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. By using this dashboard, users agree to be bound by the <a href="https://fred.stlouisfed.org/docs/api/terms_of_use.html" target="_blank" rel="noreferrer">FRED® API Terms of Use ↗</a>. Only reviewed government-origin series are enabled; a FRED API key does not grant third-party data rights.</p>
-        <p><strong>New York Fed reference rates.</strong> The SOFR, EFFR, OBFR, TGCR and BGCR data are subject to the <a href="https://www.newyorkfed.org/privacy/termsofuse.html" target="_blank" rel="noreferrer">Terms of Use posted at newyorkfed.org ↗</a>. The New York Fed is not responsible for publication of these data by Bubble USD Liquidity Dashboard, does not sanction or endorse this republication, and has no liability for your use. Bubble USD Liquidity Dashboard is not affiliated with the New York Fed. The New York Fed does not sanction, endorse, or recommend any products or services offered by Bubble USD Liquidity Dashboard. © 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org.</p>
-        <CftcLegalNotice />
-        <SecLegalNotice />
-        <SecCompanyFactsLegalNotice />
-        <p><strong>Privacy.</strong> This static dashboard does not provide accounts and does not intentionally collect personal information, analytics, or cookies.</p>
-      </article>
-    </section>
+    <main className="provenance-page">
+      <h2 className="route-heading sr-only" data-route-heading tabIndex={-1}>來源與方法</h2>
+      <section className="provenance-grid" aria-label="來源、健康狀態與分析聲明">
+        <article className="provenance-panel">
+          <div className="provenance-kicker">PROVENANCE · COLLECTOR HEALTH</div>
+          {Object.entries(snapshot.sources).map(([id, source]) => <div className="source-row" key={id}><div className="source-main">{source.url ? <a className="source-link" href={source.url} target="_blank" rel="noreferrer">{source.name} ↗</a> : <strong>{source.name}</strong>}<span className="source-meta">{source.observation_date ?? '—'} · {FRESHNESS_LABELS[source.freshness]}</span></div><span className="source-quality">{source.tier ?? '—'}</span><Badge status={source.status} label={healthText(source.status)} /></div>)}
+        </article>
+        <article className="provenance-panel analysis-contract">
+          <div className="provenance-kicker">ANALYSIS CONTRACT</div><h2>訊號唔係結論。</h2>
+          <p>Overview 嘅總體判讀只代表 P0 流動性燃料；P1–P3 只報 evidence coverage、方向同信心。+{THRESHOLD_BP} bp 係可配置操作門檻，技術日只降低信心。</p>
+        </article>
+        <article className="provenance-panel source-notices" aria-labelledby="source-notices-title">
+          <div className="provenance-kicker" id="source-notices-title">LEGAL · SOURCE NOTICES</div>
+          <p><strong>FRED® API.</strong> This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. By using this dashboard, users agree to be bound by the <a href="https://fred.stlouisfed.org/docs/api/terms_of_use.html" target="_blank" rel="noreferrer">FRED® API Terms of Use ↗</a>. Only reviewed government-origin series are enabled; a FRED API key does not grant third-party data rights.</p>
+          <p><strong>New York Fed reference rates.</strong> The SOFR, EFFR, OBFR, TGCR and BGCR data are subject to the <a href="https://www.newyorkfed.org/privacy/termsofuse.html" target="_blank" rel="noreferrer">Terms of Use posted at newyorkfed.org ↗</a>. The New York Fed is not responsible for publication of these data by Bubble USD Liquidity Dashboard, does not sanction or endorse this republication, and has no liability for your use. Bubble USD Liquidity Dashboard is not affiliated with the New York Fed. The New York Fed does not sanction, endorse, or recommend any products or services offered by Bubble USD Liquidity Dashboard. © 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org.</p>
+          <CftcLegalNotice />
+          <SecLegalNotice />
+          <SecCompanyFactsLegalNotice />
+          <p><strong>Privacy.</strong> This static dashboard does not provide accounts and does not intentionally collect personal information, analytics, or cookies.</p>
+        </article>
+      </section>
+    </main>
   );
 }
 
@@ -807,7 +810,8 @@ export function Dashboard(props: DashboardProps) {
   }, [props.onDrawer]);
   const closeDrawer = useCallback(() => props.onDrawer(null), [props.onDrawer]);
   const openSources = useCallback(() => openDrawer('sources'), [openDrawer]);
-  return <div className="app-shell"><div className="deck"><StatusBar snapshot={props.snapshot} route={props.route} onOpenSources={openSources} /><SwitchStrip snapshot={props.snapshot} route={props.route} /><div className="series-live-region" role="status" aria-live="polite">{props.seriesLoading ? '載入本頁完整時間序列…' : Object.keys(props.seriesErrors).length ? `${Object.keys(props.seriesErrors).length} 條完整時間序列暫不可用，已使用 snapshot 短序列。` : '本頁完整時間序列已載入。'}</div>{props.route === 'overview' ? <OverviewPage {...props} onDrawer={openDrawer} /> : props.route === 'liquidity-fuel' ? <LiquidityPage {...props} onDrawer={openDrawer} /> : <PhasePage route={props.route} snapshot={props.snapshot} catalogError={props.catalogError} series={props.series} range={props.range} onRange={props.onRange} onMetric={openDrawer} />}<FooterTicker snapshotUrl={`${props.baseUrl}data/snapshot.json`} onSources={openSources} /></div><Provenance snapshot={props.snapshot} />{props.drawer ? <Drawer mode={props.drawer} snapshot={props.snapshot} catalog={props.catalog} catalogError={props.catalogError} restoreFocus={drawerTriggerRef.current} onClose={closeDrawer} /> : null}</div>;
+  const provenanceRoute = props.route === 'provenance';
+  return <div className="app-shell"><div className={`deck${provenanceRoute ? ' is-provenance' : ''}`}><StatusBar snapshot={props.snapshot} route={props.route} onOpenSources={openSources} />{provenanceRoute ? null : <SwitchStrip snapshot={props.snapshot} route={props.route} />}{provenanceRoute ? null : <div className="series-live-region" role="status" aria-live="polite">{props.seriesLoading ? '載入本頁完整時間序列…' : Object.keys(props.seriesErrors).length ? `${Object.keys(props.seriesErrors).length} 條完整時間序列暫不可用，已使用 snapshot 短序列。` : '本頁完整時間序列已載入。'}</div>}{props.route === 'overview' ? <OverviewPage {...props} onDrawer={openDrawer} /> : props.route === 'liquidity-fuel' ? <LiquidityPage {...props} onDrawer={openDrawer} /> : props.route === 'provenance' ? <ProvenancePage snapshot={props.snapshot} /> : <PhasePage route={props.route} snapshot={props.snapshot} catalogError={props.catalogError} series={props.series} range={props.range} onRange={props.onRange} onMetric={openDrawer} />}<FooterTicker snapshotUrl={`${props.baseUrl}data/snapshot.json`} /></div>{props.drawer ? <Drawer mode={props.drawer} snapshot={props.snapshot} catalog={props.catalog} catalogError={props.catalogError} restoreFocus={drawerTriggerRef.current} onClose={closeDrawer} /> : null}</div>;
 }
 
 export function StateScreen({ error }: { error?: string }) {

@@ -26,7 +26,7 @@ import type {
   SwitchState,
 } from './types';
 
-export type RouteId = 'overview' | 'liquidity-fuel' | 'market-ignition' | 'fundamental-exit';
+export type RouteId = 'overview' | 'liquidity-fuel' | 'market-ignition' | 'fundamental-exit' | 'provenance';
 export type RangeKey = '1M' | '8W' | '12W' | '3M' | '1Y' | 'MAX';
 
 export interface SeriesFile {
@@ -75,6 +75,7 @@ export const ROUTES = [
   { id: 'liquidity-fuel', href: '#/liquidity-fuel', label: '流動性燃料' },
   { id: 'market-ignition', href: '#/market-ignition', label: '市場引信' },
   { id: 'fundamental-exit', href: '#/fundamental-exit', label: '基本面逃生門' },
+  { id: 'provenance', href: '#/provenance', label: '來源與方法' },
 ] as const satisfies ReadonlyArray<{ id: RouteId; href: string; label: string }>;
 
 export const SWITCH_CONFIG = [
@@ -1302,6 +1303,7 @@ export function parseRoute(hash: string): RouteId {
 }
 
 export function routeMetricIds(route: RouteId, catalog: readonly CatalogMetric[], snapshot: Snapshot): string[] {
+  if (route === 'provenance') return [];
   const dynamic = route === 'market-ignition'
     ? [
         ...P1_CFTC_CONFIG.map(({ id }) => id),
