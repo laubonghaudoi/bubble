@@ -625,6 +625,9 @@ function AttemptStatus({ attempt, success }: { attempt: string | null; success: 
 }
 
 function formatStatistic(name: string, value: number): string {
+  // Ratio semantics take precedence over the generic count-name shape used by
+  // keys such as ex_explicit_false_count_ratio_20d.
+  if (name.includes('ratio')) return formatValue(value, '', 2);
   if (name === 'sample_size' || name.endsWith('_sample_size') || name.includes('_count_') ||
     name.startsWith('unique_') || name.startsWith('filings_processed_') || name.startsWith('form4') ||
     name.startsWith('amendments_') || name.startsWith('parse_failures_') || name.startsWith('tenb5_') ||
@@ -634,7 +637,6 @@ function formatStatistic(name: string, value: number): string {
   if (name.includes('coverage_rate') || name.startsWith('ex_explicit_false_coverage_')) return formatValue(value * 100, 'percent', 1);
   if (name === 'percentile_10y' || name === 'qoq_percent_change' || name === 'yoy_percent_change') return formatValue(value, 'percent', 2);
   if (name === 'equity_usd_bn' || name === 'gdp_usd_bn') return formatValue(value, 'USD bn');
-  if (name.includes('ratio')) return formatValue(value, '', 2);
   if (name === 'net_percent_open_interest') return formatValue(value, 'percent_open_interest');
   if (name === 'change_8_weeks' || name === 'change_12_weeks') return `${formatSignedDelta(value, '', 2)} pp`;
   return formatValue(value);

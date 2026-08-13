@@ -224,6 +224,16 @@ describe('v2 routed dashboard', () => {
     expect(form4Drawer).toHaveTextContent('eligible_transaction_count_20d');
     expect(form4Drawer).toHaveTextContent('138');
     expect(form4Drawer).not.toHaveTextContent('138.00');
+    const statisticValue = (name: string) => within(form4Drawer)
+      .getByText(name, { selector: 'dt' })
+      .closest('div')!
+      .querySelector('dd');
+    expect(statisticValue('ratio_5d')).toHaveTextContent(/^0\.55$/);
+    expect(statisticValue('count_ratio_20d')).toHaveTextContent(/^0\.42$/);
+    expect(statisticValue('dollar_ratio_5d')).toHaveTextContent(/^—$/);
+    expect(statisticValue('dollar_ratio_20d')).toHaveTextContent(/^0\.08$/);
+    expect(statisticValue('ex_explicit_false_count_ratio_5d')).toHaveTextContent(/^0\.75$/);
+    expect(statisticValue('ex_explicit_false_count_ratio_20d')).toHaveTextContent(/^0\.61$/);
     fireEvent.keyDown(document, { key: 'Escape' });
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
 
