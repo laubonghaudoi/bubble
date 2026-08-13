@@ -2,7 +2,7 @@
 
 Date: 2026-08-13<br>
 Scope: KaTeX formula presentation, Cantonese readings, shared notation and rule provenance, schema `2.2.0` hard cut<br>
-Implementation parent: `90eb92c7208eb43bc46d005e34c9f5a4fd55db71`<br>
+Implementation parent: `90eb92cc9d549c751d45c090305e1d1c6c263e2f`<br>
 Implementation commit: `cc369beaba9e4056c2c22a1c9fbcd326503693c4`<br>
 Production data commit: `f99b3245790e88864567680f070171192cd2633c`
 
