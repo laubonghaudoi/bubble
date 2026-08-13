@@ -1,9 +1,9 @@
 {
-  "availability": "UNAVAILABLE_FREE",
+  "availability": "MANUAL_READY",
   "expected_next_update": null,
   "frequency": "quarterly",
-  "label": "Take-or-pay commitments",
-  "metric_id": "take_or_pay",
+  "label": "AI upstream orders / backlog",
+  "metric_id": "ai_upstream_orders_backlog",
   "observation_date": null,
   "observations": [],
   "quality": {
@@ -17,12 +17,12 @@
   "released_at": null,
   "schema_version": "2.0.0",
   "source": {
-    "name": null,
+    "name": "Human-reviewed public filings",
     "retrieved_at": null,
-    "rights_note": "No production source is active for this metric.",
-    "source_id": null,
-    "tier": null,
-    "url": null
+    "rights_note": "Publish short factual paraphrases with filing URLs and accessions.",
+    "source_id": "manual_public_filings",
+    "tier": "OFFICIAL",
+    "url": "https://www.sec.gov/search-filings"
   },
   "unit": "mixed",
   "updated_at": null

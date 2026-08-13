@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-13T00:13:49.138132Z",
+  "generated_at": "2026-08-13T01:12:58.164454Z",
   "metrics": [
     {
       "availability": "ACTIVE_FREE",
@@ -387,58 +387,58 @@
       "unit": "multiple"
     },
     {
-      "availability": "UNAVAILABLE_FREE",
+      "availability": "ACTIVE_FREE",
       "frequency": "quarterly",
       "label": "Hyperscaler aggregate cash CapEx",
       "layer": "fundamental_exit",
-      "metric_id": "hyperscaler_capex",
+      "metric_id": "hyperscaler_aggregate_cash_capex",
       "phase": "P3",
       "role": "evidence",
-      "series_path": "data/series/hyperscaler_capex.json",
+      "series_path": "data/series/hyperscaler_aggregate_cash_capex.json",
       "unit": "USD bn"
     },
     {
-      "availability": "UNAVAILABLE_FREE",
+      "availability": "ACTIVE_FREE",
       "frequency": "quarterly",
-      "label": "Hyperscaler CapEx acceleration",
+      "label": "Hyperscaler aggregate cash CapEx YoY acceleration",
       "layer": "fundamental_exit",
-      "metric_id": "capex_acceleration",
+      "metric_id": "hyperscaler_aggregate_cash_capex_yoy_acceleration_pp",
       "phase": "P3",
       "role": "evidence",
-      "series_path": "data/series/capex_acceleration.json",
+      "series_path": "data/series/hyperscaler_aggregate_cash_capex_yoy_acceleration_pp.json",
       "unit": "percentage_points"
     },
     {
-      "availability": "UNAVAILABLE_FREE",
+      "availability": "MANUAL_READY",
       "frequency": "quarterly",
-      "label": "AI upstream backlog",
+      "label": "AI upstream orders / backlog",
       "layer": "fundamental_exit",
-      "metric_id": "upstream_backlog",
+      "metric_id": "ai_upstream_orders_backlog",
       "phase": "P3",
       "role": "evidence",
-      "series_path": "data/series/upstream_backlog.json",
+      "series_path": "data/series/ai_upstream_orders_backlog.json",
       "unit": "mixed"
     },
     {
-      "availability": "UNAVAILABLE_FREE",
+      "availability": "MANUAL_READY",
       "frequency": "quarterly",
       "label": "Customer prepayments and contract commitments",
       "layer": "fundamental_exit",
-      "metric_id": "prepayments",
+      "metric_id": "customer_prepayments_contract_commitments",
       "phase": "P3",
       "role": "evidence",
-      "series_path": "data/series/prepayments.json",
+      "series_path": "data/series/customer_prepayments_contract_commitments.json",
       "unit": "mixed"
     },
     {
-      "availability": "UNAVAILABLE_FREE",
+      "availability": "MANUAL_READY",
       "frequency": "quarterly",
       "label": "Take-or-pay commitments",
       "layer": "fundamental_exit",
-      "metric_id": "take_or_pay",
+      "metric_id": "take_or_pay_commitments",
       "phase": "P3",
       "role": "evidence",
-      "series_path": "data/series/take_or_pay.json",
+      "series_path": "data/series/take_or_pay_commitments.json",
       "unit": "mixed"
     }
   ],
