@@ -124,7 +124,7 @@ def test_config_loads_exact_audited_video_model_and_reserve_zones():
     model = bundle.alert_rules["alerts"]["video_p0_model"]
     source = model["source"]
 
-    assert bundle.alert_rules["schema_version"] == "2.2.0"
+    assert bundle.alert_rules["schema_version"] == "2.3.0"
     assert model["yellow"] == {
         "spread_positive_bp": 0,
         "positive_streak_observations": 3,

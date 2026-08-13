@@ -83,17 +83,22 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe('v2.2 routed dashboard', () => {
+describe('v2.3 routed dashboard', () => {
   it('renders overview with ON RRP/SRF and frequency-aware changes, without NOT WIRED', async () => {
     const { container } = render(<App />);
-    expect(screen.getByRole('status')).toHaveTextContent('v2 snapshot');
+    expect(screen.getByRole('status')).toHaveTextContent('v2.3 snapshot');
     await screen.findByText('USD·LIQ');
-    expect(screen.getByText('ON RRP')).toBeVisible();
-    expect(screen.getByText('SRF')).toBeVisible();
+    expect(screen.getAllByText('ON RRP').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('SRF').length).toBeGreaterThan(0);
     expect(screen.queryByText(/NOT WIRED/)).not.toBeInTheDocument();
     expect(screen.getAllByText('1 OBS').length).toBeGreaterThan(0);
     expect(screen.getAllByText('1W').length).toBeGreaterThan(0);
-    expect(screen.getByText('IMPLEMENTATION STATUS')).toBeVisible();
+    expect(screen.queryByText('IMPLEMENTATION STATUS')).not.toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'PRICE / RATES' })).toBeVisible();
+    expect(screen.getByRole('group', { name: 'BALANCE / FACILITIES' })).toBeVisible();
+    expect(screen.getAllByRole('button', { name: /主圖指標$/ })).toHaveLength(13);
+    expect(screen.getByRole('button', { name: 'OBFR 主圖指標' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'TGA · H.4.1 主圖指標' })).toBeVisible();
     expect(screen.getByRole('button', { name: '8W' })).toBeVisible();
     expect(screen.getByRole('button', { name: '12W' })).toBeVisible();
     expect(screen.getByText('REGIME WINDOW')).toBeVisible();
@@ -116,6 +121,46 @@ describe('v2.2 routed dashboard', () => {
     expect(container.querySelector('.tape-panel > .panel-header')).not.toBeInTheDocument();
     expect(window.localStorage.getItem('liq-theme')).toBeNull();
     expect(document.documentElement).not.toHaveAttribute('data-theme');
+  });
+
+  it('drives the selected metric interpreter across all six typed views and keeps four-axis semantics separate', async () => {
+    const { container } = render(<App />);
+    await screen.findByText('USD·LIQ');
+    const rail = screen.getByRole('complementary', { name: '今日解讀與指標狀態' });
+    const interpreter = () => rail.querySelector<HTMLElement>('.metric-interpreter')!;
+    expect(interpreter()).toHaveAttribute('data-metric-id', 'sofr_iorb_spread_bp');
+    expect(interpreter().querySelector('[data-view-kind="REGIME_LADDER"]')).toBeInTheDocument();
+    expect(within(interpreter()).getByText('SELECTED METRIC · PRIMARY FUNDING PRICE')).toBeVisible();
+    expect(within(interpreter()).getByText('AS-OF 2026-08-11')).toBeVisible();
+    expect([...interpreter().querySelectorAll('.interpretation-axis')].map((axis) => axis.getAttribute('data-axis'))).toEqual([
+      'data', 'direction', 'impact', 'severity',
+    ]);
+    expect([...interpreter().querySelectorAll('.interpretation-axis > span')].map(({ textContent }) => textContent)).toEqual([
+      'DATA', 'DIRECTION', 'IMPACT', 'REGIME',
+    ]);
+    expect(interpreter().querySelector('[data-axis="direction"]')).toHaveAttribute('data-value', 'RISING');
+    expect(interpreter().querySelector('[data-axis="impact"]')).toHaveAttribute('data-value', 'TIGHTENING');
+
+    const select = (label: string, metricId: string, viewKind: string) => {
+      fireEvent.click(screen.getByRole('button', { name: `${label} 主圖指標` }));
+      expect(interpreter()).toHaveAttribute('data-metric-id', metricId);
+      expect(interpreter().querySelector(`[data-view-kind="${viewKind}"]`)).toBeInTheDocument();
+    };
+    select('SOFR', 'sofr', 'DIRECTIONAL');
+    select('IORB', 'iorb', 'DIRECTIONAL');
+    expect(interpreter().querySelector('[data-axis="impact"]')).toHaveAttribute('data-value', 'POLICY_ANCHOR');
+    select('TGA', 'tga_daily', 'PERCENTILE_GAUGE');
+    select('TGA · H.4.1', 'tga_weekly_h41', 'CROSS_CHECK');
+    select('SRF', 'srf_accepted', 'EVENT_STEPPER');
+    select('RESERVES', 'reserve_balances', 'REGIME_LADDER');
+
+    const globalRead = rail.querySelector<HTMLElement>('.global-read-section')!;
+    expect(interpreter().compareDocumentPosition(globalRead) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(globalRead).toHaveTextContent('GLOBAL READ · 今日總覽');
+    expect(globalRead).toHaveTextContent('最新為 1 bp。 融資成本略高。 未足以證明壓力。');
+    expect(globalRead).not.toHaveTextContent('替代解釋');
+    expect(globalRead).not.toHaveTextContent('確認：');
+    expect(container.querySelector('.metric-status-section')).not.toBeInTheDocument();
   });
 
   it.each(VIDEO_STATUS_CASES)('renders VIDEO P0 status %s with the exact %s tone', async (status, tone) => {
@@ -625,8 +670,12 @@ describe('v2.2 routed dashboard', () => {
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
     expect(metricButton).toHaveFocus();
 
-    fireEvent.click(screen.getByRole('button', { name: '查看來源與健康狀態' }));
+    const sourceButton = screen.getByRole('button', { name: '查看來源與健康狀態' });
+    sourceButton.focus();
+    fireEvent.click(sourceButton);
     const sourcesDialog = await screen.findByRole('dialog', { name: '來源與健康狀態' });
+    expect(sourcesDialog).toHaveTextContent('IMPLEMENTATION STATUS');
+    expect(sourcesDialog).toHaveTextContent(`${Object.keys(snapshot.metrics).length} 個`);
     expect(sourcesDialog).toHaveTextContent('LAST ATTEMPT');
     expect(sourcesDialog).toHaveTextContent('LAST SUCCESS');
     expect(within(sourcesDialog).getByRole('link', { name: /official TFF Futures Only dataset/ })).toBeVisible();
@@ -635,6 +684,12 @@ describe('v2.2 routed dashboard', () => {
     expect(within(sourcesDialog).getByRole('link', { name: /Form 4 instructions/ })).toHaveAttribute('href', 'https://www.sec.gov/files/form4.pdf');
     expect(sourcesDialog).toHaveTextContent(/transaction codes P and S cover open-market or private/);
     expect(sourcesDialog).toHaveTextContent(/not affiliated with or endorsed by the SEC/);
+    fireEvent.click(within(sourcesDialog).getByRole('button', { name: 'SOFR' }));
+    const switchedMetricDialog = await screen.findByRole('dialog', { name: 'SOFR' });
+    expect(switchedMetricDialog).toHaveTextContent('METRIC METHODOLOGY');
+    fireEvent.keyDown(document, { key: 'Escape' });
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(sourceButton).toHaveFocus();
   });
 
   it('keeps non-OK numeric values visible but labels every dashboard surface as last-good', async () => {
@@ -703,8 +758,9 @@ describe('v2.2 routed dashboard', () => {
     render(<App />);
     await screen.findByText('USD·LIQ');
 
-    for (const metricLabel of ['SOFR_IORB_SPREAD_BP', 'IORB']) {
-      fireEvent.click(screen.getByRole('button', { name: metricLabel }));
+    for (const [tabLabel, metricLabel] of [['SOFR−IORB', 'SOFR_IORB_SPREAD_BP'], ['IORB', 'IORB']]) {
+      fireEvent.click(screen.getByRole('button', { name: `${tabLabel} 主圖指標` }));
+      fireEvent.click(screen.getByRole('button', { name: `開啟 ${metricLabel} 完整方法與來源` }));
       const dialog = await screen.findByRole('dialog', { name: metricLabel });
       expect(dialog).toHaveTextContent('Manifest／方法目錄暫時不可用');
       expect(dialog).toHaveTextContent('503 manifest offline');
@@ -714,7 +770,7 @@ describe('v2.2 routed dashboard', () => {
     }
   });
 
-  it('announces per-series fallback and fatal v2 snapshot errors', async () => {
+  it('announces per-series fallback and fatal v2.3 snapshot errors', async () => {
     vi.mocked(loadRouteSeries).mockResolvedValueOnce({
       series: routeSeries('overview').series,
       errors: { sofr: '503 offline' },
@@ -724,9 +780,9 @@ describe('v2.2 routed dashboard', () => {
     await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('1 條完整時間序列'));
     first.unmount();
 
-    vi.mocked(loadDashboardCore).mockRejectedValueOnce(new Error('Invalid v2 snapshot payload'));
+    vi.mocked(loadDashboardCore).mockRejectedValueOnce(new Error('Invalid v2.3 snapshot payload'));
     render(<App />);
-    expect(await screen.findByRole('alert')).toHaveTextContent('Invalid v2 snapshot payload');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Invalid v2.3 snapshot payload');
     expect(screen.getByRole('alert')).toHaveTextContent('不會以零代替缺失值');
   });
 });

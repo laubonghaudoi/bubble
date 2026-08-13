@@ -1708,7 +1708,7 @@
     "status": "OK"
   },
   "released_at": "2026-07-30T22:11:13Z",
-  "schema_version": "2.2.0",
+  "schema_version": "2.3.0",
   "source": {
     "name": "SEC EDGAR APIs and filing data",
     "retrieved_at": "2026-08-13T19:02:13.285869Z",

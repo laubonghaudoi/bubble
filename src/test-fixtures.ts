@@ -1,6 +1,7 @@
 import {
   CONFIRMATION_SPREAD_IDS,
   OVERVIEW_SERIES_IDS,
+  P0_INTERPRETATION_IDS,
   P1_CFTC_CONFIG,
   P1_RIGHTS_GATED_IDS,
   P2_ACTIVE_IDS,
@@ -11,7 +12,7 @@ import {
   SCHEMA_VERSION,
   type SeriesFile,
 } from './dashboard';
-import type { Availability, CatalogMetric, FormulaClause, FormulaNotationItem, FundamentalCompanyDetail, Layer, ManualEvidenceRecord, Metric, Phase, Snapshot, VideoP0Model } from './types';
+import type { Availability, CatalogMetric, FormulaClause, FormulaNotationItem, FundamentalCompanyDetail, Layer, ManualEvidenceRecord, Metric, MetricInterpretation, Phase, Snapshot, VideoP0Model } from './types';
 
 const NOW = '2026-08-12T17:32:49Z';
 
@@ -241,8 +242,116 @@ export function makeMetric(
       source_and_license_note: '公開來源。',
       proxy_disclosure: '',
     },
+    interpretation: null,
     short_series: [{ date: '2026-08-10', value: 0.9 }, { date: '2026-08-11', value: 1 }],
     ...overrides,
+  };
+}
+
+function makeMetricInterpretation(metric: Metric, _index: number): MetricInterpretation {
+  const numericDirection: MetricInterpretation['numeric_direction'] = metric.changes.one_observation == null
+    ? 'UNKNOWN' : metric.changes.one_observation > 0 ? 'RISING'
+      : metric.changes.one_observation < 0 ? 'FALLING' : 'FLAT';
+  const directional = {
+    kind: 'DIRECTIONAL' as const,
+    label: '最近變化',
+    value: metric.value,
+    change: metric.changes.one_observation,
+    unit: metric.unit,
+    state: numericDirection,
+    basis: 'CONTEXT_ONLY' as const,
+  };
+  const rateSpreadIds = ['sofr_iorb_spread_bp', 'effr_iorb_spread_bp', 'obfr_iorb_spread_bp', 'tgcr_iorb_spread_bp', 'bgcr_iorb_spread_bp'];
+  const views: MetricInterpretation['views'] = metric.metric_id === 'sofr_iorb_spread_bp' ? [{
+    kind: 'REGIME_LADDER',
+    label: '流動性壓力階梯',
+    rows: [
+      { label: '正常', operator: '<=', threshold: 0, upper_threshold: null, unit: 'bp', rule: 'spread <= 0 bp', basis: 'VIDEO_SOURCE_RULE', active: false, met: false },
+      { label: '觀察', operator: '>', threshold: 0, upper_threshold: 3, unit: 'bp', rule: '0 bp < spread <= 3 bp', basis: 'DASHBOARD_OPERATIONALIZATION', active: true, met: true },
+      { label: '紅色', operator: '>', threshold: 3, upper_threshold: null, unit: 'bp', rule: 'spread > 3 bp', basis: 'VIDEO_SOURCE_RULE', active: false, met: false },
+    ],
+    note: '門檻由資料合約提供；前端不重算狀態。',
+  }, {
+    kind: 'BREADTH_COUNTER', label: '隔夜利率確認廣度', count: 2, total: 3, state: 'PARTIAL',
+    members: ['effr_iorb_spread_bp', 'tgcr_iorb_spread_bp', 'bgcr_iorb_spread_bp'].map((metric_id, memberIndex) => ({
+      metric_id, state: memberIndex < 2 ? 'CONFIRMING' : 'NOT_CONFIRMING', percentile: 0.5,
+      slope: memberIndex < 2 ? 0.1 : -0.1, confirming: memberIndex < 2,
+    })),
+    basis: 'STATISTICAL_BAND',
+  }] : metric.metric_id === 'tga_daily' ? [{
+    kind: 'PERCENTILE_GAUGE', label: '歷史位置', value: metric.value, unit: metric.unit,
+    percentile: 0.55, sample_size: 40, state: 'MIDDLE', slope: 0.1,
+    slope_unit: metric.unit, basis: 'STATISTICAL_BAND',
+  }, {
+    kind: 'REGIME_LADDER', label: 'TGA 操作化階梯', rows: [{
+      label: '接近來源目標', operator: '>=', threshold: 950, upper_threshold: null,
+      unit: 'USD bn', rule: 'TGA >= 950 USD bn', basis: 'DASHBOARD_OPERATIONALIZATION',
+      active: true, met: true,
+    }], note: '0.95T 係 dashboard 對影片方向性規則嘅操作化。',
+  }] : metric.metric_id === 'tga_weekly_h41' ? [{
+    kind: 'CROSS_CHECK', label: '政策利率交叉確認', primary_metric_id: metric.metric_id,
+    comparison_metric_id: 'tga_daily', difference: metric.value == null ? null : metric.value - 1,
+    unit: metric.unit, percentile: 0.5, sample_size: 40, state: 'ALIGNED', basis: 'STATISTICAL_BAND',
+  }] : metric.metric_id === 'srf_accepted' ? [{
+    kind: 'EVENT_STEPPER', label: '最近操作日', window_size: 3, positive_count: 0,
+    required_count: 2, state: 'DORMANT', technical_exercise: false,
+    basis: 'DASHBOARD_OPERATIONALIZATION',
+  }] : metric.metric_id === 'reserve_balances' ? [{
+    kind: 'REGIME_LADDER', label: '準備金水平階梯', rows: [{
+      label: '正常', operator: '>=', threshold: 2900, upper_threshold: null,
+      unit: 'USD bn', rule: 'reserves >= 2900 USD bn', basis: 'VIDEO_SOURCE_RULE',
+      active: true, met: true,
+    }], note: '水平規則同變化速度分開呈現。',
+  }, {
+    kind: 'PERCENTILE_GAUGE', label: '四星期變化速度', value: -100, unit: 'USD bn',
+    percentile: 0.2, sample_size: 260, state: 'ABOVE_P10', slope: -25,
+    slope_unit: 'USD bn', basis: 'STATISTICAL_BAND',
+  }] : [directional];
+  const role: MetricInterpretation['role'] = metric.metric_id === 'sofr_iorb_spread_bp'
+    ? 'PRIMARY_FUNDING_PRICE' : rateSpreadIds.includes(metric.metric_id) ? 'CONFIRMATION_SPREAD'
+      : metric.metric_id === 'sofr' ? 'PRIMARY_FUNDING_PRICE'
+        : metric.metric_id === 'iorb' ? 'POLICY_RATE_ANCHOR'
+          : ['effr', 'obfr', 'tgcr', 'bgcr'].includes(metric.metric_id) ? 'POLICY_ANCHORED_MARKET_RATE'
+            : metric.metric_id === 'tga_daily' ? 'TREASURY_CASH_FLOW'
+              : metric.metric_id === 'on_rrp_accepted' ? 'LIQUIDITY_BUFFER'
+                : metric.metric_id === 'srf_accepted' ? 'BACKSTOP_FACILITY'
+                  : metric.metric_id === 'reserve_balances' ? 'RESERVE_STOCK'
+                    : metric.metric_id === 'tga_weekly_h41' ? 'CROSS_CHECK' : 'BALANCE_SHEET_DRIVER';
+  const contextRoles = new Set<MetricInterpretation['role']>([
+    'POLICY_RATE_ANCHOR', 'POLICY_ANCHORED_MARKET_RATE', 'TREASURY_CASH_FLOW',
+    'LIQUIDITY_BUFFER', 'BALANCE_SHEET_DRIVER', 'CROSS_CHECK',
+  ]);
+  const exposedBases = views.flatMap((view) => view.kind === 'REGIME_LADDER'
+    ? view.rows.map(({ basis }) => basis) : [view.basis]);
+  return {
+    role,
+    classification_type: metric.metric_id === 'sofr_iorb_spread_bp' ? 'SOURCE_PLUS_OPERATIONAL'
+      : metric.metric_id === 'reserve_balances' ? 'SOURCE_PLUS_STATISTICAL'
+        : views[0].kind === 'PERCENTILE_GAUGE' ? 'ROLLING_PERCENTILE'
+          : views[0].kind === 'EVENT_STEPPER' ? 'EVENT_TRIGGER'
+            : views[0].kind === 'CROSS_CHECK' ? 'CROSS_CHECK' : 'DIRECTIONAL',
+    data_state: 'CURRENT',
+    numeric_direction: numericDirection,
+    impact: metric.metric_id === 'iorb' ? 'POLICY_ANCHOR'
+      : metric.metric_id === 'sofr_iorb_spread_bp' ? 'TIGHTENING' : 'AMBIGUOUS',
+    state: views[0].kind === 'DIRECTIONAL' ? views[0].state : 'NORMAL',
+    severity: metric.metric_id.includes('spread') ? 'NORMAL' : 'CONTEXT_ONLY',
+    confidence: 'HIGH',
+    headline: `${metric.label} 暫時未顯示明顯壓力。`,
+    what_it_measures: `${metric.label} 嘅目前水平同近期變化。`,
+    current_reasons: ['最新數值同可用歷史資料一致。'],
+    next_boundary: metric.metric_id === 'sofr_iorb_spread_bp' ? {
+      label: '下一個流動性門檻', current: metric.value, threshold: 3,
+      distance: metric.value == null ? null : 3 - metric.value, unit: 'bp',
+      rule: 'spread > 3 bp', basis: 'VIDEO_SOURCE_RULE',
+    } : null,
+    views,
+    confirm_with: metric.metric_id === 'sofr_iorb_spread_bp' ? ['sofr', 'iorb'] : [],
+    cannot_infer: '單一指標唔足以推論市場方向或交易結果。',
+    rule_basis: [...new Set([
+      ...(contextRoles.has(role) ? ['CONTEXT_ONLY' as const] : []),
+      ...exposedBases,
+    ])],
   };
 }
 
@@ -603,6 +712,11 @@ export function makeSnapshot(metricOverrides: Record<string, Partial<Metric>> = 
     });
     metrics[id].provenance = [{ ...metrics[id].source }];
     metrics[id].unavailability_reason = reason;
+  });
+  P0_INTERPRETATION_IDS.forEach((id, index) => {
+    metrics[id].interpretation = Object.hasOwn(metricOverrides[id] ?? {}, 'interpretation')
+      ? metricOverrides[id].interpretation ?? null
+      : makeMetricInterpretation(metrics[id], index);
   });
   const evidence = (prefix: string) => [{ id: `${prefix}-1`, label: 'Evidence 1', available: true, triggered: null, status: 'OK', direction: 'FLAT', confidence: 'HIGH', summary: '有新鮮資料。' }];
   const p1Evidence = [

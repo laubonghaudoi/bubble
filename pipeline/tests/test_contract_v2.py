@@ -24,6 +24,7 @@ from pipeline.contracts import (
     validate_series_file,
     validate_snapshot,
 )
+from pipeline.interpretation import build_metric_interpretations
 from pipeline.rules.p0_video_model import build_video_p0_formula_presentation
 
 
@@ -42,6 +43,67 @@ def fixture_snapshot():
 
     snapshot = json.loads(FIXTURE.read_text())
     template = snapshot["metrics"]["spx_0dte_share"]
+    interpretation_roles = {
+        "sofr_iorb_spread_bp": ("PRIMARY_FUNDING_PRICE", "SOURCE_PLUS_OPERATIONAL"),
+        "sofr": ("POLICY_ANCHORED_MARKET_RATE", "NO_HARD_THRESHOLD"),
+        "iorb": ("POLICY_RATE_ANCHOR", "NO_HARD_THRESHOLD"),
+        "effr": ("POLICY_ANCHORED_MARKET_RATE", "NO_HARD_THRESHOLD"),
+        "obfr": ("POLICY_ANCHORED_MARKET_RATE", "NO_HARD_THRESHOLD"),
+        "tgcr": ("POLICY_ANCHORED_MARKET_RATE", "NO_HARD_THRESHOLD"),
+        "bgcr": ("POLICY_ANCHORED_MARKET_RATE", "NO_HARD_THRESHOLD"),
+        "effr_iorb_spread_bp": ("CONFIRMATION_SPREAD", "ROLLING_PERCENTILE"),
+        "obfr_iorb_spread_bp": ("CONFIRMATION_SPREAD", "ROLLING_PERCENTILE"),
+        "tgcr_iorb_spread_bp": ("CONFIRMATION_SPREAD", "ROLLING_PERCENTILE"),
+        "bgcr_iorb_spread_bp": ("CONFIRMATION_SPREAD", "ROLLING_PERCENTILE"),
+        "tga_daily": ("TREASURY_CASH_FLOW", "SOURCE_PLUS_STATISTICAL"),
+        "on_rrp_accepted": ("LIQUIDITY_BUFFER", "ROLLING_PERCENTILE"),
+        "srf_accepted": ("BACKSTOP_FACILITY", "EVENT_TRIGGER"),
+        "reserve_balances": ("RESERVE_STOCK", "SOURCE_PLUS_STATISTICAL"),
+        "fed_total_assets": ("BALANCE_SHEET_DRIVER", "DIRECTIONAL"),
+        "tga_weekly_h41": ("CROSS_CHECK", "CROSS_CHECK"),
+    }
+
+    def fixture_interpretation(metric_id, metric):
+        role, classification = interpretation_roles[metric_id]
+        return {
+            "role": role,
+            "classification_type": classification,
+            "data_state": "CURRENT" if metric["value"] is not None else "UNKNOWN",
+            "numeric_direction": "FALLING" if metric_id == "on_rrp_accepted" else "UNKNOWN",
+            "impact": "AMBIGUOUS" if metric_id == "on_rrp_accepted" else "UNKNOWN",
+            "state": "AVAILABLE_BUFFER" if metric_id == "on_rrp_accepted" else "UNKNOWN",
+            "severity": "CONTEXT_ONLY" if metric["value"] is not None else "UNKNOWN",
+            "confidence": metric["context"]["confidence"],
+            "headline": "Fixture interpretation.",
+            "what_it_measures": "Fixture metric definition.",
+            "current_reasons": ["Fixture current-state reason."],
+            "next_boundary": None,
+            "views": [
+                {
+                    "kind": "DIRECTIONAL",
+                    "label": "FIXTURE READ",
+                    "value": metric["value"],
+                    "change": metric["changes"]["one_observation"],
+                    "unit": metric["unit"],
+                    "state": "AVAILABLE_BUFFER" if metric_id == "on_rrp_accepted" else "UNKNOWN",
+                    "basis": "CONTEXT_ONLY",
+                }
+            ],
+            "confirm_with": [],
+            "cannot_infer": "Fixture cannot infer risk.",
+            "rule_basis": ["CONTEXT_ONLY"],
+        }
+
+    for metric_id in interpretation_roles:
+        if metric_id == "on_rrp_accepted":
+            metric = snapshot["metrics"][metric_id]
+        else:
+            metric = copy.deepcopy(template)
+            metric["metric_id"] = metric_id
+            metric["label"] = metric_id
+            metric["availability"] = "UNAVAILABLE_FREE"
+            snapshot["metrics"][metric_id] = metric
+        metric["interpretation"] = fixture_interpretation(metric_id, metric)
     p1_held_ids = {
         "vix_vix3m_term_structure_proxy",
         "cboe_skew_tail_risk_proxy",
@@ -508,7 +570,7 @@ def fixture_snapshot():
         "not_applicable": 0,
     }
     # The compact fixture is for the pre-video metric/switch contract.  Build a
-    # deliberately disabled required 2.2 decision model so those tests can keep
+    # deliberately disabled required 2.3 decision model so those tests can keep
     # exercising their original axis while the model itself has dedicated
     # rule/contract tests.
     metric_template = snapshot["metrics"]["on_rrp_accepted"]
@@ -592,13 +654,37 @@ def fixture_snapshot():
         },
         "technical_flags": [], "notes": ["Disabled fixture."],
     }}
+    for metric in snapshot["metrics"].values():
+        metric.setdefault("interpretation", None)
+    bundle = load_config_bundle()
+    interpretations = build_metric_interpretations(
+        metric_records=snapshot["metrics"],
+        series_by_id={
+            metric_id: metric["short_series"]
+            for metric_id, metric in snapshot["metrics"].items()
+        },
+        rules=bundle.interpretation_rules,
+        alert_rules=bundle.alert_rules,
+    )
+    for metric_id, interpretation in interpretations.items():
+        snapshot["metrics"][metric_id]["interpretation"] = interpretation
+    for availability, field in {
+        "ACTIVE_FREE": "active_free_count",
+        "ACTIVE_PROXY": "active_proxy_count",
+        "MANUAL_READY": "manual_ready_count",
+        "UNAVAILABLE_FREE": "unavailable_free_count",
+    }.items():
+        snapshot[field] = sum(
+            metric["availability"] == availability
+            for metric in snapshot["metrics"].values()
+        )
     return snapshot
 
 
 def test_loads_schema_2_registry_bundle_and_canonical_p0_ids():
     bundle = load_config_bundle()
-    assert bundle.metric_registry["schema_version"] == "2.2.0"
-    assert bundle.source_registry["schema_version"] == "2.2.0"
+    assert bundle.metric_registry["schema_version"] == "2.3.0"
+    assert bundle.source_registry["schema_version"] == "2.3.0"
     assert CANONICAL_P0_METRIC_IDS <= bundle.metrics_by_id.keys()
 
 
@@ -679,7 +765,7 @@ def test_statistics_are_numeric_or_null_and_attempt_time_is_utc():
 def test_publication_contract_hard_cuts_v1_and_cross_checks_all_metric_ids():
     snapshot = fixture_snapshot()
     manifest = {
-        "schema_version": "2.2.0",
+        "schema_version": "2.3.0",
         "generated_at": snapshot["generated_at"],
         "metrics": [
             {
@@ -724,7 +810,7 @@ def test_publication_contract_hard_cuts_v1_and_cross_checks_all_metric_ids():
     }
     series = {
         metric_id: {
-            "schema_version": "2.2.0",
+            "schema_version": "2.3.0",
             "metric_id": metric_id,
             "label": metric["label"],
             "unit": metric["unit"],
@@ -761,7 +847,7 @@ def test_series_contract_requires_sorted_unique_real_dates():
     snapshot = fixture_snapshot()
     metric = snapshot["metrics"]["on_rrp_accepted"]
     series = {
-        "schema_version": "2.2.0",
+        "schema_version": "2.3.0",
         "metric_id": metric["metric_id"],
         "label": metric["label"],
         "unit": metric["unit"],
@@ -782,7 +868,7 @@ def test_series_contract_requires_sorted_unique_real_dates():
 def test_publication_cross_checks_contract_critical_metric_fields():
     snapshot = fixture_snapshot()
     manifest = {
-        "schema_version": "2.2.0",
+        "schema_version": "2.3.0",
         "generated_at": snapshot["generated_at"],
         "metrics": [],
     }
@@ -802,7 +888,7 @@ def test_publication_cross_checks_contract_critical_metric_fields():
             }
         )
         series[metric_id] = {
-            "schema_version": "2.2.0",
+            "schema_version": "2.3.0",
             "metric_id": metric_id,
             "label": metric["label"],
             "unit": metric["unit"],
@@ -841,7 +927,7 @@ def test_publication_cross_checks_contract_critical_metric_fields():
 def test_publication_rejects_internally_mixed_switches_and_timestamps():
     snapshot = fixture_snapshot()
     manifest = {
-        "schema_version": "2.2.0",
+        "schema_version": "2.3.0",
         "generated_at": snapshot["generated_at"],
         "metrics": [],
     }
@@ -861,7 +947,7 @@ def test_publication_rejects_internally_mixed_switches_and_timestamps():
             }
         )
         series[metric_id] = {
-            "schema_version": "2.2.0",
+            "schema_version": "2.3.0",
             "metric_id": metric_id,
             "label": metric["label"],
             "unit": metric["unit"],
@@ -897,7 +983,7 @@ def test_standalone_alerts_and_events_require_v2_shapes():
     with pytest.raises(ContractValidationError, match="events must be a list"):
         validate_events_file(
             {
-                "schema_version": "2.2.0",
+                "schema_version": "2.3.0",
                 "generated_at": "2026-08-12T20:00:00Z",
                 "events": "not-a-list",
             }

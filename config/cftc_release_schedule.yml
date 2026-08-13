@@ -1,5 +1,5 @@
 ---
-schema_version: 2.2.0
+schema_version: 2.3.0
 registry_kind: cftc_release_schedule
 source_url: https://www.cftc.gov/MarketReports/CommitmentsofTraders/ReleaseSchedule/index.htm
 reviewed_at: '2026-08-12T20:00:00Z'

@@ -2021,7 +2021,7 @@
     "status": "OK"
   },
   "released_at": null,
-  "schema_version": "2.2.0",
+  "schema_version": "2.3.0",
   "source": {
     "name": "U.S. Treasury FiscalData API",
     "retrieved_at": "2026-08-13T19:02:13.285869Z",

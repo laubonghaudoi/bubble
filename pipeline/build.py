@@ -1,4 +1,4 @@
-"""Schema 2.2.0 assembly helpers for the static dashboard publication."""
+"""Schema 2.3.0 assembly helpers for the static dashboard publication."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Phased orchestration for the schema 2.2.0 static publication.
+"""Phased orchestration for the schema 2.3.0 static publication.
 
 The module deliberately keeps collection, transformation, contract validation,
 staging, and promotion as separate operations.  GitHub Actions can therefore
@@ -80,6 +80,7 @@ from pipeline.io import (
     read_json,
     staged_data_directory,
 )
+from pipeline.interpretation import build_metric_interpretations
 from pipeline.form4_ledger import (
     build_ledger_package,
     load_ledger,
@@ -1953,6 +1954,17 @@ def build_release(
         registry_for_manifest.append(
             {**registry_metric, "effective_availability": availability}
         )
+
+    interpretations = build_metric_interpretations(
+        metric_records=metric_records,
+        series_by_id={
+            metric_id: state.observations for metric_id, state in states.items()
+        },
+        rules=bundle.interpretation_rules,
+        alert_rules=bundle.alert_rules,
+    )
+    for metric_id, record in metric_records.items():
+        record["interpretation"] = interpretations[metric_id]
 
     video_p0_model = evaluate_video_p0_model(
         latest_sofr_iorb_bp=sofr_stats["latest"],

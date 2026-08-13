@@ -17,6 +17,7 @@ import type {
   HealthStatus,
   ManualEvidenceRecord,
   Metric,
+  MetricInterpretationView,
   Snapshot,
   SwitchState,
   VideoP0Model,
@@ -28,6 +29,7 @@ import {
   HEALTH_LABELS,
   LIQUIDITY_MAIN_TABS,
   OVERVIEW_MAIN_TABS,
+  OVERVIEW_TAB_GROUPS,
   P1_CFTC_CONFIG,
   P1_RIGHTS_GATED_IDS,
   P2_ACTIVE_IDS,
@@ -398,6 +400,7 @@ interface ChartPanelProps {
   range: RangeKey;
   overlay: Record<string, boolean>;
   tabs: ReadonlyArray<{ id: string; label: string }>;
+  tabGroups?: ReadonlyArray<{ label: string; ids: readonly string[] }>;
   onMain: (id: string) => void;
   onRange: (range: RangeKey) => void;
   onOverlay: (id: string) => void;
@@ -468,7 +471,7 @@ function p0ChartNote(model: VideoP0Model, metricId: string) {
   return null;
 }
 
-function ChartPanel({ snapshot, series, main, range, overlay, tabs, onMain, onRange, onOverlay }: ChartPanelProps) {
+function ChartPanel({ snapshot, series, main, range, overlay, tabs, tabGroups, onMain, onRange, onOverlay }: ChartPanelProps) {
   const fallbackId = tabs[0]?.id ?? 'sofr_iorb_spread_bp';
   const metric = snapshot.metrics[main] ?? snapshot.metrics[fallbackId];
   const metricId = metric.metric_id;
@@ -491,7 +494,14 @@ function ChartPanel({ snapshot, series, main, range, overlay, tabs, onMain, onRa
   return (
     <section className="panel chart-panel" aria-label="主要流動性圖表">
       <div className="chart-toolbar">
-        <div className="tab-group" aria-label="主要指標">{tabs.map(({ id, label }) => <button className={`tab-button${metricId === id ? ' is-active' : ''}`} aria-label={`${label} 主圖指標`} aria-pressed={metricId === id} type="button" key={id} onClick={() => onMain(id)}>{label}</button>)}</div>
+        <div className="chart-tab-groups">
+          {(tabGroups ?? [{ label: '主要指標', ids: tabs.map(({ id }) => id) }]).map((group) => (
+            <div className="chart-tab-group" key={group.label}>
+              {tabGroups ? <span className="chart-tab-group-label">{group.label}</span> : null}
+              <div className="tab-group" role="group" aria-label={group.label}>{tabs.filter(({ id }) => group.ids.includes(id)).map(({ id, label }) => <button className={`tab-button${metricId === id ? ' is-active' : ''}`} aria-label={`${label} 主圖指標`} aria-pressed={metricId === id} type="button" key={id} onClick={() => onMain(id)}>{label}</button>)}</div>
+            </div>
+          ))}
+        </div>
         <div className="range-cluster"><span className="range-caption">REGIME WINDOW</span><div className="range-group" aria-label="Regime window；唔係預測期限">{RANGES.map((item) => <button className={`tab-button${range === item ? ' is-active' : ''}`} aria-pressed={range === item} type="button" key={item} onClick={() => onRange(item)}>{item}</button>)}</div></div>
       </div>
       <div className={`readout${lastGood ? ' is-last-good' : ''}`} data-value-state={valueState(metric)}>
@@ -534,13 +544,76 @@ function StatusGroups({ metrics, onMetric, compact = false }: { metrics: Metric[
   );
 }
 
-function ReadRail({ snapshot, onMetric }: { snapshot: Snapshot; onMetric: (id: string) => void }) {
+function interpretationValue(value: number | null, unit: string) {
+  if (value === null) return '—';
+  if (unit === 'USD bn' || unit === 'bp' || unit === 'percent' || unit === 'percentage_points') {
+    return formatValue(value, unit);
+  }
+  return `${formatValue(value, '', Number.isInteger(value) ? 0 : 2)}${unit ? ` ${unit}` : ''}`;
+}
+
+function percentileLabel(value: number | null) {
+  return value === null ? '—' : `${(value * 100).toFixed(1)}%`;
+}
+
+function InterpretationView({ view, metrics }: { view: MetricInterpretationView; metrics: Snapshot['metrics'] }) {
+  if (view.kind === 'REGIME_LADDER') {
+    return <article className="interpretation-view" data-view-kind={view.kind}><div className="interpretation-view-head"><h4>{view.label}</h4><span>REGIME LADDER</span></div><div className="regime-ladder">{view.rows.map((row, index) => <div className="regime-row" data-active={row.active || undefined} data-met={row.met === null ? 'unknown' : row.met} key={`${row.label}-${index}`}><span className="regime-marker" aria-hidden="true" /><div><strong>{row.label}</strong><small>{row.rule}</small></div><span>{row.threshold === null ? row.operator : `${row.operator} ${interpretationValue(row.threshold, row.unit)}`}{row.upper_threshold === null ? '' : ` · ${interpretationValue(row.upper_threshold, row.unit)}`}</span></div>)}</div>{view.note ? <p className="interpretation-view-note">{view.note}</p> : null}</article>;
+  }
+  if (view.kind === 'PERCENTILE_GAUGE') {
+    const width = view.percentile === null ? 0 : Math.max(0, Math.min(100, view.percentile * 100));
+    return <article className="interpretation-view" data-view-kind={view.kind}><div className="interpretation-view-head"><h4>{view.label}</h4><span>PERCENTILE GAUGE</span></div><div className="percentile-readout"><strong>{percentileLabel(view.percentile)}</strong><span>{view.state}</span></div><div className="percentile-track" aria-label={`${view.label} ${percentileLabel(view.percentile)}`}><span style={{ width: `${width}%` }} /></div><dl className="interpretation-stats"><div><dt>VALUE</dt><dd>{interpretationValue(view.value, view.unit)}</dd></div><div><dt>SLOPE</dt><dd>{interpretationValue(view.slope, view.slope_unit)}</dd></div><div><dt>SAMPLE</dt><dd>{view.sample_size}</dd></div></dl></article>;
+  }
+  if (view.kind === 'EVENT_STEPPER') {
+    return <article className="interpretation-view" data-view-kind={view.kind}><div className="interpretation-view-head"><h4>{view.label}</h4><span>EVENT STEPPER</span></div><div className="event-stepper" aria-label={`${view.positive_count ?? '未知'} / ${view.window_size}`}><strong>{view.positive_count ?? '—'} / {view.window_size}</strong><span>{view.state}</span></div><div className="event-steps">{Array.from({ length: view.window_size }, (_, index) => <span className={view.positive_count !== null && index < view.positive_count ? 'is-positive' : undefined} key={index} />)}</div><p className="interpretation-view-note">REQUIRED · {view.required_count}{view.technical_exercise ? ' · TECHNICAL EXERCISE' : ''}</p></article>;
+  }
+  if (view.kind === 'BREADTH_COUNTER') {
+    return <article className="interpretation-view" data-view-kind={view.kind}><div className="interpretation-view-head"><h4>{view.label}</h4><span>BREADTH COUNTER</span></div><div className="breadth-readout"><strong>{view.count ?? '—'} / {view.total}</strong><span>{view.state}</span></div><div className="breadth-members">{view.members.map((member) => <div data-confirming={member.confirming === null ? 'unknown' : member.confirming} key={member.metric_id}><span>{metrics[member.metric_id]?.label ?? member.metric_id}</span><b>{member.state}</b><small>{percentileLabel(member.percentile)}</small></div>)}</div></article>;
+  }
+  if (view.kind === 'DIRECTIONAL') {
+    return <article className="interpretation-view" data-view-kind={view.kind}><div className="interpretation-view-head"><h4>{view.label}</h4><span>DIRECTIONAL</span></div><dl className="directional-readout"><div><dt>VALUE</dt><dd>{interpretationValue(view.value, view.unit)}</dd></div><div><dt>CHANGE</dt><dd>{interpretationValue(view.change, view.unit)}</dd></div><div><dt>STATE</dt><dd>{view.state}</dd></div></dl></article>;
+  }
+  return <article className="interpretation-view" data-view-kind={view.kind}><div className="interpretation-view-head"><h4>{view.label}</h4><span>CROSS CHECK</span></div><div className="cross-check-pair"><span>{metrics[view.primary_metric_id]?.label ?? view.primary_metric_id}</span><b>↔</b><span>{metrics[view.comparison_metric_id]?.label ?? view.comparison_metric_id}</span></div><dl className="interpretation-stats"><div><dt>DIFFERENCE</dt><dd>{interpretationValue(view.difference, view.unit)}</dd></div><div><dt>PERCENTILE</dt><dd>{percentileLabel(view.percentile)}</dd></div><div><dt>SAMPLE</dt><dd>{view.sample_size}</dd></div></dl><p className="interpretation-view-note">{view.state}</p></article>;
+}
+
+function MetricInterpreter({ metric, metrics, onMetric }: { metric: Metric; metrics: Snapshot['metrics']; onMetric: (id: string) => void }) {
+  const interpretation = metric.interpretation;
+  if (!interpretation) return <section className="metric-interpreter is-unavailable" data-metric-id={metric.metric_id}><div className="interpreter-kicker">SELECTED METRIC INTERPRETER</div><h3>{metric.label}</h3><p>呢個指標未提供結構化解讀。</p></section>;
+  const axes = [
+    ['data', 'DATA', interpretation.data_state],
+    ['direction', 'DIRECTION', interpretation.numeric_direction],
+    ['impact', 'IMPACT', interpretation.impact],
+    ['severity', 'REGIME', interpretation.severity],
+  ] as const;
+  return (
+    <section className="metric-interpreter" data-metric-id={metric.metric_id} aria-labelledby="metric-interpreter-title">
+      <div className="interpreter-kicker">SELECTED METRIC INTERPRETER</div>
+      <div className="interpreter-role">SELECTED METRIC · {interpretation.role.replaceAll('_', ' ')}</div>
+      <div className="interpreter-title-row"><div><h3 id="metric-interpreter-title">{metric.label}</h3><p>{interpretation.headline}</p></div><span className="interpreter-confidence">{interpretation.confidence}</span></div>
+      <div className="interpreter-current" data-value-state={valueState(metric)}><strong>{formatValue(metric.value, metric.unit)}</strong>{isLastGood(metric) ? <LastGoodTag status={metric.quality.status} /> : null}<span>AS-OF {metric.observation_date ?? '—'}</span></div>
+      <div className="interpreter-contract-meta"><span>STATE · {interpretation.state.replaceAll('_', ' ')}</span><span>CLASSIFICATION · {interpretation.classification_type.replaceAll('_', ' ')}</span><span>BASIS · {interpretation.rule_basis.join(' + ').replaceAll('_', ' ')}</span></div>
+      <div className="interpretation-axes">{axes.map(([axis, label, value]) => <div className="interpretation-axis" data-axis={axis} data-value={value} key={axis}><span>{label}</span><strong>{value.replaceAll('_', ' ')}</strong></div>)}</div>
+      <p className="interpretation-measure"><b>MEASURES</b>{interpretation.what_it_measures}</p>
+      <ul className="interpretation-reasons">{interpretation.current_reasons.map((reason, index) => <li key={`${reason}-${index}`}>{reason}</li>)}</ul>
+      {interpretation.next_boundary ? <div className="next-boundary"><span>NEXT BOUNDARY</span><strong>{interpretation.next_boundary.label}</strong><p>{interpretation.next_boundary.rule}</p><dl><div><dt>CURRENT</dt><dd>{interpretationValue(interpretation.next_boundary.current, interpretation.next_boundary.unit)}</dd></div><div><dt>THRESHOLD</dt><dd>{interpretationValue(interpretation.next_boundary.threshold, interpretation.next_boundary.unit)}</dd></div><div><dt>DISTANCE</dt><dd>{interpretationValue(interpretation.next_boundary.distance, interpretation.next_boundary.unit)}</dd></div></dl></div> : null}
+      <div className="interpretation-views">{interpretation.views.map((view, index) => <InterpretationView view={view} metrics={metrics} key={`${view.kind}-${view.label}-${index}`} />)}</div>
+      {interpretation.confirm_with.length ? <div className="interpreter-confirm"><span>CONFIRM WITH</span><div>{interpretation.confirm_with.map((metricId) => <button type="button" key={metricId} onClick={() => onMetric(metricId)}>{metrics[metricId]?.label ?? metricId}</button>)}</div></div> : null}
+      <p className="interpreter-limit"><b>CANNOT INFER</b>{interpretation.cannot_infer}</p>
+      <button className="interpreter-method" type="button" onClick={() => onMetric(metric.metric_id)} aria-label={`開啟 ${metric.label} 完整方法與來源`}>完整方法與來源 →</button>
+    </section>
+  );
+}
+
+function ReadRail({ snapshot, selectedMetricId, onMetric }: { snapshot: Snapshot; selectedMetricId: string; onMetric: (id: string) => void }) {
   const maxBalance = Math.max(...BALANCE_IDS.map((id) => snapshot.metrics[id]?.value ?? 0), 1);
+  const selectedMetric = snapshot.metrics[selectedMetricId] ?? snapshot.metrics.sofr_iorb_spread_bp;
+  const globalBullet = snapshot.explanations.bullets[0];
   return (
     <aside className="panel read-rail" aria-label="今日解讀與指標狀態">
-      <section className="read-section">
-        <div className="read-kicker">READ · 今日粵文解讀</div><h3 className="read-headline">{snapshot.explanations.headline}</h3>
-        <div className="read-bullets">{snapshot.explanations.bullets.slice(0, 2).map((bullet, index) => <div className="read-bullet" key={`${bullet.metric_id}-${index}`}><b className="read-index">0{index + 1}</b><span>{bullet.observation} {bullet.meaning}</span><span className="read-caveat">替代解釋：{bullet.alternative}</span><span className="read-confirm">確認：{bullet.confirmation}</span><strong className="read-judgment">{bullet.judgment}</strong></div>)}</div>
+      <MetricInterpreter metric={selectedMetric} metrics={snapshot.metrics} onMetric={onMetric} />
+      <section className="read-section global-read-section">
+        <div className="read-kicker">GLOBAL READ · 今日總覽</div><h3 className="read-headline">{snapshot.explanations.headline}</h3>
+        {globalBullet ? <p className="global-read-copy">{globalBullet.observation} {globalBullet.meaning} {globalBullet.judgment}</p> : null}
         {snapshot.technical_context.length ? <div className="technical-context"><strong>技術日 CONTEXT</strong>{snapshot.technical_context.slice(0, 2).map((item) => <span key={`${item.date}-${item.note}`}>{item.date} · {item.note}</span>)}</div> : null}
       </section>
       <section className="balance-section">
@@ -550,7 +623,6 @@ function ReadRail({ snapshot, onMetric }: { snapshot: Snapshot; onMetric: (id: s
           return <div className={`balance-row${lastGood ? ' is-last-good' : ''}`} data-value-state={valueState(item)} key={id}><div className="balance-row-head"><span className="balance-label">{item.label}</span><span className="balance-value-state"><strong className="balance-value">{formatValue(item.value, item.unit)}</strong>{lastGood ? <LastGoodTag status={item.quality.status} /> : null}</span><b className={`balance-delta ${deltaClass(change.value)}`}>{formatSignedDelta(change.value, item.unit)} <small>{change.label}</small></b></div><div className="balance-track"><span className="balance-fill" style={{ width: `${Math.max(0, ((item.value ?? 0) / maxBalance) * 100)}%`, '--bar-color': BALANCE_COLORS[index] } as CSSProperties} /></div><small className="balance-meta">as-of {item.observation_date ?? '—'} · {item.frequency}</small></div>;
         })}
       </section>
-      <section className="metric-status-section"><div className="not-wired-head"><span className="not-wired-kicker">IMPLEMENTATION STATUS</span><span className="not-wired-count">{Object.keys(snapshot.metrics).length} 個</span></div><p className="not-wired-copy">可用、代理、人工同免費不可用狀態分開顯示；缺失永不當零。</p><StatusGroups metrics={Object.values(snapshot.metrics)} onMetric={onMetric} compact /></section>
     </aside>
   );
 }
@@ -773,7 +845,7 @@ function ConfirmationGrid({ snapshot, onMain, onMetric }: { snapshot: Snapshot; 
 
 function OverviewPage(props: Pick<DashboardProps, 'snapshot' | 'series' | 'main' | 'range' | 'overlay' | 'onMain' | 'onRange' | 'onOverlay' | 'onDrawer'>) {
   const model = props.snapshot.decision_models.p0_video_liquidity;
-  return <main className="overview-page"><h2 className="route-heading sr-only" data-route-heading tabIndex={-1}>總覽</h2><P0VideoBanner model={model} metrics={props.snapshot.metrics} /><div className="body-grid"><LiveTape snapshot={props.snapshot} series={props.series} selected={props.main} onSelect={props.onMain} /><ChartPanel snapshot={props.snapshot} series={props.series} main={props.main} range={props.range} overlay={props.overlay} tabs={OVERVIEW_MAIN_TABS} onMain={props.onMain} onRange={props.onRange} onOverlay={props.onOverlay} /><ReadRail snapshot={props.snapshot} onMetric={props.onDrawer} /></div></main>;
+  return <main className="overview-page"><h2 className="route-heading sr-only" data-route-heading tabIndex={-1}>總覽</h2><P0VideoBanner model={model} metrics={props.snapshot.metrics} /><div className="body-grid"><LiveTape snapshot={props.snapshot} series={props.series} selected={props.main} onSelect={props.onMain} /><ChartPanel snapshot={props.snapshot} series={props.series} main={props.main} range={props.range} overlay={props.overlay} tabs={OVERVIEW_MAIN_TABS} tabGroups={OVERVIEW_TAB_GROUPS} onMain={props.onMain} onRange={props.onRange} onOverlay={props.onOverlay} /><ReadRail snapshot={props.snapshot} selectedMetricId={props.main} onMetric={props.onDrawer} /></div></main>;
 }
 
 function LiquidityPage(props: Pick<DashboardProps, 'snapshot' | 'series' | 'main' | 'range' | 'overlay' | 'onMain' | 'onRange' | 'onOverlay' | 'onDrawer'>) {
@@ -978,7 +1050,7 @@ function ProvenancePage({ snapshot }: { snapshot: Snapshot }) {
   );
 }
 
-interface DrawerProps { mode: 'sources' | string; snapshot: Snapshot; catalog: CatalogMetric[]; catalogError: string; restoreFocus: HTMLElement | null; onClose: () => void }
+interface DrawerProps { mode: 'sources' | string; snapshot: Snapshot; catalog: CatalogMetric[]; catalogError: string; restoreFocus: HTMLElement | null; onMetric: (id: string) => void; onClose: () => void }
 
 function TimestampGrid({ observation, released, updated }: { observation: string | null; released: string | null; updated: string | null }) {
   return <dl className="timestamp-grid"><div><dt>OBSERVATION</dt><dd>{observation ?? '—'}</dd></div><div><dt>RELEASED</dt><dd>{displayTimestamp(released)}</dd></div><div><dt>PIPELINE UPDATED</dt><dd>{displayTimestamp(updated)}</dd></div></dl>;
@@ -1020,12 +1092,12 @@ function SourceDrawerRow({ source }: { source: CollectorSource }) {
   return <article className="drawer-source"><div className="drawer-source-main"><strong>{source.name}</strong><span className="source-meta">{source.tier ?? '—'} · {FRESHNESS_LABELS[source.freshness]}</span>{source.url ? <a href={source.url} target="_blank" rel="noreferrer">官方來源 ↗</a> : null}</div><Badge status={source.status} label={healthText(source.status)} /><TimestampGrid observation={source.observation_date} released={source.released_at} updated={source.updated_at} /><AttemptStatus attempt={source.last_attempt_at} success={source.last_success_at} /><p className="rights-note"><b>RIGHTS / USE</b>{source.rights_note || '未提供授權備註。'}</p>{source.failure_reason ? <p className="drawer-error">{source.failure_reason}</p> : null}</article>;
 }
 
-function Drawer({ mode, snapshot, catalog, catalogError, restoreFocus, onClose }: DrawerProps) {
+function Drawer({ mode, snapshot, catalog, catalogError, restoreFocus, onMetric, onClose }: DrawerProps) {
   const closeRef = useRef<HTMLButtonElement>(null); const drawerRef = useRef<HTMLElement>(null);
-  useEffect(() => { const overflow = document.body.style.overflow; document.body.style.overflow = 'hidden'; closeRef.current?.focus(); const onKeyDown = (event: KeyboardEvent) => { if (event.key === 'Escape') { event.preventDefault(); onClose(); return; } if (event.key !== 'Tab' || !drawerRef.current) return; const focusable = [...drawerRef.current.querySelectorAll<HTMLElement>('button, a[href], [tabindex]:not([tabindex="-1"])')].filter((element) => !element.hasAttribute('disabled')); if (!focusable.length) return; const first = focusable[0]; const last = focusable.at(-1)!; if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); } }; document.addEventListener('keydown', onKeyDown); return () => { document.removeEventListener('keydown', onKeyDown); document.body.style.overflow = overflow; if (restoreFocus?.isConnected) restoreFocus.focus(); window.requestAnimationFrame(() => { if (restoreFocus?.isConnected) restoreFocus.focus(); }); }; }, [onClose, restoreFocus]);
+  useEffect(() => { const overflow = document.body.style.overflow; document.body.style.overflow = 'hidden'; closeRef.current?.focus(); const onKeyDown = (event: KeyboardEvent) => { if (event.key === 'Escape') { event.preventDefault(); onClose(); return; } if (event.key !== 'Tab' || !drawerRef.current) return; const focusable = [...drawerRef.current.querySelectorAll<HTMLElement>('button, a[href], [tabindex]:not([tabindex="-1"])')].filter((element) => !element.hasAttribute('disabled')); if (!focusable.length) return; const first = focusable[0]; const last = focusable.at(-1)!; if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); } }; document.addEventListener('keydown', onKeyDown); return () => { document.removeEventListener('keydown', onKeyDown); document.body.style.overflow = overflow; if (restoreFocus?.isConnected) restoreFocus.focus(); window.requestAnimationFrame(() => { if (restoreFocus?.isConnected) restoreFocus.focus(); }); }; }, [mode, onClose, restoreFocus]);
   const sourceMode = mode === 'sources'; const metric = sourceMode ? undefined : snapshot.metrics[mode]; const catalogMetric = sourceMode ? undefined : catalog.find((item) => item.metric_id === mode);
   const definitions: Array<[string, keyof Metric['methodology']]> = [['回答問題', 'question'], ['精確定義', 'definition'], ['點解要睇', 'why_it_matters'], ['方向判讀', 'direction'], ['計算方法', 'calculation'], ['頻率與滯後', 'frequency_and_lag'], ['常見誤判', 'common_misreads'], ['技術扭曲', 'technical_distortions'], ['一齊確認', 'confirm_with'], ['唔可以推論', 'cannot_infer'], ['來源／授權', 'source_and_license_note'], ['Proxy disclosure', 'proxy_disclosure']];
-  return <div className="drawer-scrim" onClick={(event: MouseEvent<HTMLDivElement>) => { if (event.target === event.currentTarget) onClose(); }}><aside className="drawer" ref={drawerRef} role="dialog" aria-modal="true" aria-labelledby="drawer-title"><button className="drawer-close" type="button" ref={closeRef} onClick={onClose} aria-label="關閉">×</button><div className="drawer-kicker">{sourceMode ? 'PROVENANCE' : 'METRIC METHODOLOGY'}</div><h2 id="drawer-title">{sourceMode ? '來源與健康狀態' : metric?.label ?? mode}</h2>{!sourceMode && catalogError ? <p className="drawer-catalog-warning" role="status">Manifest／方法目錄暫時不可用（{catalogError}）。以下 snapshot metric 資料仍可查看，但方法目錄完整性未能確認。</p> : null}{sourceMode ? <>{Object.entries(snapshot.sources).map(([id, source]) => <SourceDrawerRow key={id} source={source} />)}<section className="drawer-legal-notice" aria-label="CFTC and SEC source notices"><CftcLegalNotice /><SecLegalNotice /><SecCompanyFactsLegalNotice /></section></> : metric ? <><div className="drawer-badges"><Badge status={metric.availability} label={AVAILABILITY_LABELS[metric.availability]} /><Badge status={metric.quality.status} label={healthText(metric.quality.status)} /><Badge status={metric.quality.freshness} label={FRESHNESS_LABELS[metric.quality.freshness]} /></div><TimestampGrid observation={metric.observation_date} released={metric.released_at} updated={metric.updated_at} /><AttemptStatus attempt={metric.quality.last_attempt_at} success={metric.quality.last_success_at} /><Statistics values={metric.statistics} /><p className="rights-note"><b>RIGHTS / USE</b>{metric.source.rights_note || metric.methodology.source_and_license_note}</p>{metric.quality.failure_reason ? <p className="drawer-error">{metric.quality.failure_reason}</p> : null}<dl className="drawer-def">{definitions.map(([term, key]) => { const content = metric.methodology[key]; const text = Array.isArray(content) ? content.join('、') : content; return text ? <div key={key}><dt>{term}</dt><dd>{text}</dd></div> : null; })}</dl></> : <p className="drawer-message">{catalogError || (catalogMetric ? 'Snapshot metric 暫時未提供。' : '方法資料暫時未提供。')}</p>}</aside></div>;
+  return <div className="drawer-scrim" onClick={(event: MouseEvent<HTMLDivElement>) => { if (event.target === event.currentTarget) onClose(); }}><aside className="drawer" ref={drawerRef} role="dialog" aria-modal="true" aria-labelledby="drawer-title"><button className="drawer-close" type="button" ref={closeRef} onClick={onClose} aria-label="關閉">×</button><div className="drawer-kicker">{sourceMode ? 'PROVENANCE' : 'METRIC METHODOLOGY'}</div><h2 id="drawer-title">{sourceMode ? '來源與健康狀態' : metric?.label ?? mode}</h2>{!sourceMode && catalogError ? <p className="drawer-catalog-warning" role="status">Manifest／方法目錄暫時不可用（{catalogError}）。以下 snapshot metric 資料仍可查看，但方法目錄完整性未能確認。</p> : null}{sourceMode ? <><section className="drawer-implementation-status" aria-labelledby="drawer-implementation-title"><div className="not-wired-head"><span className="not-wired-kicker" id="drawer-implementation-title">IMPLEMENTATION STATUS</span><span className="not-wired-count">{Object.keys(snapshot.metrics).length} 個</span></div><p className="not-wired-copy">可用、代理、人工同免費不可用狀態分開顯示；缺失永不當零。</p><StatusGroups metrics={Object.values(snapshot.metrics)} onMetric={onMetric} compact /></section>{Object.entries(snapshot.sources).map(([id, source]) => <SourceDrawerRow key={id} source={source} />)}<section className="drawer-legal-notice" aria-label="CFTC and SEC source notices"><CftcLegalNotice /><SecLegalNotice /><SecCompanyFactsLegalNotice /></section></> : metric ? <><div className="drawer-badges"><Badge status={metric.availability} label={AVAILABILITY_LABELS[metric.availability]} /><Badge status={metric.quality.status} label={healthText(metric.quality.status)} /><Badge status={metric.quality.freshness} label={FRESHNESS_LABELS[metric.quality.freshness]} /></div><TimestampGrid observation={metric.observation_date} released={metric.released_at} updated={metric.updated_at} /><AttemptStatus attempt={metric.quality.last_attempt_at} success={metric.quality.last_success_at} /><Statistics values={metric.statistics} /><p className="rights-note"><b>RIGHTS / USE</b>{metric.source.rights_note || metric.methodology.source_and_license_note}</p>{metric.quality.failure_reason ? <p className="drawer-error">{metric.quality.failure_reason}</p> : null}<dl className="drawer-def">{definitions.map(([term, key]) => { const content = metric.methodology[key]; const text = Array.isArray(content) ? content.join('、') : content; return text ? <div key={key}><dt>{term}</dt><dd>{text}</dd></div> : null; })}</dl></> : <p className="drawer-message">{catalogError || (catalogMetric ? 'Snapshot metric 暫時未提供。' : '方法資料暫時未提供。')}</p>}</aside></div>;
 }
 
 export interface DashboardProps {
@@ -1046,11 +1118,12 @@ export function Dashboard(props: DashboardProps) {
     props.onDrawer(mode);
   }, [props.onDrawer]);
   const closeDrawer = useCallback(() => props.onDrawer(null), [props.onDrawer]);
+  const switchDrawer = useCallback((id: string) => props.onDrawer(id), [props.onDrawer]);
   const openSources = useCallback(() => openDrawer('sources'), [openDrawer]);
   const provenanceRoute = props.route === 'provenance';
-  return <div className="app-shell"><div className="deck"><StatusBar snapshot={props.snapshot} route={props.route} onOpenSources={openSources} />{provenanceRoute ? null : <div className="series-live-region" role="status" aria-live="polite">{props.seriesLoading ? '載入本頁完整時間序列…' : Object.keys(props.seriesErrors).length ? `${Object.keys(props.seriesErrors).length} 條完整時間序列暫不可用，已使用 snapshot 短序列。` : '本頁完整時間序列已載入。'}</div>}{props.route === 'overview' ? <OverviewPage {...props} onDrawer={openDrawer} /> : props.route === 'liquidity-fuel' ? <LiquidityPage {...props} onDrawer={openDrawer} /> : props.route === 'provenance' ? <ProvenancePage snapshot={props.snapshot} /> : <PhasePage route={props.route} snapshot={props.snapshot} catalogError={props.catalogError} series={props.series} range={props.range} onRange={props.onRange} onMetric={openDrawer} />}<FooterTicker snapshotUrl={`${props.baseUrl}data/snapshot.json`} /></div>{props.drawer ? <Drawer mode={props.drawer} snapshot={props.snapshot} catalog={props.catalog} catalogError={props.catalogError} restoreFocus={drawerTriggerRef.current} onClose={closeDrawer} /> : null}</div>;
+  return <div className="app-shell"><div className="deck"><StatusBar snapshot={props.snapshot} route={props.route} onOpenSources={openSources} />{provenanceRoute ? null : <div className="series-live-region" role="status" aria-live="polite">{props.seriesLoading ? '載入本頁完整時間序列…' : Object.keys(props.seriesErrors).length ? `${Object.keys(props.seriesErrors).length} 條完整時間序列暫不可用，已使用 snapshot 短序列。` : '本頁完整時間序列已載入。'}</div>}{props.route === 'overview' ? <OverviewPage {...props} onDrawer={openDrawer} /> : props.route === 'liquidity-fuel' ? <LiquidityPage {...props} onDrawer={openDrawer} /> : props.route === 'provenance' ? <ProvenancePage snapshot={props.snapshot} /> : <PhasePage route={props.route} snapshot={props.snapshot} catalogError={props.catalogError} series={props.series} range={props.range} onRange={props.onRange} onMetric={openDrawer} />}<FooterTicker snapshotUrl={`${props.baseUrl}data/snapshot.json`} /></div>{props.drawer ? <Drawer mode={props.drawer} snapshot={props.snapshot} catalog={props.catalog} catalogError={props.catalogError} restoreFocus={drawerTriggerRef.current} onMetric={switchDrawer} onClose={closeDrawer} /> : null}</div>;
 }
 
 export function StateScreen({ error }: { error?: string }) {
-  return <main className="state-screen" role={error ? 'alert' : 'status'} aria-live="polite">{error ? <><h1>暫時未能載入數據</h1><p>現有 v2 snapshot 無法讀取（{error}）。請稍後再試；系統不會以零代替缺失值。</p></> : <><div className="loader" aria-hidden="true" /><p>載入已驗證 v2 snapshot…</p></>}</main>;
+  return <main className="state-screen" role={error ? 'alert' : 'status'} aria-live="polite">{error ? <><h1>暫時未能載入數據</h1><p>現有 v2.3 snapshot 無法讀取（{error}）。請稍後再試；系統不會以零代替缺失值。</p></> : <><div className="loader" aria-hidden="true" /><p>載入已驗證 v2.3 snapshot…</p></>}</main>;
 }

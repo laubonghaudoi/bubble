@@ -15,7 +15,7 @@
     "status": "NOT_APPLICABLE"
   },
   "released_at": null,
-  "schema_version": "2.2.0",
+  "schema_version": "2.3.0",
   "source": {
     "name": "Human-reviewed public filings",
     "retrieved_at": null,

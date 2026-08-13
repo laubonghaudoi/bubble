@@ -1,5 +1,5 @@
 {
-  "schema_version": "2.2.0",
+  "schema_version": "2.3.0",
   "generated_at": "2026-08-11T18:15:00Z",
   "market_date": "2026-08-11",
   "pipeline_updated_at": "2026-08-11T18:15:00Z",
@@ -160,7 +160,41 @@
       "short_series": [
         {"date": "2026-08-08", "value": 11.7},
         {"date": "2026-08-11", "value": 10.5}
-      ]
+      ],
+      "interpretation": {
+        "role": "LIQUIDITY_BUFFER",
+        "classification_type": "ROLLING_PERCENTILE",
+        "data_state": "CURRENT",
+        "numeric_direction": "FALLING",
+        "impact": "AMBIGUOUS",
+        "state": "INSUFFICIENT_HISTORY",
+        "severity": "CONTEXT_ONLY",
+        "confidence": "HIGH",
+        "headline": "ON RRP buffer 狀態：INSUFFICIENT_HISTORY。",
+        "what_it_measures": "合資格對手方透過隔夜逆回購放喺 Fed 嘅現金。",
+        "current_reasons": [
+          "只使用 endpoint 之前最多 20 個觀察；樣本為 1。",
+          "ON RRP 只係緩衝 context，下降亦可能反映相對回報改變。"
+        ],
+        "next_boundary": null,
+        "views": [
+          {
+            "kind": "PERCENTILE_GAUGE",
+            "label": "PRIOR-20 BUFFER POSITION",
+            "value": 10.5,
+            "unit": "USD bn",
+            "percentile": null,
+            "sample_size": 1,
+            "state": "INSUFFICIENT_HISTORY",
+            "slope": -1.2,
+            "slope_unit": "USD bn/observation",
+            "basis": "STATISTICAL_BAND"
+          }
+        ],
+        "confirm_with": ["reserve_balances", "tga_daily", "sofr_iorb_spread_bp"],
+        "cannot_infer": "ON RRP 下降亦可能只反映 bills 或 repo 回報更吸引。",
+        "rule_basis": ["CONTEXT_ONLY", "STATISTICAL_BAND"]
+      }
     },
     "spx_0dte_share": {
       "metric_id": "spx_0dte_share",
@@ -215,7 +249,8 @@
         "source_and_license_note": "No redistribution-cleared free automated input is configured.",
         "proxy_disclosure": ""
       },
-      "short_series": []
+      "short_series": [],
+      "interpretation": null
     }
   }
 }

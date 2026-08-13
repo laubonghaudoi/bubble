@@ -3868,7 +3868,7 @@
     "status": "OK"
   },
   "released_at": "2026-08-07T19:30:05.944000Z",
-  "schema_version": "2.2.0",
+  "schema_version": "2.3.0",
   "source": {
     "name": "CFTC Public Reporting Environment",
     "retrieved_at": "2026-08-13T19:02:13.285869Z",

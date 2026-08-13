@@ -42,7 +42,7 @@
       },
       "data_status": "LAST_GOOD",
       "enabled": true,
-      "evaluated_at": "2026-08-13T19:02:13.285869Z",
+      "evaluated_at": "2026-08-13T21:19:33.209655Z",
       "formulas": {
         "extreme": {
           "candidate": false,
@@ -805,7 +805,7 @@
     ],
     "headline": "P0 證據不足，今次不作中性推斷。"
   },
-  "generated_at": "2026-08-13T19:02:13.285869Z",
+  "generated_at": "2026-08-13T21:19:33.209655Z",
   "manual_ready_count": 3,
   "market_date": "2026-08-12",
   "metrics": {
@@ -827,6 +827,7 @@
       },
       "expected_next_update": null,
       "frequency": "quarterly",
+      "interpretation": null,
       "label": "AI upstream orders / backlog",
       "methodology": {
         "calculation": "Validate the version-controlled manual CSV contract, retain the official filing URL/accession and short factual paraphrase, and use the latest reviewed comparable record without coercing null to zero.",
@@ -897,6 +898,44 @@
       },
       "expected_next_update": "2026-08-13",
       "frequency": "business_daily",
+      "interpretation": {
+        "cannot_infer": "BGCR 絕對水平唔可以單獨證明系統性流動性壓力。",
+        "classification_type": "NO_HARD_THRESHOLD",
+        "confidence": "HIGH",
+        "confirm_with": [
+          "iorb",
+          "bgcr_iorb_spread_bp",
+          "sofr",
+          "tgcr"
+        ],
+        "current_reasons": [
+          "最新值為 3.6 percent。",
+          "絕對利率水平主要受政策錨影響；請配合相對 IORB 利差。"
+        ],
+        "data_state": "CURRENT",
+        "headline": "絕對利率冇獨立風險帶；資金壓力要睇相對 IORB 利差。",
+        "impact": "AMBIGUOUS",
+        "next_boundary": null,
+        "numeric_direction": "FALLING",
+        "role": "POLICY_ANCHORED_MARKET_RATE",
+        "rule_basis": [
+          "CONTEXT_ONLY"
+        ],
+        "severity": "CONTEXT_ONLY",
+        "state": "NO_STANDALONE_RISK_BAND",
+        "views": [
+          {
+            "basis": "CONTEXT_ONLY",
+            "change": -0.03,
+            "kind": "DIRECTIONAL",
+            "label": "DIRECTIONAL READ",
+            "state": "NO_STANDALONE_RISK_BAND",
+            "unit": "percent",
+            "value": 3.6
+          }
+        ],
+        "what_it_measures": "三方 repo 加 GCF Repo 嘅廣泛一般抵押品利率。"
+      },
       "label": "BGCR",
       "methodology": {
         "calculation": "Use the official BGCR observation.",
@@ -1062,6 +1101,46 @@
       },
       "expected_next_update": "2026-08-13",
       "frequency": "business_daily",
+      "interpretation": {
+        "cannot_infer": "高歷史百分位唔係危機線，必須配合 slope 同其他市場。",
+        "classification_type": "ROLLING_PERCENTILE",
+        "confidence": "HIGH",
+        "confirm_with": [
+          "sofr_iorb_spread_bp",
+          "tgcr_iorb_spread_bp",
+          "reserve_balances"
+        ],
+        "current_reasons": [
+          "歷史樣本 498；最低要求 60。",
+          "百分位同最近五期 slope 只作跨市場確認，唔會改變 alert。"
+        ],
+        "data_state": "CURRENT",
+        "headline": "未同時滿足 p80 同向上 slope 嘅確認條件。",
+        "impact": "EASING",
+        "next_boundary": null,
+        "numeric_direction": "FALLING",
+        "role": "CONFIRMATION_SPREAD",
+        "rule_basis": [
+          "STATISTICAL_BAND"
+        ],
+        "severity": "NORMAL",
+        "state": "ORDINARY",
+        "views": [
+          {
+            "basis": "STATISTICAL_BAND",
+            "kind": "PERCENTILE_GAUGE",
+            "label": "EXPANDING PRIOR-HISTORY BAND",
+            "percentile": 0.576305,
+            "sample_size": 498,
+            "slope": -0.3,
+            "slope_unit": "bp/observation",
+            "state": "ORDINARY",
+            "unit": "bp",
+            "value": -5.0
+          }
+        ],
+        "what_it_measures": "廣泛一般抵押品 repo 利率相對 IORB 嘅利差。"
+      },
       "label": "BGCR−IORB spread",
       "methodology": {
         "calculation": "(BGCR percent - IORB percent) x 100, without interpolation.",
@@ -1086,7 +1165,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-13T19:02:13.285869Z",
+          "retrieved_at": "2026-08-13T21:19:33.209655Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -1094,7 +1173,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-13T19:02:13.285869Z",
+          "retrieved_at": "2026-08-13T21:19:33.209655Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -1104,7 +1183,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-13T19:02:13.285869Z",
+        "last_attempt_at": "2026-08-13T21:19:33.209655Z",
         "last_success_at": "2026-08-13T19:02:13.285869Z",
         "sample_size": 499,
         "status": "OK"
@@ -1202,7 +1281,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-13T19:02:13.285869Z",
+        "retrieved_at": "2026-08-13T21:19:33.209655Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -1220,7 +1299,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-13T19:02:13.285869Z",
+      "updated_at": "2026-08-13T21:19:33.209655Z",
       "value": -5.0
     },
     "cboe_skew_tail_risk_proxy": {
@@ -1239,6 +1318,7 @@
       },
       "expected_next_update": null,
       "frequency": "business_daily",
+      "interpretation": null,
       "label": "Cboe SKEW tail-risk proxy",
       "methodology": {
         "calculation": "No redistribution-cleared Cboe feed is configured. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
@@ -1330,6 +1410,7 @@
       },
       "expected_next_update": "2026-08-14",
       "frequency": "weekly",
+      "interpretation": null,
       "label": "CFTC E-mini S&P 500 asset-manager net % OI",
       "methodology": {
         "calculation": "100 times net contracts divided by open interest; changes use 8 and 12 weekly observations and the z-score uses 156 reports with population standard deviation.",
@@ -1522,6 +1603,7 @@
       },
       "expected_next_update": "2026-08-14",
       "frequency": "weekly",
+      "interpretation": null,
       "label": "CFTC E-mini S&P 500 leveraged-funds net % OI",
       "methodology": {
         "calculation": "100 times net contracts divided by open interest; changes use 8 and 12 weekly observations and the z-score uses 156 reports with population standard deviation.",
@@ -1714,6 +1796,7 @@
       },
       "expected_next_update": "2026-08-14",
       "frequency": "weekly",
+      "interpretation": null,
       "label": "CFTC Nasdaq-100 consolidated asset-manager net % OI",
       "methodology": {
         "calculation": "100 times net contracts divided by open interest; changes use 8 and 12 weekly observations and the z-score uses 156 reports with population standard deviation.",
@@ -1906,6 +1989,7 @@
       },
       "expected_next_update": "2026-08-14",
       "frequency": "weekly",
+      "interpretation": null,
       "label": "CFTC Nasdaq-100 consolidated leveraged-funds net % OI",
       "methodology": {
         "calculation": "100 times net contracts divided by open interest; changes use 8 and 12 weekly observations and the z-score uses 156 reports with population standard deviation.",
@@ -2074,6 +2158,7 @@
       },
       "expected_next_update": null,
       "frequency": "business_daily",
+      "interpretation": null,
       "label": "Cross-asset rolling correlations",
       "methodology": {
         "calculation": "Several planned FRED series carry third-party redistribution restrictions. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
@@ -2141,6 +2226,7 @@
       },
       "expected_next_update": null,
       "frequency": "intraday",
+      "interpretation": null,
       "label": "BTC perpetual funding",
       "methodology": {
         "calculation": "Public endpoints do not provide redistribution rights for this public dashboard. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
@@ -2216,6 +2302,7 @@
       },
       "expected_next_update": null,
       "frequency": "intraday",
+      "interpretation": null,
       "label": "ETH perpetual funding",
       "methodology": {
         "calculation": "Public endpoints do not provide redistribution rights for this public dashboard. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
@@ -2293,6 +2380,7 @@
       },
       "expected_next_update": null,
       "frequency": "quarterly",
+      "interpretation": null,
       "label": "Customer prepayments and contract commitments",
       "methodology": {
         "calculation": "Validate the manual CSV record, source URL, accession, reviewer, review time, comparability and short paraphrase; select the latest reviewed record per company and metric.",
@@ -2363,6 +2451,43 @@
       },
       "expected_next_update": "2026-08-13",
       "frequency": "business_daily",
+      "interpretation": {
+        "cannot_infer": "EFFR 絕對水平唔可以單獨證明 repo 市場或者全系統壓力。",
+        "classification_type": "NO_HARD_THRESHOLD",
+        "confidence": "HIGH",
+        "confirm_with": [
+          "iorb",
+          "effr_iorb_spread_bp",
+          "sofr"
+        ],
+        "current_reasons": [
+          "最新值為 3.63 percent。",
+          "絕對利率水平主要受政策錨影響；請配合相對 IORB 利差。"
+        ],
+        "data_state": "CURRENT",
+        "headline": "絕對利率冇獨立風險帶；資金壓力要睇相對 IORB 利差。",
+        "impact": "AMBIGUOUS",
+        "next_boundary": null,
+        "numeric_direction": "FLAT",
+        "role": "POLICY_ANCHORED_MARKET_RATE",
+        "rule_basis": [
+          "CONTEXT_ONLY"
+        ],
+        "severity": "CONTEXT_ONLY",
+        "state": "NO_STANDALONE_RISK_BAND",
+        "views": [
+          {
+            "basis": "CONTEXT_ONLY",
+            "change": 0.0,
+            "kind": "DIRECTIONAL",
+            "label": "DIRECTIONAL READ",
+            "state": "NO_STANDALONE_RISK_BAND",
+            "unit": "percent",
+            "value": 3.63
+          }
+        ],
+        "what_it_measures": "聯邦基金市場隔夜無抵押交易嘅有效利率。"
+      },
       "label": "EFFR",
       "methodology": {
         "calculation": "Use the official EFFR observation.",
@@ -2527,6 +2652,46 @@
       },
       "expected_next_update": "2026-08-13",
       "frequency": "business_daily",
+      "interpretation": {
+        "cannot_infer": "高歷史百分位唔等於準備金短缺，亦唔係獨立警報。",
+        "classification_type": "ROLLING_PERCENTILE",
+        "confidence": "HIGH",
+        "confirm_with": [
+          "sofr_iorb_spread_bp",
+          "tgcr_iorb_spread_bp",
+          "bgcr_iorb_spread_bp"
+        ],
+        "current_reasons": [
+          "歷史樣本 501；最低要求 60。",
+          "百分位同最近五期 slope 只作跨市場確認，唔會改變 alert。"
+        ],
+        "data_state": "CURRENT",
+        "headline": "未同時滿足 p80 同向上 slope 嘅確認條件。",
+        "impact": "NEUTRAL",
+        "next_boundary": null,
+        "numeric_direction": "FLAT",
+        "role": "CONFIRMATION_SPREAD",
+        "rule_basis": [
+          "STATISTICAL_BAND"
+        ],
+        "severity": "NORMAL",
+        "state": "ORDINARY",
+        "views": [
+          {
+            "basis": "STATISTICAL_BAND",
+            "kind": "PERCENTILE_GAUGE",
+            "label": "EXPANDING PRIOR-HISTORY BAND",
+            "percentile": 0.780439,
+            "sample_size": 501,
+            "slope": 0.0,
+            "slope_unit": "bp/observation",
+            "state": "ORDINARY",
+            "unit": "bp",
+            "value": -2.0
+          }
+        ],
+        "what_it_measures": "無抵押聯邦基金利率相對 IORB 嘅利差。"
+      },
       "label": "EFFR−IORB spread",
       "methodology": {
         "calculation": "(EFFR percent - IORB percent) x 100, without interpolation.",
@@ -2551,7 +2716,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-13T19:02:13.285869Z",
+          "retrieved_at": "2026-08-13T21:19:33.209655Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -2559,7 +2724,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-13T19:02:13.285869Z",
+          "retrieved_at": "2026-08-13T21:19:33.209655Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -2569,7 +2734,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-13T19:02:13.285869Z",
+        "last_attempt_at": "2026-08-13T21:19:33.209655Z",
         "last_success_at": "2026-08-13T19:02:13.285869Z",
         "sample_size": 502,
         "status": "OK"
@@ -2667,7 +2832,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-13T19:02:13.285869Z",
+        "retrieved_at": "2026-08-13T21:19:33.209655Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -2685,7 +2850,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-13T19:02:13.285869Z",
+      "updated_at": "2026-08-13T21:19:33.209655Z",
       "value": -2.0
     },
     "fed_total_assets": {
@@ -2706,6 +2871,47 @@
       },
       "expected_next_update": "2026-08-06",
       "frequency": "weekly",
+      "interpretation": {
+        "cannot_infer": "資產收縮唔可以單獨證明市場壓力或者預測風險資產方向。",
+        "classification_type": "DIRECTIONAL",
+        "confidence": "MEDIUM",
+        "confirm_with": [
+          "reserve_balances",
+          "tga_daily",
+          "on_rrp_accepted"
+        ],
+        "current_reasons": [
+          "4W impulse：12.958 USD bn。",
+          "Expanding prior impulses：308；最低要求 104。"
+        ],
+        "data_state": "LAST_GOOD",
+        "headline": "Fed assets 4W impulse 狀態：BROADLY_FLAT。",
+        "impact": "EASING",
+        "next_boundary": null,
+        "numeric_direction": "RISING",
+        "role": "BALANCE_SHEET_DRIVER",
+        "rule_basis": [
+          "CONTEXT_ONLY",
+          "STATISTICAL_BAND"
+        ],
+        "severity": "CONTEXT_ONLY",
+        "state": "BROADLY_FLAT",
+        "views": [
+          {
+            "basis": "STATISTICAL_BAND",
+            "kind": "PERCENTILE_GAUGE",
+            "label": "4W ASSET IMPULSE",
+            "percentile": 0.649351,
+            "sample_size": 308,
+            "slope": null,
+            "slope_unit": "USD bn/observation",
+            "state": "BROADLY_FLAT",
+            "unit": "USD bn",
+            "value": 12.958
+          }
+        ],
+        "what_it_measures": "Federal Reserve H.4.1 總資產及其四周變化。"
+      },
       "label": "Federal Reserve total assets",
       "methodology": {
         "calculation": "Use official weekly level; calculate 1w and 4w observation changes.",
@@ -2872,6 +3078,7 @@
       },
       "expected_next_update": null,
       "frequency": "monthly",
+      "interpretation": null,
       "label": "FINRA customer debit balances",
       "methodology": {
         "calculation": "FINRA terms do not clear automated database construction or public redistribution. The provider interface remains disabled until written permission or a licensed feed is configured.",
@@ -2939,6 +3146,7 @@
       },
       "expected_next_update": null,
       "frequency": "business_daily",
+      "interpretation": null,
       "label": "Gamma flip level",
       "methodology": {
         "calculation": "Reliable dealer net-gamma and trade-direction inputs are not publicly available. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
@@ -3147,6 +3355,7 @@
       },
       "expected_next_update": null,
       "frequency": "quarterly",
+      "interpretation": null,
       "label": "Hyperscaler aggregate cash CapEx",
       "methodology": {
         "calculation": "Select reviewed company-specific US-GAAP tags, resolve duplicate/restated facts by filing chronology, derive Q1/H1/9M/FY single quarters, align by calendar period end, then sum USD cash CapEx before calculating growth.",
@@ -3420,6 +3629,7 @@
       },
       "expected_next_update": null,
       "frequency": "quarterly",
+      "interpretation": null,
       "label": "Hyperscaler aggregate cash CapEx YoY acceleration",
       "methodology": {
         "calculation": "For aggregate cash CapEx, compute YoY growth as CapEx_t / CapEx_t-4 - 1, then YoY acceleration as growth_t minus growth_t-1. QoQ growth and acceleration are retained as supporting statistics.",
@@ -3554,6 +3764,45 @@
       },
       "expected_next_update": null,
       "frequency": "policy_event",
+      "interpretation": {
+        "cannot_infer": "IORB 水平唔可以單獨量度準備金充裕程度或者市場壓力。",
+        "classification_type": "NO_HARD_THRESHOLD",
+        "confidence": "HIGH",
+        "confirm_with": [
+          "sofr",
+          "effr",
+          "obfr",
+          "tgcr",
+          "bgcr"
+        ],
+        "current_reasons": [
+          "最新值為 3.65 percent。",
+          "絕對利率水平主要受政策錨影響；請配合相對 IORB 利差。"
+        ],
+        "data_state": "CURRENT",
+        "headline": "IORB 係政策錨，唔係獨立危險訊號。",
+        "impact": "POLICY_ANCHOR",
+        "next_boundary": null,
+        "numeric_direction": "FLAT",
+        "role": "POLICY_RATE_ANCHOR",
+        "rule_basis": [
+          "CONTEXT_ONLY"
+        ],
+        "severity": "CONTEXT_ONLY",
+        "state": "POLICY_ANCHOR",
+        "views": [
+          {
+            "basis": "CONTEXT_ONLY",
+            "change": 0.0,
+            "kind": "DIRECTIONAL",
+            "label": "DIRECTIONAL READ",
+            "state": "POLICY_ANCHOR",
+            "unit": "percent",
+            "value": 3.65
+          }
+        ],
+        "what_it_measures": "合資格銀行將準備金留喺 Fed 可以收取嘅利率。"
+      },
       "label": "IORB",
       "methodology": {
         "calculation": "Use the official IORB percent rate effective for each observation date.",
@@ -3721,6 +3970,7 @@
       },
       "expected_next_update": null,
       "frequency": "monthly",
+      "interpretation": null,
       "label": "M2 / Nasdaq divergence",
       "methodology": {
         "calculation": "Nasdaq series redistribution rights are not cleared by access through FRED. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
@@ -3788,6 +4038,7 @@
       },
       "expected_next_update": null,
       "frequency": "business_daily",
+      "interpretation": null,
       "label": "Nasdaq-100 forward P/E",
       "methodology": {
         "calculation": "A consistent, reproducible forward-earnings consensus is proprietary. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
@@ -3859,6 +4110,7 @@
       },
       "expected_next_update": null,
       "frequency": "quarterly",
+      "interpretation": null,
       "label": "Nonfinancial corporate equities / GDP proxy",
       "methodology": {
         "calculation": "Join NCBEILQ027S and GDP by exact calendar quarter with no forward fill; convert equities from USD millions to billions, then calculate equities_bn / GDP_bn × 100. QoQ and YoY are changes in the ratio; the 10-year percentile uses up to 40 exact common quarters.",
@@ -4024,6 +4276,43 @@
       },
       "expected_next_update": "2026-08-13",
       "frequency": "business_daily",
+      "interpretation": {
+        "cannot_infer": "OBFR 絕對水平唔可以單獨識別壓力來源或者證明準備金稀缺。",
+        "classification_type": "NO_HARD_THRESHOLD",
+        "confidence": "HIGH",
+        "confirm_with": [
+          "iorb",
+          "obfr_iorb_spread_bp",
+          "effr"
+        ],
+        "current_reasons": [
+          "最新值為 3.63 percent。",
+          "絕對利率水平主要受政策錨影響；請配合相對 IORB 利差。"
+        ],
+        "data_state": "CURRENT",
+        "headline": "絕對利率冇獨立風險帶；資金壓力要睇相對 IORB 利差。",
+        "impact": "AMBIGUOUS",
+        "next_boundary": null,
+        "numeric_direction": "FLAT",
+        "role": "POLICY_ANCHORED_MARKET_RATE",
+        "rule_basis": [
+          "CONTEXT_ONLY"
+        ],
+        "severity": "CONTEXT_ONLY",
+        "state": "NO_STANDALONE_RISK_BAND",
+        "views": [
+          {
+            "basis": "CONTEXT_ONLY",
+            "change": 0.0,
+            "kind": "DIRECTIONAL",
+            "label": "DIRECTIONAL READ",
+            "state": "NO_STANDALONE_RISK_BAND",
+            "unit": "percent",
+            "value": 3.63
+          }
+        ],
+        "what_it_measures": "聯邦基金及 Eurodollar 交易構成嘅廣泛隔夜銀行融資利率。"
+      },
       "label": "OBFR",
       "methodology": {
         "calculation": "Use the official OBFR observation.",
@@ -4188,6 +4477,45 @@
       },
       "expected_next_update": "2026-08-13",
       "frequency": "business_daily",
+      "interpretation": {
+        "cannot_infer": "高歷史百分位唔可以單獨證明 repo 壓力或者系統性短缺。",
+        "classification_type": "ROLLING_PERCENTILE",
+        "confidence": "HIGH",
+        "confirm_with": [
+          "sofr_iorb_spread_bp",
+          "effr_iorb_spread_bp"
+        ],
+        "current_reasons": [
+          "歷史樣本 501；最低要求 60。",
+          "百分位同最近五期 slope 只作跨市場確認，唔會改變 alert。"
+        ],
+        "data_state": "CURRENT",
+        "headline": "未同時滿足 p80 同向上 slope 嘅確認條件。",
+        "impact": "NEUTRAL",
+        "next_boundary": null,
+        "numeric_direction": "FLAT",
+        "role": "CONFIRMATION_SPREAD",
+        "rule_basis": [
+          "STATISTICAL_BAND"
+        ],
+        "severity": "NORMAL",
+        "state": "ELEVATED",
+        "views": [
+          {
+            "basis": "STATISTICAL_BAND",
+            "kind": "PERCENTILE_GAUGE",
+            "label": "EXPANDING PRIOR-HISTORY BAND",
+            "percentile": 0.866267,
+            "sample_size": 501,
+            "slope": 0.0,
+            "slope_unit": "bp/observation",
+            "state": "ELEVATED",
+            "unit": "bp",
+            "value": -2.0
+          }
+        ],
+        "what_it_measures": "廣泛隔夜銀行融資利率相對 IORB 嘅利差。"
+      },
       "label": "OBFR−IORB spread",
       "methodology": {
         "calculation": "(OBFR percent - IORB percent) x 100, without interpolation.",
@@ -4212,7 +4540,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-13T19:02:13.285869Z",
+          "retrieved_at": "2026-08-13T21:19:33.209655Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -4220,7 +4548,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-13T19:02:13.285869Z",
+          "retrieved_at": "2026-08-13T21:19:33.209655Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -4230,7 +4558,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-13T19:02:13.285869Z",
+        "last_attempt_at": "2026-08-13T21:19:33.209655Z",
         "last_success_at": "2026-08-13T19:02:13.285869Z",
         "sample_size": 502,
         "status": "OK"
@@ -4328,7 +4656,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-13T19:02:13.285869Z",
+        "retrieved_at": "2026-08-13T21:19:33.209655Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -4346,7 +4674,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-13T19:02:13.285869Z",
+      "updated_at": "2026-08-13T21:19:33.209655Z",
       "value": -2.0
     },
     "on_rrp_accepted": {
@@ -4383,6 +4711,47 @@
       },
       "expected_next_update": "2026-08-14",
       "frequency": "business_daily",
+      "interpretation": {
+        "cannot_infer": "ON RRP 下降亦可能只反映 bills 或 repo 回報更吸引。",
+        "classification_type": "ROLLING_PERCENTILE",
+        "confidence": "HIGH",
+        "confirm_with": [
+          "reserve_balances",
+          "tga_daily",
+          "sofr_iorb_spread_bp"
+        ],
+        "current_reasons": [
+          "只使用 endpoint 之前最多 20 個觀察；樣本為 20。",
+          "ON RRP 只係緩衝 context，下降亦可能反映相對回報改變。"
+        ],
+        "data_state": "CURRENT",
+        "headline": "ON RRP buffer 狀態：DEPLETING_BUFFER。",
+        "impact": "AMBIGUOUS",
+        "next_boundary": null,
+        "numeric_direction": "FALLING",
+        "role": "LIQUIDITY_BUFFER",
+        "rule_basis": [
+          "CONTEXT_ONLY",
+          "STATISTICAL_BAND"
+        ],
+        "severity": "CONTEXT_ONLY",
+        "state": "DEPLETING_BUFFER",
+        "views": [
+          {
+            "basis": "STATISTICAL_BAND",
+            "kind": "PERCENTILE_GAUGE",
+            "label": "PRIOR-20 BUFFER POSITION",
+            "percentile": 0.25,
+            "sample_size": 20,
+            "slope": -0.194143,
+            "slope_unit": "USD bn/observation",
+            "state": "DEPLETING_BUFFER",
+            "unit": "USD bn",
+            "value": 0.45
+          }
+        ],
+        "what_it_measures": "合資格對手方透過隔夜逆回購放喺 Fed 嘅現金。"
+      },
       "label": "ON RRP accepted amount",
       "methodology": {
         "calculation": "Aggregate accepted amounts, retain source raw values, and normalize to USD billions.",
@@ -4553,6 +4922,136 @@
       },
       "expected_next_update": "2026-08-06",
       "frequency": "weekly",
+      "interpretation": {
+        "cannot_infer": "影片門檻唔係 Fed 官方跨時期危機線；準備金需求會隨制度改變。",
+        "classification_type": "SOURCE_PLUS_STATISTICAL",
+        "confidence": "MEDIUM",
+        "confirm_with": [
+          "sofr_iorb_spread_bp",
+          "srf_accepted",
+          "tga_daily",
+          "fed_total_assets"
+        ],
+        "current_reasons": [
+          "最新 level 為 2993.35 USD bn。",
+          "4W change：-105.562 USD bn；既有 trailing-5Y p10：-194.943。"
+        ],
+        "data_state": "LAST_GOOD",
+        "headline": "Reserve level 為 ABOVE_VIDEO_YELLOW_ZONE；4W speed 為 ORDINARY_DRAIN。",
+        "impact": "TIGHTENING",
+        "next_boundary": {
+          "basis": "VIDEO_SOURCE_RULE",
+          "current": 2993.349,
+          "distance": 93.349,
+          "label": "VIDEO YELLOW ZONE",
+          "rule": "reserve level falls below next source line",
+          "threshold": 2900.0,
+          "unit": "USD bn"
+        },
+        "numeric_direction": "FALLING",
+        "role": "RESERVE_STOCK",
+        "rule_basis": [
+          "VIDEO_SOURCE_RULE",
+          "DASHBOARD_OPERATIONALIZATION",
+          "STATISTICAL_BAND"
+        ],
+        "severity": "NORMAL",
+        "state": "ABOVE_VIDEO_YELLOW_ZONE · ORDINARY_DRAIN",
+        "views": [
+          {
+            "kind": "REGIME_LADDER",
+            "label": "VIDEO RESERVE LEVEL ZONES",
+            "note": "影片門檻唔係 Fed 官方跨時期危機線。",
+            "rows": [
+              {
+                "active": true,
+                "basis": "VIDEO_SOURCE_RULE",
+                "label": "ABOVE VIDEO YELLOW ZONE",
+                "met": true,
+                "operator": ">=",
+                "rule": "above_video_yellow_zone",
+                "threshold": 2900.0,
+                "unit": "USD bn",
+                "upper_threshold": null
+              },
+              {
+                "active": false,
+                "basis": "VIDEO_SOURCE_RULE",
+                "label": "VIDEO YELLOW ZONE",
+                "met": false,
+                "operator": ">= AND <",
+                "rule": "video_yellow_zone",
+                "threshold": 2800.0,
+                "unit": "USD bn",
+                "upper_threshold": 2900.0
+              },
+              {
+                "active": false,
+                "basis": "VIDEO_SOURCE_RULE",
+                "label": "RED CONFIRMATION ZONE",
+                "met": false,
+                "operator": ">= AND <",
+                "rule": "red_confirmation_zone",
+                "threshold": 2500.0,
+                "unit": "USD bn",
+                "upper_threshold": 2800.0
+              },
+              {
+                "active": false,
+                "basis": "VIDEO_SOURCE_RULE",
+                "label": "EXTREME LEVEL CANDIDATE",
+                "met": false,
+                "operator": "<",
+                "rule": "extreme_level_candidate",
+                "threshold": 2500.0,
+                "unit": "USD bn",
+                "upper_threshold": null
+              }
+            ]
+          },
+          {
+            "kind": "REGIME_LADDER",
+            "label": "4W RESERVE SPEED",
+            "note": "Trailing-5Y p10 uses 260 change endpoints; the source level zones remain separate.",
+            "rows": [
+              {
+                "active": false,
+                "basis": "DASHBOARD_OPERATIONALIZATION",
+                "label": "REPLENISHING",
+                "met": false,
+                "operator": ">",
+                "rule": "4W reserve change > 0",
+                "threshold": 0.0,
+                "unit": "USD bn",
+                "upper_threshold": null
+              },
+              {
+                "active": true,
+                "basis": "STATISTICAL_BAND",
+                "label": "ORDINARY DRAIN",
+                "met": true,
+                "operator": "> p10 AND <=",
+                "rule": "trailing-5Y p10 < 4W reserve change <= 0",
+                "threshold": -194.943,
+                "unit": "USD bn",
+                "upper_threshold": 0.0
+              },
+              {
+                "active": false,
+                "basis": "STATISTICAL_BAND",
+                "label": "RAPID DRAIN",
+                "met": false,
+                "operator": "<=",
+                "rule": "4W reserve change <= trailing-5Y p10",
+                "threshold": -194.943,
+                "unit": "USD bn",
+                "upper_threshold": null
+              }
+            ]
+          }
+        ],
+        "what_it_measures": "存放喺 Federal Reserve Banks 嘅準備金結餘總額。"
+      },
       "label": "Reserve balances with Federal Reserve Banks",
       "methodology": {
         "calculation": "Use official weekly level; calculate 1w and 4w changes from observations.",
@@ -4728,6 +5227,7 @@
       },
       "expected_next_update": "2026-08-13",
       "frequency": "business_daily",
+      "interpretation": null,
       "label": "SEC Form 4 reported P/S count ratio · 20D proxy",
       "methodology": {
         "calculation": "Use (P count + 1) / (S count + 1) over 20 completed EDGAR-index business days. Publish 5D separately. Dollar ratios require at least 80% priced-row coverage; 10b5 sensitivity includes only filings explicitly marked false.",
@@ -4834,6 +5334,44 @@
       },
       "expected_next_update": "2026-08-13",
       "frequency": "business_daily",
+      "interpretation": {
+        "cannot_infer": "SOFR 絕對水平唔可以單獨證明準備金稀缺或者市場壓力。",
+        "classification_type": "NO_HARD_THRESHOLD",
+        "confidence": "HIGH",
+        "confirm_with": [
+          "iorb",
+          "sofr_iorb_spread_bp",
+          "tgcr",
+          "bgcr"
+        ],
+        "current_reasons": [
+          "最新值為 3.62 percent。",
+          "絕對利率水平主要受政策錨影響；請配合相對 IORB 利差。"
+        ],
+        "data_state": "CURRENT",
+        "headline": "絕對利率冇獨立風險帶；資金壓力要睇相對 IORB 利差。",
+        "impact": "AMBIGUOUS",
+        "next_boundary": null,
+        "numeric_direction": "FALLING",
+        "role": "POLICY_ANCHORED_MARKET_RATE",
+        "rule_basis": [
+          "CONTEXT_ONLY"
+        ],
+        "severity": "CONTEXT_ONLY",
+        "state": "NO_STANDALONE_RISK_BAND",
+        "views": [
+          {
+            "basis": "CONTEXT_ONLY",
+            "change": -0.02,
+            "kind": "DIRECTIONAL",
+            "label": "DIRECTIONAL READ",
+            "state": "NO_STANDALONE_RISK_BAND",
+            "unit": "percent",
+            "value": 3.62
+          }
+        ],
+        "what_it_measures": "廣泛 Treasury repo 市場嘅隔夜融資利率。"
+      },
       "label": "SOFR",
       "methodology": {
         "calculation": "Use the official SOFR observation; spreads are calculated separately.",
@@ -4999,6 +5537,140 @@
       },
       "expected_next_update": "2026-08-13",
       "frequency": "business_daily",
+      "interpretation": {
+        "cannot_infer": "單一讀數唔可以證明流動性危機或者預測資產價格方向。",
+        "classification_type": "SOURCE_PLUS_OPERATIONAL",
+        "confidence": "HIGH",
+        "confirm_with": [
+          "effr_iorb_spread_bp",
+          "tgcr_iorb_spread_bp",
+          "bgcr_iorb_spread_bp",
+          "reserve_balances",
+          "srf_accepted"
+        ],
+        "current_reasons": [
+          "最新 SOFR−IORB 為 -3 bp。",
+          "連續正值期數：0。",
+          "Full Red Route A：NOT MET；Red spread leg 唔等於完整 Red route。"
+        ],
+        "data_state": "CURRENT",
+        "headline": "Repo cash 暫未貴過 IORB。",
+        "impact": "EASING",
+        "next_boundary": {
+          "basis": "VIDEO_SOURCE_RULE",
+          "current": -3.0,
+          "distance": 3.0,
+          "label": "POSITIVE PRINT",
+          "rule": "spread > positive line",
+          "threshold": 0.0,
+          "unit": "bp"
+        },
+        "numeric_direction": "FALLING",
+        "role": "PRIMARY_FUNDING_PRICE",
+        "rule_basis": [
+          "VIDEO_SOURCE_RULE",
+          "DASHBOARD_OPERATIONALIZATION",
+          "STATISTICAL_BAND"
+        ],
+        "severity": "NORMAL",
+        "state": "NO_PRICE_PRESSURE",
+        "views": [
+          {
+            "kind": "REGIME_LADDER",
+            "label": "SOFR−IORB REGIME LADDER",
+            "note": "Red spread leg 同完整 Red Route A 分開顯示。",
+            "rows": [
+              {
+                "active": true,
+                "basis": "VIDEO_SOURCE_RULE",
+                "label": "NO PRICE PRESSURE",
+                "met": true,
+                "operator": "<=",
+                "rule": "spread <= positive line",
+                "threshold": 0.0,
+                "unit": "bp",
+                "upper_threshold": null
+              },
+              {
+                "active": false,
+                "basis": "VIDEO_SOURCE_RULE",
+                "label": "POSITIVE PRINT",
+                "met": false,
+                "operator": ">",
+                "rule": "spread > positive line",
+                "threshold": 0.0,
+                "unit": "bp",
+                "upper_threshold": null
+              },
+              {
+                "active": false,
+                "basis": "DASHBOARD_OPERATIONALIZATION",
+                "label": "YELLOW CLAUSE",
+                "met": false,
+                "operator": ">=",
+                "rule": "positive_streak >= required observations",
+                "threshold": 3.0,
+                "unit": "observations",
+                "upper_threshold": null
+              },
+              {
+                "active": false,
+                "basis": "VIDEO_SOURCE_RULE",
+                "label": "RED SPREAD LEG",
+                "met": false,
+                "operator": ">",
+                "rule": "spread > red line",
+                "threshold": 3.0,
+                "unit": "bp",
+                "upper_threshold": null
+              },
+              {
+                "active": false,
+                "basis": "VIDEO_SOURCE_RULE",
+                "label": "FULL RED ROUTE A",
+                "met": false,
+                "operator": "> 3 bp AND RESERVES < 2,800 USD bn",
+                "rule": "spread > red line AND reserves < red reserve line",
+                "threshold": null,
+                "unit": "route condition",
+                "upper_threshold": null
+              }
+            ]
+          },
+          {
+            "basis": "STATISTICAL_BAND",
+            "count": 0,
+            "kind": "BREADTH_COUNTER",
+            "label": "EFFR / TGCR / BGCR CONFIRMATION",
+            "members": [
+              {
+                "confirming": false,
+                "metric_id": "effr_iorb_spread_bp",
+                "percentile": 0.780439,
+                "slope": 0.0,
+                "state": "ORDINARY"
+              },
+              {
+                "confirming": false,
+                "metric_id": "tgcr_iorb_spread_bp",
+                "percentile": 0.578313,
+                "slope": -0.3,
+                "state": "ORDINARY"
+              },
+              {
+                "confirming": false,
+                "metric_id": "bgcr_iorb_spread_bp",
+                "percentile": 0.576305,
+                "slope": -0.3,
+                "state": "ORDINARY"
+              }
+            ],
+            "state": "NO_CONFIRMATION",
+            "total": 3
+          }
+        ],
+        "what_it_measures": "Treasury repo 融資成本相對銀行將準備金放喺 Fed 所收取嘅 IORB 有幾貴。"
+      },
       "label": "SOFR−IORB spread",
       "methodology": {
         "calculation": "(SOFR percent - IORB percent) x 100, without linear interpolation.",
@@ -5025,7 +5697,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-13T19:02:13.285869Z",
+          "retrieved_at": "2026-08-13T21:19:33.209655Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -5033,7 +5705,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-13T19:02:13.285869Z",
+          "retrieved_at": "2026-08-13T21:19:33.209655Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -5043,7 +5715,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-13T19:02:13.285869Z",
+        "last_attempt_at": "2026-08-13T21:19:33.209655Z",
         "last_success_at": "2026-08-13T19:02:13.285869Z",
         "sample_size": 499,
         "status": "OK"
@@ -5141,7 +5813,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-13T19:02:13.285869Z",
+        "retrieved_at": "2026-08-13T21:19:33.209655Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -5159,7 +5831,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-13T19:02:13.285869Z",
+      "updated_at": "2026-08-13T21:19:33.209655Z",
       "value": -3.0
     },
     "spx_0dte_share": {
@@ -5178,6 +5850,7 @@
       },
       "expected_next_update": null,
       "frequency": "business_daily",
+      "interpretation": null,
       "label": "SPX 0DTE volume share",
       "methodology": {
         "calculation": "Free Cboe statistics do not expose a definition-consistent same-day-expiration numerator under redistribution-cleared terms. The provider interface remains disabled until written permission or a licensed feed is configured.",
@@ -5245,6 +5918,7 @@
       },
       "expected_next_update": null,
       "frequency": "business_daily",
+      "interpretation": null,
       "label": "SPY holdings Top-10 weight proxy",
       "methodology": {
         "calculation": "State Street terms do not clear an automated public redistribution workflow. The provider interface remains disabled until written permission or a licensed feed is configured.",
@@ -5347,6 +6021,43 @@
       },
       "expected_next_update": "2026-08-14",
       "frequency": "business_daily",
+      "interpretation": {
+        "cannot_infer": "Operational-readiness exercise 唔係市場壓力，亦唔可以觸發警報。",
+        "classification_type": "EVENT_TRIGGER",
+        "confidence": "HIGH",
+        "confirm_with": [
+          "sofr_iorb_spread_bp",
+          "reserve_balances"
+        ],
+        "current_reasons": [
+          "非技術性 positive days：2 / 3。",
+          "Technical exercise 保留數據但排除 Red Route B。"
+        ],
+        "data_state": "CURRENT",
+        "headline": "最近 3 個 completed days 有 2 日非技術性使用。",
+        "impact": "TIGHTENING",
+        "next_boundary": null,
+        "numeric_direction": "RISING",
+        "role": "BACKSTOP_FACILITY",
+        "rule_basis": [
+          "DASHBOARD_OPERATIONALIZATION"
+        ],
+        "severity": "RED",
+        "state": "PERSISTENT_USE",
+        "views": [
+          {
+            "basis": "DASHBOARD_OPERATIONALIZATION",
+            "kind": "EVENT_STEPPER",
+            "label": "LATEST COMPLETED OPERATION DAYS",
+            "positive_count": 2,
+            "required_count": 2,
+            "state": "PERSISTENT_USE",
+            "technical_exercise": false,
+            "window_size": 3
+          }
+        ],
+        "what_it_measures": "Standing Repo Facility 每個完成 operation day 嘅 accepted use。"
+      },
       "label": "Standing Repo Facility accepted amount",
       "methodology": {
         "calculation": "Sum accepted amounts by operation date; preserve submitted, accepted, rate, and collateral breakdown.",
@@ -5645,6 +6356,7 @@
       },
       "expected_next_update": null,
       "frequency": "quarterly",
+      "interpretation": null,
       "label": "Take-or-pay commitments",
       "methodology": {
         "calculation": "Validate the manual CSV contract and use only reviewed issuer disclosures with official URLs, accessions, timestamps and short factual paraphrases.",
@@ -5717,6 +6429,111 @@
       },
       "expected_next_update": "2026-08-12",
       "frequency": "business_daily",
+      "interpretation": {
+        "cannot_infer": "TGA 上升唔會自動等於壓力；其他 Fed 資產同負債可以抵消。",
+        "classification_type": "SOURCE_PLUS_STATISTICAL",
+        "confidence": "HIGH",
+        "confirm_with": [
+          "reserve_balances",
+          "on_rrp_accepted",
+          "fed_total_assets",
+          "tga_weekly_h41"
+        ],
+        "current_reasons": [
+          "5-observation flow：73.111 USD bn。",
+          "20-observation flow：209.516 USD bn。",
+          "稅期／settlement context 只改名為 TECHNICAL DRAIN，絕不叫 STRESS。"
+        ],
+        "data_state": "CURRENT",
+        "headline": "TGA level 為 APPROACHING_1T；整體 flow 為 LARGE_DRAIN_TECHNICAL_DRAIN。",
+        "impact": "TIGHTENING",
+        "next_boundary": {
+          "basis": "VIDEO_SOURCE_RULE",
+          "current": 997.33,
+          "distance": 2.67,
+          "label": "ABOVE VIDEO TARGET",
+          "rule": "TGA rises into next source context zone",
+          "threshold": 1000.0,
+          "unit": "USD bn"
+        },
+        "numeric_direction": "RISING",
+        "role": "TREASURY_CASH_FLOW",
+        "rule_basis": [
+          "CONTEXT_ONLY",
+          "STATISTICAL_BAND",
+          "DASHBOARD_OPERATIONALIZATION",
+          "VIDEO_SOURCE_RULE"
+        ],
+        "severity": "CONTEXT_ONLY",
+        "state": "APPROACHING_1T · LARGE_DRAIN_TECHNICAL_DRAIN",
+        "views": [
+          {
+            "basis": "STATISTICAL_BAND",
+            "kind": "PERCENTILE_GAUGE",
+            "label": "5-OBSERVATION FLOW",
+            "percentile": 0.817722,
+            "sample_size": 395,
+            "slope": null,
+            "slope_unit": "USD bn/observation",
+            "state": "NOTABLE_DRAIN_TECHNICAL_DRAIN",
+            "unit": "USD bn",
+            "value": 73.111
+          },
+          {
+            "basis": "STATISTICAL_BAND",
+            "kind": "PERCENTILE_GAUGE",
+            "label": "20-OBSERVATION FLOW",
+            "percentile": 0.9,
+            "sample_size": 380,
+            "slope": null,
+            "slope_unit": "USD bn/observation",
+            "state": "LARGE_DRAIN_TECHNICAL_DRAIN",
+            "unit": "USD bn",
+            "value": 209.516
+          },
+          {
+            "kind": "REGIME_LADDER",
+            "label": "VIDEO TGA LEVEL CONTEXT",
+            "note": "Level 只係影片 context；真正 liquidity impact 主要睇 flow。",
+            "rows": [
+              {
+                "active": false,
+                "basis": "DASHBOARD_OPERATIONALIZATION",
+                "label": "BELOW VIDEO PROXIMITY ZONE",
+                "met": false,
+                "operator": "<",
+                "rule": "TGA < source operational floor",
+                "threshold": 950.0,
+                "unit": "USD bn",
+                "upper_threshold": null
+              },
+              {
+                "active": true,
+                "basis": "DASHBOARD_OPERATIONALIZATION",
+                "label": "APPROACHING 1T",
+                "met": true,
+                "operator": ">= AND <",
+                "rule": "source proximity floor <= TGA < source target",
+                "threshold": 950.0,
+                "unit": "USD bn",
+                "upper_threshold": 1000.0
+              },
+              {
+                "active": false,
+                "basis": "VIDEO_SOURCE_RULE",
+                "label": "ABOVE VIDEO TARGET",
+                "met": false,
+                "operator": ">=",
+                "rule": "TGA >= source target",
+                "threshold": 1000.0,
+                "unit": "USD bn",
+                "upper_threshold": null
+              }
+            ]
+          }
+        ],
+        "what_it_measures": "美國財政部喺 Fed 嘅每日現金結餘及其變化。"
+      },
       "label": "Treasury General Account daily balance",
       "methodology": {
         "calculation": "Normalize the FiscalData closing balance to USD billions.",
@@ -5883,6 +6700,45 @@
       },
       "expected_next_update": "2026-08-06",
       "frequency": "weekly",
+      "interpretation": {
+        "cannot_infer": "Timing difference 或 divergence 唔會產生另一套 liquidity severity。",
+        "classification_type": "CROSS_CHECK",
+        "confidence": "MEDIUM",
+        "confirm_with": [
+          "tga_daily"
+        ],
+        "current_reasons": [
+          "同日 absolute difference：22.001 USD bn。",
+          "Prior common-date sample：82；只作 cross-check。"
+        ],
+        "data_state": "LAST_GOOD",
+        "headline": "Weekly/daily TGA cross-check：INSUFFICIENT_HISTORY。",
+        "impact": "AMBIGUOUS",
+        "next_boundary": null,
+        "numeric_direction": "RISING",
+        "role": "CROSS_CHECK",
+        "rule_basis": [
+          "CONTEXT_ONLY",
+          "STATISTICAL_BAND"
+        ],
+        "severity": "CONTEXT_ONLY",
+        "state": "INSUFFICIENT_HISTORY",
+        "views": [
+          {
+            "basis": "STATISTICAL_BAND",
+            "comparison_metric_id": "tga_daily",
+            "difference": 22.001,
+            "kind": "CROSS_CHECK",
+            "label": "H.4.1 / FISCALDATA COMMON-DATE CHECK",
+            "percentile": null,
+            "primary_metric_id": "tga_weekly_h41",
+            "sample_size": 82,
+            "state": "INSUFFICIENT_HISTORY",
+            "unit": "USD bn"
+          }
+        ],
+        "what_it_measures": "H.4.1 每周 Treasury General Account level，用嚟核對每日 TGA。"
+      },
       "label": "Treasury General Account H.4.1 cross-check",
       "methodology": {
         "calculation": "Use official weekly level and calculate 1w and 4w observation changes.",
@@ -6048,6 +6904,44 @@
       },
       "expected_next_update": "2026-08-13",
       "frequency": "business_daily",
+      "interpretation": {
+        "cannot_infer": "TGCR 絕對水平唔可以單獨證明市場全面收緊。",
+        "classification_type": "NO_HARD_THRESHOLD",
+        "confidence": "HIGH",
+        "confirm_with": [
+          "iorb",
+          "tgcr_iorb_spread_bp",
+          "sofr",
+          "bgcr"
+        ],
+        "current_reasons": [
+          "最新值為 3.6 percent。",
+          "絕對利率水平主要受政策錨影響；請配合相對 IORB 利差。"
+        ],
+        "data_state": "CURRENT",
+        "headline": "絕對利率冇獨立風險帶；資金壓力要睇相對 IORB 利差。",
+        "impact": "AMBIGUOUS",
+        "next_boundary": null,
+        "numeric_direction": "FALLING",
+        "role": "POLICY_ANCHORED_MARKET_RATE",
+        "rule_basis": [
+          "CONTEXT_ONLY"
+        ],
+        "severity": "CONTEXT_ONLY",
+        "state": "NO_STANDALONE_RISK_BAND",
+        "views": [
+          {
+            "basis": "CONTEXT_ONLY",
+            "change": -0.03,
+            "kind": "DIRECTIONAL",
+            "label": "DIRECTIONAL READ",
+            "state": "NO_STANDALONE_RISK_BAND",
+            "unit": "percent",
+            "value": 3.6
+          }
+        ],
+        "what_it_measures": "三方 repo 市場嘅隔夜一般抵押品利率。"
+      },
       "label": "TGCR",
       "methodology": {
         "calculation": "Use the official TGCR observation.",
@@ -6213,6 +7107,46 @@
       },
       "expected_next_update": "2026-08-13",
       "frequency": "business_daily",
+      "interpretation": {
+        "cannot_infer": "高歷史百分位唔係危機線，必須配合 slope 同其他市場。",
+        "classification_type": "ROLLING_PERCENTILE",
+        "confidence": "HIGH",
+        "confirm_with": [
+          "sofr_iorb_spread_bp",
+          "bgcr_iorb_spread_bp",
+          "reserve_balances"
+        ],
+        "current_reasons": [
+          "歷史樣本 498；最低要求 60。",
+          "百分位同最近五期 slope 只作跨市場確認，唔會改變 alert。"
+        ],
+        "data_state": "CURRENT",
+        "headline": "未同時滿足 p80 同向上 slope 嘅確認條件。",
+        "impact": "EASING",
+        "next_boundary": null,
+        "numeric_direction": "FALLING",
+        "role": "CONFIRMATION_SPREAD",
+        "rule_basis": [
+          "STATISTICAL_BAND"
+        ],
+        "severity": "NORMAL",
+        "state": "ORDINARY",
+        "views": [
+          {
+            "basis": "STATISTICAL_BAND",
+            "kind": "PERCENTILE_GAUGE",
+            "label": "EXPANDING PRIOR-HISTORY BAND",
+            "percentile": 0.578313,
+            "sample_size": 498,
+            "slope": -0.3,
+            "slope_unit": "bp/observation",
+            "state": "ORDINARY",
+            "unit": "bp",
+            "value": -5.0
+          }
+        ],
+        "what_it_measures": "三方 repo 一般抵押品利率相對 IORB 嘅利差。"
+      },
       "label": "TGCR−IORB spread",
       "methodology": {
         "calculation": "(TGCR percent - IORB percent) x 100, without interpolation.",
@@ -6237,7 +7171,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-13T19:02:13.285869Z",
+          "retrieved_at": "2026-08-13T21:19:33.209655Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -6245,7 +7179,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-13T19:02:13.285869Z",
+          "retrieved_at": "2026-08-13T21:19:33.209655Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -6255,7 +7189,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-13T19:02:13.285869Z",
+        "last_attempt_at": "2026-08-13T21:19:33.209655Z",
         "last_success_at": "2026-08-13T19:02:13.285869Z",
         "sample_size": 499,
         "status": "OK"
@@ -6353,7 +7287,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-13T19:02:13.285869Z",
+        "retrieved_at": "2026-08-13T21:19:33.209655Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -6371,7 +7305,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-13T19:02:13.285869Z",
+      "updated_at": "2026-08-13T21:19:33.209655Z",
       "value": -5.0
     },
     "trend_following_positioning_proxy": {
@@ -6390,6 +7324,7 @@
       },
       "expected_next_update": null,
       "frequency": "business_daily",
+      "interpretation": null,
       "label": "Rule-based trend-following positioning proxy",
       "methodology": {
         "calculation": "Redistribution-cleared equity and cross-asset price inputs are not configured. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
@@ -6457,6 +7392,7 @@
       },
       "expected_next_update": null,
       "frequency": "business_daily",
+      "interpretation": null,
       "label": "VIX/VIX3M term-structure proxy",
       "methodology": {
         "calculation": "No redistribution-cleared Cboe feed is configured. Future interface remains disabled until a reviewed redistribution licence and definition-consistent provider schema are configured.",
@@ -6510,8 +7446,8 @@
     }
   },
   "overall_assessment": "UNAVAILABLE",
-  "pipeline_updated_at": "2026-08-13T19:02:13.285869Z",
-  "schema_version": "2.2.0",
+  "pipeline_updated_at": "2026-08-13T21:19:33.209655Z",
+  "schema_version": "2.3.0",
   "source_health": {
     "error": 0,
     "not_applicable": 0,

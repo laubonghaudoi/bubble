@@ -1,4 +1,4 @@
-"""Schema 2.2.0 enums and validation helpers for the data-pipeline contract.
+"""Schema 2.3.0 enums and validation helpers for the data-pipeline contract.
 
 This module is intentionally independent of collectors and snapshot builders so
 future releases can adopt the contract incrementally without mutating v1 data.
@@ -15,7 +15,52 @@ from urllib.parse import unquote, urlsplit
 from zoneinfo import ZoneInfo
 
 
-SCHEMA_VERSION = "2.2.0"
+SCHEMA_VERSION = "2.3.0"
+INTERPRETED_P0_METRIC_IDS = frozenset(
+    {
+        "sofr", "iorb", "sofr_iorb_spread_bp", "effr",
+        "effr_iorb_spread_bp", "obfr", "obfr_iorb_spread_bp", "tgcr",
+        "tgcr_iorb_spread_bp", "bgcr", "bgcr_iorb_spread_bp", "tga_daily",
+        "on_rrp_accepted", "srf_accepted", "reserve_balances",
+        "fed_total_assets", "tga_weekly_h41",
+    }
+)
+INTERPRETATION_ROLES = frozenset(
+    {
+        "PRIMARY_FUNDING_PRICE", "POLICY_RATE_ANCHOR",
+        "POLICY_ANCHORED_MARKET_RATE", "CONFIRMATION_SPREAD",
+        "TREASURY_CASH_FLOW", "LIQUIDITY_BUFFER", "BACKSTOP_FACILITY",
+        "RESERVE_STOCK", "BALANCE_SHEET_DRIVER", "CROSS_CHECK",
+    }
+)
+INTERPRETATION_CLASSIFICATIONS = frozenset(
+    {
+        "NO_HARD_THRESHOLD", "SOURCE_PLUS_OPERATIONAL",
+        "SOURCE_PLUS_STATISTICAL", "ROLLING_PERCENTILE", "EVENT_TRIGGER",
+        "DIRECTIONAL", "CROSS_CHECK",
+    }
+)
+INTERPRETATION_DATA_STATES = frozenset(
+    {"CURRENT", "LAST_GOOD", "STALE", "UNKNOWN"}
+)
+INTERPRETATION_DIRECTIONS = frozenset(
+    {"RISING", "FALLING", "FLAT", "UNKNOWN"}
+)
+INTERPRETATION_IMPACTS = frozenset(
+    {"EASING", "TIGHTENING", "NEUTRAL", "AMBIGUOUS", "POLICY_ANCHOR", "UNKNOWN"}
+)
+INTERPRETATION_SEVERITIES = frozenset(
+    {"NORMAL", "WATCH", "YELLOW", "RED", "EXTREME", "CONTEXT_ONLY", "UNKNOWN"}
+)
+INTERPRETATION_CONFIDENCES = frozenset({"HIGH", "MEDIUM", "LOW", "UNKNOWN"})
+INTERPRETATION_RULE_BASES = frozenset(
+    {"VIDEO_SOURCE_RULE", "DASHBOARD_OPERATIONALIZATION", "STATISTICAL_BAND", "CONTEXT_ONLY"}
+)
+INTERPRETATION_BREADTH_METRIC_IDS = (
+    "effr_iorb_spread_bp",
+    "tgcr_iorb_spread_bp",
+    "bgcr_iorb_spread_bp",
+)
 P1_BLOCK_IDS = (
     "volatility_term_structure",
     "trend_positioning",
@@ -255,6 +300,7 @@ P3_METRIC_BASE_FIELDS = frozenset(
         "source",
         "methodology",
         "short_series",
+        "interpretation",
         "provenance",
         "unavailability_reason",
     }
@@ -2098,7 +2144,7 @@ class Freshness(StrEnum):
 
 
 class ContractValidationError(ValueError):
-    """Raised when a schema 2.2.0 record violates the canonical contract."""
+    """Raised when a schema 2.3.0 record violates the canonical contract."""
 
 
 def _require_mapping(value: Any, path: str) -> Mapping[str, Any]:
@@ -2895,7 +2941,265 @@ def _validate_video_p0_model(
         raise ContractValidationError(f"{path}.notes must be a non-empty string list")
 
 
-def validate_metric_record(metric: Mapping[str, Any]) -> None:
+def _require_exact_fields(value: Mapping[str, Any], expected: set[str], path: str) -> None:
+    if set(value) != expected:
+        missing = sorted(expected - set(value))
+        extra = sorted(set(value) - expected)
+        raise ContractValidationError(
+            f"{path} must contain the exact field set"
+            + (f"; missing: {', '.join(missing)}" if missing else "")
+            + (f"; extra: {', '.join(extra)}" if extra else "")
+        )
+
+
+def _require_string_enum(value: Any, allowed: frozenset[str], path: str) -> str:
+    if value not in allowed:
+        raise ContractValidationError(
+            f"{path} must be one of: {', '.join(sorted(allowed))}"
+        )
+    return str(value)
+
+
+def _validate_nonnegative_integer(value: Any, path: str, *, positive: bool = False) -> int:
+    if (
+        isinstance(value, bool)
+        or not isinstance(value, int)
+        or value < (1 if positive else 0)
+    ):
+        qualifier = "positive" if positive else "non-negative"
+        raise ContractValidationError(f"{path} must be a {qualifier} integer")
+    return value
+
+
+def _validate_rule_basis(value: Any, path: str) -> str:
+    return _require_string_enum(value, INTERPRETATION_RULE_BASES, path)
+
+
+def _validate_interpretation_view(value: Any, path: str, metric_ids: set[str] | None) -> None:
+    view = _require_mapping(value, path)
+    kind = view.get("kind")
+    common_basis = lambda: _validate_rule_basis(view.get("basis"), f"{path}.basis")
+    if kind == "REGIME_LADDER":
+        _require_exact_fields(view, {"kind", "label", "rows", "note"}, path)
+        _require_nonempty_string(view.get("label"), f"{path}.label")
+        _require_nonempty_string(view.get("note"), f"{path}.note")
+        rows = view.get("rows")
+        if not isinstance(rows, list) or not rows:
+            raise ContractValidationError(f"{path}.rows must be a non-empty list")
+        row_fields = {
+            "label", "operator", "threshold", "upper_threshold", "unit",
+            "rule", "basis", "active", "met",
+        }
+        for index, row_value in enumerate(rows):
+            row_path = f"{path}.rows[{index}]"
+            row = _require_mapping(row_value, row_path)
+            _require_exact_fields(row, row_fields, row_path)
+            for field in ("label", "operator", "unit", "rule"):
+                _require_nonempty_string(row.get(field), f"{row_path}.{field}")
+            _validate_nullable_number(row.get("threshold"), f"{row_path}.threshold")
+            _validate_nullable_number(row.get("upper_threshold"), f"{row_path}.upper_threshold")
+            _validate_rule_basis(row.get("basis"), f"{row_path}.basis")
+            if not isinstance(row.get("active"), bool):
+                raise ContractValidationError(f"{row_path}.active must be boolean")
+            if row.get("met") is not None and not isinstance(row.get("met"), bool):
+                raise ContractValidationError(f"{row_path}.met must be boolean or null")
+        return
+    if kind == "PERCENTILE_GAUGE":
+        _require_exact_fields(
+            view,
+            {"kind", "label", "value", "unit", "percentile", "sample_size", "state", "slope", "slope_unit", "basis"},
+            path,
+        )
+        for field in ("label", "unit", "state", "slope_unit"):
+            _require_nonempty_string(view.get(field), f"{path}.{field}")
+        for field in ("value", "percentile", "slope"):
+            _validate_nullable_number(view.get(field), f"{path}.{field}")
+        percentile = view.get("percentile")
+        if percentile is not None and not 0 <= float(percentile) <= 1:
+            raise ContractValidationError(f"{path}.percentile must be between zero and one")
+        _validate_nonnegative_integer(view.get("sample_size"), f"{path}.sample_size")
+        common_basis()
+        return
+    if kind == "EVENT_STEPPER":
+        _require_exact_fields(
+            view,
+            {"kind", "label", "window_size", "positive_count", "required_count", "state", "technical_exercise", "basis"},
+            path,
+        )
+        for field in ("label", "state"):
+            _require_nonempty_string(view.get(field), f"{path}.{field}")
+        window = _validate_nonnegative_integer(view.get("window_size"), f"{path}.window_size", positive=True)
+        required = _validate_nonnegative_integer(view.get("required_count"), f"{path}.required_count", positive=True)
+        if required > window:
+            raise ContractValidationError(f"{path}.required_count cannot exceed window_size")
+        count = view.get("positive_count")
+        if count is not None:
+            count = _validate_nonnegative_integer(count, f"{path}.positive_count")
+            if count > window:
+                raise ContractValidationError(f"{path}.positive_count cannot exceed window_size")
+        if not isinstance(view.get("technical_exercise"), bool):
+            raise ContractValidationError(f"{path}.technical_exercise must be boolean")
+        common_basis()
+        return
+    if kind == "BREADTH_COUNTER":
+        _require_exact_fields(
+            view,
+            {"kind", "label", "count", "total", "state", "members", "basis"},
+            path,
+        )
+        for field in ("label", "state"):
+            _require_nonempty_string(view.get(field), f"{path}.{field}")
+        total = _validate_nonnegative_integer(view.get("total"), f"{path}.total", positive=True)
+        count = view.get("count")
+        if count is not None:
+            count = _validate_nonnegative_integer(count, f"{path}.count")
+            if count > total:
+                raise ContractValidationError(f"{path}.count cannot exceed total")
+        members = view.get("members")
+        if not isinstance(members, list) or len(members) != total:
+            raise ContractValidationError(f"{path}.members must match total")
+        member_fields = {"metric_id", "state", "percentile", "slope", "confirming"}
+        member_ids: list[str] = []
+        for index, member_value in enumerate(members):
+            member_path = f"{path}.members[{index}]"
+            member = _require_mapping(member_value, member_path)
+            _require_exact_fields(member, member_fields, member_path)
+            member_id = _require_nonempty_string(member.get("metric_id"), f"{member_path}.metric_id")
+            member_ids.append(member_id)
+            if metric_ids is not None and member_id not in metric_ids:
+                raise ContractValidationError(f"{member_path}.metric_id is unknown")
+            _require_nonempty_string(member.get("state"), f"{member_path}.state")
+            for field in ("percentile", "slope"):
+                _validate_nullable_number(member.get(field), f"{member_path}.{field}")
+            percentile = member.get("percentile")
+            if percentile is not None and not 0 <= float(percentile) <= 1:
+                raise ContractValidationError(f"{member_path}.percentile must be between zero and one")
+            if member.get("confirming") is not None and not isinstance(member.get("confirming"), bool):
+                raise ContractValidationError(f"{member_path}.confirming must be boolean or null")
+        if len(member_ids) != len(set(member_ids)):
+            raise ContractValidationError(f"{path}.members metric IDs must be unique")
+        if total != 3 or tuple(member_ids) != INTERPRETATION_BREADTH_METRIC_IDS:
+            raise ContractValidationError(
+                f"{path}.members must be exactly EFFR, TGCR, BGCR in canonical order"
+            )
+        common_basis()
+        return
+    if kind == "DIRECTIONAL":
+        _require_exact_fields(view, {"kind", "label", "value", "change", "unit", "state", "basis"}, path)
+        for field in ("label", "unit", "state"):
+            _require_nonempty_string(view.get(field), f"{path}.{field}")
+        _validate_nullable_number(view.get("value"), f"{path}.value")
+        _validate_nullable_number(view.get("change"), f"{path}.change")
+        common_basis()
+        return
+    if kind == "CROSS_CHECK":
+        _require_exact_fields(
+            view,
+            {"kind", "label", "primary_metric_id", "comparison_metric_id", "difference", "unit", "percentile", "sample_size", "state", "basis"},
+            path,
+        )
+        for field in ("label", "primary_metric_id", "comparison_metric_id", "unit", "state"):
+            _require_nonempty_string(view.get(field), f"{path}.{field}")
+        if metric_ids is not None:
+            for field in ("primary_metric_id", "comparison_metric_id"):
+                if view[field] not in metric_ids:
+                    raise ContractValidationError(f"{path}.{field} is unknown")
+        _validate_nullable_number(view.get("difference"), f"{path}.difference")
+        _validate_nullable_number(view.get("percentile"), f"{path}.percentile")
+        percentile = view.get("percentile")
+        if percentile is not None and not 0 <= float(percentile) <= 1:
+            raise ContractValidationError(f"{path}.percentile must be between zero and one")
+        _validate_nonnegative_integer(view.get("sample_size"), f"{path}.sample_size")
+        common_basis()
+        return
+    raise ContractValidationError(f"{path}.kind is invalid")
+
+
+def _validate_metric_interpretation(
+    value: Any, path: str, *, metric_ids: set[str] | None = None
+) -> None:
+    interpretation = _require_mapping(value, path)
+    expected_fields = {
+        "role", "classification_type", "data_state", "numeric_direction",
+        "impact", "state", "severity", "confidence", "headline",
+        "what_it_measures", "current_reasons", "next_boundary", "views",
+        "confirm_with", "cannot_infer", "rule_basis",
+    }
+    _require_exact_fields(interpretation, expected_fields, path)
+    _require_string_enum(interpretation.get("role"), INTERPRETATION_ROLES, f"{path}.role")
+    _require_string_enum(interpretation.get("classification_type"), INTERPRETATION_CLASSIFICATIONS, f"{path}.classification_type")
+    _require_string_enum(interpretation.get("data_state"), INTERPRETATION_DATA_STATES, f"{path}.data_state")
+    _require_string_enum(interpretation.get("numeric_direction"), INTERPRETATION_DIRECTIONS, f"{path}.numeric_direction")
+    _require_string_enum(interpretation.get("impact"), INTERPRETATION_IMPACTS, f"{path}.impact")
+    _require_string_enum(interpretation.get("severity"), INTERPRETATION_SEVERITIES, f"{path}.severity")
+    _require_string_enum(interpretation.get("confidence"), INTERPRETATION_CONFIDENCES, f"{path}.confidence")
+    for field in ("state", "headline", "what_it_measures", "cannot_infer"):
+        _require_nonempty_string(interpretation.get(field), f"{path}.{field}")
+    reasons = interpretation.get("current_reasons")
+    if not isinstance(reasons, list) or not reasons:
+        raise ContractValidationError(f"{path}.current_reasons must be a non-empty list")
+    for index, reason in enumerate(reasons):
+        _require_nonempty_string(reason, f"{path}.current_reasons[{index}]")
+    confirmations = interpretation.get("confirm_with")
+    if not isinstance(confirmations, list):
+        raise ContractValidationError(f"{path}.confirm_with must be a list")
+    for index, metric_id in enumerate(confirmations):
+        metric_id = _require_nonempty_string(metric_id, f"{path}.confirm_with[{index}]")
+        if metric_ids is not None and metric_id not in metric_ids:
+            raise ContractValidationError(f"{path}.confirm_with[{index}] is unknown")
+    if len(confirmations) != len(set(confirmations)):
+        raise ContractValidationError(f"{path}.confirm_with must be unique")
+    bases = interpretation.get("rule_basis")
+    if not isinstance(bases, list) or not bases:
+        raise ContractValidationError(f"{path}.rule_basis must be a non-empty list")
+    for index, basis in enumerate(bases):
+        _validate_rule_basis(basis, f"{path}.rule_basis[{index}]")
+    if len(bases) != len(set(bases)):
+        raise ContractValidationError(f"{path}.rule_basis must be unique")
+    boundary = interpretation.get("next_boundary")
+    if boundary is not None:
+        boundary = _require_mapping(boundary, f"{path}.next_boundary")
+        _require_exact_fields(boundary, {"label", "current", "threshold", "distance", "unit", "rule", "basis"}, f"{path}.next_boundary")
+        for field in ("label", "unit", "rule"):
+            _require_nonempty_string(boundary.get(field), f"{path}.next_boundary.{field}")
+        for field in ("current", "threshold", "distance"):
+            _validate_nullable_number(boundary.get(field), f"{path}.next_boundary.{field}")
+        _validate_rule_basis(boundary.get("basis"), f"{path}.next_boundary.basis")
+    views = interpretation.get("views")
+    if not isinstance(views, list) or not views:
+        raise ContractValidationError(f"{path}.views must be a non-empty list")
+    for index, view in enumerate(views):
+        _validate_interpretation_view(view, f"{path}.views[{index}]", metric_ids)
+    context_roles = {
+        "POLICY_RATE_ANCHOR", "POLICY_ANCHORED_MARKET_RATE",
+        "TREASURY_CASH_FLOW", "LIQUIDITY_BUFFER", "BALANCE_SHEET_DRIVER",
+        "CROSS_CHECK",
+    }
+    exposed_bases: list[str] = (
+        ["CONTEXT_ONLY"] if interpretation["role"] in context_roles else []
+    )
+
+    def add_exposed_basis(basis: Any) -> None:
+        if isinstance(basis, str) and basis not in exposed_bases:
+            exposed_bases.append(basis)
+
+    for view in views:
+        if view.get("kind") == "REGIME_LADDER":
+            for row in view["rows"]:
+                add_exposed_basis(row.get("basis"))
+        else:
+            add_exposed_basis(view.get("basis"))
+    if boundary is not None:
+        add_exposed_basis(boundary.get("basis"))
+    if bases != exposed_bases:
+        raise ContractValidationError(
+            f"{path}.rule_basis must equal the ordered union of view, row, and boundary bases"
+        )
+
+
+def validate_metric_record(
+    metric: Mapping[str, Any], *, metric_ids: set[str] | None = None
+) -> None:
     """Validate a normalized metric record without changing its values.
 
     Missing data must remain ``None``. The validator deliberately rejects bool,
@@ -2903,7 +3207,22 @@ def validate_metric_record(metric: Mapping[str, Any]) -> None:
     """
 
     metric = _require_mapping(metric, "metric")
-    _require_nonempty_string(metric.get("metric_id"), "metric.metric_id")
+    metric_id = _require_nonempty_string(metric.get("metric_id"), "metric.metric_id")
+    if "interpretation" not in metric:
+        raise ContractValidationError("metric.interpretation is required")
+    interpretation = metric.get("interpretation")
+    if metric_id in INTERPRETED_P0_METRIC_IDS:
+        if interpretation is None:
+            raise ContractValidationError(
+                f"metric.interpretation must be non-null for {metric_id}"
+            )
+        _validate_metric_interpretation(
+            interpretation, "metric.interpretation", metric_ids=metric_ids
+        )
+    elif interpretation is not None:
+        raise ContractValidationError(
+            f"metric.interpretation must be null for non-P0 metric {metric_id}"
+        )
     _require_nonempty_string(metric.get("label"), "metric.label")
     availability = _require_enum(
         Availability, metric.get("availability"), "metric.availability"
@@ -3119,7 +3438,7 @@ def _validate_collector_source(value: Any, path: str) -> None:
 
 
 def validate_snapshot(snapshot: Mapping[str, Any]) -> None:
-    """Validate the schema 2.2.0 snapshot envelope and all metric records."""
+    """Validate the schema 2.3.0 snapshot envelope and all metric records."""
 
     snapshot = _require_mapping(snapshot, "snapshot")
     if snapshot.get("schema_version") != SCHEMA_VERSION:
@@ -3150,9 +3469,16 @@ def validate_snapshot(snapshot: Mapping[str, Any]) -> None:
         )
 
     metrics = _require_mapping(snapshot.get("metrics"), "snapshot.metrics")
+    metric_ids = set(metrics)
+    missing_interpreted = INTERPRETED_P0_METRIC_IDS - metric_ids
+    if missing_interpreted:
+        raise ContractValidationError(
+            "snapshot is missing interpreted P0 metrics: "
+            + ", ".join(sorted(missing_interpreted))
+        )
     for metric_id, metric in metrics.items():
         _require_nonempty_string(metric_id, "snapshot.metrics key")
-        validate_metric_record(metric)
+        validate_metric_record(metric, metric_ids=metric_ids)
         if metric.get("metric_id") != metric_id:
             raise ContractValidationError(
                 f"snapshot metric key {metric_id!r} does not match metric_id"
@@ -4045,5 +4371,26 @@ def validate_publication(
         if snapshot_metric.get("observation_date") != expected_date:
             raise ContractValidationError(
                 f"{metric_id}.observation_date must match the full-series endpoint"
+            )
+    # Interpretation is a deterministic derived view, not editable narrative.
+    # Rebuild it from the canonical full series and audited config, then compare
+    # exact JSON values so tampered state/headline/boundaries cannot pass.
+    from pipeline.config import load_config_bundle
+    from pipeline.interpretation import build_metric_interpretations
+
+    bundle = load_config_bundle()
+    expected_interpretations = build_metric_interpretations(
+        metric_records=snapshot["metrics"],
+        series_by_id={
+            metric_id: series["observations"]
+            for metric_id, series in series_by_id.items()
+        },
+        rules=bundle.interpretation_rules,
+        alert_rules=bundle.alert_rules,
+    )
+    for metric_id, expected in expected_interpretations.items():
+        if snapshot["metrics"][metric_id].get("interpretation") != expected:
+            raise ContractValidationError(
+                f"{metric_id}.interpretation does not reconcile with config and full series"
             )
     _validate_p3_publication(snapshot, manifest_by_id, series_by_id)

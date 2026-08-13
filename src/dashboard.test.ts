@@ -3,6 +3,9 @@ import {
   COLLECTOR_SOURCE_IDS,
   CONFIRMATION_SPREAD_IDS,
   OVERVIEW_SERIES_IDS,
+  OVERVIEW_MAIN_TABS,
+  OVERVIEW_TAB_GROUPS,
+  P0_INTERPRETATION_IDS,
   P1_CFTC_CONFIG,
   P1_RIGHTS_GATED_IDS,
   P2_ACTIVE_IDS,
@@ -32,12 +35,18 @@ import {
 } from './dashboard';
 import { jsonResponse, makeCatalog, makeManualEvidenceRecord, makeMetric, makeSeriesFile, makeSnapshot, makeSnapshotWithReviewedManualEvidence } from './test-fixtures';
 import type { FundamentalCompanyDetail, Metric, Snapshot } from './types';
+import publishedSnapshot from '../public/data/snapshot.json';
 
-describe('v2.2 contract and configuration', () => {
+describe('v2.3 contract and configuration', () => {
+  it('loads the staged public snapshot through the production validator', () => {
+    expect(isSnapshot(publishedSnapshot)).toBe(true);
+  });
+
   it('hard-cuts legacy schemas and requires the locked assessment field', () => {
     const valid = makeSnapshot();
-    expect(SCHEMA_VERSION).toBe('2.2.0');
+    expect(SCHEMA_VERSION).toBe('2.3.0');
     expect(isSnapshot(valid)).toBe(true);
+    expect(isSnapshot({ ...valid, schema_version: '2.2.0' })).toBe(false);
     expect(isSnapshot({ ...valid, schema_version: '2.1.0' })).toBe(false);
     expect(isSnapshot({ ...valid, schema_version: '2.0.0' })).toBe(false);
     expect(isSnapshot({ ...valid, schema_version: '1.0.0' })).toBe(false);
@@ -141,6 +150,80 @@ describe('v2.2 contract and configuration', () => {
       counterparties: 12,
     };
     expect(isSnapshot(existingNonP3Details)).toBe(true);
+  });
+
+  it('requires an exact typed interpretation for the 17 canonical P0 metrics only', () => {
+    const valid = makeSnapshot();
+    const interpreted = Object.values(valid.metrics).filter(({ interpretation }) => interpretation !== null);
+    expect(interpreted.map(({ metric_id }) => metric_id).sort()).toEqual([...P0_INTERPRETATION_IDS].sort());
+    expect(new Set(interpreted.flatMap(({ interpretation }) => interpretation!.views.map(({ kind }) => kind)))).toEqual(new Set([
+      'REGIME_LADDER', 'PERCENTILE_GAUGE', 'EVENT_STEPPER',
+      'BREADTH_COUNTER', 'DIRECTIONAL', 'CROSS_CHECK',
+    ]));
+
+    const missingField = structuredClone(valid) as unknown as Record<string, unknown>;
+    delete ((missingField.metrics as Record<string, Record<string, unknown>>).sofr).interpretation;
+    expect(isSnapshot(missingField), 'interpretation key is required').toBe(false);
+
+    const canonicalNull = structuredClone(valid);
+    canonicalNull.metrics.sofr.interpretation = null;
+    expect(isSnapshot(canonicalNull), 'canonical P0 interpretation cannot be null').toBe(false);
+
+    const nonCanonicalObject = structuredClone(valid);
+    nonCanonicalObject.metrics.cftc_e_mini_sp500_asset_manager_net_pct_oi.interpretation =
+      structuredClone(valid.metrics.sofr.interpretation);
+    expect(isSnapshot(nonCanonicalObject), 'P1/P2/P3 interpretations remain null').toBe(false);
+
+    const extraTopField = structuredClone(valid) as unknown as Record<string, unknown>;
+    (((extraTopField.metrics as Record<string, Record<string, unknown>>).sofr).interpretation as Record<string, unknown>).frontend_state = 'WATCH';
+    expect(isSnapshot(extraTopField), 'interpretation has exact fields').toBe(false);
+
+    const invalidRole = structuredClone(valid) as unknown as Record<string, unknown>;
+    (((invalidRole.metrics as Record<string, Record<string, unknown>>).sofr).interpretation as Record<string, unknown>).role = 'LIQUIDITY_CONTEXT';
+    expect(isSnapshot(invalidRole), 'role is a closed enum').toBe(false);
+
+    const duplicateBasis = structuredClone(valid);
+    duplicateBasis.metrics.sofr.interpretation!.rule_basis.push(duplicateBasis.metrics.sofr.interpretation!.rule_basis[0]);
+    expect(isSnapshot(duplicateBasis), 'rule basis is unique').toBe(false);
+
+    const missingNestedBasis = structuredClone(valid);
+    missingNestedBasis.metrics.reserve_balances.interpretation!.rule_basis = [
+      'VIDEO_SOURCE_RULE',
+    ];
+    expect(isSnapshot(missingNestedBasis), 'rule basis includes every nested basis').toBe(false);
+
+    const extraBasis = structuredClone(valid);
+    extraBasis.metrics.reserve_balances.interpretation!.rule_basis.push('CONTEXT_ONLY');
+    expect(isSnapshot(extraBasis), 'rule basis cannot add an unexposed basis').toBe(false);
+
+    const reorderedBreadth = structuredClone(valid);
+    const reorderedView = reorderedBreadth.metrics.sofr_iorb_spread_bp.interpretation!.views[1];
+    if (reorderedView.kind !== 'BREADTH_COUNTER') throw new Error('fixture contract drift');
+    reorderedView.members.reverse();
+    expect(isSnapshot(reorderedBreadth), 'breadth order is canonical').toBe(false);
+
+    const obfrBreadth = structuredClone(valid);
+    const obfrView = obfrBreadth.metrics.sofr_iorb_spread_bp.interpretation!.views[1];
+    if (obfrView.kind !== 'BREADTH_COUNTER') throw new Error('fixture contract drift');
+    obfrView.members[0].metric_id = 'obfr_iorb_spread_bp';
+    expect(isSnapshot(obfrBreadth), 'OBFR is not a canonical breadth member').toBe(false);
+
+    const invalidPercentile = structuredClone(valid);
+    const gauge = invalidPercentile.metrics.tga_daily.interpretation!.views[0];
+    if (gauge.kind !== 'PERCENTILE_GAUGE') throw new Error('fixture contract drift');
+    gauge.percentile = 1.01;
+    expect(isSnapshot(invalidPercentile), 'percentile is normalized to 0..1').toBe(false);
+
+    const extraViewField = structuredClone(valid) as unknown as Record<string, unknown>;
+    const views = (((extraViewField.metrics as Record<string, Record<string, unknown>>).sofr).interpretation as Record<string, unknown>).views as Array<Record<string, unknown>>;
+    views[0].threshold = 0.5;
+    expect(isSnapshot(extraViewField), 'typed views have exact fields').toBe(false);
+
+    const invalidCrossReference = structuredClone(valid);
+    const crossCheck = invalidCrossReference.metrics.tga_weekly_h41.interpretation!.views[0];
+    if (crossCheck.kind !== 'CROSS_CHECK') throw new Error('fixture contract drift');
+    crossCheck.comparison_metric_id = 'missing_metric';
+    expect(isSnapshot(invalidCrossReference), 'view metric references must resolve').toBe(false);
   });
 
   it('only exposes CFTC positioning when every weekly input is complete, fresh, and aligned', () => {
@@ -312,6 +395,9 @@ describe('v2.2 contract and configuration', () => {
     expect(tape).toContain('on_rrp_accepted');
     expect(tape).toContain('srf_accepted');
     expect(CONFIRMATION_SPREAD_IDS).toHaveLength(5);
+    expect(OVERVIEW_MAIN_TABS.map(({ id }) => id)).toEqual(OVERVIEW_SERIES_IDS);
+    expect(OVERVIEW_TAB_GROUPS.map(({ label }) => label)).toEqual(['PRICE / RATES', 'BALANCE / FACILITIES']);
+    expect(OVERVIEW_TAB_GROUPS.flatMap(({ ids }) => ids)).toEqual(OVERVIEW_SERIES_IDS);
   });
 
   it('parses canonical hashes and falls back safely', () => {
@@ -912,7 +998,7 @@ describe('route-lazy loading', () => {
     expect(getGlobalLatestDate(result.series)).toBe('2026-08-11');
   });
 
-  it('loads v2.2 core in parallel, keeps manifest failure nonfatal, and rejects a v2.1 runtime artifact', async () => {
+  it('loads v2.3 core in parallel, keeps manifest failure nonfatal, and rejects a v2.2 runtime artifact', async () => {
     const snapshot = makeSnapshot();
     const catalog = makeCatalog();
     const ok = vi.fn(async (input: RequestInfo | URL) => String(input).endsWith('snapshot.json')
@@ -927,8 +1013,8 @@ describe('route-lazy loading', () => {
     await expect(loadDashboardCore('/', noManifest)).resolves.toMatchObject({ catalog: [], catalogError: expect.stringContaining('500') });
 
     const legacyV2 = vi.fn(async (input: RequestInfo | URL) => String(input).endsWith('snapshot.json')
-      ? jsonResponse({ ...snapshot, schema_version: '2.1.0' })
+      ? jsonResponse({ ...snapshot, schema_version: '2.2.0' })
       : jsonResponse({ schema_version: SCHEMA_VERSION, generated_at: snapshot.generated_at, metrics: catalog })) as unknown as typeof fetch;
-    await expect(loadDashboardCore('/', legacyV2)).rejects.toThrow('Invalid v2 snapshot payload');
+    await expect(loadDashboardCore('/', legacyV2)).rejects.toThrow('Invalid v2.3 snapshot payload');
   });
 });

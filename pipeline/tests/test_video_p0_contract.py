@@ -1,4 +1,4 @@
-"""Adversarial publication checks for the schema 2.2 video P0 model."""
+"""Adversarial publication checks for the schema 2.3 video P0 model."""
 
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ def _clause(snapshot, formula: str, clause_id: str):
 def test_generated_model_is_independent_from_audited_overall_and_alerts(publication):
     snapshot = publication.snapshot
     model = _model(snapshot)
-    assert snapshot["schema_version"] == "2.2.0"
+    assert snapshot["schema_version"] == "2.3.0"
     assert model["model_id"] == "henren778_p0_liquidity"
     assert snapshot["overall_assessment"] == snapshot["switches"]["liquidity_fuel"]["assessment"]
     assert publication.alerts["alerts"] == snapshot["alerts"]
@@ -133,7 +133,7 @@ def test_generated_model_is_independent_from_audited_overall_and_alerts(publicat
             lambda snapshot: _model(snapshot)["formulas"]["red"]["routes"][0].update(
                 display_tex="A"
             ),
-            "unexpected display_tex",
+            "extra: display_tex",
         ),
     ],
 )
@@ -147,7 +147,7 @@ def test_snapshot_model_tampering_fails_closed(publication, mutation, message):
 def test_schema_2_1_snapshot_is_hard_cut(publication):
     snapshot = deepcopy(publication.snapshot)
     snapshot["schema_version"] = "2.1.0"
-    with pytest.raises(ContractValidationError, match="2.2.0"):
+    with pytest.raises(ContractValidationError, match="2.3.0"):
         validate_snapshot(snapshot)
 
 

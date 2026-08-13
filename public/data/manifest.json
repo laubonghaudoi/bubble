@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-13T19:02:13.285869Z",
+  "generated_at": "2026-08-13T21:19:33.209655Z",
   "metrics": [
     {
       "availability": "ACTIVE_FREE",
@@ -442,5 +442,5 @@
       "unit": "mixed"
     }
   ],
-  "schema_version": "2.2.0"
+  "schema_version": "2.3.0"
 }

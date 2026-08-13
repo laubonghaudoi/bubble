@@ -1,0 +1,196 @@
+schema_version: "2.3.0"
+registry_kind: interpretation_rules
+
+# Statistical bands are descriptive context.  They do not feed the P0 alert
+# engine or the audited video formula outcomes.
+statistics:
+  history_mode: EXPANDING_PRIOR_ENDPOINTS
+  quantile_method: NEAREST_RANK
+  daily_min_history_samples: 60
+  weekly_min_history_samples: 104
+  confirmation_slope_observations: 5
+  confirmation_elevated_quantile: 0.80
+  confirmation_extreme_quantile: 0.95
+  tga_short_change_observations: 5
+  tga_long_change_observations: 20
+  tga_notable_quantile: 0.75
+  tga_large_quantile: 0.90
+  fed_assets_change_observations: 4
+  fed_assets_lower_quantile: 0.25
+  fed_assets_upper_quantile: 0.75
+  on_rrp_history_observations: 20
+  on_rrp_min_history_samples: 20
+  on_rrp_near_floor_quantile: 0.10
+  cross_check_aligned_quantile: 0.80
+  cross_check_material_quantile: 0.95
+
+metrics:
+  - metric_id: sofr_iorb_spread_bp
+    role: PRIMARY_FUNDING_PRICE
+    classification_type: SOURCE_PLUS_OPERATIONAL
+    direction_window: ONE_OBSERVATION
+    primary_view: REGIME_LADDER
+    headline: Repo funding 相對 IORB 嘅壓力判讀。
+    what_it_measures: Treasury repo 融資成本相對銀行將準備金放喺 Fed 所收取嘅 IORB 有幾貴。
+    confirm_with: [effr_iorb_spread_bp, tgcr_iorb_spread_bp, bgcr_iorb_spread_bp, reserve_balances, srf_accepted]
+    cannot_infer: 單一讀數唔可以證明流動性危機或者預測資產價格方向。
+
+  - metric_id: sofr
+    role: POLICY_ANCHORED_MARKET_RATE
+    classification_type: NO_HARD_THRESHOLD
+    direction_window: ONE_OBSERVATION
+    primary_view: DIRECTIONAL
+    headline: SOFR 絕對水平主要跟隨政策錨；風險判讀要睇相對 IORB 利差。
+    what_it_measures: 廣泛 Treasury repo 市場嘅隔夜融資利率。
+    confirm_with: [iorb, sofr_iorb_spread_bp, tgcr, bgcr]
+    cannot_infer: SOFR 絕對水平唔可以單獨證明準備金稀缺或者市場壓力。
+
+  - metric_id: iorb
+    role: POLICY_RATE_ANCHOR
+    classification_type: NO_HARD_THRESHOLD
+    direction_window: ONE_OBSERVATION
+    primary_view: DIRECTIONAL
+    headline: IORB 係政策實施錨，唔係獨立危險訊號。
+    what_it_measures: 合資格銀行將準備金留喺 Fed 可以收取嘅利率。
+    confirm_with: [sofr, effr, obfr, tgcr, bgcr]
+    cannot_infer: IORB 水平唔可以單獨量度準備金充裕程度或者市場壓力。
+
+  - metric_id: effr
+    role: POLICY_ANCHORED_MARKET_RATE
+    classification_type: NO_HARD_THRESHOLD
+    direction_window: ONE_OBSERVATION
+    primary_view: DIRECTIONAL
+    headline: EFFR 絕對水平主要係政策錨定市場利率。
+    what_it_measures: 聯邦基金市場隔夜無抵押交易嘅有效利率。
+    confirm_with: [iorb, effr_iorb_spread_bp, sofr]
+    cannot_infer: EFFR 絕對水平唔可以單獨證明 repo 市場或者全系統壓力。
+
+  - metric_id: obfr
+    role: POLICY_ANCHORED_MARKET_RATE
+    classification_type: NO_HARD_THRESHOLD
+    direction_window: ONE_OBSERVATION
+    primary_view: DIRECTIONAL
+    headline: OBFR 絕對水平主要係政策錨定市場利率。
+    what_it_measures: 聯邦基金及 Eurodollar 交易構成嘅廣泛隔夜銀行融資利率。
+    confirm_with: [iorb, obfr_iorb_spread_bp, effr]
+    cannot_infer: OBFR 絕對水平唔可以單獨識別壓力來源或者證明準備金稀缺。
+
+  - metric_id: tgcr
+    role: POLICY_ANCHORED_MARKET_RATE
+    classification_type: NO_HARD_THRESHOLD
+    direction_window: ONE_OBSERVATION
+    primary_view: DIRECTIONAL
+    headline: TGCR 絕對水平要同 IORB 比較先有資金壓力含義。
+    what_it_measures: 三方 repo 市場嘅隔夜一般抵押品利率。
+    confirm_with: [iorb, tgcr_iorb_spread_bp, sofr, bgcr]
+    cannot_infer: TGCR 絕對水平唔可以單獨證明市場全面收緊。
+
+  - metric_id: bgcr
+    role: POLICY_ANCHORED_MARKET_RATE
+    classification_type: NO_HARD_THRESHOLD
+    direction_window: ONE_OBSERVATION
+    primary_view: DIRECTIONAL
+    headline: BGCR 絕對水平要同 IORB 比較先有資金壓力含義。
+    what_it_measures: 三方 repo 加 GCF Repo 嘅廣泛一般抵押品利率。
+    confirm_with: [iorb, bgcr_iorb_spread_bp, sofr, tgcr]
+    cannot_infer: BGCR 絕對水平唔可以單獨證明系統性流動性壓力。
+
+  - metric_id: effr_iorb_spread_bp
+    role: CONFIRMATION_SPREAD
+    classification_type: ROLLING_PERCENTILE
+    direction_window: ONE_OBSERVATION
+    primary_view: PERCENTILE_GAUGE
+    headline: EFFR−IORB 只作較低資訊權重嘅跨市場確認。
+    what_it_measures: 無抵押聯邦基金利率相對 IORB 嘅利差。
+    confirm_with: [sofr_iorb_spread_bp, tgcr_iorb_spread_bp, bgcr_iorb_spread_bp]
+    cannot_infer: 高歷史百分位唔等於準備金短缺，亦唔係獨立警報。
+
+  - metric_id: obfr_iorb_spread_bp
+    role: CONFIRMATION_SPREAD
+    classification_type: ROLLING_PERCENTILE
+    direction_window: ONE_OBSERVATION
+    primary_view: PERCENTILE_GAUGE
+    headline: OBFR−IORB 提供廣泛無抵押市場背景，但唔計入 3 條 breadth。
+    what_it_measures: 廣泛隔夜銀行融資利率相對 IORB 嘅利差。
+    confirm_with: [sofr_iorb_spread_bp, effr_iorb_spread_bp]
+    cannot_infer: 高歷史百分位唔可以單獨證明 repo 壓力或者系統性短缺。
+
+  - metric_id: tgcr_iorb_spread_bp
+    role: CONFIRMATION_SPREAD
+    classification_type: ROLLING_PERCENTILE
+    direction_window: ONE_OBSERVATION
+    primary_view: PERCENTILE_GAUGE
+    headline: TGCR−IORB 用作 secured funding breadth 確認。
+    what_it_measures: 三方 repo 一般抵押品利率相對 IORB 嘅利差。
+    confirm_with: [sofr_iorb_spread_bp, bgcr_iorb_spread_bp, reserve_balances]
+    cannot_infer: 高歷史百分位唔係危機線，必須配合 slope 同其他市場。
+
+  - metric_id: bgcr_iorb_spread_bp
+    role: CONFIRMATION_SPREAD
+    classification_type: ROLLING_PERCENTILE
+    direction_window: ONE_OBSERVATION
+    primary_view: PERCENTILE_GAUGE
+    headline: BGCR−IORB 用作較廣泛 secured funding breadth 確認。
+    what_it_measures: 廣泛一般抵押品 repo 利率相對 IORB 嘅利差。
+    confirm_with: [sofr_iorb_spread_bp, tgcr_iorb_spread_bp, reserve_balances]
+    cannot_infer: 高歷史百分位唔係危機線，必須配合 slope 同其他市場。
+
+  - metric_id: tga_daily
+    role: TREASURY_CASH_FLOW
+    classification_type: SOURCE_PLUS_STATISTICAL
+    direction_window: FIVE_OBSERVATIONS
+    primary_view: PERCENTILE_GAUGE
+    headline: TGA 要分開 level context 同對準備金嘅流量影響。
+    what_it_measures: 美國財政部喺 Fed 嘅每日現金結餘及其變化。
+    confirm_with: [reserve_balances, on_rrp_accepted, fed_total_assets, tga_weekly_h41]
+    cannot_infer: TGA 上升唔會自動等於壓力；其他 Fed 資產同負債可以抵消。
+
+  - metric_id: on_rrp_accepted
+    role: LIQUIDITY_BUFFER
+    classification_type: ROLLING_PERCENTILE
+    direction_window: FIVE_OBSERVATIONS
+    primary_view: PERCENTILE_GAUGE
+    headline: ON RRP 係可耗用緩衝，而唔係固定危險指標。
+    what_it_measures: 合資格對手方透過隔夜逆回購放喺 Fed 嘅現金。
+    confirm_with: [reserve_balances, tga_daily, sofr_iorb_spread_bp]
+    cannot_infer: ON RRP 下降亦可能只反映 bills 或 repo 回報更吸引。
+
+  - metric_id: srf_accepted
+    role: BACKSTOP_FACILITY
+    classification_type: EVENT_TRIGGER
+    direction_window: ONE_OBSERVATION
+    primary_view: EVENT_STEPPER
+    headline: SRF 要按完成 operation days 同非技術性使用分類。
+    what_it_measures: Standing Repo Facility 每個完成 operation day 嘅 accepted use。
+    confirm_with: [sofr_iorb_spread_bp, reserve_balances]
+    cannot_infer: Operational-readiness exercise 唔係市場壓力，亦唔可以觸發警報。
+
+  - metric_id: reserve_balances
+    role: RESERVE_STOCK
+    classification_type: SOURCE_PLUS_STATISTICAL
+    direction_window: FOUR_WEEKS
+    primary_view: REGIME_LADDER
+    headline: Reserve Balances 要同時睇影片 level zone 同 4W drain speed。
+    what_it_measures: 存放喺 Federal Reserve Banks 嘅準備金結餘總額。
+    confirm_with: [sofr_iorb_spread_bp, srf_accepted, tga_daily, fed_total_assets]
+    cannot_infer: 影片門檻唔係 Fed 官方跨時期危機線；準備金需求會隨制度改變。
+
+  - metric_id: fed_total_assets
+    role: BALANCE_SHEET_DRIVER
+    classification_type: DIRECTIONAL
+    direction_window: FOUR_WEEKS
+    primary_view: PERCENTILE_GAUGE
+    headline: Fed Total Assets 嘅 4W impulse 係 liquidity driver，唔係 crisis trigger。
+    what_it_measures: Federal Reserve H.4.1 總資產及其四周變化。
+    confirm_with: [reserve_balances, tga_daily, on_rrp_accepted]
+    cannot_infer: 資產收縮唔可以單獨證明市場壓力或者預測風險資產方向。
+
+  - metric_id: tga_weekly_h41
+    role: CROSS_CHECK
+    classification_type: CROSS_CHECK
+    direction_window: FOUR_WEEKS
+    primary_view: CROSS_CHECK
+    headline: Weekly H.4.1 TGA 只用作 daily FiscalData 嘅時間配對 cross-check。
+    what_it_measures: H.4.1 每周 Treasury General Account level，用嚟核對每日 TGA。
+    confirm_with: [tga_daily]
+    cannot_infer: Timing difference 或 divergence 唔會產生另一套 liquidity severity。

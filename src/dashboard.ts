@@ -17,6 +17,8 @@ import type {
   ManualEvidenceDetail,
   ManualEvidenceRecord,
   ManualEvidenceSeriesPoint,
+  MetricInterpretation,
+  MetricInterpretationView,
   MetricSource,
   Phase,
   Point,
@@ -37,7 +39,7 @@ export interface RouteTarget {
 export type RangeKey = '1M' | '8W' | '12W' | '3M' | '1Y' | 'MAX';
 
 export interface SeriesFile {
-  schema_version: '2.2.0';
+  schema_version: '2.3.0';
   metric_id: string;
   label: string;
   unit: string;
@@ -74,7 +76,7 @@ export interface ChangePresentation {
   value: number | null;
 }
 
-export const SCHEMA_VERSION = '2.2.0' as const;
+export const SCHEMA_VERSION = '2.3.0' as const;
 
 export const ROUTES = [
   { id: 'overview', href: '#/overview', label: '總覽' },
@@ -128,13 +130,53 @@ export const OVERVIEW_MAIN_TABS = [
   { id: 'sofr', label: 'SOFR' },
   { id: 'iorb', label: 'IORB' },
   { id: 'effr', label: 'EFFR' },
+  { id: 'obfr', label: 'OBFR' },
+  { id: 'tgcr', label: 'TGCR' },
+  { id: 'bgcr', label: 'BGCR' },
   { id: 'tga_daily', label: 'TGA' },
+  { id: 'on_rrp_accepted', label: 'ON RRP' },
+  { id: 'srf_accepted', label: 'SRF' },
   { id: 'reserve_balances', label: 'RESERVES' },
   { id: 'fed_total_assets', label: 'WALCL' },
+  { id: 'tga_weekly_h41', label: 'TGA · H.4.1' },
+] as const;
+
+export const OVERVIEW_TAB_GROUPS = [
+  {
+    label: 'PRICE / RATES',
+    ids: ['sofr_iorb_spread_bp', 'sofr', 'iorb', 'effr', 'obfr', 'tgcr', 'bgcr'],
+  },
+  {
+    label: 'BALANCE / FACILITIES',
+    ids: [
+      'tga_daily', 'on_rrp_accepted', 'srf_accepted',
+      'reserve_balances', 'fed_total_assets', 'tga_weekly_h41',
+    ],
+  },
 ] as const;
 
 export const CONFIRMATION_SPREAD_IDS = [
   'sofr_iorb_spread_bp',
+  'effr_iorb_spread_bp',
+  'obfr_iorb_spread_bp',
+  'tgcr_iorb_spread_bp',
+  'bgcr_iorb_spread_bp',
+] as const;
+
+export const P0_INTERPRETATION_IDS = [
+  'sofr_iorb_spread_bp',
+  'sofr',
+  'iorb',
+  'effr',
+  'obfr',
+  'tgcr',
+  'bgcr',
+  'tga_daily',
+  'on_rrp_accepted',
+  'srf_accepted',
+  'reserve_balances',
+  'fed_total_assets',
+  'tga_weekly_h41',
   'effr_iorb_spread_bp',
   'obfr_iorb_spread_bp',
   'tgcr_iorb_spread_bp',
@@ -315,6 +357,23 @@ export const FRESHNESS_LABELS: Readonly<Record<Freshness, string>> = {
 const AVAILABILITIES = new Set<Availability>(['ACTIVE_FREE', 'ACTIVE_PROXY', 'MANUAL_READY', 'UNAVAILABLE_FREE']);
 const HEALTH_STATUSES = new Set<HealthStatus>(['OK', 'STALE', 'ERROR', 'NOT_RELEASED_YET', 'NOT_APPLICABLE']);
 const FRESHNESS_VALUES = new Set<Freshness>(['FRESH', 'LATE', 'STALE', 'UNKNOWN']);
+const INTERPRETATION_CLASSIFICATIONS = new Set([
+  'NO_HARD_THRESHOLD', 'SOURCE_PLUS_OPERATIONAL', 'SOURCE_PLUS_STATISTICAL',
+  'ROLLING_PERCENTILE', 'EVENT_TRIGGER', 'DIRECTIONAL', 'CROSS_CHECK',
+]);
+const INTERPRETATION_ROLES = new Set([
+  'PRIMARY_FUNDING_PRICE', 'POLICY_ANCHORED_MARKET_RATE', 'POLICY_RATE_ANCHOR',
+  'CONFIRMATION_SPREAD', 'TREASURY_CASH_FLOW', 'LIQUIDITY_BUFFER', 'BACKSTOP_FACILITY',
+  'RESERVE_STOCK', 'BALANCE_SHEET_DRIVER', 'CROSS_CHECK',
+]);
+const INTERPRETATION_DATA_STATES = new Set(['CURRENT', 'LAST_GOOD', 'STALE', 'UNKNOWN']);
+const INTERPRETATION_DIRECTIONS = new Set(['RISING', 'FALLING', 'FLAT', 'UNKNOWN']);
+const INTERPRETATION_IMPACTS = new Set(['EASING', 'TIGHTENING', 'NEUTRAL', 'AMBIGUOUS', 'POLICY_ANCHOR', 'UNKNOWN']);
+const INTERPRETATION_SEVERITIES = new Set(['NORMAL', 'WATCH', 'YELLOW', 'RED', 'EXTREME', 'CONTEXT_ONLY', 'UNKNOWN']);
+const INTERPRETATION_CONFIDENCES = new Set(['HIGH', 'MEDIUM', 'LOW', 'UNKNOWN']);
+const INTERPRETATION_RULE_BASES = new Set([
+  'VIDEO_SOURCE_RULE', 'DASHBOARD_OPERATIONALIZATION', 'STATISTICAL_BAND', 'CONTEXT_ONLY',
+]);
 const PHASES = new Set<Phase>(['P0', 'P1', 'P2', 'P3']);
 const LAYERS = new Set<Layer>(['liquidity_fuel', 'market_ignition', 'fundamental_exit']);
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
@@ -808,7 +867,7 @@ const P3_EVIDENCE_BLOCK_FIELDS = [
 const P3_METRIC_BASE_FIELDS = [
   'metric_id', 'label', 'availability', 'value', 'unit', 'frequency',
   'observation_date', 'released_at', 'updated_at', 'expected_next_update',
-  'changes', 'statistics', 'quality', 'context', 'source', 'methodology',
+  'changes', 'statistics', 'quality', 'context', 'source', 'methodology', 'interpretation',
   'short_series', 'provenance', 'unavailability_reason',
 ] as const;
 
@@ -979,6 +1038,129 @@ function isMethodology(value: unknown): value is Methodology {
     Array.isArray(value.confirm_with) && value.confirm_with.every((item) => typeof item === 'string');
 }
 
+function isNonemptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function isInterpretationRuleBasis(value: unknown): boolean {
+  return typeof value === 'string' && INTERPRETATION_RULE_BASES.has(value);
+}
+
+function isNormalizedNullableNumber(value: unknown): boolean {
+  return value === null || (isFiniteNumber(value) && value >= 0 && value <= 1);
+}
+
+function isInterpretationView(value: unknown): value is MetricInterpretationView {
+  if (!isRecord(value) || !isNonemptyString(value.kind) || !isNonemptyString(value.label)) return false;
+  if (value.kind === 'REGIME_LADDER') {
+    const fields = ['kind', 'label', 'rows', 'note'];
+    return hasExactFields(value, fields) && isNonemptyString(value.note) &&
+      Array.isArray(value.rows) && value.rows.length > 0 && value.rows.every((row) =>
+        hasExactFields(row, [
+          'label', 'operator', 'threshold', 'upper_threshold', 'unit', 'rule', 'basis', 'active', 'met',
+        ]) && isNonemptyString(row.label) && isNonemptyString(row.operator) &&
+        isNullableNumber(row.threshold) && isNullableNumber(row.upper_threshold) &&
+        isNonemptyString(row.unit) && isNonemptyString(row.rule) &&
+        isInterpretationRuleBasis(row.basis) && typeof row.active === 'boolean' &&
+        (row.met === null || typeof row.met === 'boolean'));
+  }
+  if (value.kind === 'PERCENTILE_GAUGE') {
+    return hasExactFields(value, [
+      'kind', 'label', 'value', 'unit', 'percentile', 'sample_size', 'state', 'slope', 'slope_unit', 'basis',
+    ]) && isNullableNumber(value.value) && isNonemptyString(value.unit) &&
+      isNormalizedNullableNumber(value.percentile) && isNonnegativeInteger(value.sample_size) &&
+      isNonemptyString(value.state) && isNullableNumber(value.slope) &&
+      isNonemptyString(value.slope_unit) && isInterpretationRuleBasis(value.basis);
+  }
+  if (value.kind === 'EVENT_STEPPER') {
+    return hasExactFields(value, [
+      'kind', 'label', 'window_size', 'positive_count', 'required_count', 'state', 'technical_exercise', 'basis',
+    ]) && isNonnegativeInteger(value.window_size) && value.window_size > 0 &&
+      (value.positive_count === null || (isNonnegativeInteger(value.positive_count) && value.positive_count <= value.window_size)) &&
+      isNonnegativeInteger(value.required_count) && value.required_count > 0 && value.required_count <= value.window_size &&
+      isNonemptyString(value.state) && typeof value.technical_exercise === 'boolean' &&
+      isInterpretationRuleBasis(value.basis);
+  }
+  if (value.kind === 'BREADTH_COUNTER') {
+    return hasExactFields(value, ['kind', 'label', 'count', 'total', 'state', 'members', 'basis']) &&
+      (value.count === null || isNonnegativeInteger(value.count)) &&
+      isNonnegativeInteger(value.total) && value.total > 0 &&
+      (value.count === null || value.count <= value.total) && isNonemptyString(value.state) &&
+      value.total === 3 && Array.isArray(value.members) && value.members.length === value.total &&
+      value.members.map((member) => isRecord(member) ? member.metric_id : null).join('|') ===
+        'effr_iorb_spread_bp|tgcr_iorb_spread_bp|bgcr_iorb_spread_bp' &&
+      new Set(value.members.map((member) => isRecord(member) ? member.metric_id : null)).size === value.members.length &&
+      value.members.every((member) =>
+        hasExactFields(member, ['metric_id', 'state', 'percentile', 'slope', 'confirming']) &&
+        isNonemptyString(member.metric_id) && isNonemptyString(member.state) &&
+        isNormalizedNullableNumber(member.percentile) && isNullableNumber(member.slope) &&
+        (member.confirming === null || typeof member.confirming === 'boolean')) &&
+      isInterpretationRuleBasis(value.basis);
+  }
+  if (value.kind === 'DIRECTIONAL') {
+    return hasExactFields(value, ['kind', 'label', 'value', 'change', 'unit', 'state', 'basis']) &&
+      isNullableNumber(value.value) && isNullableNumber(value.change) && isNonemptyString(value.unit) &&
+      isNonemptyString(value.state) && isInterpretationRuleBasis(value.basis);
+  }
+  if (value.kind === 'CROSS_CHECK') {
+    return hasExactFields(value, [
+      'kind', 'label', 'primary_metric_id', 'comparison_metric_id', 'difference', 'unit',
+      'percentile', 'sample_size', 'state', 'basis',
+    ]) && isNonemptyString(value.primary_metric_id) && isNonemptyString(value.comparison_metric_id) &&
+      isNullableNumber(value.difference) && isNonemptyString(value.unit) &&
+      isNormalizedNullableNumber(value.percentile) && isNonnegativeInteger(value.sample_size) &&
+      isNonemptyString(value.state) && isInterpretationRuleBasis(value.basis);
+  }
+  return false;
+}
+
+function isMetricInterpretation(value: unknown): value is MetricInterpretation {
+  if (!hasExactFields(value, [
+    'role', 'classification_type', 'data_state', 'numeric_direction', 'impact', 'state',
+    'severity', 'confidence', 'headline', 'what_it_measures', 'current_reasons',
+    'next_boundary', 'views', 'confirm_with', 'cannot_infer', 'rule_basis',
+  ]) || typeof value.role !== 'string' || !INTERPRETATION_ROLES.has(value.role) ||
+    typeof value.classification_type !== 'string' ||
+    !INTERPRETATION_CLASSIFICATIONS.has(value.classification_type) ||
+    typeof value.data_state !== 'string' || !INTERPRETATION_DATA_STATES.has(value.data_state) ||
+    typeof value.numeric_direction !== 'string' || !INTERPRETATION_DIRECTIONS.has(value.numeric_direction) ||
+    typeof value.impact !== 'string' || !INTERPRETATION_IMPACTS.has(value.impact) ||
+    !isNonemptyString(value.state) || typeof value.severity !== 'string' ||
+    !INTERPRETATION_SEVERITIES.has(value.severity) || typeof value.confidence !== 'string' ||
+    !INTERPRETATION_CONFIDENCES.has(value.confidence) || !isNonemptyString(value.headline) ||
+    !isNonemptyString(value.what_it_measures) || !Array.isArray(value.current_reasons) ||
+    value.current_reasons.length === 0 || !value.current_reasons.every(isNonemptyString) ||
+    !Array.isArray(value.views) || value.views.length === 0 || !value.views.every(isInterpretationView) ||
+    !Array.isArray(value.confirm_with) || !value.confirm_with.every(isNonemptyString) ||
+    new Set(value.confirm_with).size !== value.confirm_with.length ||
+    !isNonemptyString(value.cannot_infer) || !Array.isArray(value.rule_basis) ||
+    value.rule_basis.length === 0 || !value.rule_basis.every(isInterpretationRuleBasis) ||
+    new Set(value.rule_basis).size !== value.rule_basis.length) return false;
+  if (value.next_boundary !== null && !(hasExactFields(value.next_boundary, [
+    'label', 'current', 'threshold', 'distance', 'unit', 'rule', 'basis',
+  ]) && isNonemptyString(value.next_boundary.label) && isNullableNumber(value.next_boundary.current) &&
+    isNullableNumber(value.next_boundary.threshold) && isNullableNumber(value.next_boundary.distance) &&
+    isNonemptyString(value.next_boundary.unit) && isNonemptyString(value.next_boundary.rule) &&
+    isInterpretationRuleBasis(value.next_boundary.basis))) return false;
+
+  const contextRoles = new Set([
+    'POLICY_RATE_ANCHOR', 'POLICY_ANCHORED_MARKET_RATE', 'TREASURY_CASH_FLOW',
+    'LIQUIDITY_BUFFER', 'BALANCE_SHEET_DRIVER', 'CROSS_CHECK',
+  ]);
+  const exposedBases: string[] = contextRoles.has(value.role) ? ['CONTEXT_ONLY'] : [];
+  const addBasis = (basis: string) => {
+    if (!exposedBases.includes(basis)) exposedBases.push(basis);
+  };
+  (value.views as MetricInterpretationView[]).forEach((view) => {
+    if (view.kind === 'REGIME_LADDER') view.rows.forEach(({ basis }) => addBasis(basis));
+    else addBasis(view.basis);
+  });
+  if (value.next_boundary !== null) addBasis(value.next_boundary.basis as string);
+  const ruleBasis = value.rule_basis as string[];
+  return exposedBases.length === ruleBasis.length &&
+    exposedBases.every((basis, index) => ruleBasis[index] === basis);
+}
+
 function isChanges(value: unknown): boolean {
   if (!isRecord(value) || !isNullableNumber(value.one_observation) || !isNullableNumber(value.five_observations)) return false;
   return ['twenty_observations', 'one_week', 'four_weeks', 'one_month', 'one_quarter', 'eight_weeks', 'twelve_weeks']
@@ -994,6 +1176,8 @@ function isMetric(value: unknown, id?: string): value is Metric {
     isChanges(value.changes) && isStatistics(value.statistics) &&
     isQuality(value.quality) && isContext(value.context) &&
     isMetricSource(value.source) && isMethodology(value.methodology) &&
+    Object.hasOwn(value, 'interpretation') &&
+    (value.interpretation === null || isMetricInterpretation(value.interpretation)) &&
     Array.isArray(value.short_series) && value.short_series.every(
       value.metric_id === 'srf_accepted' ? isSrfPoint : isPoint,
     ) &&
@@ -1358,6 +1542,23 @@ export function isSnapshot(value: unknown): value is Snapshot {
       !EVIDENCE_CONFIDENCE.has(block.confidence) || !P3_SWITCH_DIRECTIONS.has(block.direction) ||
       (!block.available && block.direction !== 'UNKNOWN'))) return false;
   if (!Object.entries(metrics).every(([id, metric]) => isMetric(metric, id))) return false;
+  const interpretedIds = new Set<string>(P0_INTERPRETATION_IDS);
+  if (!Object.entries(metrics).every(([id, rawMetric]) => {
+    const interpretation = (rawMetric as Metric).interpretation;
+    if (interpretedIds.has(id) !== (interpretation !== null)) return false;
+    if (interpretation === null) return true;
+    if (interpretation.confirm_with.some((metricId) => !Object.hasOwn(metrics, metricId))) return false;
+    return interpretation.views.every((view) => {
+      if (view.kind === 'BREADTH_COUNTER') {
+        return view.members.every(({ metric_id }) => Object.hasOwn(metrics, metric_id));
+      }
+      if (view.kind === 'CROSS_CHECK') {
+        return Object.hasOwn(metrics, view.primary_metric_id) &&
+          Object.hasOwn(metrics, view.comparison_metric_id);
+      }
+      return true;
+    });
+  })) return false;
   if (![...OVERVIEW_SERIES_IDS, ...CONFIRMATION_SPREAD_IDS, ...P1_CFTC_CONFIG.map(({ id }) => id), ...P1_RIGHTS_GATED_IDS, ...P2_SERIES_IDS, ...P3_METRIC_IDS]
     .every((id) => isMetric(metrics[id], id))) return false;
   if (!hasExactFields(value.decision_models, ['p0_video_liquidity']) ||
@@ -1643,13 +1844,13 @@ export function snapshotSeriesFallback(snapshot: Snapshot, id: string): SeriesFi
 
 export async function loadDashboardCore(base: string, fetcher: typeof fetch = fetch): Promise<DashboardCore> {
   const snapshotPromise = fetchJson(dataUrl(base, 'data/snapshot.json'), fetcher).then((value) => {
-    if (!isSnapshot(value)) throw new Error('Invalid v2 snapshot payload');
+    if (!isSnapshot(value)) throw new Error('Invalid v2.3 snapshot payload');
     return value;
   });
   const catalogPromise = fetchJson(dataUrl(base, 'data/manifest.json'), fetcher)
     .then((value): { catalog: CatalogMetric[]; catalogError: null } => {
       if (!isRecord(value) || value.schema_version !== SCHEMA_VERSION || !isIsoTimestamp(value.generated_at) ||
-        !Array.isArray(value.metrics) || !value.metrics.every(isCatalogMetric)) throw new Error('Invalid v2 manifest payload');
+        !Array.isArray(value.metrics) || !value.metrics.every(isCatalogMetric)) throw new Error('Invalid v2.3 manifest payload');
       return { catalog: value.metrics, catalogError: null };
     })
     .catch((error): { catalog: CatalogMetric[]; catalogError: string } => ({ catalog: [], catalogError: errorMessage(error) }));
@@ -1670,7 +1871,7 @@ export async function loadRouteSeries(
     const path = catalogById.get(id)?.series_path ?? `data/series/${id}.json`;
     try {
       const value = await fetchJson(dataUrl(base, path), fetcher);
-      if (!isSeriesFile(value, id)) throw new Error(`Invalid v2 series payload: ${id}`);
+      if (!isSeriesFile(value, id)) throw new Error(`Invalid v2.3 series payload: ${id}`);
       return [id, value, null];
     } catch (error) {
       return [id, snapshotSeriesFallback(snapshot, id), errorMessage(error)];

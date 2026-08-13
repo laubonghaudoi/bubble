@@ -1,6 +1,6 @@
 # 美元流動性監測
 
-一個以 React/Vite 建立、由 GitHub Pages 托管嘅靜態美元流動性儀錶板。瀏覽器只讀取已發布嘅 schema `2.2.0` JSON；第三方 fetch、schema validation、金融計算、freshness 判斷同粵文解釋全部喺 Python pipeline 完成。
+一個以 React/Vite 建立、由 GitHub Pages 托管嘅靜態美元流動性儀錶板。瀏覽器只讀取已發布嘅 schema `2.3.0` JSON；第三方 fetch、schema validation、金融計算、freshness 判斷同粵文解釋全部喺 Python pipeline 完成。
 
 網站固定使用 Bloomberg editorial 配色，冇 dark-mode 或 theme switch。
 
@@ -23,6 +23,8 @@ GitHub Pages 使用 hash routing，所以 project subpath 同直接開頁都唔�
 - `1000–1439px`：維持 compact 三欄，左右 rail 會收窄，toolbar 可 wrap，但 document 不可水平溢出；
 - `999px` 或以下：Overview 同 detail route 改為單欄 document flow，可以垂直捲動；route navigation、P0 banner 同長公式可喺各自 container 水平捲動，但 document 本身不可水平溢出；
 - 所有可見 UI 文字以 `11px` 為下限，普通文字 contrast 至少 `4.5:1`。`.sr-only`、KaTeX 隱藏 MathML tree 同數學上下標不屬於視覺字體下限審計。
+
+Overview 13 個 LIVE TAPE 指標全部都可以成為主圖指標；揀選 tape row 或 chart tab 會同步更新右邊 selected-metric interpreter。Interpreter 先講「量度乜、而家點解讀、下一條界線、要同乜確認、唔可以推論乜」，再將 methodology 同 provenance 留喺可展開詳情；佢只解釋已發布資料，唔會喺 React 重新計門檻或 severity。
 
 Liquidity Fuel 保留 8 個主指標 tabs 同 6 個 range controls；chart 要隨可用 viewport 高度伸展，唔可以喺 canvas 下方留出大段空白。Provenance 全尺寸採用單列：全寬三張頂層公式卡、無外框全寬 notation、source/model notes，然後先係 collector health 同 legal notices；畫面唔再另設 `ANALYSIS CONTRACT` 卡，研究用途聲明由全站 footer 保留。
 
@@ -53,17 +55,38 @@ npm run build
 
 可用 group：`all`、`daily`、`h41`、`weekly`、`monthly`、`quarterly`、`manual`。`daily` 會處理 P0 同最新已完成 SEC Form 4 daily indexes；`weekly` 同時處理 H.4.1、CFTC TFF positioning 同 45 日 Form 4 index reconciliation；`monthly`／`quarterly` 會重查 government-origin equities/GDP exact-quarter proxy；`quarterly` 亦會原子更新四間 hyperscaler 嘅 SEC Company Facts CapEx。所有 group 都會先驗證 reviewed manual CSV，`manual` group可安全重建人工 evidence。
 
-## Schema 2.2.0 contract
+## Schema 2.3.0 contract
 
 `public/data/` 係一次過發布嘅完整 artifact set，包括 `snapshot.json`、`manifest.json`、`alerts.json`、`events.json`、`series/*.json`，以及 privacy-minimized `ledgers/sec_form4/`。Pipeline 先喺 staging directory 完成 fetch、normalize、transform、ledger hash/privacy allowlist 同 contract validation，全部成功先用 directory promotion 取代 live data；任何一步失敗都保留上一版完整資料。Raw SEC submissions 只可以留喺私有 Actions cache，永遠唔可以進入 public artifact。
 
-`2.2.0` 係 hard cut，唔係向後兼容提示。Python publication contract 同 frontend loader 都會拒絕 `2.1.0` 或更舊 snapshot；唔會忽略新欄位、補預設門檻，或者靜默退回舊模型。`snapshot.decision_models` 必須只包含完整嘅 `p0_video_liquidity`：模型狀態、資料狀態、信心、影片來源段落、黃／紅／極端門檻、operationalizations、formula clauses、兩條紅色路徑、crisis context、notation 同 technical flags 都要存在，並同 snapshot metric value、quality、freshness、timestamps 同公式真值逐項對得上。缺少、額外、過期或被手改嘅 model data 都會 fail closed。
+`2.3.0` 係 hard cut，唔係向後兼容提示。Python publication contract 同 frontend loader 都會拒絕 `2.2.0` 或更舊 snapshot；唔會忽略新欄位、補預設門檻，或者靜默退回舊模型。`snapshot.decision_models` 必須只包含完整嘅 `p0_video_liquidity`：模型狀態、資料狀態、信心、影片來源段落、黃／紅／極端門檻、operationalizations、formula clauses、兩條紅色路徑、crisis context、notation 同 technical flags 都要存在，並同 snapshot metric value、quality、freshness、timestamps 同公式真值逐項對得上。缺少、額外、過期或被手改嘅 model data 都會 fail closed。
 
 黃／紅／極端三個頂層 formula evaluation 都必須同時提供可審核嘅純文字 `expression`、由同一套 config threshold 生成嘅 `display_tex`、粵文 `plain_language` 同即時 `clauses`；Red Route A/B 保留 route expression、truth value 同 clauses，唔重複另一套正式公式。Model-level `notation` 必須用唯一 key 完整定義公式變數、邏輯符號、source rule、dashboard operationalization 同 manual context。`VIDEO_SOURCE_RULE` 只表示影片明言嘅規則或門檻，`DASHBOARD_OPERATIONALIZATION` 係為咗可重現而訂嘅 persistence、floor、rolling-window 或 percentile 實作，`MANUAL_CONTEXT` 只用於危機背景判斷；純數學符號另標記為 `MATHEMATICAL_NOTATION`，唔會混入 evidence provenance。
 
 Frontend 只將 `display_tex` 交畀 KaTeX，並同時輸出視覺 HTML 同可存取 MathML；粵文讀法會用 accessible description 同相應公式連結。TeX parse、module 或 stylesheet 載入失敗時，公式會顯示 pipeline 提供嘅 `expression` fallback，而唔會令成個 panel 消失。KaTeX 只改善表示方式，唔會將 source-specific rule、dashboard operationalization 或人工 crisis context 包裝成學術定律，亦唔會改變任何 formula outcome、P0 overall、switch 或 alerts。
 
 `p0_video_liquidity` 係對影片公式嘅獨立、可審核 decision model；唔會改寫既有 P0 `overall_assessment`、switch 或 alerts。SRF full series 同 snapshot fallback 亦必須保留 technical／nontechnical classification metadata，缺失分類唔可以當作非技術性零使用。
+
+### Selected-metric interpretation layer
+
+Schema `2.3.0` 要求每個 snapshot metric 都有 exact `interpretation` key。17 個 canonical P0 records——13 個 LIVE TAPE 指標，加 EFFR／OBFR／TGCR／BGCR 相對 IORB 四個額外 confirmation spreads——必須係完整 interpretation object；其餘每一個 metric（包括其他 P0 rights-gated records 同所有 P1、P2、P3 records）必須明確為 `null`，唔可以缺 key、由 frontend 補預設值，或者將未審核分類偽裝成已支援。
+
+完整 object 包含 `role`、`classification_type`、`data_state`、`numeric_direction`、`impact`、`state`、`severity`、`confidence`、`headline`、`what_it_measures`、`current_reasons`、`next_boundary`、typed `views`、`confirm_with`、`cannot_infer` 同 `rule_basis`。`role` 只可以係 `PRIMARY_FUNDING_PRICE`、`POLICY_RATE_ANCHOR`、`POLICY_ANCHORED_MARKET_RATE`、`CONFIRMATION_SPREAD`、`TREASURY_CASH_FLOW`、`LIQUIDITY_BUFFER`、`BACKSTOP_FACILITY`、`RESERVE_STOCK`、`BALANCE_SHEET_DRIVER` 或 `CROSS_CHECK`；`classification_type` 只可以係 `NO_HARD_THRESHOLD`、`SOURCE_PLUS_OPERATIONAL`、`SOURCE_PLUS_STATISTICAL`、`ROLLING_PERCENTILE`、`EVENT_TRIGGER`、`DIRECTIONAL` 或 `CROSS_CHECK`。所有文字、狀態、界線同 supporting views 都由 Python pipeline 產生並由 publication/frontend strict validators 核對；React 只 render，唔會自行分類。
+
+狀態軸係固定 contract：`data_state` 用 `CURRENT`／`LAST_GOOD`／`STALE`／`UNKNOWN`；`numeric_direction` 用 `RISING`／`FALLING`／`FLAT`／`UNKNOWN`；`impact` 用 `EASING`／`TIGHTENING`／`NEUTRAL`／`AMBIGUOUS`／`POLICY_ANCHOR`／`UNKNOWN`；`severity` 用 `NORMAL`／`WATCH`／`YELLOW`／`RED`／`EXTREME`／`CONTEXT_ONLY`／`UNKNOWN`；`confidence` 用 `HIGH`／`MEDIUM`／`LOW`／`UNKNOWN`。`state` 保留 metric-specific 非空字串，唔會偽裝成另一條通用 severity 軸。
+
+`views` 係非空 discriminated union，只容許 `REGIME_LADDER`、`PERCENTILE_GAUGE`、`EVENT_STEPPER`、`BREADTH_COUNTER`、`DIRECTIONAL` 同 `CROSS_CHECK`；每個 kind 都有 strict field set，唔可以混入另一種 view 嘅 keys。`next_boundary` 只可以係 `null` 或完整 `{label,current,threshold,distance,unit,rule,basis}` object；`current_reasons` 同 `rule_basis` 必須非空，basis 亦必須唯一。
+
+`rule_basis` 只容許以下標籤：
+
+- `VIDEO_SOURCE_RULE`：指定影片明言嘅來源規則；
+- `DASHBOARD_OPERATIONALIZATION`：儀錶板為咗可重現而固定嘅操作化規則；
+- `STATISTICAL_BAND`：有明確 lookback、樣本門檻同算法嘅歷史統計帶；
+- `CONTEXT_ONLY`：只供背景解讀，唔係 signal 或 alert trigger。
+
+唔存在 `VALIDATED_SIGNAL` 呢種 basis。Interpretation layer 唔會將關聯、歷史百分位或 context 升格成已驗證交易訊號，亦唔可以改寫既有 P0 composite、alerts、黃／紅／Extreme formula truth、switch 或 Overview overall assessment。
+
+Release 8A/8C 新增嘅 statistical bands 預設使用全歷史 expanding window，但每個 observation 只可以睇到佢之前已完成嘅 observations：被評估 endpoint 必須排除，未來資料亦唔可以回寫過去分類。Nearest-rank threshold 係排序後第 `ceil(q × n)` 個 prior value（1-indexed）；畫面報告嘅 percentile 係 empirical CDF `count(prior ≤ current) / n`。Daily bands 至少要有 60 個 prior observations，weekly bands至少要有 104 個 prior observations，未達門檻就要清楚顯示 insufficient/null，而唔係當 neutral。ON RRP 係唯一非 expanding 例外：用 endpoint-excluded 嘅 20 個 prior valid observations、最少完整 20 個先分類，bottom-decile boundary 固定 `q = 0.10`。呢套 no-lookahead 規則適用於新 interpreter bands；影片 Extreme 既有 trailing-five-year p10、P0 alert rules 同其他已鎖定 formula thresholds保持不變。
 
 狀態分成三條獨立軸：
 
@@ -89,7 +112,7 @@ Frontend 只將 `display_tex` 交畀 KaTeX，並同時輸出視覺 HTML 同可�
 - weekday daily、Thursday H.4.1、weekly、monthly、quarterly UTC cron；
 - `workflow_dispatch`：可揀明確 group。
 
-Workflow 依序執行：核對 reviewed P3 filing metadata → fetch → validate/transform → 寫入獨立 schema `2.2.0` stage → Python tests → 喺臨時 workspace 用同一份 code 加 staged data 跑 frontend tests/build → atomic promote 完整 stage → commit generated `public/data` → push → Pages deploy。所有 gates 通過前，version-controlled `public/data` 都唔會被逐檔覆蓋。任何 metadata、data push 或 contract failure都會停止 deployment，唔會靜默略過。
+Workflow 依序執行：核對 reviewed P3 filing metadata → fetch → validate/transform → 寫入獨立 schema `2.3.0` stage → Python tests → 喺臨時 workspace 用同一份 code 加 staged data 跑 frontend tests/build → atomic promote 完整 stage → commit generated `public/data` → push → Pages deploy。所有 gates 通過前，version-controlled `public/data` 都唔會被逐檔覆蓋。任何 metadata、data push 或 contract failure都會停止 deployment，唔會靜默略過。
 
 Generated-data push 使用本次 job 嘅 repository `GITHUB_TOKEN`。按 [GitHub 官方觸發規則](https://docs.github.com/en/actions/concepts/security/github_token)，由呢個 token 造成嘅 push event 唔會建立另一個 workflow run，因此唔會形成 recursive data-commit loop。原本個 run 會喺 push 成功後直接上載已驗證嘅 `dist` 並部署 Pages；concurrency group 亦確保同一時間只得一個 production writer/deployer。唔好改用 PAT 或 GitHub App token，除非同時另外設計 recursion guard。
 
@@ -106,6 +129,7 @@ P0 包括：
 - FRED 政府來源 allowlist：IORB、WRESBAL、WALCL、WTREGEN；
 - 月／季／年結、已覆核報稅窗口同大型 Treasury settlement context。
 - 獨立 `p0_video_liquidity` 黃／紅／Extreme 來源公式模型；只供可審核重現，唔改既有 P0 overall、switch、pill 或 alerts。
+- 17 個 P0 selected-metric interpretations；統計帶只作 source-backed 解讀同 next-boundary context，唔加入 alert engine。
 
 P1 Market Ignition 使用 CFTC 官方 TFF Futures Only：
 
@@ -145,5 +169,7 @@ P3 Fundamental Exit 係獨立 evidence-only 頁面，唔會改變 P0 overall、P
 - [Release 5 QA紀錄](docs/release-5-qa.md)
 - [Release 6 QA紀錄](docs/release-6-qa.md)
 - [Release 7 QA紀錄（responsive redesign）](docs/release-7-qa.md)
+- [Release 8 QA紀錄（Provenance single-column）](docs/release-8-qa.md)
+- [Release 8A/8C QA紀錄（Selected Metric Interpreter）](docs/release-8a-qa.md)
 
 本工具只供研究，唔提供投資建議。操作門檻、相關性及 proxy 指標唔代表因果，單一 metric 亦唔足以證明危機、泡沫轉折或資產方向。

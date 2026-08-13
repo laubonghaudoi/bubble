@@ -201,6 +201,159 @@ export interface Methodology {
   proxy_disclosure: string;
 }
 
+export type InterpretationRole =
+  | 'PRIMARY_FUNDING_PRICE'
+  | 'POLICY_ANCHORED_MARKET_RATE'
+  | 'POLICY_RATE_ANCHOR'
+  | 'CONFIRMATION_SPREAD'
+  | 'TREASURY_CASH_FLOW'
+  | 'LIQUIDITY_BUFFER'
+  | 'BACKSTOP_FACILITY'
+  | 'RESERVE_STOCK'
+  | 'BALANCE_SHEET_DRIVER'
+  | 'CROSS_CHECK';
+
+export type InterpretationClassificationType =
+  | 'NO_HARD_THRESHOLD'
+  | 'SOURCE_PLUS_OPERATIONAL'
+  | 'SOURCE_PLUS_STATISTICAL'
+  | 'ROLLING_PERCENTILE'
+  | 'EVENT_TRIGGER'
+  | 'DIRECTIONAL'
+  | 'CROSS_CHECK';
+
+export type InterpretationDataState = 'CURRENT' | 'LAST_GOOD' | 'STALE' | 'UNKNOWN';
+export type InterpretationNumericDirection = 'RISING' | 'FALLING' | 'FLAT' | 'UNKNOWN';
+export type InterpretationImpact = 'EASING' | 'TIGHTENING' | 'NEUTRAL' | 'AMBIGUOUS' | 'POLICY_ANCHOR' | 'UNKNOWN';
+export type InterpretationSeverity = 'NORMAL' | 'WATCH' | 'YELLOW' | 'RED' | 'EXTREME' | 'CONTEXT_ONLY' | 'UNKNOWN';
+export type InterpretationConfidence = 'HIGH' | 'MEDIUM' | 'LOW' | 'UNKNOWN';
+export type InterpretationRuleBasis =
+  | 'VIDEO_SOURCE_RULE'
+  | 'DASHBOARD_OPERATIONALIZATION'
+  | 'STATISTICAL_BAND'
+  | 'CONTEXT_ONLY';
+
+export interface InterpretationBoundary {
+  label: string;
+  current: number | null;
+  threshold: number | null;
+  distance: number | null;
+  unit: string;
+  rule: string;
+  basis: InterpretationRuleBasis;
+}
+
+export interface InterpretationRegimeRow {
+  label: string;
+  operator: string;
+  threshold: number | null;
+  upper_threshold: number | null;
+  unit: string;
+  rule: string;
+  basis: InterpretationRuleBasis;
+  active: boolean;
+  met: boolean | null;
+}
+
+export interface InterpretationRegimeLadderView {
+  kind: 'REGIME_LADDER';
+  label: string;
+  rows: InterpretationRegimeRow[];
+  note: string;
+}
+
+export interface InterpretationPercentileGaugeView {
+  kind: 'PERCENTILE_GAUGE';
+  label: string;
+  value: number | null;
+  unit: string;
+  percentile: number | null;
+  sample_size: number;
+  state: string;
+  slope: number | null;
+  slope_unit: string;
+  basis: InterpretationRuleBasis;
+}
+
+export interface InterpretationEventStepperView {
+  kind: 'EVENT_STEPPER';
+  label: string;
+  window_size: number;
+  positive_count: number | null;
+  required_count: number;
+  state: string;
+  technical_exercise: boolean;
+  basis: InterpretationRuleBasis;
+}
+
+export interface InterpretationBreadthMember {
+  metric_id: string;
+  state: string;
+  percentile: number | null;
+  slope: number | null;
+  confirming: boolean | null;
+}
+
+export interface InterpretationBreadthCounterView {
+  kind: 'BREADTH_COUNTER';
+  label: string;
+  state: string;
+  count: number | null;
+  total: number;
+  members: InterpretationBreadthMember[];
+  basis: InterpretationRuleBasis;
+}
+
+export interface InterpretationDirectionalView {
+  kind: 'DIRECTIONAL';
+  label: string;
+  value: number | null;
+  change: number | null;
+  unit: string;
+  state: string;
+  basis: InterpretationRuleBasis;
+}
+
+export interface InterpretationCrossCheckView {
+  kind: 'CROSS_CHECK';
+  label: string;
+  primary_metric_id: string;
+  comparison_metric_id: string;
+  difference: number | null;
+  unit: string;
+  percentile: number | null;
+  sample_size: number;
+  state: string;
+  basis: InterpretationRuleBasis;
+}
+
+export type MetricInterpretationView =
+  | InterpretationRegimeLadderView
+  | InterpretationPercentileGaugeView
+  | InterpretationEventStepperView
+  | InterpretationBreadthCounterView
+  | InterpretationDirectionalView
+  | InterpretationCrossCheckView;
+
+export interface MetricInterpretation {
+  role: InterpretationRole;
+  classification_type: InterpretationClassificationType;
+  data_state: InterpretationDataState;
+  numeric_direction: InterpretationNumericDirection;
+  impact: InterpretationImpact;
+  state: string;
+  severity: InterpretationSeverity;
+  confidence: InterpretationConfidence;
+  headline: string;
+  what_it_measures: string;
+  current_reasons: string[];
+  next_boundary: InterpretationBoundary | null;
+  views: MetricInterpretationView[];
+  confirm_with: string[];
+  cannot_infer: string;
+  rule_basis: InterpretationRuleBasis[];
+}
+
 export interface Metric {
   metric_id: string;
   label: string;
@@ -218,6 +371,7 @@ export interface Metric {
   context: MetricContext;
   source: MetricSource;
   methodology: Methodology;
+  interpretation: MetricInterpretation | null;
   short_series: Point[];
   provenance?: MetricSource[];
   unavailability_reason?: string | null;
@@ -437,7 +591,7 @@ export interface VideoP0Model {
 }
 
 export interface Snapshot {
-  schema_version: '2.2.0';
+  schema_version: '2.3.0';
   generated_at: string;
   pipeline_updated_at: string;
   market_date: string | null;

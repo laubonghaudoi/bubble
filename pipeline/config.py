@@ -24,6 +24,7 @@ CONFIG_FILENAMES = (
     "metric_registry.yml",
     "source_registry.yml",
     "alert_rules.yml",
+    "interpretation_rules.yml",
     "companies.yml",
     "us_tax_dates.yml",
     "nyfed_operational_readiness.yml",
@@ -100,6 +101,65 @@ ACTIVE_P3_AUTOMATED_METRIC_IDS = frozenset(
 
 MANUAL_P3_METRIC_IDS = CANONICAL_P3_METRIC_IDS - ACTIVE_P3_AUTOMATED_METRIC_IDS
 
+INTERPRETED_P0_METRIC_IDS = CANONICAL_P0_METRIC_IDS
+INTERPRETATION_ROLES = frozenset(
+    {
+        "PRIMARY_FUNDING_PRICE",
+        "POLICY_RATE_ANCHOR",
+        "POLICY_ANCHORED_MARKET_RATE",
+        "CONFIRMATION_SPREAD",
+        "TREASURY_CASH_FLOW",
+        "LIQUIDITY_BUFFER",
+        "BACKSTOP_FACILITY",
+        "RESERVE_STOCK",
+        "BALANCE_SHEET_DRIVER",
+        "CROSS_CHECK",
+    }
+)
+INTERPRETATION_CLASSIFICATIONS = frozenset(
+    {
+        "SOURCE_PLUS_OPERATIONAL",
+        "SOURCE_PLUS_STATISTICAL",
+        "NO_HARD_THRESHOLD",
+        "ROLLING_PERCENTILE",
+        "EVENT_TRIGGER",
+        "DIRECTIONAL",
+        "CROSS_CHECK",
+    }
+)
+INTERPRETATION_DIRECTION_WINDOWS = frozenset(
+    {"ONE_OBSERVATION", "FIVE_OBSERVATIONS", "FOUR_WEEKS"}
+)
+INTERPRETATION_VIEW_KINDS = frozenset(
+    {
+        "REGIME_LADDER",
+        "PERCENTILE_GAUGE",
+        "EVENT_STEPPER",
+        "BREADTH_COUNTER",
+        "DIRECTIONAL",
+        "CROSS_CHECK",
+    }
+)
+INTERPRETATION_METRIC_CONTRACT = {
+    "sofr_iorb_spread_bp": ("PRIMARY_FUNDING_PRICE", "SOURCE_PLUS_OPERATIONAL", "ONE_OBSERVATION", "REGIME_LADDER"),
+    "sofr": ("POLICY_ANCHORED_MARKET_RATE", "NO_HARD_THRESHOLD", "ONE_OBSERVATION", "DIRECTIONAL"),
+    "iorb": ("POLICY_RATE_ANCHOR", "NO_HARD_THRESHOLD", "ONE_OBSERVATION", "DIRECTIONAL"),
+    "effr": ("POLICY_ANCHORED_MARKET_RATE", "NO_HARD_THRESHOLD", "ONE_OBSERVATION", "DIRECTIONAL"),
+    "obfr": ("POLICY_ANCHORED_MARKET_RATE", "NO_HARD_THRESHOLD", "ONE_OBSERVATION", "DIRECTIONAL"),
+    "tgcr": ("POLICY_ANCHORED_MARKET_RATE", "NO_HARD_THRESHOLD", "ONE_OBSERVATION", "DIRECTIONAL"),
+    "bgcr": ("POLICY_ANCHORED_MARKET_RATE", "NO_HARD_THRESHOLD", "ONE_OBSERVATION", "DIRECTIONAL"),
+    "effr_iorb_spread_bp": ("CONFIRMATION_SPREAD", "ROLLING_PERCENTILE", "ONE_OBSERVATION", "PERCENTILE_GAUGE"),
+    "obfr_iorb_spread_bp": ("CONFIRMATION_SPREAD", "ROLLING_PERCENTILE", "ONE_OBSERVATION", "PERCENTILE_GAUGE"),
+    "tgcr_iorb_spread_bp": ("CONFIRMATION_SPREAD", "ROLLING_PERCENTILE", "ONE_OBSERVATION", "PERCENTILE_GAUGE"),
+    "bgcr_iorb_spread_bp": ("CONFIRMATION_SPREAD", "ROLLING_PERCENTILE", "ONE_OBSERVATION", "PERCENTILE_GAUGE"),
+    "tga_daily": ("TREASURY_CASH_FLOW", "SOURCE_PLUS_STATISTICAL", "FIVE_OBSERVATIONS", "PERCENTILE_GAUGE"),
+    "on_rrp_accepted": ("LIQUIDITY_BUFFER", "ROLLING_PERCENTILE", "FIVE_OBSERVATIONS", "PERCENTILE_GAUGE"),
+    "srf_accepted": ("BACKSTOP_FACILITY", "EVENT_TRIGGER", "ONE_OBSERVATION", "EVENT_STEPPER"),
+    "reserve_balances": ("RESERVE_STOCK", "SOURCE_PLUS_STATISTICAL", "FOUR_WEEKS", "REGIME_LADDER"),
+    "fed_total_assets": ("BALANCE_SHEET_DRIVER", "DIRECTIONAL", "FOUR_WEEKS", "PERCENTILE_GAUGE"),
+    "tga_weekly_h41": ("CROSS_CHECK", "CROSS_CHECK", "FOUR_WEEKS", "CROSS_CHECK"),
+}
+
 VIDEO_P0_CRISIS_CONTEXT_STATUSES = frozenset(
     {"UNKNOWN", "MAJOR_CRISIS_PRESENT", "NO_MAJOR_CRISIS"}
 )
@@ -152,6 +212,7 @@ class ConfigBundle:
     metric_registry: Mapping[str, Any]
     source_registry: Mapping[str, Any]
     alert_rules: Mapping[str, Any]
+    interpretation_rules: Mapping[str, Any]
     companies: Mapping[str, Any]
     us_tax_dates: Mapping[str, Any]
     nyfed_operational_readiness: Mapping[str, Any]
@@ -164,6 +225,13 @@ class ConfigBundle:
     @property
     def sources_by_id(self) -> dict[str, Mapping[str, Any]]:
         return {source["source_id"]: source for source in self.source_registry["sources"]}
+
+    @property
+    def interpretation_by_id(self) -> dict[str, Mapping[str, Any]]:
+        return {
+            rule["metric_id"]: rule
+            for rule in self.interpretation_rules["metrics"]
+        }
 
 
 def _load_yaml(path: Path) -> Mapping[str, Any]:
@@ -193,6 +261,7 @@ def load_config_bundle(config_dir: str | Path | None = None) -> ConfigBundle:
         metric_registry=loaded["metric_registry.yml"],
         source_registry=loaded["source_registry.yml"],
         alert_rules=loaded["alert_rules.yml"],
+        interpretation_rules=loaded["interpretation_rules.yml"],
         companies=loaded["companies.yml"],
         us_tax_dates=loaded["us_tax_dates.yml"],
         nyfed_operational_readiness=loaded["nyfed_operational_readiness.yml"],
@@ -590,6 +659,142 @@ def _validate_video_p0_model_config(alerts: Mapping[str, Any]) -> None:
     validate_video_p0_crisis_context(model.get("crisis_context"), path=f"{path}.crisis_context")
 
 
+def _validate_interpretation_rules(
+    rules: Mapping[str, Any], *, metric_ids: set[str]
+) -> None:
+    """Validate presentation/statistical metadata without duplicating alert lines."""
+
+    if rules.get("registry_kind") != "interpretation_rules":
+        raise ConfigValidationError(
+            "interpretation_rules.registry_kind must be interpretation_rules"
+        )
+    expected_top = {"schema_version", "registry_kind", "statistics", "metrics"}
+    if set(rules) != expected_top:
+        raise ConfigValidationError(
+            "interpretation_rules must contain exactly: "
+            + ", ".join(sorted(expected_top))
+        )
+
+    statistics = rules.get("statistics")
+    expected_statistics = {
+        "history_mode",
+        "quantile_method",
+        "daily_min_history_samples",
+        "weekly_min_history_samples",
+        "confirmation_slope_observations",
+        "confirmation_elevated_quantile",
+        "confirmation_extreme_quantile",
+        "tga_short_change_observations",
+        "tga_long_change_observations",
+        "tga_notable_quantile",
+        "tga_large_quantile",
+        "fed_assets_change_observations",
+        "fed_assets_lower_quantile",
+        "fed_assets_upper_quantile",
+        "on_rrp_history_observations",
+        "on_rrp_min_history_samples",
+        "on_rrp_near_floor_quantile",
+        "cross_check_aligned_quantile",
+        "cross_check_material_quantile",
+    }
+    if not isinstance(statistics, Mapping) or set(statistics) != expected_statistics:
+        raise ConfigValidationError(
+            "interpretation_rules.statistics does not match the strict contract"
+        )
+    if statistics.get("history_mode") != "EXPANDING_PRIOR_ENDPOINTS":
+        raise ConfigValidationError(
+            "interpretation statistics must use EXPANDING_PRIOR_ENDPOINTS"
+        )
+    if statistics.get("quantile_method") != "NEAREST_RANK":
+        raise ConfigValidationError(
+            "interpretation statistics must use NEAREST_RANK"
+        )
+    expected_integers = {
+        "daily_min_history_samples": 60,
+        "weekly_min_history_samples": 104,
+        "confirmation_slope_observations": 5,
+        "tga_short_change_observations": 5,
+        "tga_long_change_observations": 20,
+        "fed_assets_change_observations": 4,
+        "on_rrp_history_observations": 20,
+        "on_rrp_min_history_samples": 20,
+    }
+    for field, expected in expected_integers.items():
+        value = statistics.get(field)
+        if isinstance(value, bool) or not isinstance(value, int) or value != expected:
+            raise ConfigValidationError(
+                f"interpretation_rules.statistics.{field} must be exactly {expected}"
+            )
+    expected_quantiles = {
+        "confirmation_elevated_quantile": 0.80,
+        "confirmation_extreme_quantile": 0.95,
+        "tga_notable_quantile": 0.75,
+        "tga_large_quantile": 0.90,
+        "fed_assets_lower_quantile": 0.25,
+        "fed_assets_upper_quantile": 0.75,
+        "cross_check_aligned_quantile": 0.80,
+        "cross_check_material_quantile": 0.95,
+        "on_rrp_near_floor_quantile": 0.10,
+    }
+    for field, expected in expected_quantiles.items():
+        value = statistics.get(field)
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or float(value) != expected:
+            raise ConfigValidationError(
+                f"interpretation_rules.statistics.{field} must be exactly {expected}"
+            )
+
+    by_id = _unique_records(rules.get("metrics"), "metric_id", "interpretation metrics")
+    if set(by_id) != INTERPRETED_P0_METRIC_IDS:
+        raise ConfigValidationError(
+            "interpretation metric IDs must be exactly the 17 canonical P0 metrics"
+        )
+    expected_metric_fields = {
+        "metric_id",
+        "role",
+        "classification_type",
+        "direction_window",
+        "primary_view",
+        "headline",
+        "what_it_measures",
+        "confirm_with",
+        "cannot_infer",
+    }
+    for metric_id, rule in by_id.items():
+        path = f"interpretation metric {metric_id}"
+        if set(rule) != expected_metric_fields:
+            raise ConfigValidationError(f"{path} does not match the strict field set")
+        if rule.get("role") not in INTERPRETATION_ROLES:
+            raise ConfigValidationError(f"{path}.role is invalid")
+        if rule.get("classification_type") not in INTERPRETATION_CLASSIFICATIONS:
+            raise ConfigValidationError(f"{path}.classification_type is invalid")
+        if rule.get("direction_window") not in INTERPRETATION_DIRECTION_WINDOWS:
+            raise ConfigValidationError(f"{path}.direction_window is invalid")
+        if rule.get("primary_view") not in INTERPRETATION_VIEW_KINDS:
+            raise ConfigValidationError(f"{path}.primary_view is invalid")
+        actual_contract = (
+            rule.get("role"), rule.get("classification_type"),
+            rule.get("direction_window"), rule.get("primary_view"),
+        )
+        if actual_contract != INTERPRETATION_METRIC_CONTRACT[metric_id]:
+            raise ConfigValidationError(
+                f"{path} role/classification/direction/primary-view contract is invalid"
+            )
+        for field in ("headline", "what_it_measures", "cannot_infer"):
+            value = rule.get(field)
+            if not isinstance(value, str) or not value.strip():
+                raise ConfigValidationError(f"{path}.{field} must be non-empty")
+        confirmations = rule.get("confirm_with")
+        if (
+            not isinstance(confirmations, list)
+            or any(not isinstance(value, str) or not value for value in confirmations)
+            or len(confirmations) != len(set(confirmations))
+            or any(value not in metric_ids for value in confirmations)
+        ):
+            raise ConfigValidationError(
+                f"{path}.confirm_with must be unique canonical metric IDs"
+            )
+
+
 def validate_config_bundle(bundle: ConfigBundle) -> None:
     metrics = _unique_records(
         bundle.metric_registry.get("metrics"), "metric_id", "metrics"
@@ -601,6 +806,9 @@ def validate_config_bundle(bundle: ConfigBundle) -> None:
     if not isinstance(alerts, Mapping):
         raise ConfigValidationError("alert_rules alerts must be an object")
     _validate_video_p0_model_config(alerts)
+    _validate_interpretation_rules(
+        bundle.interpretation_rules, metric_ids=set(metrics)
+    )
     releases = bundle.cftc_release_schedule.get("releases")
     if not isinstance(releases, list) or not releases:
         raise ConfigValidationError("cftc release schedule must be non-empty")
