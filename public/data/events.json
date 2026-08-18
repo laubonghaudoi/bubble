@@ -3,79 +3,6 @@
     {
       "auction_keys": [
         [
-          "912810TS7",
-          "2023-07-19",
-          "2023-07-31"
-        ],
-        [
-          "91282CHN4",
-          "2023-07-24",
-          "2023-07-31"
-        ],
-        [
-          "91282CHP9",
-          "2023-07-20",
-          "2023-07-31"
-        ],
-        [
-          "91282CHQ7",
-          "2023-07-25",
-          "2023-07-31"
-        ],
-        [
-          "91282CHR5",
-          "2023-07-27",
-          "2023-07-31"
-        ],
-        [
-          "91282CHS3",
-          "2023-07-26",
-          "2023-07-31"
-        ]
-      ],
-      "date": "2023-07-31",
-      "flags": [
-        "TREASURY_SETTLEMENT"
-      ],
-      "large_treasury_settlement": null,
-      "note": "Treasury 結算可能短暫抽走銀行體系現金。",
-      "security_count": 6,
-      "trailing_nonzero_sample_size": 0,
-      "trailing_p90_usd_bn": null,
-      "treasury_settlement_usd_bn": 173.0
-    },
-    {
-      "auction_keys": [
-        [
-          "912797GJ0",
-          "2023-07-27",
-          "2023-08-01"
-        ],
-        [
-          "912797GU5",
-          "2023-07-27",
-          "2023-08-01"
-        ],
-        [
-          "912797HM2",
-          "2023-07-26",
-          "2023-08-01"
-        ]
-      ],
-      "date": "2023-08-01",
-      "flags": [
-        "TREASURY_SETTLEMENT"
-      ],
-      "large_treasury_settlement": null,
-      "note": "Treasury 結算可能短暫抽走銀行體系現金。",
-      "security_count": 3,
-      "trailing_nonzero_sample_size": 1,
-      "trailing_p90_usd_bn": null,
-      "treasury_settlement_usd_bn": 176.0
-    },
-    {
-      "auction_keys": [
-        [
           "912796CQ0",
           "2023-08-01",
           "2023-08-03"
@@ -98,7 +25,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 2,
+      "trailing_nonzero_sample_size": 0,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 173.0
     },
@@ -127,7 +54,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 3,
+      "trailing_nonzero_sample_size": 1,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 176.0
     },
@@ -161,7 +88,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 4,
+      "trailing_nonzero_sample_size": 2,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 222.0
     },
@@ -205,7 +132,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
-      "trailing_nonzero_sample_size": 5,
+      "trailing_nonzero_sample_size": 3,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 291.0
     },
@@ -234,7 +161,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 6,
+      "trailing_nonzero_sample_size": 4,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 191.0
     },
@@ -268,7 +195,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 7,
+      "trailing_nonzero_sample_size": 5,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 200.025
     },
@@ -297,7 +224,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 8,
+      "trailing_nonzero_sample_size": 6,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 191.0
     },
@@ -316,7 +243,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 1,
-      "trailing_nonzero_sample_size": 9,
+      "trailing_nonzero_sample_size": 7,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 24.0
     },
@@ -345,7 +272,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 10,
+      "trailing_nonzero_sample_size": 8,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 200.0
     },
@@ -399,7 +326,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 8,
-      "trailing_nonzero_sample_size": 11,
+      "trailing_nonzero_sample_size": 9,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 342.0
     },
@@ -428,7 +355,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 12,
+      "trailing_nonzero_sample_size": 10,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 200.0
     },
@@ -462,7 +389,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 13,
+      "trailing_nonzero_sample_size": 11,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 233.0
     },
@@ -491,7 +418,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 14,
+      "trailing_nonzero_sample_size": 12,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 200.0
     },
@@ -520,7 +447,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 15,
+      "trailing_nonzero_sample_size": 13,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 191.0
     },
@@ -549,7 +476,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 16,
+      "trailing_nonzero_sample_size": 14,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 99.0
     },
@@ -578,7 +505,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 17,
+      "trailing_nonzero_sample_size": 15,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 200.0
     },
@@ -607,7 +534,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 18,
+      "trailing_nonzero_sample_size": 16,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 191.0
     },
@@ -636,7 +563,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 19,
+      "trailing_nonzero_sample_size": 17,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 200.0
     },
@@ -665,7 +592,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 20,
+      "trailing_nonzero_sample_size": 18,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 191.0
     },
@@ -689,7 +616,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 2,
-      "trailing_nonzero_sample_size": 21,
+      "trailing_nonzero_sample_size": 19,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 39.0
     },
@@ -723,7 +650,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 22,
+      "trailing_nonzero_sample_size": 20,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 147.0
     },
@@ -752,7 +679,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 23,
+      "trailing_nonzero_sample_size": 21,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 212.0
     },
@@ -786,7 +713,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 24,
+      "trailing_nonzero_sample_size": 22,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 244.0
     },
@@ -815,7 +742,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 25,
+      "trailing_nonzero_sample_size": 23,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 224.0
     },
@@ -844,7 +771,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 26,
+      "trailing_nonzero_sample_size": 24,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 209.0
     },
@@ -873,7 +800,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 27,
+      "trailing_nonzero_sample_size": 25,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 101.0
     },
@@ -902,7 +829,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 28,
+      "trailing_nonzero_sample_size": 26,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 236.0
     },
@@ -931,7 +858,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 29,
+      "trailing_nonzero_sample_size": 27,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 218.0
     },
@@ -960,7 +887,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 30,
+      "trailing_nonzero_sample_size": 28,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 236.0
     },
@@ -989,7 +916,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 31,
+      "trailing_nonzero_sample_size": 29,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 218.0
     },
@@ -1048,7 +975,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 9,
-      "trailing_nonzero_sample_size": 32,
+      "trailing_nonzero_sample_size": 30,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 438.0
     },
@@ -1082,7 +1009,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 33,
+      "trailing_nonzero_sample_size": 31,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 262.0
     },
@@ -1111,7 +1038,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 34,
+      "trailing_nonzero_sample_size": 32,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 236.0
     },
@@ -1140,7 +1067,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 35,
+      "trailing_nonzero_sample_size": 33,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 218.0
     },
@@ -1169,7 +1096,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 36,
+      "trailing_nonzero_sample_size": 34,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 236.0
     },
@@ -1198,7 +1125,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 37,
+      "trailing_nonzero_sample_size": 35,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 112.0
     },
@@ -1227,7 +1154,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 38,
+      "trailing_nonzero_sample_size": 36,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 218.0
     },
@@ -1256,7 +1183,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 39,
+      "trailing_nonzero_sample_size": 37,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 236.0
     },
@@ -1290,7 +1217,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 40,
+      "trailing_nonzero_sample_size": 38,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 244.0
     },
@@ -1319,7 +1246,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 41,
+      "trailing_nonzero_sample_size": 39,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 221.0
     },
@@ -1378,7 +1305,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 9,
-      "trailing_nonzero_sample_size": 42,
+      "trailing_nonzero_sample_size": 40,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 436.0
     },
@@ -1407,7 +1334,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 43,
+      "trailing_nonzero_sample_size": 41,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 216.0
     },
@@ -1436,7 +1363,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 44,
+      "trailing_nonzero_sample_size": 42,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 213.0
     },
@@ -1465,7 +1392,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 45,
+      "trailing_nonzero_sample_size": 43,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 216.0
     },
@@ -1494,7 +1421,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 46,
+      "trailing_nonzero_sample_size": 44,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 213.0
     },
@@ -1523,7 +1450,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 47,
+      "trailing_nonzero_sample_size": 45,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 108.0
     },
@@ -1552,7 +1479,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 48,
+      "trailing_nonzero_sample_size": 46,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 216.0
     },
@@ -1581,7 +1508,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 49,
+      "trailing_nonzero_sample_size": 47,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 213.0
     },
@@ -1610,7 +1537,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 50,
+      "trailing_nonzero_sample_size": 48,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 216.0
     },
@@ -1644,7 +1571,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 51,
+      "trailing_nonzero_sample_size": 49,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 257.0
     },
@@ -1668,7 +1595,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 2,
-      "trailing_nonzero_sample_size": 52,
+      "trailing_nonzero_sample_size": 50,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 46.0
     },
@@ -1717,7 +1644,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 7,
-      "trailing_nonzero_sample_size": 53,
+      "trailing_nonzero_sample_size": 51,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 384.0
     },
@@ -1746,7 +1673,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 54,
+      "trailing_nonzero_sample_size": 52,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 213.0
     },
@@ -1775,7 +1702,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 55,
+      "trailing_nonzero_sample_size": 53,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 216.0
     },
@@ -1804,7 +1731,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 56,
+      "trailing_nonzero_sample_size": 54,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 213.0
     },
@@ -1848,7 +1775,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
-      "trailing_nonzero_sample_size": 57,
+      "trailing_nonzero_sample_size": 55,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 326.0
     },
@@ -1877,7 +1804,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 58,
+      "trailing_nonzero_sample_size": 56,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 213.0
     },
@@ -1906,7 +1833,7 @@
       "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 59,
+      "trailing_nonzero_sample_size": 57,
       "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 228.0
     },
@@ -1935,14 +1862,13 @@
       ],
       "date": "2024-01-25",
       "flags": [
-        "LARGE_TREASURY_SETTLEMENT",
         "TREASURY_SETTLEMENT"
       ],
-      "large_treasury_settlement": true,
-      "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
+      "large_treasury_settlement": null,
+      "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 60,
-      "trailing_p90_usd_bn": 264.9,
+      "trailing_nonzero_sample_size": 58,
+      "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 268.0
     },
     {
@@ -1967,11 +1893,11 @@
       "flags": [
         "TREASURY_SETTLEMENT"
       ],
-      "large_treasury_settlement": false,
+      "large_treasury_settlement": null,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 61,
-      "trailing_p90_usd_bn": 268.0,
+      "trailing_nonzero_sample_size": 59,
+      "trailing_p90_usd_bn": null,
       "treasury_settlement_usd_bn": 240.0
     },
     {
@@ -2014,8 +1940,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
-      "trailing_nonzero_sample_size": 62,
-      "trailing_p90_usd_bn": 267.4,
+      "trailing_nonzero_sample_size": 60,
+      "trailing_p90_usd_bn": 270.3,
       "treasury_settlement_usd_bn": 221.0
     },
     {
@@ -2043,8 +1969,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 63,
-      "trailing_p90_usd_bn": 266.8,
+      "trailing_nonzero_sample_size": 61,
+      "trailing_p90_usd_bn": 268.0,
       "treasury_settlement_usd_bn": 229.0
     },
     {
@@ -2072,8 +1998,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 64,
-      "trailing_p90_usd_bn": 266.2,
+      "trailing_nonzero_sample_size": 62,
+      "trailing_p90_usd_bn": 267.4,
       "treasury_settlement_usd_bn": 245.0
     },
     {
@@ -2101,8 +2027,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 65,
-      "trailing_p90_usd_bn": 265.6,
+      "trailing_nonzero_sample_size": 63,
+      "trailing_p90_usd_bn": 266.8,
       "treasury_settlement_usd_bn": 229.0
     },
     {
@@ -2130,8 +2056,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 66,
-      "trailing_p90_usd_bn": 265.0,
+      "trailing_nonzero_sample_size": 64,
+      "trailing_p90_usd_bn": 266.2,
       "treasury_settlement_usd_bn": 245.0
     },
     {
@@ -2175,8 +2101,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
-      "trailing_nonzero_sample_size": 67,
-      "trailing_p90_usd_bn": 264.4,
+      "trailing_nonzero_sample_size": 65,
+      "trailing_p90_usd_bn": 265.6,
       "treasury_settlement_usd_bn": 350.0
     },
     {
@@ -2204,8 +2130,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 68,
-      "trailing_p90_usd_bn": 274.9,
+      "trailing_nonzero_sample_size": 66,
+      "trailing_p90_usd_bn": 279.5,
       "treasury_settlement_usd_bn": 245.0
     },
     {
@@ -2233,14 +2159,13 @@
       ],
       "date": "2024-02-22",
       "flags": [
-        "LARGE_TREASURY_SETTLEMENT",
         "TREASURY_SETTLEMENT"
       ],
-      "large_treasury_settlement": true,
-      "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
+      "large_treasury_settlement": false,
+      "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 69,
-      "trailing_p90_usd_bn": 272.6,
+      "trailing_nonzero_sample_size": 67,
+      "trailing_p90_usd_bn": 277.2,
       "treasury_settlement_usd_bn": 275.0
     },
     {
@@ -2258,8 +2183,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 1,
-      "trailing_nonzero_sample_size": 70,
-      "trailing_p90_usd_bn": 276.6,
+      "trailing_nonzero_sample_size": 68,
+      "trailing_p90_usd_bn": 279.8,
       "treasury_settlement_usd_bn": 28.0
     },
     {
@@ -2287,8 +2212,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 71,
-      "trailing_p90_usd_bn": 275.0,
+      "trailing_nonzero_sample_size": 69,
+      "trailing_p90_usd_bn": 278.2,
       "treasury_settlement_usd_bn": 245.0
     },
     {
@@ -2342,8 +2267,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 8,
-      "trailing_nonzero_sample_size": 72,
-      "trailing_p90_usd_bn": 274.3,
+      "trailing_nonzero_sample_size": 70,
+      "trailing_p90_usd_bn": 276.6,
       "treasury_settlement_usd_bn": 423.0
     },
     {
@@ -2371,8 +2296,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 73,
-      "trailing_p90_usd_bn": 287.8,
+      "trailing_nonzero_sample_size": 71,
+      "trailing_p90_usd_bn": 291.0,
       "treasury_settlement_usd_bn": 245.0
     },
     {
@@ -2400,8 +2325,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 74,
-      "trailing_p90_usd_bn": 286.2,
+      "trailing_nonzero_sample_size": 72,
+      "trailing_p90_usd_bn": 289.4,
       "treasury_settlement_usd_bn": 229.0
     },
     {
@@ -2429,8 +2354,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 75,
-      "trailing_p90_usd_bn": 284.6,
+      "trailing_nonzero_sample_size": 73,
+      "trailing_p90_usd_bn": 287.8,
       "treasury_settlement_usd_bn": 245.0
     },
     {
@@ -2458,8 +2383,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 76,
-      "trailing_p90_usd_bn": 283.0,
+      "trailing_nonzero_sample_size": 74,
+      "trailing_p90_usd_bn": 286.2,
       "treasury_settlement_usd_bn": 229.0
     },
     {
@@ -2487,8 +2412,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 77,
-      "trailing_p90_usd_bn": 281.4,
+      "trailing_nonzero_sample_size": 75,
+      "trailing_p90_usd_bn": 284.6,
       "treasury_settlement_usd_bn": 117.0
     },
     {
@@ -2516,8 +2441,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 78,
-      "trailing_p90_usd_bn": 279.8,
+      "trailing_nonzero_sample_size": 76,
+      "trailing_p90_usd_bn": 283.0,
       "treasury_settlement_usd_bn": 245.0
     },
     {
@@ -2550,8 +2475,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 79,
-      "trailing_p90_usd_bn": 278.2,
+      "trailing_nonzero_sample_size": 77,
+      "trailing_p90_usd_bn": 281.4,
       "treasury_settlement_usd_bn": 267.0
     },
     {
@@ -2579,8 +2504,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 80,
-      "trailing_p90_usd_bn": 276.6,
+      "trailing_nonzero_sample_size": 78,
+      "trailing_p90_usd_bn": 279.8,
       "treasury_settlement_usd_bn": 230.0
     },
     {
@@ -2613,8 +2538,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 81,
-      "trailing_p90_usd_bn": 275.0,
+      "trailing_nonzero_sample_size": 79,
+      "trailing_p90_usd_bn": 278.2,
       "treasury_settlement_usd_bn": 229.0
     },
     {
@@ -2652,8 +2577,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 5,
-      "trailing_nonzero_sample_size": 82,
-      "trailing_p90_usd_bn": 274.3,
+      "trailing_nonzero_sample_size": 80,
+      "trailing_p90_usd_bn": 276.6,
       "treasury_settlement_usd_bn": 217.0
     },
     {
@@ -2681,8 +2606,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 83,
-      "trailing_p90_usd_bn": 273.6,
+      "trailing_nonzero_sample_size": 81,
+      "trailing_p90_usd_bn": 275.0,
       "treasury_settlement_usd_bn": 215.0
     },
     {
@@ -2710,8 +2635,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 84,
-      "trailing_p90_usd_bn": 272.9,
+      "trailing_nonzero_sample_size": 82,
+      "trailing_p90_usd_bn": 274.3,
       "treasury_settlement_usd_bn": 205.0
     },
     {
@@ -2739,8 +2664,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 85,
-      "trailing_p90_usd_bn": 272.2,
+      "trailing_nonzero_sample_size": 83,
+      "trailing_p90_usd_bn": 273.6,
       "treasury_settlement_usd_bn": 205.0
     },
     {
@@ -2768,8 +2693,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 86,
-      "trailing_p90_usd_bn": 271.5,
+      "trailing_nonzero_sample_size": 84,
+      "trailing_p90_usd_bn": 272.9,
       "treasury_settlement_usd_bn": 205.0
     },
     {
@@ -2797,8 +2722,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 87,
-      "trailing_p90_usd_bn": 270.8,
+      "trailing_nonzero_sample_size": 85,
+      "trailing_p90_usd_bn": 272.2,
       "treasury_settlement_usd_bn": 119.0
     },
     {
@@ -2826,8 +2751,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 88,
-      "trailing_p90_usd_bn": 270.1,
+      "trailing_nonzero_sample_size": 86,
+      "trailing_p90_usd_bn": 271.5,
       "treasury_settlement_usd_bn": 205.0
     },
     {
@@ -2860,8 +2785,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 89,
-      "trailing_p90_usd_bn": 269.4,
+      "trailing_nonzero_sample_size": 87,
+      "trailing_p90_usd_bn": 270.8,
       "treasury_settlement_usd_bn": 251.0
     },
     {
@@ -2889,8 +2814,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 90,
-      "trailing_p90_usd_bn": 268.7,
+      "trailing_nonzero_sample_size": 88,
+      "trailing_p90_usd_bn": 270.1,
       "treasury_settlement_usd_bn": 205.0
     },
     {
@@ -2918,8 +2843,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 91,
-      "trailing_p90_usd_bn": 268.0,
+      "trailing_nonzero_sample_size": 89,
+      "trailing_p90_usd_bn": 269.4,
       "treasury_settlement_usd_bn": 205.0
     },
     {
@@ -2978,8 +2903,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 9,
-      "trailing_nonzero_sample_size": 92,
-      "trailing_p90_usd_bn": 267.9,
+      "trailing_nonzero_sample_size": 90,
+      "trailing_p90_usd_bn": 268.7,
       "treasury_settlement_usd_bn": 454.0
     },
     {
@@ -3007,8 +2932,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 93,
-      "trailing_p90_usd_bn": 273.6,
+      "trailing_nonzero_sample_size": 91,
+      "trailing_p90_usd_bn": 275.0,
       "treasury_settlement_usd_bn": 205.0
     },
     {
@@ -3036,8 +2961,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 94,
-      "trailing_p90_usd_bn": 272.9,
+      "trailing_nonzero_sample_size": 92,
+      "trailing_p90_usd_bn": 274.3,
       "treasury_settlement_usd_bn": 205.0
     },
     {
@@ -3065,8 +2990,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 95,
-      "trailing_p90_usd_bn": 272.2,
+      "trailing_nonzero_sample_size": 93,
+      "trailing_p90_usd_bn": 273.6,
       "treasury_settlement_usd_bn": 215.0
     },
     {
@@ -3094,8 +3019,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 96,
-      "trailing_p90_usd_bn": 271.5,
+      "trailing_nonzero_sample_size": 94,
+      "trailing_p90_usd_bn": 272.9,
       "treasury_settlement_usd_bn": 220.0
     },
     {
@@ -3123,8 +3048,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 97,
-      "trailing_p90_usd_bn": 270.8,
+      "trailing_nonzero_sample_size": 95,
+      "trailing_p90_usd_bn": 272.2,
       "treasury_settlement_usd_bn": 125.0
     },
     {
@@ -3157,8 +3082,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 98,
-      "trailing_p90_usd_bn": 270.1,
+      "trailing_nonzero_sample_size": 96,
+      "trailing_p90_usd_bn": 271.5,
       "treasury_settlement_usd_bn": 261.0
     },
     {
@@ -3186,8 +3111,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 99,
-      "trailing_p90_usd_bn": 269.4,
+      "trailing_nonzero_sample_size": 97,
+      "trailing_p90_usd_bn": 270.8,
       "treasury_settlement_usd_bn": 220.0
     },
     {
@@ -3215,8 +3140,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 100,
-      "trailing_p90_usd_bn": 268.7,
+      "trailing_nonzero_sample_size": 98,
+      "trailing_p90_usd_bn": 270.1,
       "treasury_settlement_usd_bn": 215.0
     },
     {
@@ -3244,8 +3169,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 101,
-      "trailing_p90_usd_bn": 268.0,
+      "trailing_nonzero_sample_size": 99,
+      "trailing_p90_usd_bn": 269.4,
       "treasury_settlement_usd_bn": 220.0
     },
     {
@@ -3273,8 +3198,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 102,
-      "trailing_p90_usd_bn": 267.9,
+      "trailing_nonzero_sample_size": 100,
+      "trailing_p90_usd_bn": 268.7,
       "treasury_settlement_usd_bn": 205.0
     },
     {
@@ -3317,8 +3242,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
-      "trailing_nonzero_sample_size": 103,
-      "trailing_p90_usd_bn": 267.8,
+      "trailing_nonzero_sample_size": 101,
+      "trailing_p90_usd_bn": 268.0,
       "treasury_settlement_usd_bn": 243.0
     },
     {
@@ -3346,8 +3271,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 104,
-      "trailing_p90_usd_bn": 267.7,
+      "trailing_nonzero_sample_size": 102,
+      "trailing_p90_usd_bn": 267.9,
       "treasury_settlement_usd_bn": 200.0
     },
     {
@@ -3375,8 +3300,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 105,
-      "trailing_p90_usd_bn": 267.6,
+      "trailing_nonzero_sample_size": 103,
+      "trailing_p90_usd_bn": 267.8,
       "treasury_settlement_usd_bn": 200.0
     },
     {
@@ -3404,8 +3329,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 106,
-      "trailing_p90_usd_bn": 267.5,
+      "trailing_nonzero_sample_size": 104,
+      "trailing_p90_usd_bn": 267.7,
       "treasury_settlement_usd_bn": 200.0
     },
     {
@@ -3438,8 +3363,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 107,
-      "trailing_p90_usd_bn": 267.4,
+      "trailing_nonzero_sample_size": 105,
+      "trailing_p90_usd_bn": 267.6,
       "treasury_settlement_usd_bn": 246.0
     },
     {
@@ -3467,8 +3392,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 108,
-      "trailing_p90_usd_bn": 267.3,
+      "trailing_nonzero_sample_size": 106,
+      "trailing_p90_usd_bn": 267.5,
       "treasury_settlement_usd_bn": 119.0
     },
     {
@@ -3496,8 +3421,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 109,
-      "trailing_p90_usd_bn": 267.2,
+      "trailing_nonzero_sample_size": 107,
+      "trailing_p90_usd_bn": 267.4,
       "treasury_settlement_usd_bn": 200.0
     },
     {
@@ -3525,8 +3450,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 110,
-      "trailing_p90_usd_bn": 267.1,
+      "trailing_nonzero_sample_size": 108,
+      "trailing_p90_usd_bn": 267.3,
       "treasury_settlement_usd_bn": 200.0
     },
     {
@@ -3554,8 +3479,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 111,
-      "trailing_p90_usd_bn": 267.0,
+      "trailing_nonzero_sample_size": 109,
+      "trailing_p90_usd_bn": 267.2,
       "treasury_settlement_usd_bn": 200.0
     },
     {
@@ -3583,8 +3508,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 112,
-      "trailing_p90_usd_bn": 266.5,
+      "trailing_nonzero_sample_size": 110,
+      "trailing_p90_usd_bn": 267.1,
       "treasury_settlement_usd_bn": 200.0
     },
     {
@@ -3607,8 +3532,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 2,
-      "trailing_nonzero_sample_size": 113,
-      "trailing_p90_usd_bn": 266.0,
+      "trailing_nonzero_sample_size": 111,
+      "trailing_p90_usd_bn": 267.0,
       "treasury_settlement_usd_bn": 49.0
     },
     {
@@ -3641,8 +3566,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 114,
-      "trailing_p90_usd_bn": 265.5,
+      "trailing_nonzero_sample_size": 112,
+      "trailing_p90_usd_bn": 266.5,
       "treasury_settlement_usd_bn": 196.0
     },
     {
@@ -3670,8 +3595,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 115,
-      "trailing_p90_usd_bn": 265.0,
+      "trailing_nonzero_sample_size": 113,
+      "trailing_p90_usd_bn": 266.0,
       "treasury_settlement_usd_bn": 215.0
     },
     {
@@ -3699,8 +3624,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 116,
-      "trailing_p90_usd_bn": 264.5,
+      "trailing_nonzero_sample_size": 114,
+      "trailing_p90_usd_bn": 265.5,
       "treasury_settlement_usd_bn": 208.0
     },
     {
@@ -3728,8 +3653,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 117,
-      "trailing_p90_usd_bn": 264.0,
+      "trailing_nonzero_sample_size": 115,
+      "trailing_p90_usd_bn": 265.0,
       "treasury_settlement_usd_bn": 225.0
     },
     {
@@ -3762,8 +3687,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 118,
-      "trailing_p90_usd_bn": 263.5,
+      "trailing_nonzero_sample_size": 116,
+      "trailing_p90_usd_bn": 264.5,
       "treasury_settlement_usd_bn": 262.0
     },
     {
@@ -3791,8 +3716,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 119,
-      "trailing_p90_usd_bn": 263.0,
+      "trailing_nonzero_sample_size": 117,
+      "trailing_p90_usd_bn": 264.0,
       "treasury_settlement_usd_bn": 119.0
     },
     {
@@ -3820,8 +3745,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 120,
-      "trailing_p90_usd_bn": 262.5,
+      "trailing_nonzero_sample_size": 118,
+      "trailing_p90_usd_bn": 263.5,
       "treasury_settlement_usd_bn": 235.0
     },
     {
@@ -3849,8 +3774,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 121,
-      "trailing_p90_usd_bn": 262.0,
+      "trailing_nonzero_sample_size": 119,
+      "trailing_p90_usd_bn": 263.0,
       "treasury_settlement_usd_bn": 216.0
     },
     {
@@ -3878,8 +3803,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 122,
-      "trailing_p90_usd_bn": 262.0,
+      "trailing_nonzero_sample_size": 120,
+      "trailing_p90_usd_bn": 262.5,
       "treasury_settlement_usd_bn": 235.0
     },
     {
@@ -3907,7 +3832,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 123,
+      "trailing_nonzero_sample_size": 121,
       "trailing_p90_usd_bn": 262.0,
       "treasury_settlement_usd_bn": 216.0
     },
@@ -3936,7 +3861,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 124,
+      "trailing_nonzero_sample_size": 122,
       "trailing_p90_usd_bn": 262.0,
       "treasury_settlement_usd_bn": 235.0
     },
@@ -3980,7 +3905,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
-      "trailing_nonzero_sample_size": 125,
+      "trailing_nonzero_sample_size": 123,
       "trailing_p90_usd_bn": 262.0,
       "treasury_settlement_usd_bn": 245.0
     },
@@ -4009,7 +3934,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 126,
+      "trailing_nonzero_sample_size": 124,
       "trailing_p90_usd_bn": 262.0,
       "treasury_settlement_usd_bn": 216.0
     },
@@ -4038,7 +3963,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 127,
+      "trailing_nonzero_sample_size": 125,
       "trailing_p90_usd_bn": 262.0,
       "treasury_settlement_usd_bn": 235.0
     },
@@ -4073,7 +3998,7 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 128,
+      "trailing_nonzero_sample_size": 126,
       "trailing_p90_usd_bn": 262.0,
       "treasury_settlement_usd_bn": 267.0
     },
@@ -4102,8 +4027,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 129,
-      "trailing_p90_usd_bn": 263.0,
+      "trailing_nonzero_sample_size": 127,
+      "trailing_p90_usd_bn": 264.0,
       "treasury_settlement_usd_bn": 245.0
     },
     {
@@ -4147,8 +4072,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
-      "trailing_nonzero_sample_size": 130,
-      "trailing_p90_usd_bn": 262.5,
+      "trailing_nonzero_sample_size": 128,
+      "trailing_p90_usd_bn": 263.5,
       "treasury_settlement_usd_bn": 346.0
     },
     {
@@ -4176,7 +4101,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 131,
+      "trailing_nonzero_sample_size": 129,
       "trailing_p90_usd_bn": 267.0,
       "treasury_settlement_usd_bn": 245.0
     },
@@ -4205,8 +4130,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 132,
-      "trailing_p90_usd_bn": 266.5,
+      "trailing_nonzero_sample_size": 130,
+      "trailing_p90_usd_bn": 267.0,
       "treasury_settlement_usd_bn": 221.0
     },
     {
@@ -4240,8 +4165,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 133,
-      "trailing_p90_usd_bn": 266.0,
+      "trailing_nonzero_sample_size": 131,
+      "trailing_p90_usd_bn": 267.0,
       "treasury_settlement_usd_bn": 280.0
     },
     {
@@ -4269,7 +4194,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 134,
+      "trailing_nonzero_sample_size": 132,
       "trailing_p90_usd_bn": 267.0,
       "treasury_settlement_usd_bn": 221.0
     },
@@ -4294,7 +4219,7 @@
       "large_treasury_settlement": false,
       "note": "月末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 2,
-      "trailing_nonzero_sample_size": 135,
+      "trailing_nonzero_sample_size": 133,
       "trailing_p90_usd_bn": 267.0,
       "treasury_settlement_usd_bn": 36.0
     },
@@ -4344,7 +4269,7 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 7,
-      "trailing_nonzero_sample_size": 136,
+      "trailing_nonzero_sample_size": 134,
       "trailing_p90_usd_bn": 267.0,
       "treasury_settlement_usd_bn": 424.0
     },
@@ -4378,8 +4303,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 137,
-      "trailing_p90_usd_bn": 267.4,
+      "trailing_nonzero_sample_size": 135,
+      "trailing_p90_usd_bn": 267.6,
       "treasury_settlement_usd_bn": 257.0
     },
     {
@@ -4407,8 +4332,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 138,
-      "trailing_p90_usd_bn": 267.3,
+      "trailing_nonzero_sample_size": 136,
+      "trailing_p90_usd_bn": 267.5,
       "treasury_settlement_usd_bn": 220.0
     },
     {
@@ -4436,8 +4361,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 139,
-      "trailing_p90_usd_bn": 267.2,
+      "trailing_nonzero_sample_size": 137,
+      "trailing_p90_usd_bn": 267.4,
       "treasury_settlement_usd_bn": 206.0
     },
     {
@@ -4465,8 +4390,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 140,
-      "trailing_p90_usd_bn": 267.1,
+      "trailing_nonzero_sample_size": 138,
+      "trailing_p90_usd_bn": 267.3,
       "treasury_settlement_usd_bn": 119.0
     },
     {
@@ -4494,8 +4419,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 141,
-      "trailing_p90_usd_bn": 267.0,
+      "trailing_nonzero_sample_size": 139,
+      "trailing_p90_usd_bn": 267.2,
       "treasury_settlement_usd_bn": 220.0
     },
     {
@@ -4523,8 +4448,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 142,
-      "trailing_p90_usd_bn": 267.0,
+      "trailing_nonzero_sample_size": 140,
+      "trailing_p90_usd_bn": 267.1,
       "treasury_settlement_usd_bn": 206.0
     },
     {
@@ -4552,7 +4477,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 143,
+      "trailing_nonzero_sample_size": 141,
       "trailing_p90_usd_bn": 267.0,
       "treasury_settlement_usd_bn": 220.0
     },
@@ -4581,7 +4506,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 144,
+      "trailing_nonzero_sample_size": 142,
       "trailing_p90_usd_bn": 267.0,
       "treasury_settlement_usd_bn": 206.0
     },
@@ -4600,7 +4525,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 1,
-      "trailing_nonzero_sample_size": 145,
+      "trailing_nonzero_sample_size": 143,
       "trailing_p90_usd_bn": 267.0,
       "treasury_settlement_usd_bn": 28.0
     },
@@ -4641,7 +4566,7 @@
       "large_treasury_settlement": false,
       "note": "月末資產負債表調整可能暫時影響隔夜利率。 季末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 5,
-      "trailing_nonzero_sample_size": 146,
+      "trailing_nonzero_sample_size": 144,
       "trailing_p90_usd_bn": 267.0,
       "treasury_settlement_usd_bn": 213.0
     },
@@ -4670,7 +4595,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 147,
+      "trailing_nonzero_sample_size": 145,
       "trailing_p90_usd_bn": 267.0,
       "treasury_settlement_usd_bn": 237.0
     },
@@ -4705,7 +4630,7 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 148,
+      "trailing_nonzero_sample_size": 146,
       "trailing_p90_usd_bn": 267.0,
       "treasury_settlement_usd_bn": 269.0
     },
@@ -4734,8 +4659,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 149,
-      "trailing_p90_usd_bn": 267.2,
+      "trailing_nonzero_sample_size": 147,
+      "trailing_p90_usd_bn": 267.4,
       "treasury_settlement_usd_bn": 249.0
     },
     {
@@ -4763,8 +4688,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 150,
-      "trailing_p90_usd_bn": 267.1,
+      "trailing_nonzero_sample_size": 148,
+      "trailing_p90_usd_bn": 267.3,
       "treasury_settlement_usd_bn": 233.0
     },
     {
@@ -4808,8 +4733,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
-      "trailing_nonzero_sample_size": 151,
-      "trailing_p90_usd_bn": 267.0,
+      "trailing_nonzero_sample_size": 149,
+      "trailing_p90_usd_bn": 267.2,
       "treasury_settlement_usd_bn": 368.0
     },
     {
@@ -4837,8 +4762,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 152,
-      "trailing_p90_usd_bn": 267.9,
+      "trailing_nonzero_sample_size": 150,
+      "trailing_p90_usd_bn": 268.1,
       "treasury_settlement_usd_bn": 233.0
     },
     {
@@ -4866,8 +4791,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 153,
-      "trailing_p90_usd_bn": 267.8,
+      "trailing_nonzero_sample_size": 151,
+      "trailing_p90_usd_bn": 268.0,
       "treasury_settlement_usd_bn": 249.0
     },
     {
@@ -4895,8 +4820,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 154,
-      "trailing_p90_usd_bn": 267.7,
+      "trailing_nonzero_sample_size": 152,
+      "trailing_p90_usd_bn": 267.9,
       "treasury_settlement_usd_bn": 233.0
     },
     {
@@ -4924,8 +4849,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 155,
-      "trailing_p90_usd_bn": 267.6,
+      "trailing_nonzero_sample_size": 153,
+      "trailing_p90_usd_bn": 267.8,
       "treasury_settlement_usd_bn": 249.0
     },
     {
@@ -4990,8 +4915,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 月末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 10,
-      "trailing_nonzero_sample_size": 156,
-      "trailing_p90_usd_bn": 267.5,
+      "trailing_nonzero_sample_size": 154,
+      "trailing_p90_usd_bn": 267.7,
       "treasury_settlement_usd_bn": 531.0
     },
     {
@@ -5019,8 +4944,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 157,
-      "trailing_p90_usd_bn": 268.4,
+      "trailing_nonzero_sample_size": 155,
+      "trailing_p90_usd_bn": 268.6,
       "treasury_settlement_usd_bn": 249.0
     },
     {
@@ -5048,8 +4973,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 158,
-      "trailing_p90_usd_bn": 268.3,
+      "trailing_nonzero_sample_size": 156,
+      "trailing_p90_usd_bn": 268.5,
       "treasury_settlement_usd_bn": 233.0
     },
     {
@@ -5077,8 +5002,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 159,
-      "trailing_p90_usd_bn": 268.2,
+      "trailing_nonzero_sample_size": 157,
+      "trailing_p90_usd_bn": 268.4,
       "treasury_settlement_usd_bn": 249.0
     },
     {
@@ -5106,8 +5031,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 160,
-      "trailing_p90_usd_bn": 268.1,
+      "trailing_nonzero_sample_size": 158,
+      "trailing_p90_usd_bn": 268.3,
       "treasury_settlement_usd_bn": 233.0
     },
     {
@@ -5135,8 +5060,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 161,
-      "trailing_p90_usd_bn": 268.0,
+      "trailing_nonzero_sample_size": 159,
+      "trailing_p90_usd_bn": 268.2,
       "treasury_settlement_usd_bn": 125.0
     },
     {
@@ -5164,8 +5089,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 162,
-      "trailing_p90_usd_bn": 267.9,
+      "trailing_nonzero_sample_size": 160,
+      "trailing_p90_usd_bn": 268.1,
       "treasury_settlement_usd_bn": 249.0
     },
     {
@@ -5199,8 +5124,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 163,
-      "trailing_p90_usd_bn": 267.8,
+      "trailing_nonzero_sample_size": 161,
+      "trailing_p90_usd_bn": 268.0,
       "treasury_settlement_usd_bn": 283.0
     },
     {
@@ -5234,8 +5159,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 164,
-      "trailing_p90_usd_bn": 268.7,
+      "trailing_nonzero_sample_size": 162,
+      "trailing_p90_usd_bn": 268.9,
       "treasury_settlement_usd_bn": 289.0
     },
     {
@@ -5280,8 +5205,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 月末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
-      "trailing_nonzero_sample_size": 165,
-      "trailing_p90_usd_bn": 272.6,
+      "trailing_nonzero_sample_size": 163,
+      "trailing_p90_usd_bn": 273.8,
       "treasury_settlement_usd_bn": 326.0
     },
     {
@@ -5314,8 +5239,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 166,
-      "trailing_p90_usd_bn": 277.5,
+      "trailing_nonzero_sample_size": 164,
+      "trailing_p90_usd_bn": 278.5,
       "treasury_settlement_usd_bn": 199.0
     },
     {
@@ -5343,8 +5268,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 167,
-      "trailing_p90_usd_bn": 277.0,
+      "trailing_nonzero_sample_size": 165,
+      "trailing_p90_usd_bn": 278.0,
       "treasury_settlement_usd_bn": 249.0
     },
     {
@@ -5372,8 +5297,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 168,
-      "trailing_p90_usd_bn": 276.5,
+      "trailing_nonzero_sample_size": 166,
+      "trailing_p90_usd_bn": 277.5,
       "treasury_settlement_usd_bn": 228.0
     },
     {
@@ -5391,8 +5316,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 1,
-      "trailing_nonzero_sample_size": 169,
-      "trailing_p90_usd_bn": 276.0,
+      "trailing_nonzero_sample_size": 167,
+      "trailing_p90_usd_bn": 277.0,
       "treasury_settlement_usd_bn": 0.025
     },
     {
@@ -5420,8 +5345,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 170,
-      "trailing_p90_usd_bn": 275.5,
+      "trailing_nonzero_sample_size": 168,
+      "trailing_p90_usd_bn": 276.5,
       "treasury_settlement_usd_bn": 229.0
     },
     {
@@ -5449,8 +5374,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 171,
-      "trailing_p90_usd_bn": 275.0,
+      "trailing_nonzero_sample_size": 169,
+      "trailing_p90_usd_bn": 276.0,
       "treasury_settlement_usd_bn": 223.0
     },
     {
@@ -5478,8 +5403,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 172,
-      "trailing_p90_usd_bn": 274.4,
+      "trailing_nonzero_sample_size": 170,
+      "trailing_p90_usd_bn": 275.5,
       "treasury_settlement_usd_bn": 119.0
     },
     {
@@ -5507,8 +5432,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 173,
-      "trailing_p90_usd_bn": 273.8,
+      "trailing_nonzero_sample_size": 171,
+      "trailing_p90_usd_bn": 275.0,
       "treasury_settlement_usd_bn": 219.0
     },
     {
@@ -5536,8 +5461,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 174,
-      "trailing_p90_usd_bn": 273.2,
+      "trailing_nonzero_sample_size": 172,
+      "trailing_p90_usd_bn": 274.4,
       "treasury_settlement_usd_bn": 218.0
     },
     {
@@ -5565,8 +5490,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 175,
-      "trailing_p90_usd_bn": 272.6,
+      "trailing_nonzero_sample_size": 173,
+      "trailing_p90_usd_bn": 273.8,
       "treasury_settlement_usd_bn": 219.0
     },
     {
@@ -5599,8 +5524,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 176,
-      "trailing_p90_usd_bn": 272.0,
+      "trailing_nonzero_sample_size": 174,
+      "trailing_p90_usd_bn": 273.2,
       "treasury_settlement_usd_bn": 266.0
     },
     {
@@ -5618,8 +5543,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 1,
-      "trailing_nonzero_sample_size": 177,
-      "trailing_p90_usd_bn": 271.4,
+      "trailing_nonzero_sample_size": 175,
+      "trailing_p90_usd_bn": 272.6,
       "treasury_settlement_usd_bn": 28.0
     },
     {
@@ -5676,8 +5601,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 月末資產負債表調整可能暫時影響隔夜利率。 季末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。 年末資產負債表調整可能暫時影響隔夜利率。",
       "security_count": 8,
-      "trailing_nonzero_sample_size": 178,
-      "trailing_p90_usd_bn": 270.8,
+      "trailing_nonzero_sample_size": 176,
+      "trailing_p90_usd_bn": 272.0,
       "treasury_settlement_usd_bn": 427.0
     },
     {
@@ -5705,8 +5630,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 179,
-      "trailing_p90_usd_bn": 276.0,
+      "trailing_nonzero_sample_size": 177,
+      "trailing_p90_usd_bn": 277.0,
       "treasury_settlement_usd_bn": 231.0
     },
     {
@@ -5734,8 +5659,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 180,
-      "trailing_p90_usd_bn": 275.5,
+      "trailing_nonzero_sample_size": 178,
+      "trailing_p90_usd_bn": 276.5,
       "treasury_settlement_usd_bn": 229.0
     },
     {
@@ -5763,8 +5688,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 181,
-      "trailing_p90_usd_bn": 275.0,
+      "trailing_nonzero_sample_size": 179,
+      "trailing_p90_usd_bn": 276.0,
       "treasury_settlement_usd_bn": 241.0
     },
     {
@@ -5792,8 +5717,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 182,
-      "trailing_p90_usd_bn": 274.4,
+      "trailing_nonzero_sample_size": 180,
+      "trailing_p90_usd_bn": 275.5,
       "treasury_settlement_usd_bn": 249.0
     },
     {
@@ -5821,8 +5746,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 183,
-      "trailing_p90_usd_bn": 273.8,
+      "trailing_nonzero_sample_size": 181,
+      "trailing_p90_usd_bn": 275.0,
       "treasury_settlement_usd_bn": 119.0
     },
     {
@@ -5850,8 +5775,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 184,
-      "trailing_p90_usd_bn": 273.2,
+      "trailing_nonzero_sample_size": 182,
+      "trailing_p90_usd_bn": 274.4,
       "treasury_settlement_usd_bn": 241.0
     },
     {
@@ -5879,8 +5804,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 185,
-      "trailing_p90_usd_bn": 272.6,
+      "trailing_nonzero_sample_size": 183,
+      "trailing_p90_usd_bn": 273.8,
       "treasury_settlement_usd_bn": 249.0
     },
     {
@@ -5919,8 +5844,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 5,
-      "trailing_nonzero_sample_size": 186,
-      "trailing_p90_usd_bn": 272.0,
+      "trailing_nonzero_sample_size": 184,
+      "trailing_p90_usd_bn": 273.2,
       "treasury_settlement_usd_bn": 354.0
     },
     {
@@ -5948,8 +5873,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 187,
-      "trailing_p90_usd_bn": 277.0,
+      "trailing_nonzero_sample_size": 185,
+      "trailing_p90_usd_bn": 278.0,
       "treasury_settlement_usd_bn": 249.0
     },
     {
@@ -5977,8 +5902,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 188,
-      "trailing_p90_usd_bn": 276.5,
+      "trailing_nonzero_sample_size": 186,
+      "trailing_p90_usd_bn": 277.5,
       "treasury_settlement_usd_bn": 241.0
     },
     {
@@ -6022,8 +5947,8 @@
       "large_treasury_settlement": false,
       "note": "月末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
-      "trailing_nonzero_sample_size": 189,
-      "trailing_p90_usd_bn": 276.0,
+      "trailing_nonzero_sample_size": 187,
+      "trailing_p90_usd_bn": 277.0,
       "treasury_settlement_usd_bn": 246.0
     },
     {
@@ -6051,8 +5976,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 190,
-      "trailing_p90_usd_bn": 275.5,
+      "trailing_nonzero_sample_size": 188,
+      "trailing_p90_usd_bn": 276.5,
       "treasury_settlement_usd_bn": 249.0
     },
     {
@@ -6080,8 +6005,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 191,
-      "trailing_p90_usd_bn": 275.0,
+      "trailing_nonzero_sample_size": 189,
+      "trailing_p90_usd_bn": 276.0,
       "treasury_settlement_usd_bn": 241.0
     },
     {
@@ -6109,8 +6034,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 192,
-      "trailing_p90_usd_bn": 274.4,
+      "trailing_nonzero_sample_size": 190,
+      "trailing_p90_usd_bn": 275.5,
       "treasury_settlement_usd_bn": 249.0
     },
     {
@@ -6138,8 +6063,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 193,
-      "trailing_p90_usd_bn": 273.8,
+      "trailing_nonzero_sample_size": 191,
+      "trailing_p90_usd_bn": 275.0,
       "treasury_settlement_usd_bn": 241.0
     },
     {
@@ -6183,8 +6108,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
-      "trailing_nonzero_sample_size": 194,
-      "trailing_p90_usd_bn": 273.2,
+      "trailing_nonzero_sample_size": 192,
+      "trailing_p90_usd_bn": 274.4,
       "treasury_settlement_usd_bn": 362.0
     },
     {
@@ -6212,14 +6137,13 @@
       ],
       "date": "2025-02-20",
       "flags": [
-        "LARGE_TREASURY_SETTLEMENT",
         "TREASURY_SETTLEMENT"
       ],
-      "large_treasury_settlement": true,
-      "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
+      "large_treasury_settlement": false,
+      "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 195,
-      "trailing_p90_usd_bn": 278.0,
+      "trailing_nonzero_sample_size": 193,
+      "trailing_p90_usd_bn": 279.0,
       "treasury_settlement_usd_bn": 278.0
     },
     {
@@ -6247,8 +6171,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 196,
-      "trailing_p90_usd_bn": 279.0,
+      "trailing_nonzero_sample_size": 194,
+      "trailing_p90_usd_bn": 279.4,
       "treasury_settlement_usd_bn": 225.0
     },
     {
@@ -6276,8 +6200,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 197,
-      "trailing_p90_usd_bn": 278.8,
+      "trailing_nonzero_sample_size": 195,
+      "trailing_p90_usd_bn": 279.2,
       "treasury_settlement_usd_bn": 219.0
     },
     {
@@ -6321,8 +6245,8 @@
       "large_treasury_settlement": false,
       "note": "月末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
-      "trailing_nonzero_sample_size": 198,
-      "trailing_p90_usd_bn": 278.6,
+      "trailing_nonzero_sample_size": 196,
+      "trailing_p90_usd_bn": 279.0,
       "treasury_settlement_usd_bn": 236.0
     },
     {
@@ -6350,8 +6274,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 199,
-      "trailing_p90_usd_bn": 278.4,
+      "trailing_nonzero_sample_size": 197,
+      "trailing_p90_usd_bn": 278.8,
       "treasury_settlement_usd_bn": 215.0
     },
     {
@@ -6384,8 +6308,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 200,
-      "trailing_p90_usd_bn": 278.2,
+      "trailing_nonzero_sample_size": 198,
+      "trailing_p90_usd_bn": 278.6,
       "treasury_settlement_usd_bn": 254.0
     },
     {
@@ -6413,8 +6337,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 201,
-      "trailing_p90_usd_bn": 278.0,
+      "trailing_nonzero_sample_size": 199,
+      "trailing_p90_usd_bn": 278.4,
       "treasury_settlement_usd_bn": 210.0
     },
     {
@@ -6442,8 +6366,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 202,
-      "trailing_p90_usd_bn": 277.7,
+      "trailing_nonzero_sample_size": 200,
+      "trailing_p90_usd_bn": 278.2,
       "treasury_settlement_usd_bn": 214.0
     },
     {
@@ -6471,8 +6395,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 203,
-      "trailing_p90_usd_bn": 277.4,
+      "trailing_nonzero_sample_size": 201,
+      "trailing_p90_usd_bn": 278.0,
       "treasury_settlement_usd_bn": 119.0
     },
     {
@@ -6500,8 +6424,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 204,
-      "trailing_p90_usd_bn": 277.1,
+      "trailing_nonzero_sample_size": 202,
+      "trailing_p90_usd_bn": 277.7,
       "treasury_settlement_usd_bn": 210.0
     },
     {
@@ -6534,8 +6458,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 205,
-      "trailing_p90_usd_bn": 276.8,
+      "trailing_nonzero_sample_size": 203,
+      "trailing_p90_usd_bn": 277.4,
       "treasury_settlement_usd_bn": 262.0
     },
     {
@@ -6563,8 +6487,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 206,
-      "trailing_p90_usd_bn": 276.5,
+      "trailing_nonzero_sample_size": 204,
+      "trailing_p90_usd_bn": 277.1,
       "treasury_settlement_usd_bn": 210.0
     },
     {
@@ -6592,8 +6516,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 207,
-      "trailing_p90_usd_bn": 276.2,
+      "trailing_nonzero_sample_size": 205,
+      "trailing_p90_usd_bn": 276.8,
       "treasury_settlement_usd_bn": 214.0
     },
     {
@@ -6611,8 +6535,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 1,
-      "trailing_nonzero_sample_size": 208,
-      "trailing_p90_usd_bn": 275.9,
+      "trailing_nonzero_sample_size": 206,
+      "trailing_p90_usd_bn": 276.5,
       "treasury_settlement_usd_bn": 28.0
     },
     {
@@ -6652,8 +6576,8 @@
       "large_treasury_settlement": false,
       "note": "月末資產負債表調整可能暫時影響隔夜利率。 季末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 5,
-      "trailing_nonzero_sample_size": 209,
-      "trailing_p90_usd_bn": 275.6,
+      "trailing_nonzero_sample_size": 207,
+      "trailing_p90_usd_bn": 276.2,
       "treasury_settlement_usd_bn": 214.0
     },
     {
@@ -6681,8 +6605,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 210,
-      "trailing_p90_usd_bn": 275.3,
+      "trailing_nonzero_sample_size": 208,
+      "trailing_p90_usd_bn": 275.9,
       "treasury_settlement_usd_bn": 210.0
     },
     {
@@ -6715,8 +6639,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 211,
-      "trailing_p90_usd_bn": 275.0,
+      "trailing_nonzero_sample_size": 209,
+      "trailing_p90_usd_bn": 275.6,
       "treasury_settlement_usd_bn": 264.0
     },
     {
@@ -6749,8 +6673,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 212,
-      "trailing_p90_usd_bn": 274.4,
+      "trailing_nonzero_sample_size": 210,
+      "trailing_p90_usd_bn": 275.3,
       "treasury_settlement_usd_bn": 265.0
     },
     {
@@ -6778,8 +6702,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 213,
-      "trailing_p90_usd_bn": 273.8,
+      "trailing_nonzero_sample_size": 211,
+      "trailing_p90_usd_bn": 275.0,
       "treasury_settlement_usd_bn": 214.0
     },
     {
@@ -6823,8 +6747,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
-      "trailing_nonzero_sample_size": 214,
-      "trailing_p90_usd_bn": 273.2,
+      "trailing_nonzero_sample_size": 212,
+      "trailing_p90_usd_bn": 274.4,
       "treasury_settlement_usd_bn": 339.0
     },
     {
@@ -6857,8 +6781,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 215,
-      "trailing_p90_usd_bn": 276.8,
+      "trailing_nonzero_sample_size": 213,
+      "trailing_p90_usd_bn": 277.4,
       "treasury_settlement_usd_bn": 262.0
     },
     {
@@ -6886,8 +6810,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 216,
-      "trailing_p90_usd_bn": 276.5,
+      "trailing_nonzero_sample_size": 214,
+      "trailing_p90_usd_bn": 277.1,
       "treasury_settlement_usd_bn": 220.0
     },
     {
@@ -6915,8 +6839,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 217,
-      "trailing_p90_usd_bn": 276.2,
+      "trailing_nonzero_sample_size": 215,
+      "trailing_p90_usd_bn": 276.8,
       "treasury_settlement_usd_bn": 214.0
     },
     {
@@ -6944,8 +6868,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 218,
-      "trailing_p90_usd_bn": 275.9,
+      "trailing_nonzero_sample_size": 216,
+      "trailing_p90_usd_bn": 276.5,
       "treasury_settlement_usd_bn": 220.0
     },
     {
@@ -6989,8 +6913,8 @@
       "large_treasury_settlement": false,
       "note": "月末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
-      "trailing_nonzero_sample_size": 219,
-      "trailing_p90_usd_bn": 275.6,
+      "trailing_nonzero_sample_size": 217,
+      "trailing_p90_usd_bn": 276.2,
       "treasury_settlement_usd_bn": 251.0
     },
     {
@@ -7018,8 +6942,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 220,
-      "trailing_p90_usd_bn": 275.3,
+      "trailing_nonzero_sample_size": 218,
+      "trailing_p90_usd_bn": 275.9,
       "treasury_settlement_usd_bn": 214.0
     },
     {
@@ -7047,8 +6971,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 221,
-      "trailing_p90_usd_bn": 275.0,
+      "trailing_nonzero_sample_size": 219,
+      "trailing_p90_usd_bn": 275.6,
       "treasury_settlement_usd_bn": 220.0
     },
     {
@@ -7076,8 +7000,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 222,
-      "trailing_p90_usd_bn": 274.4,
+      "trailing_nonzero_sample_size": 220,
+      "trailing_p90_usd_bn": 275.3,
       "treasury_settlement_usd_bn": 214.0
     },
     {
@@ -7110,8 +7034,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 223,
-      "trailing_p90_usd_bn": 273.8,
+      "trailing_nonzero_sample_size": 221,
+      "trailing_p90_usd_bn": 275.0,
       "treasury_settlement_usd_bn": 245.0
     },
     {
@@ -7160,8 +7084,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 7,
-      "trailing_nonzero_sample_size": 224,
-      "trailing_p90_usd_bn": 273.2,
+      "trailing_nonzero_sample_size": 222,
+      "trailing_p90_usd_bn": 274.4,
       "treasury_settlement_usd_bn": 387.0
     },
     {
@@ -7189,8 +7113,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 225,
-      "trailing_p90_usd_bn": 276.8,
+      "trailing_nonzero_sample_size": 223,
+      "trailing_p90_usd_bn": 277.4,
       "treasury_settlement_usd_bn": 220.0
     },
     {
@@ -7218,8 +7142,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 226,
-      "trailing_p90_usd_bn": 276.5,
+      "trailing_nonzero_sample_size": 224,
+      "trailing_p90_usd_bn": 277.1,
       "treasury_settlement_usd_bn": 214.0
     },
     {
@@ -7247,8 +7171,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 227,
-      "trailing_p90_usd_bn": 276.2,
+      "trailing_nonzero_sample_size": 225,
+      "trailing_p90_usd_bn": 276.8,
       "treasury_settlement_usd_bn": 220.0
     },
     {
@@ -7276,8 +7200,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 228,
-      "trailing_p90_usd_bn": 275.9,
+      "trailing_nonzero_sample_size": 226,
+      "trailing_p90_usd_bn": 276.5,
       "treasury_settlement_usd_bn": 214.0
     },
     {
@@ -7301,8 +7225,8 @@
       "large_treasury_settlement": false,
       "note": "月末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 2,
-      "trailing_nonzero_sample_size": 229,
-      "trailing_p90_usd_bn": 275.6,
+      "trailing_nonzero_sample_size": 227,
+      "trailing_p90_usd_bn": 276.2,
       "treasury_settlement_usd_bn": 46.0
     },
     {
@@ -7335,8 +7259,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 230,
-      "trailing_p90_usd_bn": 275.3,
+      "trailing_nonzero_sample_size": 228,
+      "trailing_p90_usd_bn": 275.9,
       "treasury_settlement_usd_bn": 199.0
     },
     {
@@ -7364,8 +7288,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 231,
-      "trailing_p90_usd_bn": 275.0,
+      "trailing_nonzero_sample_size": 229,
+      "trailing_p90_usd_bn": 275.6,
       "treasury_settlement_usd_bn": 200.0
     },
     {
@@ -7393,8 +7317,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 232,
-      "trailing_p90_usd_bn": 274.4,
+      "trailing_nonzero_sample_size": 230,
+      "trailing_p90_usd_bn": 275.3,
       "treasury_settlement_usd_bn": 204.0
     },
     {
@@ -7422,8 +7346,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 233,
-      "trailing_p90_usd_bn": 273.8,
+      "trailing_nonzero_sample_size": 231,
+      "trailing_p90_usd_bn": 275.0,
       "treasury_settlement_usd_bn": 180.0
     },
     {
@@ -7456,8 +7380,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 234,
-      "trailing_p90_usd_bn": 273.2,
+      "trailing_nonzero_sample_size": 232,
+      "trailing_p90_usd_bn": 274.4,
       "treasury_settlement_usd_bn": 247.0
     },
     {
@@ -7485,8 +7409,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 235,
-      "trailing_p90_usd_bn": 272.6,
+      "trailing_nonzero_sample_size": 233,
+      "trailing_p90_usd_bn": 273.8,
       "treasury_settlement_usd_bn": 119.0
     },
     {
@@ -7514,8 +7438,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 236,
-      "trailing_p90_usd_bn": 272.0,
+      "trailing_nonzero_sample_size": 234,
+      "trailing_p90_usd_bn": 273.2,
       "treasury_settlement_usd_bn": 180.0
     },
     {
@@ -7543,8 +7467,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 237,
-      "trailing_p90_usd_bn": 271.4,
+      "trailing_nonzero_sample_size": 235,
+      "trailing_p90_usd_bn": 272.6,
       "treasury_settlement_usd_bn": 199.0
     },
     {
@@ -7572,8 +7496,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 238,
-      "trailing_p90_usd_bn": 270.8,
+      "trailing_nonzero_sample_size": 236,
+      "trailing_p90_usd_bn": 272.0,
       "treasury_settlement_usd_bn": 180.0
     },
     {
@@ -7601,8 +7525,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 239,
-      "trailing_p90_usd_bn": 270.2,
+      "trailing_nonzero_sample_size": 237,
+      "trailing_p90_usd_bn": 271.4,
       "treasury_settlement_usd_bn": 199.0
     },
     {
@@ -7620,8 +7544,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 1,
-      "trailing_nonzero_sample_size": 240,
-      "trailing_p90_usd_bn": 269.6,
+      "trailing_nonzero_sample_size": 238,
+      "trailing_p90_usd_bn": 270.8,
       "treasury_settlement_usd_bn": 28.0
     },
     {
@@ -7661,8 +7585,8 @@
       "large_treasury_settlement": false,
       "note": "月末資產負債表調整可能暫時影響隔夜利率。 季末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 5,
-      "trailing_nonzero_sample_size": 241,
-      "trailing_p90_usd_bn": 269.0,
+      "trailing_nonzero_sample_size": 239,
+      "trailing_p90_usd_bn": 270.2,
       "treasury_settlement_usd_bn": 219.0
     },
     {
@@ -7695,8 +7619,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 242,
-      "trailing_p90_usd_bn": 268.9,
+      "trailing_nonzero_sample_size": 240,
+      "trailing_p90_usd_bn": 269.6,
       "treasury_settlement_usd_bn": 233.0
     },
     {
@@ -7724,8 +7648,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 243,
-      "trailing_p90_usd_bn": 268.8,
+      "trailing_nonzero_sample_size": 241,
+      "trailing_p90_usd_bn": 269.0,
       "treasury_settlement_usd_bn": 200.0
     },
     {
@@ -7758,8 +7682,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 244,
-      "trailing_p90_usd_bn": 268.7,
+      "trailing_nonzero_sample_size": 242,
+      "trailing_p90_usd_bn": 268.9,
       "treasury_settlement_usd_bn": 225.0
     },
     {
@@ -7792,8 +7716,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 245,
-      "trailing_p90_usd_bn": 268.6,
+      "trailing_nonzero_sample_size": 243,
+      "trailing_p90_usd_bn": 268.8,
       "treasury_settlement_usd_bn": 255.0
     },
     {
@@ -7837,8 +7761,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
-      "trailing_nonzero_sample_size": 246,
-      "trailing_p90_usd_bn": 268.5,
+      "trailing_nonzero_sample_size": 244,
+      "trailing_p90_usd_bn": 268.7,
       "treasury_settlement_usd_bn": 334.0
     },
     {
@@ -7866,8 +7790,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 247,
-      "trailing_p90_usd_bn": 271.4,
+      "trailing_nonzero_sample_size": 245,
+      "trailing_p90_usd_bn": 272.6,
       "treasury_settlement_usd_bn": 225.0
     },
     {
@@ -7895,8 +7819,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 248,
-      "trailing_p90_usd_bn": 270.8,
+      "trailing_nonzero_sample_size": 246,
+      "trailing_p90_usd_bn": 272.0,
       "treasury_settlement_usd_bn": 235.0
     },
     {
@@ -7924,8 +7848,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 249,
-      "trailing_p90_usd_bn": 270.2,
+      "trailing_nonzero_sample_size": 247,
+      "trailing_p90_usd_bn": 271.4,
       "treasury_settlement_usd_bn": 235.0
     },
     {
@@ -7953,8 +7877,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 250,
-      "trailing_p90_usd_bn": 269.6,
+      "trailing_nonzero_sample_size": 248,
+      "trailing_p90_usd_bn": 270.8,
       "treasury_settlement_usd_bn": 245.0
     },
     {
@@ -8014,8 +7938,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 月末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 9,
-      "trailing_nonzero_sample_size": 251,
-      "trailing_p90_usd_bn": 269.0,
+      "trailing_nonzero_sample_size": 249,
+      "trailing_p90_usd_bn": 270.2,
       "treasury_settlement_usd_bn": 482.0
     },
     {
@@ -8043,8 +7967,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 252,
-      "trailing_p90_usd_bn": 274.4,
+      "trailing_nonzero_sample_size": 250,
+      "trailing_p90_usd_bn": 275.3,
       "treasury_settlement_usd_bn": 245.0
     },
     {
@@ -8078,8 +8002,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 253,
-      "trailing_p90_usd_bn": 273.8,
+      "trailing_nonzero_sample_size": 251,
+      "trailing_p90_usd_bn": 275.0,
       "treasury_settlement_usd_bn": 290.0
     },
     {
@@ -8107,8 +8031,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 254,
-      "trailing_p90_usd_bn": 277.1,
+      "trailing_nonzero_sample_size": 252,
+      "trailing_p90_usd_bn": 277.7,
       "treasury_settlement_usd_bn": 250.0
     },
     {
@@ -8136,8 +8060,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 255,
-      "trailing_p90_usd_bn": 276.8,
+      "trailing_nonzero_sample_size": 253,
+      "trailing_p90_usd_bn": 277.4,
       "treasury_settlement_usd_bn": 240.0
     },
     {
@@ -8165,8 +8089,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 256,
-      "trailing_p90_usd_bn": 276.5,
+      "trailing_nonzero_sample_size": 254,
+      "trailing_p90_usd_bn": 277.1,
       "treasury_settlement_usd_bn": 125.0
     },
     {
@@ -8194,8 +8118,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 257,
-      "trailing_p90_usd_bn": 276.2,
+      "trailing_nonzero_sample_size": 255,
+      "trailing_p90_usd_bn": 276.8,
       "treasury_settlement_usd_bn": 250.0
     },
     {
@@ -8223,8 +8147,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 258,
-      "trailing_p90_usd_bn": 275.9,
+      "trailing_nonzero_sample_size": 256,
+      "trailing_p90_usd_bn": 276.5,
       "treasury_settlement_usd_bn": 240.0
     },
     {
@@ -8252,8 +8176,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 259,
-      "trailing_p90_usd_bn": 275.6,
+      "trailing_nonzero_sample_size": 257,
+      "trailing_p90_usd_bn": 276.2,
       "treasury_settlement_usd_bn": 250.0
     },
     {
@@ -8281,8 +8205,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 260,
-      "trailing_p90_usd_bn": 275.3,
+      "trailing_nonzero_sample_size": 258,
+      "trailing_p90_usd_bn": 275.9,
       "treasury_settlement_usd_bn": 240.0
     },
     {
@@ -8306,8 +8230,8 @@
       "large_treasury_settlement": false,
       "note": "月末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 2,
-      "trailing_nonzero_sample_size": 261,
-      "trailing_p90_usd_bn": 275.0,
+      "trailing_nonzero_sample_size": 259,
+      "trailing_p90_usd_bn": 275.6,
       "treasury_settlement_usd_bn": 36.0
     },
     {
@@ -8356,8 +8280,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 7,
-      "trailing_nonzero_sample_size": 262,
-      "trailing_p90_usd_bn": 274.4,
+      "trailing_nonzero_sample_size": 260,
+      "trailing_p90_usd_bn": 275.3,
       "treasury_settlement_usd_bn": 449.0
     },
     {
@@ -8391,8 +8315,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 263,
-      "trailing_p90_usd_bn": 277.4,
+      "trailing_nonzero_sample_size": 261,
+      "trailing_p90_usd_bn": 278.0,
       "treasury_settlement_usd_bn": 290.0
     },
     {
@@ -8420,8 +8344,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 264,
-      "trailing_p90_usd_bn": 279.4,
+      "trailing_nonzero_sample_size": 262,
+      "trailing_p90_usd_bn": 279.8,
       "treasury_settlement_usd_bn": 250.0
     },
     {
@@ -8449,8 +8373,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 265,
-      "trailing_p90_usd_bn": 279.2,
+      "trailing_nonzero_sample_size": 263,
+      "trailing_p90_usd_bn": 279.6,
       "treasury_settlement_usd_bn": 240.0
     },
     {
@@ -8478,8 +8402,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 266,
-      "trailing_p90_usd_bn": 279.0,
+      "trailing_nonzero_sample_size": 264,
+      "trailing_p90_usd_bn": 279.4,
       "treasury_settlement_usd_bn": 119.0
     },
     {
@@ -8507,8 +8431,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 267,
-      "trailing_p90_usd_bn": 278.8,
+      "trailing_nonzero_sample_size": 265,
+      "trailing_p90_usd_bn": 279.2,
       "treasury_settlement_usd_bn": 250.0
     },
     {
@@ -8536,8 +8460,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 268,
-      "trailing_p90_usd_bn": 278.6,
+      "trailing_nonzero_sample_size": 266,
+      "trailing_p90_usd_bn": 279.0,
       "treasury_settlement_usd_bn": 240.0
     },
     {
@@ -8565,8 +8489,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 269,
-      "trailing_p90_usd_bn": 278.4,
+      "trailing_nonzero_sample_size": 267,
+      "trailing_p90_usd_bn": 278.8,
       "treasury_settlement_usd_bn": 250.0
     },
     {
@@ -8594,8 +8518,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 270,
-      "trailing_p90_usd_bn": 278.2,
+      "trailing_nonzero_sample_size": 268,
+      "trailing_p90_usd_bn": 278.6,
       "treasury_settlement_usd_bn": 240.0
     },
     {
@@ -8613,8 +8537,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 1,
-      "trailing_nonzero_sample_size": 271,
-      "trailing_p90_usd_bn": 278.0,
+      "trailing_nonzero_sample_size": 269,
+      "trailing_p90_usd_bn": 278.4,
       "treasury_settlement_usd_bn": 28.0
     },
     {
@@ -8670,8 +8594,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 月末資產負債表調整可能暫時影響隔夜利率。 季末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 8,
-      "trailing_nonzero_sample_size": 272,
-      "trailing_p90_usd_bn": 277.7,
+      "trailing_nonzero_sample_size": 270,
+      "trailing_p90_usd_bn": 278.2,
       "treasury_settlement_usd_bn": 465.0
     },
     {
@@ -8705,8 +8629,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 273,
-      "trailing_p90_usd_bn": 279.6,
+      "trailing_nonzero_sample_size": 271,
+      "trailing_p90_usd_bn": 280.0,
       "treasury_settlement_usd_bn": 290.0
     },
     {
@@ -8734,8 +8658,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 274,
-      "trailing_p90_usd_bn": 282.1,
+      "trailing_nonzero_sample_size": 272,
+      "trailing_p90_usd_bn": 282.7,
       "treasury_settlement_usd_bn": 262.0
     },
     {
@@ -8763,8 +8687,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 275,
-      "trailing_p90_usd_bn": 281.8,
+      "trailing_nonzero_sample_size": 273,
+      "trailing_p90_usd_bn": 282.4,
       "treasury_settlement_usd_bn": 249.0
     },
     {
@@ -8792,8 +8716,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 276,
-      "trailing_p90_usd_bn": 281.5,
+      "trailing_nonzero_sample_size": 274,
+      "trailing_p90_usd_bn": 282.1,
       "treasury_settlement_usd_bn": 274.0
     },
     {
@@ -8821,8 +8745,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 277,
-      "trailing_p90_usd_bn": 281.2,
+      "trailing_nonzero_sample_size": 275,
+      "trailing_p90_usd_bn": 281.8,
       "treasury_settlement_usd_bn": 119.0
     },
     {
@@ -8850,8 +8774,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 278,
-      "trailing_p90_usd_bn": 280.9,
+      "trailing_nonzero_sample_size": 276,
+      "trailing_p90_usd_bn": 281.5,
       "treasury_settlement_usd_bn": 258.0
     },
     {
@@ -8879,8 +8803,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 279,
-      "trailing_p90_usd_bn": 280.6,
+      "trailing_nonzero_sample_size": 277,
+      "trailing_p90_usd_bn": 281.2,
       "treasury_settlement_usd_bn": 274.0
     },
     {
@@ -8908,8 +8832,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 280,
-      "trailing_p90_usd_bn": 280.3,
+      "trailing_nonzero_sample_size": 278,
+      "trailing_p90_usd_bn": 280.9,
       "treasury_settlement_usd_bn": 258.0
     },
     {
@@ -8937,8 +8861,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 281,
-      "trailing_p90_usd_bn": 280.0,
+      "trailing_nonzero_sample_size": 279,
+      "trailing_p90_usd_bn": 280.6,
       "treasury_settlement_usd_bn": 274.0
     },
     {
@@ -8972,8 +8896,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 282,
-      "trailing_p90_usd_bn": 279.8,
+      "trailing_nonzero_sample_size": 280,
+      "trailing_p90_usd_bn": 280.3,
       "treasury_settlement_usd_bn": 308.0
     },
     {
@@ -9017,8 +8941,8 @@
       "large_treasury_settlement": false,
       "note": "月末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
-      "trailing_nonzero_sample_size": 283,
-      "trailing_p90_usd_bn": 282.4,
+      "trailing_nonzero_sample_size": 281,
+      "trailing_p90_usd_bn": 283.0,
       "treasury_settlement_usd_bn": 252.0
     },
     {
@@ -9046,8 +8970,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 284,
-      "trailing_p90_usd_bn": 282.1,
+      "trailing_nonzero_sample_size": 282,
+      "trailing_p90_usd_bn": 282.7,
       "treasury_settlement_usd_bn": 274.0
     },
     {
@@ -9075,8 +8999,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 285,
-      "trailing_p90_usd_bn": 281.8,
+      "trailing_nonzero_sample_size": 283,
+      "trailing_p90_usd_bn": 282.4,
       "treasury_settlement_usd_bn": 258.0
     },
     {
@@ -9104,8 +9028,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 286,
-      "trailing_p90_usd_bn": 281.5,
+      "trailing_nonzero_sample_size": 284,
+      "trailing_p90_usd_bn": 282.1,
       "treasury_settlement_usd_bn": 274.0
     },
     {
@@ -9133,8 +9057,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 287,
-      "trailing_p90_usd_bn": 281.2,
+      "trailing_nonzero_sample_size": 285,
+      "trailing_p90_usd_bn": 281.8,
       "treasury_settlement_usd_bn": 258.0
     },
     {
@@ -9162,8 +9086,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 288,
-      "trailing_p90_usd_bn": 280.9,
+      "trailing_nonzero_sample_size": 286,
+      "trailing_p90_usd_bn": 281.5,
       "treasury_settlement_usd_bn": 125.0
     },
     {
@@ -9191,8 +9115,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 289,
-      "trailing_p90_usd_bn": 280.6,
+      "trailing_nonzero_sample_size": 287,
+      "trailing_p90_usd_bn": 281.2,
       "treasury_settlement_usd_bn": 274.0
     },
     {
@@ -9220,8 +9144,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 290,
-      "trailing_p90_usd_bn": 280.3,
+      "trailing_nonzero_sample_size": 288,
+      "trailing_p90_usd_bn": 280.9,
       "treasury_settlement_usd_bn": 258.0
     },
     {
@@ -9249,8 +9173,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 291,
-      "trailing_p90_usd_bn": 280.0,
+      "trailing_nonzero_sample_size": 289,
+      "trailing_p90_usd_bn": 280.6,
       "treasury_settlement_usd_bn": 274.0
     },
     {
@@ -9295,8 +9219,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 月末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
-      "trailing_nonzero_sample_size": 292,
-      "trailing_p90_usd_bn": 279.8,
+      "trailing_nonzero_sample_size": 290,
+      "trailing_p90_usd_bn": 280.3,
       "treasury_settlement_usd_bn": 345.0
     },
     {
@@ -9329,8 +9253,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 293,
-      "trailing_p90_usd_bn": 282.4,
+      "trailing_nonzero_sample_size": 291,
+      "trailing_p90_usd_bn": 283.0,
       "treasury_settlement_usd_bn": 199.0
     },
     {
@@ -9358,8 +9282,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 294,
-      "trailing_p90_usd_bn": 282.1,
+      "trailing_nonzero_sample_size": 292,
+      "trailing_p90_usd_bn": 282.7,
       "treasury_settlement_usd_bn": 254.0
     },
     {
@@ -9387,8 +9311,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 295,
-      "trailing_p90_usd_bn": 281.8,
+      "trailing_nonzero_sample_size": 293,
+      "trailing_p90_usd_bn": 282.4,
       "treasury_settlement_usd_bn": 238.0
     },
     {
@@ -9406,8 +9330,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 1,
-      "trailing_nonzero_sample_size": 296,
-      "trailing_p90_usd_bn": 281.5,
+      "trailing_nonzero_sample_size": 294,
+      "trailing_p90_usd_bn": 282.1,
       "treasury_settlement_usd_bn": 0.025
     },
     {
@@ -9435,8 +9359,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 297,
-      "trailing_p90_usd_bn": 281.2,
+      "trailing_nonzero_sample_size": 295,
+      "trailing_p90_usd_bn": 281.8,
       "treasury_settlement_usd_bn": 239.0
     },
     {
@@ -9464,8 +9388,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 298,
-      "trailing_p90_usd_bn": 280.9,
+      "trailing_nonzero_sample_size": 296,
+      "trailing_p90_usd_bn": 281.5,
       "treasury_settlement_usd_bn": 238.0
     },
     {
@@ -9493,8 +9417,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 299,
-      "trailing_p90_usd_bn": 280.6,
+      "trailing_nonzero_sample_size": 297,
+      "trailing_p90_usd_bn": 281.2,
       "treasury_settlement_usd_bn": 119.0
     },
     {
@@ -9522,8 +9446,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 300,
-      "trailing_p90_usd_bn": 280.3,
+      "trailing_nonzero_sample_size": 298,
+      "trailing_p90_usd_bn": 280.9,
       "treasury_settlement_usd_bn": 234.0
     },
     {
@@ -9551,8 +9475,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 301,
-      "trailing_p90_usd_bn": 280.0,
+      "trailing_nonzero_sample_size": 299,
+      "trailing_p90_usd_bn": 280.6,
       "treasury_settlement_usd_bn": 238.0
     },
     {
@@ -9580,8 +9504,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 302,
-      "trailing_p90_usd_bn": 279.8,
+      "trailing_nonzero_sample_size": 300,
+      "trailing_p90_usd_bn": 280.3,
       "treasury_settlement_usd_bn": 229.0
     },
     {
@@ -9620,8 +9544,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 5,
-      "trailing_nonzero_sample_size": 303,
-      "trailing_p90_usd_bn": 279.6,
+      "trailing_nonzero_sample_size": 301,
+      "trailing_p90_usd_bn": 280.0,
       "treasury_settlement_usd_bn": 316.0
     },
     {
@@ -9649,8 +9573,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 304,
-      "trailing_p90_usd_bn": 282.1,
+      "trailing_nonzero_sample_size": 302,
+      "trailing_p90_usd_bn": 282.7,
       "treasury_settlement_usd_bn": 229.0
     },
     {
@@ -9691,8 +9615,8 @@
       "large_treasury_settlement": false,
       "note": "月末資產負債表調整可能暫時影響隔夜利率。 季末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。 年末資產負債表調整可能暫時影響隔夜利率。",
       "security_count": 5,
-      "trailing_nonzero_sample_size": 305,
-      "trailing_p90_usd_bn": 281.8,
+      "trailing_nonzero_sample_size": 303,
+      "trailing_p90_usd_bn": 282.4,
       "treasury_settlement_usd_bn": 220.0
     },
     {
@@ -9720,8 +9644,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 306,
-      "trailing_p90_usd_bn": 281.5,
+      "trailing_nonzero_sample_size": 304,
+      "trailing_p90_usd_bn": 282.1,
       "treasury_settlement_usd_bn": 238.0
     },
     {
@@ -9749,8 +9673,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 307,
-      "trailing_p90_usd_bn": 281.2,
+      "trailing_nonzero_sample_size": 305,
+      "trailing_p90_usd_bn": 281.8,
       "treasury_settlement_usd_bn": 229.0
     },
     {
@@ -9778,8 +9702,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 308,
-      "trailing_p90_usd_bn": 280.9,
+      "trailing_nonzero_sample_size": 306,
+      "trailing_p90_usd_bn": 281.5,
       "treasury_settlement_usd_bn": 238.0
     },
     {
@@ -9807,8 +9731,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 309,
-      "trailing_p90_usd_bn": 280.6,
+      "trailing_nonzero_sample_size": 307,
+      "trailing_p90_usd_bn": 281.2,
       "treasury_settlement_usd_bn": 229.0
     },
     {
@@ -9852,8 +9776,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
-      "trailing_nonzero_sample_size": 310,
-      "trailing_p90_usd_bn": 280.3,
+      "trailing_nonzero_sample_size": 308,
+      "trailing_p90_usd_bn": 280.9,
       "treasury_settlement_usd_bn": 357.0
     },
     {
@@ -9881,8 +9805,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 311,
-      "trailing_p90_usd_bn": 283.0,
+      "trailing_nonzero_sample_size": 309,
+      "trailing_p90_usd_bn": 284.2,
       "treasury_settlement_usd_bn": 254.0
     },
     {
@@ -9916,8 +9840,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 312,
-      "trailing_p90_usd_bn": 282.7,
+      "trailing_nonzero_sample_size": 310,
+      "trailing_p90_usd_bn": 283.6,
       "treasury_settlement_usd_bn": 301.0
     },
     {
@@ -9945,8 +9869,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 313,
-      "trailing_p90_usd_bn": 287.8,
+      "trailing_nonzero_sample_size": 311,
+      "trailing_p90_usd_bn": 289.0,
       "treasury_settlement_usd_bn": 269.0
     },
     {
@@ -9974,8 +9898,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 314,
-      "trailing_p90_usd_bn": 287.2,
+      "trailing_nonzero_sample_size": 312,
+      "trailing_p90_usd_bn": 288.4,
       "treasury_settlement_usd_bn": 256.0
     },
     {
@@ -9994,8 +9918,8 @@
       "large_treasury_settlement": false,
       "note": "月末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 1,
-      "trailing_nonzero_sample_size": 315,
-      "trailing_p90_usd_bn": 286.6,
+      "trailing_nonzero_sample_size": 313,
+      "trailing_p90_usd_bn": 287.8,
       "treasury_settlement_usd_bn": 21.0
     },
     {
@@ -10033,8 +9957,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 5,
-      "trailing_nonzero_sample_size": 316,
-      "trailing_p90_usd_bn": 286.0,
+      "trailing_nonzero_sample_size": 314,
+      "trailing_p90_usd_bn": 287.2,
       "treasury_settlement_usd_bn": 226.0
     },
     {
@@ -10062,8 +9986,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 317,
-      "trailing_p90_usd_bn": 285.4,
+      "trailing_nonzero_sample_size": 315,
+      "trailing_p90_usd_bn": 286.6,
       "treasury_settlement_usd_bn": 269.0
     },
     {
@@ -10091,8 +10015,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 318,
-      "trailing_p90_usd_bn": 284.8,
+      "trailing_nonzero_sample_size": 316,
+      "trailing_p90_usd_bn": 286.0,
       "treasury_settlement_usd_bn": 256.0
     },
     {
@@ -10120,8 +10044,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 319,
-      "trailing_p90_usd_bn": 284.2,
+      "trailing_nonzero_sample_size": 317,
+      "trailing_p90_usd_bn": 285.4,
       "treasury_settlement_usd_bn": 269.0
     },
     {
@@ -10149,8 +10073,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 320,
-      "trailing_p90_usd_bn": 283.6,
+      "trailing_nonzero_sample_size": 318,
+      "trailing_p90_usd_bn": 284.8,
       "treasury_settlement_usd_bn": 256.0
     },
     {
@@ -10194,8 +10118,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
-      "trailing_nonzero_sample_size": 321,
-      "trailing_p90_usd_bn": 283.0,
+      "trailing_nonzero_sample_size": 319,
+      "trailing_p90_usd_bn": 284.2,
       "treasury_settlement_usd_bn": 394.0
     },
     {
@@ -10229,8 +10153,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 322,
-      "trailing_p90_usd_bn": 288.4,
+      "trailing_nonzero_sample_size": 320,
+      "trailing_p90_usd_bn": 289.1,
       "treasury_settlement_usd_bn": 306.0
     },
     {
@@ -10258,8 +10182,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 323,
-      "trailing_p90_usd_bn": 289.8,
+      "trailing_nonzero_sample_size": 321,
+      "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 269.0
     },
     {
@@ -10287,8 +10211,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 324,
-      "trailing_p90_usd_bn": 289.7,
+      "trailing_nonzero_sample_size": 322,
+      "trailing_p90_usd_bn": 289.9,
       "treasury_settlement_usd_bn": 256.0
     },
     {
@@ -10312,8 +10236,8 @@
       "large_treasury_settlement": false,
       "note": "月末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 2,
-      "trailing_nonzero_sample_size": 325,
-      "trailing_p90_usd_bn": 289.6,
+      "trailing_nonzero_sample_size": 323,
+      "trailing_p90_usd_bn": 289.8,
       "treasury_settlement_usd_bn": 37.0
     },
     {
@@ -10346,8 +10270,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 326,
-      "trailing_p90_usd_bn": 289.5,
+      "trailing_nonzero_sample_size": 324,
+      "trailing_p90_usd_bn": 289.7,
       "treasury_settlement_usd_bn": 199.0
     },
     {
@@ -10375,8 +10299,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 327,
-      "trailing_p90_usd_bn": 289.4,
+      "trailing_nonzero_sample_size": 325,
+      "trailing_p90_usd_bn": 289.6,
       "treasury_settlement_usd_bn": 269.0
     },
     {
@@ -10404,8 +10328,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 328,
-      "trailing_p90_usd_bn": 289.3,
+      "trailing_nonzero_sample_size": 326,
+      "trailing_p90_usd_bn": 289.5,
       "treasury_settlement_usd_bn": 256.0
     },
     {
@@ -10433,8 +10357,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 329,
-      "trailing_p90_usd_bn": 289.2,
+      "trailing_nonzero_sample_size": 327,
+      "trailing_p90_usd_bn": 289.4,
       "treasury_settlement_usd_bn": 269.0
     },
     {
@@ -10462,8 +10386,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 330,
-      "trailing_p90_usd_bn": 289.1,
+      "trailing_nonzero_sample_size": 328,
+      "trailing_p90_usd_bn": 289.3,
       "treasury_settlement_usd_bn": 256.0
     },
     {
@@ -10491,8 +10415,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 331,
-      "trailing_p90_usd_bn": 289.0,
+      "trailing_nonzero_sample_size": 329,
+      "trailing_p90_usd_bn": 289.2,
       "treasury_settlement_usd_bn": 119.0
     },
     {
@@ -10520,8 +10444,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 332,
-      "trailing_p90_usd_bn": 288.4,
+      "trailing_nonzero_sample_size": 330,
+      "trailing_p90_usd_bn": 289.1,
       "treasury_settlement_usd_bn": 259.0
     },
     {
@@ -10555,8 +10479,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 333,
-      "trailing_p90_usd_bn": 287.8,
+      "trailing_nonzero_sample_size": 331,
+      "trailing_p90_usd_bn": 289.0,
       "treasury_settlement_usd_bn": 301.0
     },
     {
@@ -10584,8 +10508,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 334,
-      "trailing_p90_usd_bn": 289.7,
+      "trailing_nonzero_sample_size": 332,
+      "trailing_p90_usd_bn": 289.9,
       "treasury_settlement_usd_bn": 244.0
     },
     {
@@ -10613,8 +10537,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 335,
-      "trailing_p90_usd_bn": 289.6,
+      "trailing_nonzero_sample_size": 333,
+      "trailing_p90_usd_bn": 289.8,
       "treasury_settlement_usd_bn": 246.0
     },
     {
@@ -10632,8 +10556,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 1,
-      "trailing_nonzero_sample_size": 336,
-      "trailing_p90_usd_bn": 289.5,
+      "trailing_nonzero_sample_size": 334,
+      "trailing_p90_usd_bn": 289.7,
       "treasury_settlement_usd_bn": 28.0
     },
     {
@@ -10689,8 +10613,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 月末資產負債表調整可能暫時影響隔夜利率。 季末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 8,
-      "trailing_nonzero_sample_size": 337,
-      "trailing_p90_usd_bn": 289.4,
+      "trailing_nonzero_sample_size": 335,
+      "trailing_p90_usd_bn": 289.6,
       "treasury_settlement_usd_bn": 449.0
     },
     {
@@ -10718,7 +10642,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 338,
+      "trailing_nonzero_sample_size": 336,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 241.0
     },
@@ -10747,7 +10671,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 339,
+      "trailing_nonzero_sample_size": 337,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 224.0
     },
@@ -10776,7 +10700,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 340,
+      "trailing_nonzero_sample_size": 338,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 236.0
     },
@@ -10815,7 +10739,7 @@
       "tax_types": [
         "INDIVIDUAL_ESTIMATED_TAX"
       ],
-      "trailing_nonzero_sample_size": 341,
+      "trailing_nonzero_sample_size": 339,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 224.0
     },
@@ -10854,8 +10778,8 @@
       "tax_types": [
         "INDIVIDUAL_ESTIMATED_TAX"
       ],
-      "trailing_nonzero_sample_size": 342,
-      "trailing_p90_usd_bn": 289.9,
+      "trailing_nonzero_sample_size": 340,
+      "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 119.0
     },
     {
@@ -10898,8 +10822,8 @@
       "tax_types": [
         "INDIVIDUAL_ESTIMATED_TAX"
       ],
-      "trailing_nonzero_sample_size": 343,
-      "trailing_p90_usd_bn": 289.8,
+      "trailing_nonzero_sample_size": 341,
+      "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 286.0
     },
     {
@@ -10927,8 +10851,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 344,
-      "trailing_p90_usd_bn": 289.7,
+      "trailing_nonzero_sample_size": 342,
+      "trailing_p90_usd_bn": 289.9,
       "treasury_settlement_usd_bn": 224.0
     },
     {
@@ -10956,8 +10880,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 345,
-      "trailing_p90_usd_bn": 289.6,
+      "trailing_nonzero_sample_size": 343,
+      "trailing_p90_usd_bn": 289.8,
       "treasury_settlement_usd_bn": 236.0
     },
     {
@@ -10985,8 +10909,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 346,
-      "trailing_p90_usd_bn": 289.5,
+      "trailing_nonzero_sample_size": 344,
+      "trailing_p90_usd_bn": 289.7,
       "treasury_settlement_usd_bn": 224.0
     },
     {
@@ -11046,8 +10970,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 月末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 9,
-      "trailing_nonzero_sample_size": 347,
-      "trailing_p90_usd_bn": 289.4,
+      "trailing_nonzero_sample_size": 345,
+      "trailing_p90_usd_bn": 289.6,
       "treasury_settlement_usd_bn": 488.0
     },
     {
@@ -11075,7 +10999,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 348,
+      "trailing_nonzero_sample_size": 346,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 224.0
     },
@@ -11104,7 +11028,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 349,
+      "trailing_nonzero_sample_size": 347,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 241.0
     },
@@ -11133,7 +11057,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 350,
+      "trailing_nonzero_sample_size": 348,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 244.0
     },
@@ -11180,7 +11104,7 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 351,
+      "trailing_nonzero_sample_size": 349,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 296.0
     },
@@ -11209,7 +11133,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 352,
+      "trailing_nonzero_sample_size": 350,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 125.0
     },
@@ -11238,7 +11162,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 353,
+      "trailing_nonzero_sample_size": 351,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 264.0
     },
@@ -11267,7 +11191,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 354,
+      "trailing_nonzero_sample_size": 352,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 251.0
     },
@@ -11286,7 +11210,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 1,
-      "trailing_nonzero_sample_size": 355,
+      "trailing_nonzero_sample_size": 353,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 25.0
     },
@@ -11315,7 +11239,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 356,
+      "trailing_nonzero_sample_size": 354,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 264.0
     },
@@ -11356,7 +11280,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 357,
+      "trailing_nonzero_sample_size": 355,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 251.0
     },
@@ -11381,7 +11305,7 @@
       "large_treasury_settlement": false,
       "note": "月末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 2,
-      "trailing_nonzero_sample_size": 358,
+      "trailing_nonzero_sample_size": 356,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 47.0
     },
@@ -11415,7 +11339,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 359,
+      "trailing_nonzero_sample_size": 357,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 199.0
     },
@@ -11444,7 +11368,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 360,
+      "trailing_nonzero_sample_size": 358,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 234.0
     },
@@ -11473,7 +11397,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 361,
+      "trailing_nonzero_sample_size": 359,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 241.0
     },
@@ -11502,8 +11426,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 362,
-      "trailing_p90_usd_bn": 289.9,
+      "trailing_nonzero_sample_size": 360,
+      "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 219.0
     },
     {
@@ -11536,8 +11460,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 363,
-      "trailing_p90_usd_bn": 289.8,
+      "trailing_nonzero_sample_size": 361,
+      "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 281.0
     },
     {
@@ -11591,8 +11515,8 @@
       "tax_types": [
         "INDIVIDUAL_ESTIMATED_TAX"
       ],
-      "trailing_nonzero_sample_size": 364,
-      "trailing_p90_usd_bn": 289.7,
+      "trailing_nonzero_sample_size": 362,
+      "trailing_p90_usd_bn": 289.9,
       "treasury_settlement_usd_bn": 119.0
     },
     {
@@ -11630,8 +11554,8 @@
       "tax_types": [
         "INDIVIDUAL_ESTIMATED_TAX"
       ],
-      "trailing_nonzero_sample_size": 365,
-      "trailing_p90_usd_bn": 289.6,
+      "trailing_nonzero_sample_size": 363,
+      "trailing_p90_usd_bn": 289.8,
       "treasury_settlement_usd_bn": 214.0
     },
     {
@@ -11659,8 +11583,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 366,
-      "trailing_p90_usd_bn": 289.5,
+      "trailing_nonzero_sample_size": 364,
+      "trailing_p90_usd_bn": 289.7,
       "treasury_settlement_usd_bn": 231.0
     },
     {
@@ -11678,8 +11602,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 1,
-      "trailing_nonzero_sample_size": 367,
-      "trailing_p90_usd_bn": 289.4,
+      "trailing_nonzero_sample_size": 365,
+      "trailing_p90_usd_bn": 289.6,
       "treasury_settlement_usd_bn": 13.0
     },
     {
@@ -11707,8 +11631,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 368,
-      "trailing_p90_usd_bn": 289.3,
+      "trailing_nonzero_sample_size": 366,
+      "trailing_p90_usd_bn": 289.5,
       "treasury_settlement_usd_bn": 214.0
     },
     {
@@ -11736,8 +11660,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 369,
-      "trailing_p90_usd_bn": 289.2,
+      "trailing_nonzero_sample_size": 367,
+      "trailing_p90_usd_bn": 289.4,
       "treasury_settlement_usd_bn": 231.0
     },
     {
@@ -11755,8 +11679,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 1,
-      "trailing_nonzero_sample_size": 370,
-      "trailing_p90_usd_bn": 289.1,
+      "trailing_nonzero_sample_size": 368,
+      "trailing_p90_usd_bn": 289.3,
       "treasury_settlement_usd_bn": 28.0
     },
     {
@@ -11807,8 +11731,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 月末資產負債表調整可能暫時影響隔夜利率。 季末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 7,
-      "trailing_nonzero_sample_size": 371,
-      "trailing_p90_usd_bn": 289.0,
+      "trailing_nonzero_sample_size": 369,
+      "trailing_p90_usd_bn": 289.2,
       "treasury_settlement_usd_bn": 421.0
     },
     {
@@ -11836,8 +11760,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 372,
-      "trailing_p90_usd_bn": 289.9,
+      "trailing_nonzero_sample_size": 370,
+      "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 251.0
     },
     {
@@ -11865,8 +11789,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 373,
-      "trailing_p90_usd_bn": 289.8,
+      "trailing_nonzero_sample_size": 371,
+      "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 242.0
     },
     {
@@ -11900,8 +11824,8 @@
       "large_treasury_settlement": true,
       "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 4,
-      "trailing_nonzero_sample_size": 374,
-      "trailing_p90_usd_bn": 289.7,
+      "trailing_nonzero_sample_size": 372,
+      "trailing_p90_usd_bn": 289.9,
       "treasury_settlement_usd_bn": 313.0
     },
     {
@@ -11929,7 +11853,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 375,
+      "trailing_nonzero_sample_size": 373,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 267.0
     },
@@ -11958,7 +11882,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 376,
+      "trailing_nonzero_sample_size": 374,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 119.0
     },
@@ -11987,7 +11911,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 377,
+      "trailing_nonzero_sample_size": 375,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 266.0
     },
@@ -12016,7 +11940,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 378,
+      "trailing_nonzero_sample_size": 376,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 282.0
     },
@@ -12045,7 +11969,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 379,
+      "trailing_nonzero_sample_size": 377,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 266.0
     },
@@ -12064,7 +11988,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 1,
-      "trailing_nonzero_sample_size": 380,
+      "trailing_nonzero_sample_size": 378,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 13.0
     },
@@ -12093,7 +12017,7 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 381,
+      "trailing_nonzero_sample_size": 379,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 282.0
     },
@@ -12122,8 +12046,8 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 382,
-      "trailing_p90_usd_bn": 289.9,
+      "trailing_nonzero_sample_size": 380,
+      "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 266.0
     },
     {
@@ -12162,8 +12086,8 @@
       "large_treasury_settlement": false,
       "note": "月末資產負債表調整可能暫時影響隔夜利率。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 5,
-      "trailing_nonzero_sample_size": 383,
-      "trailing_p90_usd_bn": 289.8,
+      "trailing_nonzero_sample_size": 381,
+      "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 234.0
     },
     {
@@ -12400,6 +12324,6 @@
       "treasury_settlement_usd_bn": 24.0
     }
   ],
-  "generated_at": "2026-08-15T07:24:59.131131Z",
+  "generated_at": "2026-08-18T07:32:18.842066Z",
   "schema_version": "2.3.0"
 }
