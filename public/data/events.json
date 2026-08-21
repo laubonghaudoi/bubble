@@ -12302,6 +12302,54 @@
     {
       "auction_keys": [
         [
+          "912797SU2",
+          "2026-08-24",
+          "2026-08-27"
+        ],
+        [
+          "912797UJ4",
+          "2026-08-25",
+          "2026-08-27"
+        ],
+        [
+          "912797WC7",
+          "2026-08-24",
+          "2026-08-27"
+        ]
+      ],
+      "date": "2026-08-27",
+      "flags": [
+        "TREASURY_SETTLEMENT"
+      ],
+      "large_treasury_settlement": false,
+      "note": "Treasury 結算可能短暫抽走銀行體系現金。",
+      "security_count": 3,
+      "trailing_nonzero_sample_size": 382,
+      "trailing_p90_usd_bn": 289.9,
+      "treasury_settlement_usd_bn": 266.0
+    },
+    {
+      "auction_keys": [
+        [
+          "91282CRD5",
+          "2026-08-26",
+          "2026-08-28"
+        ]
+      ],
+      "date": "2026-08-28",
+      "flags": [
+        "TREASURY_SETTLEMENT"
+      ],
+      "large_treasury_settlement": false,
+      "note": "Treasury 結算可能短暫抽走銀行體系現金。",
+      "security_count": 1,
+      "trailing_nonzero_sample_size": 383,
+      "trailing_p90_usd_bn": 289.8,
+      "treasury_settlement_usd_bn": 28.0
+    },
+    {
+      "auction_keys": [
+        [
           "912810US5",
           "2026-08-20",
           "2026-08-31"
@@ -12309,6 +12357,21 @@
         [
           "912810UX4",
           "2026-08-19",
+          "2026-08-31"
+        ],
+        [
+          "91282CRH6",
+          "2026-08-25",
+          "2026-08-31"
+        ],
+        [
+          "91282CRJ2",
+          "2026-08-27",
+          "2026-08-31"
+        ],
+        [
+          "91282CRK9",
+          "2026-08-26",
           "2026-08-31"
         ]
       ],
@@ -12318,12 +12381,12 @@
       ],
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
-      "security_count": 2,
-      "trailing_nonzero_sample_size": 381,
-      "trailing_p90_usd_bn": 290.0,
-      "treasury_settlement_usd_bn": 24.0
+      "security_count": 5,
+      "trailing_nonzero_sample_size": 383,
+      "trailing_p90_usd_bn": 289.8,
+      "treasury_settlement_usd_bn": 207.0
     }
   ],
-  "generated_at": "2026-08-20T23:04:52.377897Z",
+  "generated_at": "2026-08-21T07:37:21.088513Z",
   "schema_version": "2.3.0"
 }
