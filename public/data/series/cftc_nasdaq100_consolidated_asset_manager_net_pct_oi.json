@@ -1,10 +1,10 @@
 {
   "availability": "ACTIVE_FREE",
-  "expected_next_update": "2026-08-21",
+  "expected_next_update": "2026-08-28",
   "frequency": "weekly",
   "label": "CFTC Nasdaq-100 consolidated asset-manager net % OI",
   "metric_id": "cftc_nasdaq100_consolidated_asset_manager_net_pct_oi",
-  "observation_date": "2026-08-11",
+  "observation_date": "2026-08-18",
   "observations": [
     {
       "asset_manager_pct_long": 33.9,
@@ -3881,26 +3881,50 @@
       "source_report_id": "26081120974+F",
       "trader_category": "asset_manager",
       "value": 20.701528
+    },
+    {
+      "asset_manager_pct_long": 33.6,
+      "asset_manager_pct_short": 11.9,
+      "asset_manager_spread": 6538,
+      "cftc_commodity_code": "209 ",
+      "cftc_market_code": "CME ",
+      "commodity_name": "NASDAQ  BROADBASED INDICES",
+      "contract_code": "20974+",
+      "contract_name": "NASDAQ-100 Consolidated",
+      "contract_units": "(NASDAQ 100 INDEX X $20)",
+      "date": "2026-08-18",
+      "long_position": 106790,
+      "market_and_exchange_name": "NASDAQ-100 Consolidated - CHICAGO MERCANTILE EXCHANGE",
+      "net_percent_open_interest_raw": 21.689442477069697,
+      "net_position": 69026,
+      "open_interest": 318247,
+      "released_at": "2026-08-21T19:30:05.971000Z",
+      "report_type": "TFF_FUTURES_ONLY",
+      "row_id": "row-nvvz~tkmu~qhhn",
+      "short_position": 37764,
+      "source_report_id": "26081820974+F",
+      "trader_category": "asset_manager",
+      "value": 21.689442
     }
   ],
   "quality": {
     "failure_reason": null,
     "freshness": "FRESH",
-    "last_attempt_at": "2026-08-21T07:37:21.088513Z",
-    "last_success_at": "2026-08-21T07:37:21.088513Z",
-    "sample_size": 162,
+    "last_attempt_at": "2026-08-21T22:49:18.464225Z",
+    "last_success_at": "2026-08-21T22:49:18.464225Z",
+    "sample_size": 163,
     "status": "OK"
   },
-  "released_at": "2026-08-14T19:30:06.779000Z",
+  "released_at": "2026-08-21T19:30:05.971000Z",
   "schema_version": "2.3.0",
   "source": {
     "name": "CFTC Public Reporting Environment",
-    "retrieved_at": "2026-08-21T07:37:21.088513Z",
+    "retrieved_at": "2026-08-21T22:49:18.464225Z",
     "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
     "source_id": "cftc_pre",
     "tier": "OFFICIAL",
     "url": "https://publicreporting.cftc.gov/"
   },
   "unit": "percent_open_interest",
-  "updated_at": "2026-08-21T07:37:21.088513Z"
+  "updated_at": "2026-08-21T22:49:18.464225Z"
 }
