@@ -2042,8 +2042,8 @@
   "quality": {
     "failure_reason": null,
     "freshness": "FRESH",
-    "last_attempt_at": "2026-08-22T05:28:20.558770Z",
-    "last_success_at": "2026-08-22T05:28:20.558770Z",
+    "last_attempt_at": "2026-08-22T07:25:57.757592Z",
+    "last_success_at": "2026-08-22T07:25:57.757592Z",
     "sample_size": 508,
     "status": "OK"
   },
@@ -2051,12 +2051,12 @@
   "schema_version": "2.3.0",
   "source": {
     "name": "Federal Reserve Bank of New York Markets Data API",
-    "retrieved_at": "2026-08-22T05:28:20.558770Z",
+    "retrieved_at": "2026-08-22T07:25:57.757592Z",
     "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
     "source_id": "nyfed_markets",
     "tier": "OFFICIAL",
     "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
   },
   "unit": "percent",
-  "updated_at": "2026-08-22T05:28:20.558770Z"
+  "updated_at": "2026-08-22T07:25:57.757592Z"
 }
