@@ -19,9 +19,13 @@ GitHub Pages 使用 hash routing，所以 project subpath 同直接開頁都唔�
 
 介面採用單一 Bloomberg-style masthead：品牌、五頁 hash navigation 同市場／更新／來源狀態同處一行；footer 保留全站「只供研究，並非投資建議」聲明。Overview 將 LIVE TAPE 標題同 `TREND / LAST / CHANGE` 合併成一個 header，避免重複佔用垂直空間。
 
+Overview 頂部係「燃料四鍵」rail：`sofr_iorb_spread_bp`、`reserve_balances`、`tga_daily`、`srf_accepted` 四張卡，順序同標籤同 P0 banner contract 一致，唔可以重排或改名。每張卡標明該指標喺 TGA 抽水 → 準備金存量 → 資金價格 → 後備工具呢條鏈上嘅角色（`價 · PRICE`／`量 · STOCK`／`驅動 · DRIVER`／`後備 · BACKSTOP`），並顯示讀數、frequency-aware change、observation date 同一幅趨勢圖：三個 line 指標用面積線，SRF 用 bar，因為 SRF 係離散 operation 而唔係連續水平。Rail 跟隨 chart panel 同一個 range control，`窗口 <RANGE>` 會寫喺 rail header。Liquidity Fuel 繼續用原本 56px 嘅 compact banner，唔畫趨勢。
+
+Rail 上嘅門檻線一律嚟自 `snapshot.decision_models.p0_video_liquidity.thresholds`（同主圖共用 `p0ReferenceLines`），React 唔會自己計。只有落喺目前窗口 1.5 個 data span 以內嘅參考線先會畫出嚟，並喺卡底以同色 chip 做圖例；離開窗口嘅線唔畫、唔入 chip，只喺 SVG 的 accessible description 講明有幾多條未畫。呢個規則存在係因為將 `2.5T` 呢類遠線硬塞入 3 個月窗口會將實際觀察值壓成一條平線，睇落似「冇變化」。
+
 - `1440px` 或以上：Overview 係固定 viewport 三欄，左 rail 介乎 `400–460px`、中間 chart 流體伸縮、右 rail 介乎 `380–476px`；頁面本身唔應有水平或垂直 scroll，較長 tape／read rail 只喺自身捲動；
 - `1000–1439px`：維持 compact 三欄，左右 rail 會收窄，toolbar 可 wrap，但 document 不可水平溢出；
-- `999px` 或以下：Overview 同 detail route 改為單欄 document flow，可以垂直捲動；route navigation、P0 banner 同長公式可喺各自 container 水平捲動，但 document 本身不可水平溢出；
+- `999px` 或以下：Overview 同 detail route 改為單欄 document flow，可以垂直捲動；燃料四鍵 rail 由四欄改成 2×2 並就地換行（唔水平捲動），route navigation、Liquidity Fuel 嘅 compact P0 banner 同長公式可喺各自 container 水平捲動，但 document 本身不可水平溢出；
 - 所有可見 UI 文字以 `11px` 為下限，普通文字 contrast 至少 `4.5:1`。`.sr-only`、KaTeX 隱藏 MathML tree 同數學上下標不屬於視覺字體下限審計。
 
 Overview 13 個 LIVE TAPE 指標全部都可以成為主圖指標；揀選 tape row 或 chart tab 會同步更新右邊 selected-metric interpreter。Interpreter 先講「量度乜、而家點解讀、下一條界線、要同乜確認、唔可以推論乜」，再將 methodology 同 provenance 留喺可展開詳情；佢只解釋已發布資料，唔會喺 React 重新計門檻或 severity。

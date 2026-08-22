@@ -778,12 +778,10 @@ export function RateOverlayChart({series,selected,lastGoodIds=EMPTY_LAST_GOOD_ID
 
 interface SparkSegment{line:string;area:string}
 
-function sparkSegments(points:readonly Point[]):SparkSegment[]{
-  const width=48,height=19,pad=1.5,bottom=height-pad;
-  const finite=points.flatMap((point,index)=>isFiniteNumber(point.value)?[{index,value:point.value}]:[]);
-  if(finite.length===0)return [];
-  const min=Math.min(...finite.map(point=>point.value));
-  const max=Math.max(...finite.map(point=>point.value));
+interface TrendGeometry{width:number;height:number;pad:number;min:number;max:number}
+
+function areaSegments(points:readonly Point[],geom:TrendGeometry):SparkSegment[]{
+  const {width,height,pad,min,max}=geom,bottom=height-pad;
   const span=max-min||1;
   const x=(index:number)=>points.length<=1?width/2:pad+(index/(points.length-1))*(width-pad*2);
   const y=(value:number)=>pad+((max-value)/span)*(height-pad*2);
@@ -805,6 +803,14 @@ function sparkSegments(points:readonly Point[]):SparkSegment[]{
     const areaLine=group.map(point=>`L${point.x.toFixed(2)} ${point.y.toFixed(2)}`).join(' ');
     const area=`M${first.x.toFixed(2)} ${bottom.toFixed(2)} ${areaLine} L${last.x.toFixed(2)} ${bottom.toFixed(2)} Z`;
     return {line,area};
+  });
+}
+
+function sparkSegments(points:readonly Point[]):SparkSegment[]{
+  const finite=points.flatMap(point=>isFiniteNumber(point.value)?[point.value]:[]);
+  if(finite.length===0)return [];
+  return areaSegments(points,{
+    width:48,height:19,pad:1.5,min:Math.min(...finite),max:Math.max(...finite),
   });
 }
 
@@ -834,6 +840,118 @@ export function Sparkline({points,selected,label,lastGood=false}:SparklineProps)
       key={`line-${index}`} d={segment.line} fill="none"
       stroke={selected?'var(--action)':'var(--sparkoff)'} strokeWidth="1.25"
       vectorEffect="non-scaling-stroke"
+    />)}
+  </svg>;
+}
+
+/**
+ * Fuel trend: the taller overview plot for the four P0 fuel metrics.  Model
+ * reference lines are drawn only when they sit close enough to the plotted
+ * window to stay honest about scale; far-away lines are reported as omitted
+ * instead of squashing the observed series into a flat line.
+ */
+export const FUEL_TREND_GEOMETRY={width:240,height:44,pad:4} as const;
+
+const REFERENCE_STROKE:Record<ReferenceLineTone,string>={
+  neutral:'var(--zero)',warning:'var(--warning-fg)',danger:'var(--negative-fg)',
+  extreme:'var(--negative-fg)',technical:'var(--faint)',
+};
+const REFERENCE_DASH:Record<ReferenceLineType,string|undefined>={
+  solid:undefined,dashed:'4 3','dash-dot':'6 2 1.5 2',
+};
+
+/** Reference lines within 1.5 data-spans of the plotted window. */
+export function visibleReferenceLines(
+  points:ChartPoints,referenceLines:readonly ReferenceLine[],
+):ReferenceLine[]{
+  const values=pointsFrom(points).flatMap(point=>isFiniteNumber(point.value)?[point.value]:[]);
+  if(values.length===0)return [];
+  const min=Math.min(...values),max=Math.max(...values);
+  const band=(max-min)||Math.max(Math.abs(max)*0.05,1);
+  return referenceLines.filter(line=>isFiniteNumber(line.value)&&
+    line.value>=min-band*1.5&&line.value<=max+band*1.5);
+}
+
+interface FuelTrendBar{x:number;y:number;width:number;height:number}
+interface FuelTrendLine{id:string;y:number;tone:ReferenceLineTone;lineType:ReferenceLineType}
+
+export interface FuelTrendPlot{
+  segments:SparkSegment[];
+  bars:FuelTrendBar[];
+  lines:FuelTrendLine[];
+  omitted:number;
+  count:number;
+}
+
+export function fuelTrendPlot(
+  points:readonly Point[],mode:'line'|'bar',referenceLines:readonly ReferenceLine[],
+):FuelTrendPlot{
+  const {width,height,pad}=FUEL_TREND_GEOMETRY;
+  const finite=points.flatMap(point=>isFiniteNumber(point.value)?[point.value]:[]);
+  if(finite.length===0)return {segments:[],bars:[],lines:[],omitted:referenceLines.length,count:0};
+
+  const near=visibleReferenceLines(points,referenceLines);
+  const omitted=referenceLines.length-near.length;
+  const bounds=[...finite,...near.map(line=>line.value),...(mode==='bar'?[0]:[])];
+  let min=Math.min(...bounds),max=Math.max(...bounds);
+  const headroom=(max-min)*0.08||Math.max(Math.abs(max)*0.05,1)*0.5;
+  min-=headroom;max+=headroom;
+  const y=(value:number)=>pad+((max-value)/(max-min||1))*(height-pad*2);
+  const lines=near.map(line=>({id:line.id,y:y(line.value),tone:line.tone,lineType:line.lineType}));
+
+  if(mode==='bar'){
+    const baseline=y(Math.max(min,0));
+    const slot=width/Math.max(points.length,1);
+    const barWidth=Math.max(Math.min(slot-1,9),1.5);
+    const bars=points.flatMap((point,index)=>{
+      if(!isFiniteNumber(point.value))return [];
+      const top=y(point.value);
+      return [{
+        x:index*slot+(slot-barWidth)/2,y:Math.min(top,baseline),
+        width:barWidth,height:Math.max(Math.abs(baseline-top),1),
+      }];
+    });
+    return {segments:[],bars,lines,omitted,count:finite.length};
+  }
+  return {segments:areaSegments(points,{width,height,pad,min,max}),bars:[],lines,omitted,count:finite.length};
+}
+
+export interface FuelTrendProps{
+  points:ChartPoints;
+  label:string;
+  mode?:'line'|'bar';
+  referenceLines?:readonly ReferenceLine[];
+  lastGood?:boolean;
+}
+
+export function FuelTrend({points,label,mode='line',referenceLines,lastGood=false}:FuelTrendProps){
+  const observations=useMemo(()=>pointsFrom(points),[points]);
+  const lines=useMemo(()=>referenceLines??[],[referenceLines]);
+  const plot=useMemo(()=>fuelTrendPlot(observations,mode,lines),[observations,mode,lines]);
+  const {width,height}=FUEL_TREND_GEOMETRY;
+  const summary=plot.count
+    ?`${label} 走勢，${plot.count} 個觀察值${plot.lines.length?`，附 ${plot.lines.length} 條模型參考線`:''}${plot.omitted?`，另有 ${plot.omitted} 條參考線離開現時窗口未畫`:''}。${lastGood?`${LAST_GOOD_A11Y}。`:''}`
+    :`${label} 於現時窗口沒有可畫觀察值。`;
+  return <svg
+    className="fuel-trend" width="100%" height={height}
+    viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none"
+    role="img" aria-label={summary}
+  >
+    <title>{summary}</title>
+    {plot.lines.map(line=><line
+      key={line.id} x1="0" x2={width} y1={line.y} y2={line.y}
+      stroke={REFERENCE_STROKE[line.tone]} strokeDasharray={REFERENCE_DASH[line.lineType]}
+      strokeWidth="1" vectorEffect="non-scaling-stroke"
+    />)}
+    {plot.segments.map((segment,index)=><path
+      key={`area-${index}`} d={segment.area} fill="var(--area-selected)" stroke="none"
+    />)}
+    {plot.segments.map((segment,index)=><path
+      key={`line-${index}`} d={segment.line} fill="none" stroke="var(--action)"
+      strokeWidth="1.5" vectorEffect="non-scaling-stroke"
+    />)}
+    {plot.bars.map((bar,index)=><rect
+      key={`bar-${index}`} x={bar.x} y={bar.y} width={bar.width} height={bar.height} fill="var(--action)"
     />)}
   </svg>;
 }

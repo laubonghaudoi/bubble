@@ -50,10 +50,12 @@ import {
   windowPoints,
 } from '../dashboard';
 import {
+  FuelTrend,
   MainMetricChart,
   OVERLAY_CONFIG,
   RateOverlayChart,
   Sparkline,
+  visibleReferenceLines,
   type ChartPoint,
   type ReferenceLine,
   type SrfAlertWindow,
@@ -259,25 +261,69 @@ function FormulaClauseList({ clauses }: { clauses: readonly FormulaClause[] }) {
   );
 }
 
-function P0VideoBanner({ model, metrics }: { model: VideoP0Model; metrics: Snapshot['metrics'] }) {
-  const keyMetrics = [
-    { id: 'sofr_iorb_spread_bp', label: 'SOFR−IORB' },
-    { id: 'reserve_balances', label: 'RESERVES' },
-    { id: 'tga_daily', label: 'TGA' },
-    { id: 'srf_accepted', label: 'SRF · 2/3' },
-  ] as const;
+/**
+ * The four P0 fuel metrics, labelled by the role each one plays in the chain
+ * TGA drain → reserve stock → funding price → backstop use.  Labels and order
+ * are the published banner contract and must stay in sync with the model.
+ */
+const FUEL_METRICS = [
+  { id: 'sofr_iorb_spread_bp', label: 'SOFR−IORB', role: '價 · PRICE', mode: 'line' },
+  { id: 'reserve_balances', label: 'RESERVES', role: '量 · STOCK', mode: 'line' },
+  { id: 'tga_daily', label: 'TGA', role: '驅動 · DRIVER', mode: 'line' },
+  { id: 'srf_accepted', label: 'SRF · 2/3', role: '後備 · BACKSTOP', mode: 'bar' },
+] as const;
+
+function fuelReferenceUnit(metric: Metric | undefined): 'bp' | 'USD bn' {
+  return metric?.unit === 'bp' ? 'bp' : 'USD bn';
+}
+
+function P0VideoBanner({ model, metrics, variant = 'strip', series, range, globalLatest = null }: {
+  model: VideoP0Model;
+  metrics: Snapshot['metrics'];
+  variant?: 'strip' | 'rail';
+  series?: SeriesMap;
+  range?: RangeKey;
+  globalLatest?: string | null;
+}) {
+  const rail = variant === 'rail';
   return (
-    <section className="video-p0-banner" style={statusStyle(model.status)} aria-label={`VIDEO P0 MODEL：${model.status}；資料狀態 ${model.data_status}`}>
+    <section className={`video-p0-banner${rail ? ' is-rail' : ''}`} style={statusStyle(model.status)} aria-label={`VIDEO P0 MODEL：${model.status}；資料狀態 ${model.data_status}`}>
       <div className="video-p0-banner-state">
         <span>VIDEO P0 MODEL</span>
         <strong style={statusStyle(model.status)}>{model.status.replaceAll('_', ' ')}</strong>
         <small style={statusStyle(model.data_status)}>DATA · {model.data_status.replaceAll('_', '-')}</small>
+        {rail ? <em className="video-p0-window">燃料四鍵 · 窗口 {range ?? '3M'}</em> : null}
       </div>
       <dl className="video-p0-values">
-        {keyMetrics.map(({ id, label }) => {
+        {FUEL_METRICS.map(({ id, label, role, mode }) => {
           const metric = metrics[id];
           const state = valueState(metric);
-          return <div data-value-state={state} key={id}><dt>{label}</dt><dd>{compactP0Value(id, metric)}</dd>{state !== 'current' ? <small>{state === 'last-good' ? 'LAST-GOOD' : 'UNKNOWN'}</small> : null}</div>;
+          if (!rail) {
+            return <div data-value-state={state} key={id}><dt>{label}</dt><dd>{compactP0Value(id, metric)}</dd>{state !== 'current' ? <small>{state === 'last-good' ? 'LAST-GOOD' : 'UNKNOWN'}</small> : null}</div>;
+          }
+          const change = metric ? changePresentation(metric) : null;
+          const points = windowPoints(series?.[id]?.observations ?? metric?.short_series ?? [], range ?? '3M', globalLatest);
+          // Chips legend only the lines the plot can honestly draw; the plot
+          // still receives every model line so it can report the omitted ones.
+          const references = p0ReferenceLines(model, id);
+          const drawn = visibleReferenceLines(points, references);
+          return (
+            <div data-value-state={state} key={id}>
+              <dt><span className="fuel-role">{role}</span><span className="fuel-label">{label}</span></dt>
+              <dd>
+                <span className="fuel-readout">
+                  <b className="fuel-value">{compactP0Value(id, metric)}</b>
+                  {change && metric ? <span className={`fuel-delta ${deltaClass(change.value)}`}>{formatSignedDelta(change.value, metric.unit)}<small>{change.label}</small></span> : null}
+                </span>
+                <FuelTrend points={points} label={metric?.label ?? label} mode={mode} referenceLines={references} lastGood={state === 'last-good'} />
+                <span className="fuel-meta">
+                  <span>AS-OF {metric?.observation_date ?? '—'}</span>
+                  {drawn.length ? <span className="fuel-refs" aria-label="圖中模型參考線">{drawn.map((line) => <b key={line.id} data-tone={line.tone} title={line.label}>{chartThresholdLabel(line.value, fuelReferenceUnit(metric))}</b>)}</span> : null}
+                </span>
+              </dd>
+              {state !== 'current' ? <small>{state === 'last-good' ? 'LAST-GOOD' : 'UNKNOWN'}</small> : null}
+            </div>
+          );
         })}
       </dl>
       <a className="video-p0-link" href="#/provenance#p0-video-formulas">睇黃色／紅色公式 <span aria-hidden="true">→</span></a>
@@ -845,7 +891,7 @@ function ConfirmationGrid({ snapshot, onMain, onMetric }: { snapshot: Snapshot; 
 
 function OverviewPage(props: Pick<DashboardProps, 'snapshot' | 'series' | 'main' | 'range' | 'overlay' | 'onMain' | 'onRange' | 'onOverlay' | 'onDrawer'>) {
   const model = props.snapshot.decision_models.p0_video_liquidity;
-  return <main className="overview-page"><h2 className="route-heading sr-only" data-route-heading tabIndex={-1}>總覽</h2><P0VideoBanner model={model} metrics={props.snapshot.metrics} /><div className="body-grid"><LiveTape snapshot={props.snapshot} series={props.series} selected={props.main} onSelect={props.onMain} /><ChartPanel snapshot={props.snapshot} series={props.series} main={props.main} range={props.range} overlay={props.overlay} tabs={OVERVIEW_MAIN_TABS} tabGroups={OVERVIEW_TAB_GROUPS} onMain={props.onMain} onRange={props.onRange} onOverlay={props.onOverlay} /><ReadRail snapshot={props.snapshot} selectedMetricId={props.main} onMetric={props.onDrawer} /></div></main>;
+  return <main className="overview-page"><h2 className="route-heading sr-only" data-route-heading tabIndex={-1}>總覽</h2><P0VideoBanner model={model} metrics={props.snapshot.metrics} variant="rail" series={props.series} range={props.range} globalLatest={getGlobalLatestDate(props.series)} /><div className="body-grid"><LiveTape snapshot={props.snapshot} series={props.series} selected={props.main} onSelect={props.onMain} /><ChartPanel snapshot={props.snapshot} series={props.series} main={props.main} range={props.range} overlay={props.overlay} tabs={OVERVIEW_MAIN_TABS} tabGroups={OVERVIEW_TAB_GROUPS} onMain={props.onMain} onRange={props.onRange} onOverlay={props.onOverlay} /><ReadRail snapshot={props.snapshot} selectedMetricId={props.main} onMetric={props.onDrawer} /></div></main>;
 }
 
 function LiquidityPage(props: Pick<DashboardProps, 'snapshot' | 'series' | 'main' | 'range' | 'overlay' | 'onMain' | 'onRange' | 'onOverlay' | 'onDrawer'>) {

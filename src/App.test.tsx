@@ -13,8 +13,12 @@ import {
 } from './dashboard';
 import { makeCatalog, makeSnapshot, makeSnapshotWithReviewedManualEvidence } from './test-fixtures';
 
-vi.mock('./components/Charts', () => ({
+vi.mock('./components/Charts', async (importOriginal) => ({
+  // Pure helpers (reference-line visibility, plot geometry) stay real so the
+  // fuel rail is tested against production logic, not a stand-in.
+  ...(await importOriginal<typeof import('./components/Charts')>()),
   MainMetricChart: ({ label, lastGood }: { label: string; lastGood?: boolean }) => <div role="img" aria-label={`${label} 圖表${lastGood ? '，最後成功值，並非今日新值' : ''}`} />,
+  FuelTrend: ({ label, lastGood }: { label: string; lastGood?: boolean }) => <svg role="img" aria-label={`${label} 走勢${lastGood ? '，最後成功值，並非今日新值' : ''}`} />,
   OVERLAY_CONFIG: [
     { id: 'sofr', label: 'SOFR', colour: '#0064FA', cssVariable: '--series-sofr' },
     { id: 'iorb', label: 'IORB', colour: '#E51503', cssVariable: '--series-iorb' },
@@ -191,9 +195,13 @@ describe('v2.3 routed dashboard', () => {
   it('shows the same four-value formula banner on Overview and Liquidity Fuel', async () => {
     render(<App />);
     let banner = await screen.findByRole('region', { name: /VIDEO P0 MODEL/ });
-    expect([...banner.querySelectorAll('dt')].map(({ textContent }) => textContent)).toEqual([
+    expect([...banner.querySelectorAll('.fuel-label')].map(({ textContent }) => textContent)).toEqual([
       'SOFR−IORB', 'RESERVES', 'TGA', 'SRF · 2/3',
     ]);
+    expect([...banner.querySelectorAll('.fuel-role')].map(({ textContent }) => textContent)).toEqual([
+      '價 · PRICE', '量 · STOCK', '驅動 · DRIVER', '後備 · BACKSTOP',
+    ]);
+    expect(within(banner).getAllByRole('img', { name: /走勢/ })).toHaveLength(4);
     expect(within(banner).getByRole('link', { name: /睇黃色／紅色公式/ })).toHaveAttribute(
       'href', '#/provenance#p0-video-formulas',
     );
