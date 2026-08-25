@@ -1,10 +1,10 @@
 {
   "availability": "ACTIVE_FREE",
-  "expected_next_update": "2026-08-21",
+  "expected_next_update": "2026-08-24",
   "frequency": "business_daily",
   "label": "SOFR−IORB spread",
   "metric_id": "sofr_iorb_spread_bp",
-  "observation_date": "2026-08-20",
+  "observation_date": "2026-08-21",
   "observations": [
     {
       "date": "2024-08-12",
@@ -3540,26 +3540,33 @@
       "iorb_pct": 3.65,
       "market_rate_pct": 3.63,
       "value": -2.0
+    },
+    {
+      "date": "2026-08-21",
+      "iorb_observation_date": "2026-08-21",
+      "iorb_pct": 3.65,
+      "market_rate_pct": 3.65,
+      "value": 0.0
     }
   ],
   "quality": {
     "failure_reason": null,
-    "freshness": "FRESH",
-    "last_attempt_at": "2026-08-22T07:25:57.757592Z",
-    "last_success_at": "2026-08-22T07:25:57.757592Z",
-    "sample_size": 505,
+    "freshness": "LATE",
+    "last_attempt_at": "2026-08-25T07:38:44.958652Z",
+    "last_success_at": "2026-08-25T07:38:44.958652Z",
+    "sample_size": 506,
     "status": "OK"
   },
   "released_at": null,
   "schema_version": "2.3.0",
   "source": {
     "name": "Federal Reserve Bank of New York Markets Data API",
-    "retrieved_at": "2026-08-22T07:25:57.757592Z",
+    "retrieved_at": "2026-08-25T07:38:44.958652Z",
     "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
     "source_id": "nyfed_markets",
     "tier": "OFFICIAL",
     "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
   },
   "unit": "bp",
-  "updated_at": "2026-08-22T07:25:57.757592Z"
+  "updated_at": "2026-08-25T07:38:44.958652Z"
 }
