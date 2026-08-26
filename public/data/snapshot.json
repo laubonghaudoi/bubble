@@ -12,7 +12,7 @@
     "positive_streak_met": false,
     "quality_status": "OK",
     "reserve_4w_at_or_below_trailing_5y_p10": false,
-    "srf_positive_operation_days_latest_3": 0,
+    "srf_positive_operation_days_latest_3": 1,
     "stress_reasons": [],
     "stress_triggered": false,
     "technical_flags": [],
@@ -26,7 +26,7 @@
   "decision_models": {
     "p0_video_liquidity": {
       "availability_reason": null,
-      "confidence": "MEDIUM",
+      "confidence": "HIGH",
       "crisis_context": {
         "as_of": null,
         "note": null,
@@ -34,9 +34,9 @@
         "reviewer": null,
         "status": "UNKNOWN"
       },
-      "data_status": "LAST_GOOD",
+      "data_status": "CURRENT",
       "enabled": true,
-      "evaluated_at": "2026-08-25T07:38:44.958652Z",
+      "evaluated_at": "2026-08-26T07:40:27.865558Z",
       "formulas": {
         "extreme": {
           "candidate": false,
@@ -164,13 +164,13 @@
               "clause_id": "sofr_spread_above_red",
               "current_unit": "bp",
               "current_value": 0.0,
-              "evaluation_state": "LAST_GOOD",
-              "freshness": "LATE",
+              "evaluation_state": "CURRENT",
+              "freshness": "FRESH",
               "label": "SOFR−IORB > +3 bp",
               "met": false,
               "metric_id": "sofr_iorb_spread_bp",
               "note": "Equality at +3 bp does not meet this strict greater-than clause.",
-              "observation_date": "2026-08-21",
+              "observation_date": "2026-08-24",
               "operator": ">",
               "order": 1,
               "quality_status": "OK",
@@ -227,18 +227,18 @@
               ],
               "clause_id": "srf_positive_days",
               "current_unit": "days",
-              "current_value": 0,
+              "current_value": 1,
               "evaluation_state": "CURRENT",
               "freshness": "FRESH",
               "label": "Nontechnical SRF positive on at least 2 of latest 3 operation days",
               "met": false,
               "metric_id": "srf_accepted",
               "note": "Latest 3 completed operation days; technical-only exercises are excluded, while mixed days use only alert-eligible nontechnical accepted amount.",
-              "observation_date": "2026-08-24",
+              "observation_date": "2026-08-25",
               "operator": ">=",
               "order": 3,
               "quality_status": "OK",
-              "released_at": "2026-08-24T17:45:44Z",
+              "released_at": "2026-08-25T17:45:33Z",
               "threshold": 2,
               "threshold_unit": "days in latest 3 completed days"
             }
@@ -267,13 +267,13 @@
                   "clause_id": "sofr_spread_above_red",
                   "current_unit": "bp",
                   "current_value": 0.0,
-                  "evaluation_state": "LAST_GOOD",
-                  "freshness": "LATE",
+                  "evaluation_state": "CURRENT",
+                  "freshness": "FRESH",
                   "label": "SOFR−IORB > +3 bp",
                   "met": false,
                   "metric_id": "sofr_iorb_spread_bp",
                   "note": "Equality at +3 bp does not meet this strict greater-than clause.",
-                  "observation_date": "2026-08-21",
+                  "observation_date": "2026-08-24",
                   "operator": ">",
                   "order": 1,
                   "quality_status": "OK",
@@ -338,18 +338,18 @@
                   ],
                   "clause_id": "srf_positive_days",
                   "current_unit": "days",
-                  "current_value": 0,
+                  "current_value": 1,
                   "evaluation_state": "CURRENT",
                   "freshness": "FRESH",
                   "label": "Nontechnical SRF positive on at least 2 of latest 3 operation days",
                   "met": false,
                   "metric_id": "srf_accepted",
                   "note": "Latest 3 completed operation days; technical-only exercises are excluded, while mixed days use only alert-eligible nontechnical accepted amount.",
-                  "observation_date": "2026-08-24",
+                  "observation_date": "2026-08-25",
                   "operator": ">=",
                   "order": 3,
                   "quality_status": "OK",
-                  "released_at": "2026-08-24T17:45:44Z",
+                  "released_at": "2026-08-25T17:45:33Z",
                   "threshold": 2,
                   "threshold_unit": "days in latest 3 completed days"
                 }
@@ -382,13 +382,13 @@
               "clause_id": "sofr_positive_streak",
               "current_unit": "observations",
               "current_value": 0,
-              "evaluation_state": "LAST_GOOD",
-              "freshness": "LATE",
+              "evaluation_state": "CURRENT",
+              "freshness": "FRESH",
               "label": "SOFR−IORB positive streak",
               "met": false,
               "metric_id": "sofr_iorb_spread_bp",
               "note": "3 observations are a dashboard operationalization, not a quoted duration.",
-              "observation_date": "2026-08-21",
+              "observation_date": "2026-08-24",
               "operator": ">=",
               "order": 1,
               "quality_status": "OK",
@@ -477,14 +477,14 @@
               ],
               "clause_id": "tga_near_1t",
               "current_unit": "USD bn",
-              "current_value": 933.218,
-              "evaluation_state": "LAST_GOOD",
-              "freshness": "LATE",
+              "current_value": 966.849,
+              "evaluation_state": "CURRENT",
+              "freshness": "FRESH",
               "label": "TGA near 1T operational floor",
-              "met": false,
+              "met": true,
               "metric_id": "tga_daily",
               "note": "Values above 1T still satisfy this one-sided proximity rule.",
-              "observation_date": "2026-08-21",
+              "observation_date": "2026-08-24",
               "operator": ">=",
               "order": 4,
               "quality_status": "OK",
@@ -721,8 +721,7 @@
       ],
       "notes": [
         "Video-model thresholds are source-specific reference rules, not universal reserve-scarcity laws.",
-        "This decision model does not replace the audited NORMAL/WATCH/ELEVATED/STRESS P0 engine.",
-        "At least one clause uses a last-good value because a new release is not yet available."
+        "This decision model does not replace the audited NORMAL/WATCH/ELEVATED/STRESS P0 engine."
       ],
       "operationalizations": {
         "exclude_technical_exercises": true,
@@ -799,9 +798,9 @@
     ],
     "headline": "Liquidity Fuel 暫未觸發監察條件。"
   },
-  "generated_at": "2026-08-25T07:38:44.958652Z",
+  "generated_at": "2026-08-26T07:40:27.865558Z",
   "manual_ready_count": 3,
-  "market_date": "2026-08-21",
+  "market_date": "2026-08-24",
   "metrics": {
     "ai_upstream_orders_backlog": {
       "availability": "MANUAL_READY",
@@ -880,8 +879,8 @@
       "availability": "ACTIVE_FREE",
       "changes": {
         "eight_weeks": null,
-        "five_observations": 0.03,
-        "one_observation": 0.03,
+        "five_observations": -0.01,
+        "one_observation": 0.0,
         "twelve_weeks": null,
         "twenty_observations": 0.01
       },
@@ -890,7 +889,7 @@
         "is_proxy": false,
         "technical_flags": []
       },
-      "expected_next_update": "2026-08-24",
+      "expected_next_update": "2026-08-25",
       "frequency": "business_daily",
       "interpretation": {
         "cannot_infer": "BGCR 絕對水平唔可以單獨證明系統性流動性壓力。",
@@ -906,11 +905,11 @@
           "最新值為 3.63 percent。",
           "絕對利率水平主要受政策錨影響；請配合相對 IORB 利差。"
         ],
-        "data_state": "LAST_GOOD",
+        "data_state": "CURRENT",
         "headline": "絕對利率冇獨立風險帶；資金壓力要睇相對 IORB 利差。",
         "impact": "AMBIGUOUS",
         "next_boundary": null,
-        "numeric_direction": "RISING",
+        "numeric_direction": "FLAT",
         "role": "POLICY_ANCHORED_MARKET_RATE",
         "rule_basis": [
           "CONTEXT_ONLY"
@@ -920,7 +919,7 @@
         "views": [
           {
             "basis": "CONTEXT_ONLY",
-            "change": 0.03,
+            "change": 0.0,
             "kind": "DIRECTIONAL",
             "label": "DIRECTIONAL READ",
             "state": "NO_STANDALONE_RISK_BAND",
@@ -951,11 +950,11 @@
         "why_it_matters": "It broadens confirmation across secured funding venues."
       },
       "metric_id": "bgcr",
-      "observation_date": "2026-08-21",
+      "observation_date": "2026-08-24",
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -964,18 +963,14 @@
       ],
       "quality": {
         "failure_reason": null,
-        "freshness": "LATE",
-        "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-        "last_success_at": "2026-08-25T07:38:44.958652Z",
-        "sample_size": 506,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+        "last_success_at": "2026-08-26T07:40:27.865558Z",
+        "sample_size": 507,
         "status": "OK"
       },
       "released_at": null,
       "short_series": [
-        {
-          "date": "2026-07-23",
-          "value": 3.62
-        },
         {
           "date": "2026-07-24",
           "value": 3.62
@@ -1059,32 +1054,36 @@
         {
           "date": "2026-08-21",
           "value": 3.63
+        },
+        {
+          "date": "2026-08-24",
+          "value": 3.63
         }
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-25T07:38:44.958652Z",
+        "retrieved_at": "2026-08-26T07:40:27.865558Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
         "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
       },
       "statistics": {
-        "sample_size": 506,
-        "twenty_observation_percentile": 0.575,
-        "twenty_observation_slope": -0.001338
+        "sample_size": 507,
+        "twenty_observation_percentile": 0.55,
+        "twenty_observation_slope": -0.001256
       },
       "unavailability_reason": null,
       "unit": "percent",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "value": 3.63
     },
     "bgcr_iorb_spread_bp": {
       "availability": "ACTIVE_FREE",
       "changes": {
         "eight_weeks": null,
-        "five_observations": 3.0,
-        "one_observation": 3.0,
+        "five_observations": -1.0,
+        "one_observation": 0.0,
         "twelve_weeks": null,
         "twenty_observations": 1.0
       },
@@ -1093,7 +1092,7 @@
         "is_proxy": false,
         "technical_flags": []
       },
-      "expected_next_update": "2026-08-24",
+      "expected_next_update": "2026-08-25",
       "frequency": "business_daily",
       "interpretation": {
         "cannot_infer": "高歷史百分位唔係危機線，必須配合 slope 同其他市場。",
@@ -1105,28 +1104,28 @@
           "reserve_balances"
         ],
         "current_reasons": [
-          "歷史樣本 505；最低要求 60。",
+          "歷史樣本 506；最低要求 60。",
           "百分位同最近五期 slope 只作跨市場確認，唔會改變 alert。"
         ],
-        "data_state": "LAST_GOOD",
-        "headline": "未同時滿足 p80 同向上 slope 嘅確認條件。",
-        "impact": "TIGHTENING",
+        "data_state": "CURRENT",
+        "headline": "利差同近期 slope 同時提供確認。",
+        "impact": "NEUTRAL",
         "next_boundary": null,
-        "numeric_direction": "RISING",
+        "numeric_direction": "FLAT",
         "role": "CONFIRMATION_SPREAD",
         "rule_basis": [
           "STATISTICAL_BAND"
         ],
-        "severity": "NORMAL",
+        "severity": "WATCH",
         "state": "ELEVATED",
         "views": [
           {
             "basis": "STATISTICAL_BAND",
             "kind": "PERCENTILE_GAUGE",
             "label": "EXPANDING PRIOR-HISTORY BAND",
-            "percentile": 0.80396,
-            "sample_size": 505,
-            "slope": -0.5,
+            "percentile": 0.804348,
+            "sample_size": 506,
+            "slope": 0.3,
             "slope_unit": "bp/observation",
             "state": "ELEVATED",
             "unit": "bp",
@@ -1155,11 +1154,11 @@
         "why_it_matters": "It supplies broad secured-market confirmation for SOFR pressure."
       },
       "metric_id": "bgcr_iorb_spread_bp",
-      "observation_date": "2026-08-21",
+      "observation_date": "2026-08-24",
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -1167,7 +1166,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -1176,18 +1175,14 @@
       ],
       "quality": {
         "failure_reason": null,
-        "freshness": "LATE",
-        "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-        "last_success_at": "2026-08-25T07:38:44.958652Z",
-        "sample_size": 506,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+        "last_success_at": "2026-08-26T07:40:27.865558Z",
+        "sample_size": 507,
         "status": "OK"
       },
       "released_at": null,
       "short_series": [
-        {
-          "date": "2026-07-23",
-          "value": -3.0
-        },
         {
           "date": "2026-07-24",
           "value": -3.0
@@ -1271,11 +1266,15 @@
         {
           "date": "2026-08-21",
           "value": -2.0
+        },
+        {
+          "date": "2026-08-24",
+          "value": -2.0
         }
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-25T07:38:44.958652Z",
+        "retrieved_at": "2026-08-26T07:40:27.865558Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -1283,17 +1282,17 @@
       },
       "statistics": {
         "above_3bp_streak": 0,
-        "change_1obs": 3.0,
-        "change_5obs": 3.0,
+        "change_1obs": 0.0,
+        "change_5obs": -1.0,
         "latest": -2.0,
-        "mean_5obs": -3.0,
+        "mean_5obs": -3.2,
         "observations_used": 5,
         "positive_streak": 0,
-        "slope_5obs_bp_per_obs": -0.5
+        "slope_5obs_bp_per_obs": 0.3
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "value": -2.0
     },
     "cboe_skew_tail_risk_proxy": {
@@ -1428,7 +1427,7 @@
       "provenance": [
         {
           "name": "CFTC Public Reporting Environment",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
           "source_id": "cftc_pre",
           "tier": "OFFICIAL",
@@ -1438,8 +1437,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-        "last_success_at": "2026-08-25T07:38:44.958652Z",
+        "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+        "last_success_at": "2026-08-26T07:40:27.865558Z",
         "sample_size": 163,
         "status": "OK"
       },
@@ -1536,7 +1535,7 @@
       ],
       "source": {
         "name": "CFTC Public Reporting Environment",
-        "retrieved_at": "2026-08-25T07:38:44.958652Z",
+        "retrieved_at": "2026-08-26T07:40:27.865558Z",
         "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
         "source_id": "cftc_pre",
         "tier": "OFFICIAL",
@@ -1554,7 +1553,7 @@
       },
       "unavailability_reason": null,
       "unit": "percent_open_interest",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "value": 46.351354
     },
     "cftc_e_mini_sp500_leveraged_funds_net_pct_oi": {
@@ -1621,7 +1620,7 @@
       "provenance": [
         {
           "name": "CFTC Public Reporting Environment",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
           "source_id": "cftc_pre",
           "tier": "OFFICIAL",
@@ -1631,8 +1630,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-        "last_success_at": "2026-08-25T07:38:44.958652Z",
+        "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+        "last_success_at": "2026-08-26T07:40:27.865558Z",
         "sample_size": 163,
         "status": "OK"
       },
@@ -1729,7 +1728,7 @@
       ],
       "source": {
         "name": "CFTC Public Reporting Environment",
-        "retrieved_at": "2026-08-25T07:38:44.958652Z",
+        "retrieved_at": "2026-08-26T07:40:27.865558Z",
         "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
         "source_id": "cftc_pre",
         "tier": "OFFICIAL",
@@ -1747,7 +1746,7 @@
       },
       "unavailability_reason": null,
       "unit": "percent_open_interest",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "value": -13.578831
     },
     "cftc_nasdaq100_consolidated_asset_manager_net_pct_oi": {
@@ -1814,7 +1813,7 @@
       "provenance": [
         {
           "name": "CFTC Public Reporting Environment",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
           "source_id": "cftc_pre",
           "tier": "OFFICIAL",
@@ -1824,8 +1823,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-        "last_success_at": "2026-08-25T07:38:44.958652Z",
+        "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+        "last_success_at": "2026-08-26T07:40:27.865558Z",
         "sample_size": 163,
         "status": "OK"
       },
@@ -1922,7 +1921,7 @@
       ],
       "source": {
         "name": "CFTC Public Reporting Environment",
-        "retrieved_at": "2026-08-25T07:38:44.958652Z",
+        "retrieved_at": "2026-08-26T07:40:27.865558Z",
         "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
         "source_id": "cftc_pre",
         "tier": "OFFICIAL",
@@ -1940,7 +1939,7 @@
       },
       "unavailability_reason": null,
       "unit": "percent_open_interest",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "value": 21.689442
     },
     "cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi": {
@@ -2007,7 +2006,7 @@
       "provenance": [
         {
           "name": "CFTC Public Reporting Environment",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
           "source_id": "cftc_pre",
           "tier": "OFFICIAL",
@@ -2017,8 +2016,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-        "last_success_at": "2026-08-25T07:38:44.958652Z",
+        "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+        "last_success_at": "2026-08-26T07:40:27.865558Z",
         "sample_size": 163,
         "status": "OK"
       },
@@ -2115,7 +2114,7 @@
       ],
       "source": {
         "name": "CFTC Public Reporting Environment",
-        "retrieved_at": "2026-08-25T07:38:44.958652Z",
+        "retrieved_at": "2026-08-26T07:40:27.865558Z",
         "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
         "source_id": "cftc_pre",
         "tier": "OFFICIAL",
@@ -2133,7 +2132,7 @@
       },
       "unavailability_reason": null,
       "unit": "percent_open_interest",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "value": -21.275613
     },
     "cross_asset_correlation": {
@@ -2443,7 +2442,7 @@
         "is_proxy": false,
         "technical_flags": []
       },
-      "expected_next_update": "2026-08-24",
+      "expected_next_update": "2026-08-25",
       "frequency": "business_daily",
       "interpretation": {
         "cannot_infer": "EFFR 絕對水平唔可以單獨證明 repo 市場或者全系統壓力。",
@@ -2458,7 +2457,7 @@
           "最新值為 3.63 percent。",
           "絕對利率水平主要受政策錨影響；請配合相對 IORB 利差。"
         ],
-        "data_state": "LAST_GOOD",
+        "data_state": "CURRENT",
         "headline": "絕對利率冇獨立風險帶；資金壓力要睇相對 IORB 利差。",
         "impact": "AMBIGUOUS",
         "next_boundary": null,
@@ -2502,11 +2501,11 @@
         "why_it_matters": "It confirms whether unsecured interbank funding is moving relative to IORB."
       },
       "metric_id": "effr",
-      "observation_date": "2026-08-21",
+      "observation_date": "2026-08-24",
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -2515,18 +2514,14 @@
       ],
       "quality": {
         "failure_reason": null,
-        "freshness": "LATE",
-        "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-        "last_success_at": "2026-08-25T07:38:44.958652Z",
-        "sample_size": 509,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+        "last_success_at": "2026-08-26T07:40:27.865558Z",
+        "sample_size": 510,
         "status": "OK"
       },
       "released_at": null,
       "short_series": [
-        {
-          "date": "2026-07-23",
-          "value": 3.63
-        },
         {
           "date": "2026-07-24",
           "value": 3.63
@@ -2610,24 +2605,28 @@
         {
           "date": "2026-08-21",
           "value": 3.63
+        },
+        {
+          "date": "2026-08-24",
+          "value": 3.63
         }
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-25T07:38:44.958652Z",
+        "retrieved_at": "2026-08-26T07:40:27.865558Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
         "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
       },
       "statistics": {
-        "sample_size": 509,
+        "sample_size": 510,
         "twenty_observation_percentile": 0.5,
         "twenty_observation_slope": 0.0
       },
       "unavailability_reason": null,
       "unit": "percent",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "value": 3.63
     },
     "effr_iorb_spread_bp": {
@@ -2644,7 +2643,7 @@
         "is_proxy": false,
         "technical_flags": []
       },
-      "expected_next_update": "2026-08-24",
+      "expected_next_update": "2026-08-25",
       "frequency": "business_daily",
       "interpretation": {
         "cannot_infer": "高歷史百分位唔等於準備金短缺，亦唔係獨立警報。",
@@ -2656,10 +2655,10 @@
           "bgcr_iorb_spread_bp"
         ],
         "current_reasons": [
-          "歷史樣本 508；最低要求 60。",
+          "歷史樣本 509；最低要求 60。",
           "百分位同最近五期 slope 只作跨市場確認，唔會改變 alert。"
         ],
-        "data_state": "LAST_GOOD",
+        "data_state": "CURRENT",
         "headline": "未同時滿足 p80 同向上 slope 嘅確認條件。",
         "impact": "NEUTRAL",
         "next_boundary": null,
@@ -2675,8 +2674,8 @@
             "basis": "STATISTICAL_BAND",
             "kind": "PERCENTILE_GAUGE",
             "label": "EXPANDING PRIOR-HISTORY BAND",
-            "percentile": 0.783465,
-            "sample_size": 508,
+            "percentile": 0.78389,
+            "sample_size": 509,
             "slope": 0.0,
             "slope_unit": "bp/observation",
             "state": "ORDINARY",
@@ -2706,11 +2705,11 @@
         "why_it_matters": "It supplies unsecured confirmation for SOFR-based funding pressure."
       },
       "metric_id": "effr_iorb_spread_bp",
-      "observation_date": "2026-08-21",
+      "observation_date": "2026-08-24",
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -2718,7 +2717,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -2727,18 +2726,14 @@
       ],
       "quality": {
         "failure_reason": null,
-        "freshness": "LATE",
-        "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-        "last_success_at": "2026-08-25T07:38:44.958652Z",
-        "sample_size": 509,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+        "last_success_at": "2026-08-26T07:40:27.865558Z",
+        "sample_size": 510,
         "status": "OK"
       },
       "released_at": null,
       "short_series": [
-        {
-          "date": "2026-07-23",
-          "value": -2.0
-        },
         {
           "date": "2026-07-24",
           "value": -2.0
@@ -2822,11 +2817,15 @@
         {
           "date": "2026-08-21",
           "value": -2.0
+        },
+        {
+          "date": "2026-08-24",
+          "value": -2.0
         }
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-25T07:38:44.958652Z",
+        "retrieved_at": "2026-08-26T07:40:27.865558Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -2844,7 +2843,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "value": -2.0
     },
     "fed_total_assets": {
@@ -3752,9 +3751,7 @@
       "context": {
         "confidence": "HIGH",
         "is_proxy": false,
-        "technical_flags": [
-          "TREASURY_SETTLEMENT"
-        ]
+        "technical_flags": []
       },
       "expected_next_update": null,
       "frequency": "policy_event",
@@ -3819,11 +3816,11 @@
         "why_it_matters": "It is the core policy-rate comparator for overnight funding rates."
       },
       "metric_id": "iorb",
-      "observation_date": "2026-08-25",
+      "observation_date": "2026-08-26",
       "provenance": [
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -3833,17 +3830,13 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-        "last_success_at": "2026-08-25T07:38:44.958652Z",
-        "sample_size": 1854,
+        "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+        "last_success_at": "2026-08-26T07:40:27.865558Z",
+        "sample_size": 1855,
         "status": "OK"
       },
       "released_at": null,
       "short_series": [
-        {
-          "date": "2026-08-04",
-          "value": 3.65
-        },
         {
           "date": "2026-08-05",
           "value": 3.65
@@ -3927,24 +3920,28 @@
         {
           "date": "2026-08-25",
           "value": 3.65
+        },
+        {
+          "date": "2026-08-26",
+          "value": 3.65
         }
       ],
       "source": {
         "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-        "retrieved_at": "2026-08-25T07:38:44.958652Z",
+        "retrieved_at": "2026-08-26T07:40:27.865558Z",
         "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
         "source_id": "fred_government",
         "tier": "DISTRIBUTOR",
         "url": "https://fred.stlouisfed.org/docs/api/fred/"
       },
       "statistics": {
-        "sample_size": 1854,
+        "sample_size": 1855,
         "twenty_observation_percentile": 0.5,
         "twenty_observation_slope": 0.0
       },
       "unavailability_reason": null,
       "unit": "percent",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "value": 3.65
     },
     "m2_nasdaq_divergence": {
@@ -4268,7 +4265,7 @@
         "is_proxy": false,
         "technical_flags": []
       },
-      "expected_next_update": "2026-08-24",
+      "expected_next_update": "2026-08-25",
       "frequency": "business_daily",
       "interpretation": {
         "cannot_infer": "OBFR 絕對水平唔可以單獨識別壓力來源或者證明準備金稀缺。",
@@ -4283,7 +4280,7 @@
           "最新值為 3.63 percent。",
           "絕對利率水平主要受政策錨影響；請配合相對 IORB 利差。"
         ],
-        "data_state": "LAST_GOOD",
+        "data_state": "CURRENT",
         "headline": "絕對利率冇獨立風險帶；資金壓力要睇相對 IORB 利差。",
         "impact": "AMBIGUOUS",
         "next_boundary": null,
@@ -4327,11 +4324,11 @@
         "why_it_matters": "Its broader unsecured scope can confirm funding pressure outside federal funds alone."
       },
       "metric_id": "obfr",
-      "observation_date": "2026-08-21",
+      "observation_date": "2026-08-24",
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -4340,18 +4337,14 @@
       ],
       "quality": {
         "failure_reason": null,
-        "freshness": "LATE",
-        "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-        "last_success_at": "2026-08-25T07:38:44.958652Z",
-        "sample_size": 509,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+        "last_success_at": "2026-08-26T07:40:27.865558Z",
+        "sample_size": 510,
         "status": "OK"
       },
       "released_at": null,
       "short_series": [
-        {
-          "date": "2026-07-23",
-          "value": 3.63
-        },
         {
           "date": "2026-07-24",
           "value": 3.63
@@ -4435,24 +4428,28 @@
         {
           "date": "2026-08-21",
           "value": 3.63
+        },
+        {
+          "date": "2026-08-24",
+          "value": 3.63
         }
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-25T07:38:44.958652Z",
+        "retrieved_at": "2026-08-26T07:40:27.865558Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
         "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
       },
       "statistics": {
-        "sample_size": 509,
+        "sample_size": 510,
         "twenty_observation_percentile": 0.5,
         "twenty_observation_slope": 0.0
       },
       "unavailability_reason": null,
       "unit": "percent",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "value": 3.63
     },
     "obfr_iorb_spread_bp": {
@@ -4469,7 +4466,7 @@
         "is_proxy": false,
         "technical_flags": []
       },
-      "expected_next_update": "2026-08-24",
+      "expected_next_update": "2026-08-25",
       "frequency": "business_daily",
       "interpretation": {
         "cannot_infer": "高歷史百分位唔可以單獨證明 repo 壓力或者系統性短缺。",
@@ -4480,10 +4477,10 @@
           "effr_iorb_spread_bp"
         ],
         "current_reasons": [
-          "歷史樣本 508；最低要求 60。",
+          "歷史樣本 509；最低要求 60。",
           "百分位同最近五期 slope 只作跨市場確認，唔會改變 alert。"
         ],
-        "data_state": "LAST_GOOD",
+        "data_state": "CURRENT",
         "headline": "未同時滿足 p80 同向上 slope 嘅確認條件。",
         "impact": "NEUTRAL",
         "next_boundary": null,
@@ -4499,8 +4496,8 @@
             "basis": "STATISTICAL_BAND",
             "kind": "PERCENTILE_GAUGE",
             "label": "EXPANDING PRIOR-HISTORY BAND",
-            "percentile": 0.86811,
-            "sample_size": 508,
+            "percentile": 0.868369,
+            "sample_size": 509,
             "slope": 0.0,
             "slope_unit": "bp/observation",
             "state": "ELEVATED",
@@ -4530,11 +4527,11 @@
         "why_it_matters": "It tests whether SOFR pressure is shared by broader unsecured funding."
       },
       "metric_id": "obfr_iorb_spread_bp",
-      "observation_date": "2026-08-21",
+      "observation_date": "2026-08-24",
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -4542,7 +4539,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -4551,18 +4548,14 @@
       ],
       "quality": {
         "failure_reason": null,
-        "freshness": "LATE",
-        "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-        "last_success_at": "2026-08-25T07:38:44.958652Z",
-        "sample_size": 509,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+        "last_success_at": "2026-08-26T07:40:27.865558Z",
+        "sample_size": 510,
         "status": "OK"
       },
       "released_at": null,
       "short_series": [
-        {
-          "date": "2026-07-23",
-          "value": -2.0
-        },
         {
           "date": "2026-07-24",
           "value": -2.0
@@ -4646,11 +4639,15 @@
         {
           "date": "2026-08-21",
           "value": -2.0
+        },
+        {
+          "date": "2026-08-24",
+          "value": -2.0
         }
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-25T07:38:44.958652Z",
+        "retrieved_at": "2026-08-26T07:40:27.865558Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -4668,17 +4665,17 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "value": -2.0
     },
     "on_rrp_accepted": {
       "availability": "ACTIVE_FREE",
       "changes": {
         "eight_weeks": null,
-        "five_observations": 0.125,
-        "one_observation": 0.18,
+        "five_observations": 0.25,
+        "one_observation": 0.025,
         "twelve_weeks": null,
-        "twenty_observations": -1.0
+        "twenty_observations": -0.721
       },
       "context": {
         "confidence": "HIGH",
@@ -4687,21 +4684,23 @@
           "interpretation": "History-relative context only, not a danger signal. Falling ON RRP may cushion QT or TGA growth, or simply reflect more attractive bill and repo returns.",
           "method": "TRAILING_20_OBSERVATION_PERCENTILE",
           "near_floor": false,
-          "percentile_rank": 0.325,
+          "percentile_rank": 0.375,
           "sample_size": 20,
           "threshold_rule": "BOTTOM_DECILE_WHEN_SAMPLE_SUFFICIENT"
         },
-        "technical_flags": []
+        "technical_flags": [
+          "TREASURY_SETTLEMENT"
+        ]
       },
       "details": {
         "operation_count": 1,
-        "released_at": "2026-08-24T17:15:36Z",
+        "released_at": "2026-08-25T17:15:36Z",
         "source_amount_unit": "USD",
-        "source_total_amt_accepted": 380000000.0,
-        "source_total_amt_submitted": 380000000.0,
-        "submitted_usd_bn": 0.38
+        "source_total_amt_accepted": 405000000.0,
+        "source_total_amt_submitted": 405000000.0,
+        "submitted_usd_bn": 0.405
       },
-      "expected_next_update": "2026-08-25",
+      "expected_next_update": "2026-08-26",
       "frequency": "business_daily",
       "interpretation": {
         "cannot_infer": "ON RRP 下降亦可能只反映 bills 或 repo 回報更吸引。",
@@ -4733,13 +4732,13 @@
             "basis": "STATISTICAL_BAND",
             "kind": "PERCENTILE_GAUGE",
             "label": "PRIOR-20 BUFFER POSITION",
-            "percentile": 0.3,
+            "percentile": 0.35,
             "sample_size": 20,
-            "slope": 0.019086,
+            "slope": 0.0404,
             "slope_unit": "USD bn/observation",
             "state": "AVAILABLE_BUFFER",
             "unit": "USD bn",
-            "value": 0.38
+            "value": 0.405
           }
         ],
         "what_it_measures": "合資格對手方透過隔夜逆回購放喺 Fed 嘅現金。"
@@ -4764,11 +4763,11 @@
         "why_it_matters": "Declines can cushion TGA growth or QT on the Fed liability side."
       },
       "metric_id": "on_rrp_accepted",
-      "observation_date": "2026-08-24",
+      "observation_date": "2026-08-25",
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -4778,17 +4777,13 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-        "last_success_at": "2026-08-25T07:38:44.958652Z",
-        "sample_size": 404,
+        "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+        "last_success_at": "2026-08-26T07:40:27.865558Z",
+        "sample_size": 405,
         "status": "OK"
       },
-      "released_at": "2026-08-24T17:15:36Z",
+      "released_at": "2026-08-25T17:15:36Z",
       "short_series": [
-        {
-          "date": "2026-07-24",
-          "value": 0.675
-        },
         {
           "date": "2026-07-27",
           "value": 1.38
@@ -4872,11 +4867,15 @@
         {
           "date": "2026-08-24",
           "value": 0.38
+        },
+        {
+          "date": "2026-08-25",
+          "value": 0.405
         }
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-25T07:38:44.958652Z",
+        "retrieved_at": "2026-08-26T07:40:27.865558Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -4884,17 +4883,17 @@
       },
       "statistics": {
         "near_floor_minimum_samples": 20,
-        "near_floor_percentile_rank": 0.325,
+        "near_floor_percentile_rank": 0.375,
         "near_floor_sample_size": 20,
         "near_floor_threshold_percentile": 0.1,
-        "sample_size": 404,
-        "twenty_observation_percentile": 0.325,
-        "twenty_observation_slope": -0.110845
+        "sample_size": 405,
+        "twenty_observation_percentile": 0.375,
+        "twenty_observation_slope": -0.118886
       },
       "unavailability_reason": null,
       "unit": "USD bn",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
-      "value": 0.38
+      "updated_at": "2026-08-26T07:40:27.865558Z",
+      "value": 0.405
     },
     "reserve_balances": {
       "availability": "ACTIVE_FREE",
@@ -5200,8 +5199,8 @@
       "availability": "ACTIVE_PROXY",
       "changes": {
         "eight_weeks": null,
-        "five_observations": -0.013764,
-        "one_observation": -0.003725,
+        "five_observations": -0.012803,
+        "one_observation": -0.001447,
         "twelve_weeks": null,
         "twenty_observations": null
       },
@@ -5212,12 +5211,12 @@
         "ex_10b5_scope": "EXPLICIT_FALSE_ONLY",
         "is_proxy": true,
         "technical_flags": [],
-        "window_end_20d": "2026-08-24",
-        "window_end_5d": "2026-08-24",
-        "window_start_20d": "2026-07-28",
-        "window_start_5d": "2026-08-18"
+        "window_end_20d": "2026-08-25",
+        "window_end_5d": "2026-08-25",
+        "window_start_20d": "2026-07-29",
+        "window_start_5d": "2026-08-19"
       },
-      "expected_next_update": "2026-08-25",
+      "expected_next_update": "2026-08-26",
       "frequency": "business_daily",
       "interpretation": null,
       "label": "SEC Form 4 reported P/S count ratio · 20D proxy",
@@ -5238,11 +5237,11 @@
         "why_it_matters": "It gives a broad, reproducible insider-filing fragility context while preserving coverage, amendment, pricing, and 10b5 limitations."
       },
       "metric_id": "sec_form4_nonderivative_ps_count_ratio_20d",
-      "observation_date": "2026-08-24",
+      "observation_date": "2026-08-25",
       "provenance": [
         {
           "name": "SEC EDGAR APIs and filing data",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "Cite the filing and accession; do not republish long issuer-authored passages.",
           "source_id": "sec_edgar",
           "tier": "OFFICIAL",
@@ -5252,12 +5251,12 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-        "last_success_at": "2026-08-25T07:38:44.958652Z",
-        "sample_size": 10,
+        "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+        "last_success_at": "2026-08-26T07:40:27.865558Z",
+        "sample_size": 11,
         "status": "OK"
       },
-      "released_at": "2026-08-25T01:58:03Z",
+      "released_at": "2026-08-26T01:57:57Z",
       "short_series": [
         {
           "date": "2026-08-11",
@@ -5298,56 +5297,60 @@
         {
           "date": "2026-08-24",
           "value": 0.166549
+        },
+        {
+          "date": "2026-08-25",
+          "value": 0.165102
         }
       ],
       "source": {
         "name": "SEC EDGAR APIs and filing data",
-        "retrieved_at": "2026-08-25T07:38:44.958652Z",
+        "retrieved_at": "2026-08-26T07:40:27.865558Z",
         "rights_note": "Cite the filing and accession; do not republish long issuer-authored passages.",
         "source_id": "sec_edgar",
         "tier": "OFFICIAL",
         "url": "https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data"
       },
       "statistics": {
-        "amendments_linked_20d": 40,
-        "amendments_review_count_20d": 141,
-        "count_ratio_20d": 0.166549,
-        "dollar_coverage_rate_20d": 0.998268,
-        "dollar_coverage_rate_5d": 0.999172,
-        "dollar_ratio_20d": 1.136561,
-        "dollar_ratio_5d": 0.079184,
-        "eligible_transaction_count_20d": 11548,
-        "ex_explicit_false_count_ratio_20d": 0.374854,
-        "ex_explicit_false_count_ratio_5d": 0.333993,
-        "ex_explicit_false_coverage_20d": 0.509266,
-        "ex_explicit_false_coverage_5d": 0.557427,
-        "filings_processed_20d": 11724,
-        "form4_count_20d": 11543,
-        "form4a_count_20d": 181,
-        "parse_failures_20d": 13,
-        "priced_transaction_count_20d": 11528,
-        "purchase_count_20d": 1648,
-        "purchase_count_5d": 514,
-        "ratio_5d": 0.165648,
-        "sale_count_20d": 9900,
-        "sale_count_5d": 3108,
-        "tenb5_false_filings_20d": 9836,
-        "tenb5_true_filings_20d": 1712,
+        "amendments_linked_20d": 42,
+        "amendments_review_count_20d": 147,
+        "count_ratio_20d": 0.165102,
+        "dollar_coverage_rate_20d": 0.998304,
+        "dollar_coverage_rate_5d": 0.999117,
+        "dollar_ratio_20d": 1.123918,
+        "dollar_ratio_5d": 0.069236,
+        "eligible_transaction_count_20d": 11790,
+        "ex_explicit_false_count_ratio_20d": 0.365722,
+        "ex_explicit_false_count_ratio_5d": 0.327027,
+        "ex_explicit_false_coverage_20d": 0.514843,
+        "ex_explicit_false_coverage_5d": 0.577739,
+        "filings_processed_20d": 11813,
+        "form4_count_20d": 11624,
+        "form4a_count_20d": 189,
+        "parse_failures_20d": 17,
+        "priced_transaction_count_20d": 11770,
+        "purchase_count_20d": 1670,
+        "purchase_count_5d": 490,
+        "ratio_5d": 0.168903,
+        "sale_count_20d": 10120,
+        "sale_count_5d": 2906,
+        "tenb5_false_filings_20d": 9888,
+        "tenb5_true_filings_20d": 1742,
         "tenb5_unknown_filings_20d": 0,
-        "unique_accessions_20d": 11724,
-        "unique_issuers_20d": 2751
+        "unique_accessions_20d": 11813,
+        "unique_issuers_20d": 2770
       },
       "unavailability_reason": null,
       "unit": "ratio",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
-      "value": 0.166549
+      "updated_at": "2026-08-26T07:40:27.865558Z",
+      "value": 0.165102
     },
     "sofr": {
       "availability": "ACTIVE_FREE",
       "changes": {
         "eight_weeks": null,
-        "five_observations": 0.03,
-        "one_observation": 0.02,
+        "five_observations": -0.01,
+        "one_observation": 0.0,
         "twelve_weeks": null,
         "twenty_observations": 0.01
       },
@@ -5356,7 +5359,7 @@
         "is_proxy": false,
         "technical_flags": []
       },
-      "expected_next_update": "2026-08-24",
+      "expected_next_update": "2026-08-25",
       "frequency": "business_daily",
       "interpretation": {
         "cannot_infer": "SOFR 絕對水平唔可以單獨證明準備金稀缺或者市場壓力。",
@@ -5372,11 +5375,11 @@
           "最新值為 3.65 percent。",
           "絕對利率水平主要受政策錨影響；請配合相對 IORB 利差。"
         ],
-        "data_state": "LAST_GOOD",
+        "data_state": "CURRENT",
         "headline": "絕對利率冇獨立風險帶；資金壓力要睇相對 IORB 利差。",
         "impact": "AMBIGUOUS",
         "next_boundary": null,
-        "numeric_direction": "RISING",
+        "numeric_direction": "FLAT",
         "role": "POLICY_ANCHORED_MARKET_RATE",
         "rule_basis": [
           "CONTEXT_ONLY"
@@ -5386,7 +5389,7 @@
         "views": [
           {
             "basis": "CONTEXT_ONLY",
-            "change": 0.02,
+            "change": 0.0,
             "kind": "DIRECTIONAL",
             "label": "DIRECTIONAL READ",
             "state": "NO_STANDALONE_RISK_BAND",
@@ -5417,11 +5420,11 @@
         "why_it_matters": "A move relative to IORB can reveal secured-funding pressure."
       },
       "metric_id": "sofr",
-      "observation_date": "2026-08-21",
+      "observation_date": "2026-08-24",
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -5430,18 +5433,14 @@
       ],
       "quality": {
         "failure_reason": null,
-        "freshness": "LATE",
-        "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-        "last_success_at": "2026-08-25T07:38:44.958652Z",
-        "sample_size": 506,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+        "last_success_at": "2026-08-26T07:40:27.865558Z",
+        "sample_size": 507,
         "status": "OK"
       },
       "released_at": null,
       "short_series": [
-        {
-          "date": "2026-07-23",
-          "value": 3.64
-        },
         {
           "date": "2026-07-24",
           "value": 3.64
@@ -5525,32 +5524,36 @@
         {
           "date": "2026-08-21",
           "value": 3.65
+        },
+        {
+          "date": "2026-08-24",
+          "value": 3.65
         }
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-25T07:38:44.958652Z",
+        "retrieved_at": "2026-08-26T07:40:27.865558Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
         "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
       },
       "statistics": {
-        "sample_size": 506,
-        "twenty_observation_percentile": 0.675,
-        "twenty_observation_slope": -0.000955
+        "sample_size": 507,
+        "twenty_observation_percentile": 0.65,
+        "twenty_observation_slope": -0.000827
       },
       "unavailability_reason": null,
       "unit": "percent",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "value": 3.65
     },
     "sofr_iorb_spread_bp": {
       "availability": "ACTIVE_FREE",
       "changes": {
         "eight_weeks": null,
-        "five_observations": 3.0,
-        "one_observation": 2.0,
+        "five_observations": -1.0,
+        "one_observation": 0.0,
         "twelve_weeks": null,
         "twenty_observations": 1.0
       },
@@ -5559,7 +5562,7 @@
         "is_proxy": false,
         "technical_flags": []
       },
-      "expected_next_update": "2026-08-24",
+      "expected_next_update": "2026-08-25",
       "frequency": "business_daily",
       "interpretation": {
         "cannot_infer": "單一讀數唔可以證明流動性危機或者預測資產價格方向。",
@@ -5577,9 +5580,9 @@
           "連續正值期數：0。",
           "Full Red Route A：NOT MET；Red spread leg 唔等於完整 Red route。"
         ],
-        "data_state": "LAST_GOOD",
+        "data_state": "CURRENT",
         "headline": "Repo cash 暫未貴過 IORB。",
-        "impact": "TIGHTENING",
+        "impact": "NEUTRAL",
         "next_boundary": {
           "basis": "VIDEO_SOURCE_RULE",
           "current": 0.0,
@@ -5589,7 +5592,7 @@
           "threshold": 0.0,
           "unit": "bp"
         },
-        "numeric_direction": "RISING",
+        "numeric_direction": "FLAT",
         "role": "PRIMARY_FUNDING_PRICE",
         "rule_basis": [
           "VIDEO_SOURCE_RULE",
@@ -5663,33 +5666,33 @@
           },
           {
             "basis": "STATISTICAL_BAND",
-            "count": 0,
+            "count": 2,
             "kind": "BREADTH_COUNTER",
             "label": "EFFR / TGCR / BGCR CONFIRMATION",
             "members": [
               {
                 "confirming": false,
                 "metric_id": "effr_iorb_spread_bp",
-                "percentile": 0.783465,
+                "percentile": 0.78389,
                 "slope": 0.0,
                 "state": "ORDINARY"
               },
               {
-                "confirming": false,
+                "confirming": true,
                 "metric_id": "tgcr_iorb_spread_bp",
-                "percentile": 0.80396,
-                "slope": -0.5,
+                "percentile": 0.804348,
+                "slope": 0.3,
                 "state": "ELEVATED"
               },
               {
-                "confirming": false,
+                "confirming": true,
                 "metric_id": "bgcr_iorb_spread_bp",
-                "percentile": 0.80396,
-                "slope": -0.5,
+                "percentile": 0.804348,
+                "slope": 0.3,
                 "state": "ELEVATED"
               }
             ],
-            "state": "NO_CONFIRMATION",
+            "state": "BROADENING",
             "total": 3
           }
         ],
@@ -5717,11 +5720,11 @@
         "why_it_matters": "It is the primary secured-funding pressure signal."
       },
       "metric_id": "sofr_iorb_spread_bp",
-      "observation_date": "2026-08-21",
+      "observation_date": "2026-08-24",
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -5729,7 +5732,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -5738,18 +5741,14 @@
       ],
       "quality": {
         "failure_reason": null,
-        "freshness": "LATE",
-        "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-        "last_success_at": "2026-08-25T07:38:44.958652Z",
-        "sample_size": 506,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+        "last_success_at": "2026-08-26T07:40:27.865558Z",
+        "sample_size": 507,
         "status": "OK"
       },
       "released_at": null,
       "short_series": [
-        {
-          "date": "2026-07-23",
-          "value": -1.0
-        },
         {
           "date": "2026-07-24",
           "value": -1.0
@@ -5833,11 +5832,15 @@
         {
           "date": "2026-08-21",
           "value": 0.0
+        },
+        {
+          "date": "2026-08-24",
+          "value": 0.0
         }
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-25T07:38:44.958652Z",
+        "retrieved_at": "2026-08-26T07:40:27.865558Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -5845,17 +5848,17 @@
       },
       "statistics": {
         "above_3bp_streak": 0,
-        "change_1obs": 2.0,
-        "change_5obs": 3.0,
+        "change_1obs": 0.0,
+        "change_5obs": -1.0,
         "latest": 0.0,
-        "mean_5obs": -0.8,
+        "mean_5obs": -1.0,
         "observations_used": 5,
         "positive_streak": 0,
-        "slope_5obs_bp_per_obs": -0.4
+        "slope_5obs_bp_per_obs": 0.3
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "value": 0.0
     },
     "spx_0dte_share": {
@@ -5998,34 +6001,36 @@
       "availability": "ACTIVE_FREE",
       "changes": {
         "eight_weeks": null,
-        "five_observations": -0.001,
-        "one_observation": 0.0,
+        "five_observations": 0.002,
+        "one_observation": 0.003,
         "twelve_weeks": null,
-        "twenty_observations": -0.02
+        "twenty_observations": -0.006
       },
       "context": {
         "confidence": "HIGH",
         "is_proxy": false,
-        "technical_flags": []
+        "technical_flags": [
+          "TREASURY_SETTLEMENT"
+        ]
       },
       "details": {
-        "accepted_amount_usd_bn": 0.0,
-        "alert_eligible_accepted_amount_usd_bn": 0.0,
+        "accepted_amount_usd_bn": 0.003,
+        "alert_eligible_accepted_amount_usd_bn": 0.003,
         "breakdown": {
           "agency_debt": {
-            "accepted_amount_usd_bn": 0.0,
-            "alert_eligible_accepted_amount_usd_bn": 0.0,
-            "submitted_amount_usd_bn": 0.0
+            "accepted_amount_usd_bn": 0.001,
+            "alert_eligible_accepted_amount_usd_bn": 0.001,
+            "submitted_amount_usd_bn": 0.001
           },
           "agency_mbs": {
-            "accepted_amount_usd_bn": 0.0,
-            "alert_eligible_accepted_amount_usd_bn": 0.0,
-            "submitted_amount_usd_bn": 0.0
+            "accepted_amount_usd_bn": 0.001,
+            "alert_eligible_accepted_amount_usd_bn": 0.001,
+            "submitted_amount_usd_bn": 0.001
           },
           "treasury": {
-            "accepted_amount_usd_bn": 0.0,
-            "alert_eligible_accepted_amount_usd_bn": 0.0,
-            "submitted_amount_usd_bn": 0.0
+            "accepted_amount_usd_bn": 0.001,
+            "alert_eligible_accepted_amount_usd_bn": 0.001,
+            "submitted_amount_usd_bn": 0.001
           }
         },
         "classification_complete": true,
@@ -6037,11 +6042,11 @@
         "rates_pct": [
           3.75
         ],
-        "released_at": "2026-08-24T17:45:44Z",
-        "submitted_amount_usd_bn": 0.0,
+        "released_at": "2026-08-25T17:45:33Z",
+        "submitted_amount_usd_bn": 0.003,
         "technical_exercise": false
       },
-      "expected_next_update": "2026-08-25",
+      "expected_next_update": "2026-08-26",
       "frequency": "business_daily",
       "interpretation": {
         "cannot_infer": "Operational-readiness exercise 唔係市場壓力，亦唔可以觸發警報。",
@@ -6052,28 +6057,28 @@
           "reserve_balances"
         ],
         "current_reasons": [
-          "非技術性 positive days：0 / 3。",
+          "非技術性 positive days：1 / 3。",
           "Technical exercise 保留數據但排除 Red Route B。"
         ],
         "data_state": "CURRENT",
-        "headline": "最近 3 個 completed days 有 0 日非技術性使用。",
-        "impact": "NEUTRAL",
+        "headline": "最近 3 個 completed days 有 1 日非技術性使用。",
+        "impact": "TIGHTENING",
         "next_boundary": null,
-        "numeric_direction": "FLAT",
+        "numeric_direction": "RISING",
         "role": "BACKSTOP_FACILITY",
         "rule_basis": [
           "DASHBOARD_OPERATIONALIZATION"
         ],
         "severity": "NORMAL",
-        "state": "DORMANT",
+        "state": "ISOLATED_USE",
         "views": [
           {
             "basis": "DASHBOARD_OPERATIONALIZATION",
             "kind": "EVENT_STEPPER",
             "label": "LATEST COMPLETED OPERATION DAYS",
-            "positive_count": 0,
+            "positive_count": 1,
             "required_count": 2,
-            "state": "DORMANT",
+            "state": "ISOLATED_USE",
             "technical_exercise": false,
             "window_size": 3
           }
@@ -6100,11 +6105,11 @@
         "why_it_matters": "Nontechnical persistent use can confirm marginal Treasury financing pressure."
       },
       "metric_id": "srf_accepted",
-      "observation_date": "2026-08-24",
+      "observation_date": "2026-08-25",
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -6114,23 +6119,13 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-        "last_success_at": "2026-08-25T07:38:44.958652Z",
-        "sample_size": 175,
+        "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+        "last_success_at": "2026-08-26T07:40:27.865558Z",
+        "sample_size": 176,
         "status": "OK"
       },
-      "released_at": "2026-08-24T17:45:44Z",
+      "released_at": "2026-08-25T17:45:33Z",
       "short_series": [
-        {
-          "accepted_amount_usd_bn": 0.001,
-          "alert_eligible_accepted_amount_usd_bn": 0.001,
-          "classification_complete": true,
-          "date": "2026-07-24",
-          "exercise_accepted_amount_usd_bn": 0.0,
-          "has_technical_exercise": false,
-          "technical_exercise": false,
-          "value": 0.001
-        },
         {
           "accepted_amount_usd_bn": 0.02,
           "alert_eligible_accepted_amount_usd_bn": 0.02,
@@ -6340,25 +6335,35 @@
           "has_technical_exercise": false,
           "technical_exercise": false,
           "value": 0.0
+        },
+        {
+          "accepted_amount_usd_bn": 0.003,
+          "alert_eligible_accepted_amount_usd_bn": 0.003,
+          "classification_complete": true,
+          "date": "2026-08-25",
+          "exercise_accepted_amount_usd_bn": 0.0,
+          "has_technical_exercise": false,
+          "technical_exercise": false,
+          "value": 0.003
         }
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-25T07:38:44.958652Z",
+        "retrieved_at": "2026-08-26T07:40:27.865558Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
         "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
       },
       "statistics": {
-        "nontechnical_positive_use_streak": 0,
-        "positive_nontechnical_latest_3": 0,
-        "sample_size": 175
+        "nontechnical_positive_use_streak": 1,
+        "positive_nontechnical_latest_3": 1,
+        "sample_size": 176
       },
       "unavailability_reason": null,
       "unit": "USD bn",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
-      "value": 0.0
+      "updated_at": "2026-08-26T07:40:27.865558Z",
+      "value": 0.003
     },
     "take_or_pay_commitments": {
       "availability": "MANUAL_READY",
@@ -6437,17 +6442,17 @@
       "availability": "ACTIVE_FREE",
       "changes": {
         "eight_weeks": null,
-        "five_observations": -25.966,
-        "one_observation": -1.859,
+        "five_observations": 34.064,
+        "one_observation": 33.631,
         "twelve_weeks": null,
-        "twenty_observations": 46.918
+        "twenty_observations": 64.098
       },
       "context": {
         "confidence": "HIGH",
         "is_proxy": false,
         "technical_flags": []
       },
-      "expected_next_update": "2026-08-24",
+      "expected_next_update": "2026-08-25",
       "frequency": "business_daily",
       "interpretation": {
         "cannot_infer": "TGA 上升唔會自動等於壓力；其他 Fed 資產同負債可以抵消。",
@@ -6460,23 +6465,23 @@
           "tga_weekly_h41"
         ],
         "current_reasons": [
-          "5-observation flow：-25.966 USD bn。",
-          "20-observation flow：46.918 USD bn。",
+          "5-observation flow：34.064 USD bn。",
+          "20-observation flow：64.098 USD bn。",
           "今期無 tax／settlement technical suffix。"
         ],
-        "data_state": "LAST_GOOD",
-        "headline": "TGA level 為 BELOW_VIDEO_PROXIMITY_ZONE；整體 flow 為 MILD_DRAIN。",
-        "impact": "EASING",
+        "data_state": "CURRENT",
+        "headline": "TGA level 為 APPROACHING_1T；整體 flow 為 MILD_DRAIN。",
+        "impact": "TIGHTENING",
         "next_boundary": {
-          "basis": "DASHBOARD_OPERATIONALIZATION",
-          "current": 933.218,
-          "distance": 16.782,
-          "label": "APPROACHING 1T",
+          "basis": "VIDEO_SOURCE_RULE",
+          "current": 966.849,
+          "distance": 33.151,
+          "label": "ABOVE VIDEO TARGET",
           "rule": "TGA rises into next source context zone",
-          "threshold": 950.0,
+          "threshold": 1000.0,
           "unit": "USD bn"
         },
-        "numeric_direction": "FALLING",
+        "numeric_direction": "RISING",
         "role": "TREASURY_CASH_FLOW",
         "rule_basis": [
           "CONTEXT_ONLY",
@@ -6485,31 +6490,31 @@
           "VIDEO_SOURCE_RULE"
         ],
         "severity": "CONTEXT_ONLY",
-        "state": "BELOW_VIDEO_PROXIMITY_ZONE · MILD_DRAIN",
+        "state": "APPROACHING_1T · MILD_DRAIN",
         "views": [
           {
             "basis": "STATISTICAL_BAND",
             "kind": "PERCENTILE_GAUGE",
             "label": "5-OBSERVATION FLOW",
-            "percentile": 0.379653,
-            "sample_size": 403,
+            "percentile": 0.69802,
+            "sample_size": 404,
             "slope": null,
             "slope_unit": "USD bn/observation",
-            "state": "LIQUIDITY_RELEASE",
+            "state": "MILD_DRAIN",
             "unit": "USD bn",
-            "value": -25.966
+            "value": 34.064
           },
           {
             "basis": "STATISTICAL_BAND",
             "kind": "PERCENTILE_GAUGE",
             "label": "20-OBSERVATION FLOW",
-            "percentile": 0.569588,
-            "sample_size": 388,
+            "percentile": 0.598972,
+            "sample_size": 389,
             "slope": null,
             "slope_unit": "USD bn/observation",
             "state": "MILD_DRAIN",
             "unit": "USD bn",
-            "value": 46.918
+            "value": 64.098
           },
           {
             "kind": "REGIME_LADDER",
@@ -6517,10 +6522,10 @@
             "note": "Level 只係影片 context；真正 liquidity impact 主要睇 flow。",
             "rows": [
               {
-                "active": true,
+                "active": false,
                 "basis": "DASHBOARD_OPERATIONALIZATION",
                 "label": "BELOW VIDEO PROXIMITY ZONE",
-                "met": true,
+                "met": false,
                 "operator": "<",
                 "rule": "TGA < source operational floor",
                 "threshold": 950.0,
@@ -6528,10 +6533,10 @@
                 "upper_threshold": null
               },
               {
-                "active": false,
+                "active": true,
                 "basis": "DASHBOARD_OPERATIONALIZATION",
                 "label": "APPROACHING 1T",
-                "met": false,
+                "met": true,
                 "operator": ">= AND <",
                 "rule": "source proximity floor <= TGA < source target",
                 "threshold": 950.0,
@@ -6574,11 +6579,11 @@
         "why_it_matters": "TGA changes alter Federal Reserve liabilities and can drain or add reserve balances, all else equal."
       },
       "metric_id": "tga_daily",
-      "observation_date": "2026-08-21",
+      "observation_date": "2026-08-24",
       "provenance": [
         {
           "name": "U.S. Treasury FiscalData API",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "Cite FiscalData and preserve the dataset as-of date.",
           "source_id": "treasury_fiscaldata",
           "tier": "OFFICIAL",
@@ -6587,18 +6592,14 @@
       ],
       "quality": {
         "failure_reason": null,
-        "freshness": "LATE",
-        "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-        "last_success_at": "2026-08-25T07:38:44.958652Z",
-        "sample_size": 409,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+        "last_success_at": "2026-08-26T07:40:27.865558Z",
+        "sample_size": 410,
         "status": "OK"
       },
       "released_at": null,
       "short_series": [
-        {
-          "date": "2026-07-23",
-          "value": 877.201
-        },
         {
           "date": "2026-07-24",
           "value": 886.3
@@ -6682,25 +6683,29 @@
         {
           "date": "2026-08-21",
           "value": 933.218
+        },
+        {
+          "date": "2026-08-24",
+          "value": 966.849
         }
       ],
       "source": {
         "name": "U.S. Treasury FiscalData API",
-        "retrieved_at": "2026-08-25T07:38:44.958652Z",
+        "retrieved_at": "2026-08-26T07:40:27.865558Z",
         "rights_note": "Cite FiscalData and preserve the dataset as-of date.",
         "source_id": "treasury_fiscaldata",
         "tier": "OFFICIAL",
         "url": "https://fiscaldata.treasury.gov/api-documentation/"
       },
       "statistics": {
-        "sample_size": 409,
-        "twenty_observation_percentile": 0.325,
-        "twenty_observation_slope": 0.79643
+        "sample_size": 410,
+        "twenty_observation_percentile": 0.775,
+        "twenty_observation_slope": 0.438308
       },
       "unavailability_reason": null,
       "unit": "USD bn",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
-      "value": 933.218
+      "updated_at": "2026-08-26T07:40:27.865558Z",
+      "value": 966.849
     },
     "tga_weekly_h41": {
       "availability": "ACTIVE_FREE",
@@ -6912,8 +6917,8 @@
       "availability": "ACTIVE_FREE",
       "changes": {
         "eight_weeks": null,
-        "five_observations": 0.03,
-        "one_observation": 0.03,
+        "five_observations": -0.01,
+        "one_observation": 0.0,
         "twelve_weeks": null,
         "twenty_observations": 0.01
       },
@@ -6922,7 +6927,7 @@
         "is_proxy": false,
         "technical_flags": []
       },
-      "expected_next_update": "2026-08-24",
+      "expected_next_update": "2026-08-25",
       "frequency": "business_daily",
       "interpretation": {
         "cannot_infer": "TGCR 絕對水平唔可以單獨證明市場全面收緊。",
@@ -6938,11 +6943,11 @@
           "最新值為 3.63 percent。",
           "絕對利率水平主要受政策錨影響；請配合相對 IORB 利差。"
         ],
-        "data_state": "LAST_GOOD",
+        "data_state": "CURRENT",
         "headline": "絕對利率冇獨立風險帶；資金壓力要睇相對 IORB 利差。",
         "impact": "AMBIGUOUS",
         "next_boundary": null,
-        "numeric_direction": "RISING",
+        "numeric_direction": "FLAT",
         "role": "POLICY_ANCHORED_MARKET_RATE",
         "rule_basis": [
           "CONTEXT_ONLY"
@@ -6952,7 +6957,7 @@
         "views": [
           {
             "basis": "CONTEXT_ONLY",
-            "change": 0.03,
+            "change": 0.0,
             "kind": "DIRECTIONAL",
             "label": "DIRECTIONAL READ",
             "state": "NO_STANDALONE_RISK_BAND",
@@ -6983,11 +6988,11 @@
         "why_it_matters": "It isolates an important secured-funding venue."
       },
       "metric_id": "tgcr",
-      "observation_date": "2026-08-21",
+      "observation_date": "2026-08-24",
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -6996,18 +7001,14 @@
       ],
       "quality": {
         "failure_reason": null,
-        "freshness": "LATE",
-        "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-        "last_success_at": "2026-08-25T07:38:44.958652Z",
-        "sample_size": 506,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+        "last_success_at": "2026-08-26T07:40:27.865558Z",
+        "sample_size": 507,
         "status": "OK"
       },
       "released_at": null,
       "short_series": [
-        {
-          "date": "2026-07-23",
-          "value": 3.62
-        },
         {
           "date": "2026-07-24",
           "value": 3.62
@@ -7091,32 +7092,36 @@
         {
           "date": "2026-08-21",
           "value": 3.63
+        },
+        {
+          "date": "2026-08-24",
+          "value": 3.63
         }
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-25T07:38:44.958652Z",
+        "retrieved_at": "2026-08-26T07:40:27.865558Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
         "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
       },
       "statistics": {
-        "sample_size": 506,
-        "twenty_observation_percentile": 0.575,
-        "twenty_observation_slope": -0.001338
+        "sample_size": 507,
+        "twenty_observation_percentile": 0.55,
+        "twenty_observation_slope": -0.001256
       },
       "unavailability_reason": null,
       "unit": "percent",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "value": 3.63
     },
     "tgcr_iorb_spread_bp": {
       "availability": "ACTIVE_FREE",
       "changes": {
         "eight_weeks": null,
-        "five_observations": 3.0,
-        "one_observation": 3.0,
+        "five_observations": -1.0,
+        "one_observation": 0.0,
         "twelve_weeks": null,
         "twenty_observations": 1.0
       },
@@ -7125,7 +7130,7 @@
         "is_proxy": false,
         "technical_flags": []
       },
-      "expected_next_update": "2026-08-24",
+      "expected_next_update": "2026-08-25",
       "frequency": "business_daily",
       "interpretation": {
         "cannot_infer": "高歷史百分位唔係危機線，必須配合 slope 同其他市場。",
@@ -7137,28 +7142,28 @@
           "reserve_balances"
         ],
         "current_reasons": [
-          "歷史樣本 505；最低要求 60。",
+          "歷史樣本 506；最低要求 60。",
           "百分位同最近五期 slope 只作跨市場確認，唔會改變 alert。"
         ],
-        "data_state": "LAST_GOOD",
-        "headline": "未同時滿足 p80 同向上 slope 嘅確認條件。",
-        "impact": "TIGHTENING",
+        "data_state": "CURRENT",
+        "headline": "利差同近期 slope 同時提供確認。",
+        "impact": "NEUTRAL",
         "next_boundary": null,
-        "numeric_direction": "RISING",
+        "numeric_direction": "FLAT",
         "role": "CONFIRMATION_SPREAD",
         "rule_basis": [
           "STATISTICAL_BAND"
         ],
-        "severity": "NORMAL",
+        "severity": "WATCH",
         "state": "ELEVATED",
         "views": [
           {
             "basis": "STATISTICAL_BAND",
             "kind": "PERCENTILE_GAUGE",
             "label": "EXPANDING PRIOR-HISTORY BAND",
-            "percentile": 0.80396,
-            "sample_size": 505,
-            "slope": -0.5,
+            "percentile": 0.804348,
+            "sample_size": 506,
+            "slope": 0.3,
             "slope_unit": "bp/observation",
             "state": "ELEVATED",
             "unit": "bp",
@@ -7187,11 +7192,11 @@
         "why_it_matters": "It confirms whether secured pressure is present in tri-party GC repo."
       },
       "metric_id": "tgcr_iorb_spread_bp",
-      "observation_date": "2026-08-21",
+      "observation_date": "2026-08-24",
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -7199,7 +7204,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-08-25T07:38:44.958652Z",
+          "retrieved_at": "2026-08-26T07:40:27.865558Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -7208,18 +7213,14 @@
       ],
       "quality": {
         "failure_reason": null,
-        "freshness": "LATE",
-        "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-        "last_success_at": "2026-08-25T07:38:44.958652Z",
-        "sample_size": 506,
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+        "last_success_at": "2026-08-26T07:40:27.865558Z",
+        "sample_size": 507,
         "status": "OK"
       },
       "released_at": null,
       "short_series": [
-        {
-          "date": "2026-07-23",
-          "value": -3.0
-        },
         {
           "date": "2026-07-24",
           "value": -3.0
@@ -7303,11 +7304,15 @@
         {
           "date": "2026-08-21",
           "value": -2.0
+        },
+        {
+          "date": "2026-08-24",
+          "value": -2.0
         }
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-08-25T07:38:44.958652Z",
+        "retrieved_at": "2026-08-26T07:40:27.865558Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -7315,17 +7320,17 @@
       },
       "statistics": {
         "above_3bp_streak": 0,
-        "change_1obs": 3.0,
-        "change_5obs": 3.0,
+        "change_1obs": 0.0,
+        "change_5obs": -1.0,
         "latest": -2.0,
-        "mean_5obs": -3.0,
+        "mean_5obs": -3.2,
         "observations_used": 5,
         "positive_streak": 0,
-        "slope_5obs_bp_per_obs": -0.5
+        "slope_5obs_bp_per_obs": 0.3
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "value": -2.0
     },
     "trend_following_positioning_proxy": {
@@ -7466,7 +7471,7 @@
     }
   },
   "overall_assessment": "NEUTRAL",
-  "pipeline_updated_at": "2026-08-25T07:38:44.958652Z",
+  "pipeline_updated_at": "2026-08-26T07:40:27.865558Z",
   "schema_version": "2.3.0",
   "source_health": {
     "error": 0,
@@ -7481,15 +7486,15 @@
       "expected_next_update": "2026-08-28",
       "failure_reason": null,
       "freshness": "FRESH",
-      "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-      "last_success_at": "2026-08-25T07:38:44.958652Z",
+      "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+      "last_success_at": "2026-08-26T07:40:27.865558Z",
       "name": "CFTC Public Reporting Environment",
       "observation_date": "2026-08-18",
       "released_at": "2026-08-21T19:30:05.971000Z",
       "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
       "status": "OK",
       "tier": "OFFICIAL",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "url": "https://publicreporting.cftc.gov/"
     },
     "fred_h41": {
@@ -7513,15 +7518,15 @@
       "expected_next_update": null,
       "failure_reason": null,
       "freshness": "FRESH",
-      "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-      "last_success_at": "2026-08-25T07:38:44.958652Z",
+      "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+      "last_success_at": "2026-08-26T07:40:27.865558Z",
       "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-      "observation_date": "2026-08-25",
+      "observation_date": "2026-08-26",
       "released_at": null,
       "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
       "status": "OK",
       "tier": "DISTRIBUTOR",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "url": "https://fred.stlouisfed.org/docs/api/fred/"
     },
     "fred_nonfinancial_equities_gdp": {
@@ -7542,50 +7547,50 @@
     },
     "nyfed_on_rrp": {
       "collector_id": "nyfed_on_rrp",
-      "expected_next_update": "2026-08-25",
+      "expected_next_update": "2026-08-26",
       "failure_reason": null,
       "freshness": "FRESH",
-      "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-      "last_success_at": "2026-08-25T07:38:44.958652Z",
+      "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+      "last_success_at": "2026-08-26T07:40:27.865558Z",
       "name": "Federal Reserve Bank of New York Markets Data API",
-      "observation_date": "2026-08-24",
-      "released_at": "2026-08-24T17:15:36Z",
+      "observation_date": "2026-08-25",
+      "released_at": "2026-08-25T17:15:36Z",
       "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
       "status": "OK",
       "tier": "OFFICIAL",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
     },
     "nyfed_rates": {
       "collector_id": "nyfed_rates",
-      "expected_next_update": "2026-08-24",
+      "expected_next_update": "2026-08-25",
       "failure_reason": null,
-      "freshness": "LATE",
-      "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-      "last_success_at": "2026-08-25T07:38:44.958652Z",
+      "freshness": "FRESH",
+      "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+      "last_success_at": "2026-08-26T07:40:27.865558Z",
       "name": "Federal Reserve Bank of New York Markets Data API",
-      "observation_date": "2026-08-21",
+      "observation_date": "2026-08-24",
       "released_at": null,
       "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
       "status": "OK",
       "tier": "OFFICIAL",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
     },
     "nyfed_srf": {
       "collector_id": "nyfed_srf",
-      "expected_next_update": "2026-08-25",
+      "expected_next_update": "2026-08-26",
       "failure_reason": null,
       "freshness": "FRESH",
-      "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-      "last_success_at": "2026-08-25T07:38:44.958652Z",
+      "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+      "last_success_at": "2026-08-26T07:40:27.865558Z",
       "name": "Federal Reserve Bank of New York Markets Data API",
-      "observation_date": "2026-08-24",
-      "released_at": "2026-08-24T17:45:44Z",
+      "observation_date": "2026-08-25",
+      "released_at": "2026-08-25T17:45:33Z",
       "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
       "status": "OK",
       "tier": "OFFICIAL",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
     },
     "sec_companyfacts_capex": {
@@ -7606,18 +7611,18 @@
     },
     "sec_form4_daily_index": {
       "collector_id": "sec_form4_daily_index",
-      "expected_next_update": "2026-08-25",
+      "expected_next_update": "2026-08-26",
       "failure_reason": null,
       "freshness": "FRESH",
-      "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-      "last_success_at": "2026-08-25T07:38:44.958652Z",
+      "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+      "last_success_at": "2026-08-26T07:40:27.865558Z",
       "name": "SEC EDGAR APIs and filing data",
-      "observation_date": "2026-08-24",
-      "released_at": "2026-08-25T01:58:03Z",
+      "observation_date": "2026-08-25",
+      "released_at": "2026-08-26T01:57:57Z",
       "rights_note": "Cite the filing and accession; do not republish long issuer-authored passages.",
       "status": "OK",
       "tier": "OFFICIAL",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "url": "https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data"
     },
     "treasury_auctions": {
@@ -7625,31 +7630,31 @@
       "expected_next_update": null,
       "failure_reason": null,
       "freshness": "FRESH",
-      "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-      "last_success_at": "2026-08-25T07:38:44.958652Z",
+      "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+      "last_success_at": "2026-08-26T07:40:27.865558Z",
       "name": "U.S. Treasury FiscalData API",
-      "observation_date": "2026-08-31",
+      "observation_date": "2026-09-01",
       "released_at": null,
       "rights_note": "Cite FiscalData and preserve the dataset as-of date.",
       "status": "OK",
       "tier": "OFFICIAL",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "url": "https://fiscaldata.treasury.gov/api-documentation/"
     },
     "treasury_tga": {
       "collector_id": "treasury_tga",
-      "expected_next_update": "2026-08-24",
+      "expected_next_update": "2026-08-25",
       "failure_reason": null,
-      "freshness": "LATE",
-      "last_attempt_at": "2026-08-25T07:38:44.958652Z",
-      "last_success_at": "2026-08-25T07:38:44.958652Z",
+      "freshness": "FRESH",
+      "last_attempt_at": "2026-08-26T07:40:27.865558Z",
+      "last_success_at": "2026-08-26T07:40:27.865558Z",
       "name": "U.S. Treasury FiscalData API",
-      "observation_date": "2026-08-21",
+      "observation_date": "2026-08-24",
       "released_at": null,
       "rights_note": "Cite FiscalData and preserve the dataset as-of date.",
       "status": "OK",
       "tier": "OFFICIAL",
-      "updated_at": "2026-08-25T07:38:44.958652Z",
+      "updated_at": "2026-08-26T07:40:27.865558Z",
       "url": "https://fiscaldata.treasury.gov/api-documentation/"
     }
   },
@@ -7733,10 +7738,10 @@
         {
           "available": true,
           "confidence": "HIGH",
-          "direction": "FLAT",
+          "direction": "MORE_USE",
           "id": "srf_backstop",
           "label": "SRF accepted",
-          "status": "0/3 POSITIVE",
+          "status": "1/3 POSITIVE",
           "summary": "技術演習按官方 allowlist 標記，唔按金額猜測。",
           "triggered": false
         },
