@@ -1,10 +1,10 @@
 {
   "availability": "ACTIVE_FREE",
-  "expected_next_update": "2026-08-26",
+  "expected_next_update": "2026-08-28",
   "frequency": "business_daily",
   "label": "ON RRP accepted amount",
   "metric_id": "on_rrp_accepted",
-  "observation_date": "2026-08-25",
+  "observation_date": "2026-08-27",
   "observations": [
     {
       "date": "2025-01-10",
@@ -4055,26 +4055,46 @@
       "source_total_amt_submitted": 405000000.0,
       "submitted_usd_bn": 0.405,
       "value": 0.405
+    },
+    {
+      "date": "2026-08-26",
+      "operation_count": 1,
+      "released_at": "2026-08-26T17:15:31Z",
+      "source_amount_unit": "USD",
+      "source_total_amt_accepted": 702000000.0,
+      "source_total_amt_submitted": 702000000.0,
+      "submitted_usd_bn": 0.702,
+      "value": 0.702
+    },
+    {
+      "date": "2026-08-27",
+      "operation_count": 1,
+      "released_at": "2026-08-27T17:15:31Z",
+      "source_amount_unit": "USD",
+      "source_total_amt_accepted": 456000000.0,
+      "source_total_amt_submitted": 456000000.0,
+      "submitted_usd_bn": 0.456,
+      "value": 0.456
     }
   ],
   "quality": {
     "failure_reason": null,
     "freshness": "FRESH",
-    "last_attempt_at": "2026-08-26T07:40:27.865558Z",
-    "last_success_at": "2026-08-26T07:40:27.865558Z",
-    "sample_size": 405,
+    "last_attempt_at": "2026-08-27T18:01:42.647705Z",
+    "last_success_at": "2026-08-27T18:01:42.647705Z",
+    "sample_size": 407,
     "status": "OK"
   },
-  "released_at": "2026-08-25T17:15:36Z",
+  "released_at": "2026-08-27T17:15:31Z",
   "schema_version": "2.3.0",
   "source": {
     "name": "Federal Reserve Bank of New York Markets Data API",
-    "retrieved_at": "2026-08-26T07:40:27.865558Z",
+    "retrieved_at": "2026-08-27T18:01:42.647705Z",
     "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
     "source_id": "nyfed_markets",
     "tier": "OFFICIAL",
     "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
   },
   "unit": "USD bn",
-  "updated_at": "2026-08-26T07:40:27.865558Z"
+  "updated_at": "2026-08-27T18:01:42.647705Z"
 }

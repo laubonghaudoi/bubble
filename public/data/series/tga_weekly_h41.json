@@ -1269,11 +1269,11 @@
   ],
   "quality": {
     "failure_reason": null,
-    "freshness": "FRESH",
+    "freshness": "LATE",
     "last_attempt_at": "2026-08-22T05:28:20.558770Z",
     "last_success_at": "2026-08-22T05:28:20.558770Z",
     "sample_size": 315,
-    "status": "OK"
+    "status": "NOT_RELEASED_YET"
   },
   "released_at": null,
   "schema_version": "2.3.0",
