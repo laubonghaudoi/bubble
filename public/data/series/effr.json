@@ -1,10 +1,10 @@
 {
   "availability": "ACTIVE_FREE",
-  "expected_next_update": "2026-08-31",
+  "expected_next_update": "2026-09-01",
   "frequency": "business_daily",
   "label": "EFFR",
   "metric_id": "effr",
-  "observation_date": "2026-08-28",
+  "observation_date": "2026-08-31",
   "observations": [
     {
       "date": "2024-08-12",
@@ -2061,26 +2061,30 @@
     {
       "date": "2026-08-28",
       "value": 3.63
+    },
+    {
+      "date": "2026-08-31",
+      "value": 3.63
     }
   ],
   "quality": {
     "failure_reason": null,
-    "freshness": "LATE",
-    "last_attempt_at": "2026-09-01T12:17:03.961765Z",
-    "last_success_at": "2026-09-01T12:17:03.961765Z",
-    "sample_size": 514,
+    "freshness": "FRESH",
+    "last_attempt_at": "2026-09-02T11:54:44.681505Z",
+    "last_success_at": "2026-09-02T11:54:44.681505Z",
+    "sample_size": 515,
     "status": "OK"
   },
   "released_at": null,
   "schema_version": "2.3.0",
   "source": {
     "name": "Federal Reserve Bank of New York Markets Data API",
-    "retrieved_at": "2026-09-01T12:17:03.961765Z",
+    "retrieved_at": "2026-09-02T11:54:44.681505Z",
     "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
     "source_id": "nyfed_markets",
     "tier": "OFFICIAL",
     "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
   },
   "unit": "percent",
-  "updated_at": "2026-09-01T12:17:03.961765Z"
+  "updated_at": "2026-09-02T11:54:44.681505Z"
 }
