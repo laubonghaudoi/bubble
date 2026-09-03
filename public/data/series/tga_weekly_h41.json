@@ -1273,11 +1273,11 @@
   ],
   "quality": {
     "failure_reason": null,
-    "freshness": "FRESH",
+    "freshness": "LATE",
     "last_attempt_at": "2026-08-29T03:47:23.751550Z",
     "last_success_at": "2026-08-29T03:47:23.751550Z",
     "sample_size": 316,
-    "status": "OK"
+    "status": "NOT_RELEASED_YET"
   },
   "released_at": null,
   "schema_version": "2.3.0",
