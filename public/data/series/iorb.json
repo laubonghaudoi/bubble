@@ -4,7 +4,7 @@
   "frequency": "policy_event",
   "label": "IORB",
   "metric_id": "iorb",
-  "observation_date": "2026-09-03",
+  "observation_date": "2026-09-04",
   "observations": [
     {
       "date": "2021-07-29",
@@ -7457,26 +7457,30 @@
     {
       "date": "2026-09-03",
       "value": 3.65
+    },
+    {
+      "date": "2026-09-04",
+      "value": 3.65
     }
   ],
   "quality": {
     "failure_reason": null,
     "freshness": "FRESH",
-    "last_attempt_at": "2026-09-03T11:52:54.961506Z",
-    "last_success_at": "2026-09-03T11:52:54.961506Z",
-    "sample_size": 1863,
+    "last_attempt_at": "2026-09-04T11:55:44.803714Z",
+    "last_success_at": "2026-09-04T11:55:44.803714Z",
+    "sample_size": 1864,
     "status": "OK"
   },
   "released_at": null,
   "schema_version": "2.3.0",
   "source": {
     "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-    "retrieved_at": "2026-09-03T11:52:54.961506Z",
+    "retrieved_at": "2026-09-04T11:55:44.803714Z",
     "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
     "source_id": "fred_government",
     "tier": "DISTRIBUTOR",
     "url": "https://fred.stlouisfed.org/docs/api/fred/"
   },
   "unit": "percent",
-  "updated_at": "2026-09-03T11:52:54.961506Z"
+  "updated_at": "2026-09-04T11:55:44.803714Z"
 }

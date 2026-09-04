@@ -12346,8 +12346,66 @@
       "trailing_nonzero_sample_size": 383,
       "trailing_p90_usd_bn": 289.8,
       "treasury_settlement_usd_bn": 247.0
+    },
+    {
+      "auction_keys": [
+        [
+          "912797UL9",
+          "2026-09-08",
+          "2026-09-10"
+        ],
+        [
+          "912797VG9",
+          "2026-09-08",
+          "2026-09-10"
+        ],
+        [
+          "912797WK9",
+          "2026-09-08",
+          "2026-09-10"
+        ]
+      ],
+      "date": "2026-09-10",
+      "flags": [
+        "TREASURY_SETTLEMENT"
+      ],
+      "large_treasury_settlement": false,
+      "note": "Treasury 結算可能短暫抽走銀行體系現金。",
+      "security_count": 3,
+      "trailing_nonzero_sample_size": 384,
+      "trailing_p90_usd_bn": 289.7,
+      "treasury_settlement_usd_bn": 246.0
+    },
+    {
+      "auction_keys": [
+        [
+          "912810UW6",
+          "2026-09-10",
+          "2026-09-15"
+        ],
+        [
+          "91282CRF0",
+          "2026-09-09",
+          "2026-09-15"
+        ],
+        [
+          "91282CRL7",
+          "2026-09-08",
+          "2026-09-15"
+        ]
+      ],
+      "date": "2026-09-15",
+      "flags": [
+        "TREASURY_SETTLEMENT"
+      ],
+      "large_treasury_settlement": false,
+      "note": "Treasury 結算可能短暫抽走銀行體系現金。",
+      "security_count": 3,
+      "trailing_nonzero_sample_size": 383,
+      "trailing_p90_usd_bn": 289.8,
+      "treasury_settlement_usd_bn": 119.0
     }
   ],
-  "generated_at": "2026-09-04T00:26:51.901451Z",
+  "generated_at": "2026-09-04T11:55:44.803714Z",
   "schema_version": "2.3.0"
 }
