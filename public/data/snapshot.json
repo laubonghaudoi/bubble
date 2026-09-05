@@ -39,7 +39,7 @@
       },
       "data_status": "CURRENT",
       "enabled": true,
-      "evaluated_at": "2026-09-04T11:55:44.803714Z",
+      "evaluated_at": "2026-09-05T00:14:11.526575Z",
       "formulas": {
         "extreme": {
           "candidate": false,
@@ -801,7 +801,7 @@
     ],
     "headline": "Liquidity Fuel 暫未觸發監察條件。"
   },
-  "generated_at": "2026-09-04T11:55:44.803714Z",
+  "generated_at": "2026-09-05T00:14:11.526575Z",
   "manual_ready_count": 3,
   "market_date": "2026-09-02",
   "metrics": {
@@ -1161,7 +1161,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-09-04T11:55:44.803714Z",
+          "retrieved_at": "2026-09-05T00:14:11.526575Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -1169,7 +1169,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-09-04T11:55:44.803714Z",
+          "retrieved_at": "2026-09-05T00:14:11.526575Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -1179,7 +1179,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-09-04T11:55:44.803714Z",
+        "last_attempt_at": "2026-09-05T00:14:11.526575Z",
         "last_success_at": "2026-09-04T11:55:44.803714Z",
         "sample_size": 514,
         "status": "OK"
@@ -1277,7 +1277,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-09-04T11:55:44.803714Z",
+        "retrieved_at": "2026-09-05T00:14:11.526575Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -1295,7 +1295,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-09-04T11:55:44.803714Z",
+      "updated_at": "2026-09-05T00:14:11.526575Z",
       "value": -2.0
     },
     "cboe_skew_tail_risk_proxy": {
@@ -1369,13 +1369,13 @@
     "cftc_e_mini_sp500_asset_manager_net_pct_oi": {
       "availability": "ACTIVE_FREE",
       "changes": {
-        "eight_weeks": -3.026732,
-        "five_observations": -1.309942,
-        "four_weeks": -1.012293,
-        "one_observation": 0.246018,
-        "one_week": 0.246018,
-        "twelve_weeks": 0.913172,
-        "twenty_observations": -2.152816
+        "eight_weeks": -3.639276,
+        "five_observations": -1.971206,
+        "four_weeks": 1.356889,
+        "one_observation": -0.958913,
+        "one_week": -0.958913,
+        "twelve_weeks": 0.971516,
+        "twenty_observations": -5.566446
       },
       "context": {
         "confidence": "HIGH",
@@ -1384,27 +1384,27 @@
         "technical_flags": []
       },
       "details": {
-        "asset_manager_pct_long": 57.0,
-        "asset_manager_pct_short": 10.4,
-        "asset_manager_spread": 85838,
+        "asset_manager_pct_long": 56.5,
+        "asset_manager_pct_short": 10.9,
+        "asset_manager_spread": 86481,
         "cftc_commodity_code": "138 ",
         "cftc_market_code": "CME ",
         "commodity_name": "S&P BROAD BASED STOCK INDICES",
         "contract_code": "13874A",
         "contract_name": "E-MINI S&P 500",
         "contract_units": "($50 X S&P 500 INDEX)",
-        "long_position": 1166084,
+        "long_position": 1156793,
         "market_and_exchange_name": "E-MINI S&P 500 - CHICAGO MERCANTILE EXCHANGE",
-        "net_position": 953228,
-        "open_interest": 2045669,
-        "released_at": "2026-08-28T19:30:07.994000Z",
+        "net_position": 934180,
+        "open_interest": 2046914,
+        "released_at": "2026-09-04T19:30:10.112000Z",
         "report_type": "TFF_FUTURES_ONLY",
-        "row_id": "row-m56r_juv3-imk8",
-        "short_position": 212856,
-        "source_report_id": "26082513874AF",
+        "row_id": "row-mcv4-vndt_xq46",
+        "short_position": 222613,
+        "source_report_id": "26090113874AF",
         "trader_category": "asset_manager"
       },
-      "expected_next_update": "2026-09-04",
+      "expected_next_update": "2026-09-11",
       "frequency": "weekly",
       "interpretation": null,
       "label": "CFTC E-mini S&P 500 asset-manager net % OI",
@@ -1426,11 +1426,11 @@
         "why_it_matters": "It separates a disclosed institutional positioning category from leveraged-fund exposure."
       },
       "metric_id": "cftc_e_mini_sp500_asset_manager_net_pct_oi",
-      "observation_date": "2026-08-25",
+      "observation_date": "2026-09-01",
       "provenance": [
         {
           "name": "CFTC Public Reporting Environment",
-          "retrieved_at": "2026-09-04T11:55:44.803714Z",
+          "retrieved_at": "2026-09-05T00:14:11.526575Z",
           "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
           "source_id": "cftc_pre",
           "tier": "OFFICIAL",
@@ -1440,17 +1440,13 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-09-04T11:55:44.803714Z",
-        "last_success_at": "2026-09-04T11:55:44.803714Z",
-        "sample_size": 164,
+        "last_attempt_at": "2026-09-05T00:14:11.526575Z",
+        "last_success_at": "2026-09-05T00:14:11.526575Z",
+        "sample_size": 165,
         "status": "OK"
       },
-      "released_at": "2026-08-28T19:30:07.994000Z",
+      "released_at": "2026-09-04T19:30:10.112000Z",
       "short_series": [
-        {
-          "date": "2026-03-31",
-          "value": 47.013686
-        },
         {
           "date": "2026-04-07",
           "value": 48.750188
@@ -1534,41 +1530,45 @@
         {
           "date": "2026-08-25",
           "value": 46.597372
+        },
+        {
+          "date": "2026-09-01",
+          "value": 45.638459
         }
       ],
       "source": {
         "name": "CFTC Public Reporting Environment",
-        "retrieved_at": "2026-09-04T11:55:44.803714Z",
+        "retrieved_at": "2026-09-05T00:14:11.526575Z",
         "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
         "source_id": "cftc_pre",
         "tier": "OFFICIAL",
         "url": "https://publicreporting.cftc.gov/"
       },
       "statistics": {
-        "change_12_weeks": 0.913172,
-        "change_8_weeks": -3.026732,
-        "net_percent_open_interest": 46.597372302166185,
-        "net_position": 953228,
-        "open_interest": 2045669,
-        "sample_size": 164,
-        "z_score_3_year": 0.557117,
+        "change_12_weeks": 0.971516,
+        "change_8_weeks": -3.639276,
+        "net_percent_open_interest": 45.63845867486372,
+        "net_position": 934180,
+        "open_interest": 2046914,
+        "sample_size": 165,
+        "z_score_3_year": 0.367988,
         "z_score_3_year_sample_size": 156
       },
       "unavailability_reason": null,
       "unit": "percent_open_interest",
-      "updated_at": "2026-09-04T11:55:44.803714Z",
-      "value": 46.597372
+      "updated_at": "2026-09-05T00:14:11.526575Z",
+      "value": 45.638459
     },
     "cftc_e_mini_sp500_leveraged_funds_net_pct_oi": {
       "availability": "ACTIVE_PROXY",
       "changes": {
-        "eight_weeks": 2.915913,
-        "five_observations": 1.238518,
-        "four_weeks": -0.417691,
-        "one_observation": -1.829527,
-        "one_week": -1.829527,
-        "twelve_weeks": 7.889836,
-        "twenty_observations": -2.734869
+        "eight_weeks": 2.858403,
+        "five_observations": -0.523614,
+        "four_weeks": 0.080553,
+        "one_observation": -0.105923,
+        "one_week": -0.105923,
+        "twelve_weeks": 4.982876,
+        "twenty_observations": 5.942569
       },
       "context": {
         "confidence": "HIGH",
@@ -1583,21 +1583,21 @@
         "contract_code": "13874A",
         "contract_name": "E-MINI S&P 500",
         "contract_units": "($50 X S&P 500 INDEX)",
-        "leveraged_funds_pct_long": 7.4,
-        "leveraged_funds_pct_short": 22.8,
-        "leveraged_funds_spread": 43157,
-        "long_position": 150526,
+        "leveraged_funds_pct_long": 8.1,
+        "leveraged_funds_pct_short": 23.6,
+        "leveraged_funds_spread": 42884,
+        "long_position": 165311,
         "market_and_exchange_name": "E-MINI S&P 500 - CHICAGO MERCANTILE EXCHANGE",
-        "net_position": -315204,
-        "open_interest": 2045669,
-        "released_at": "2026-08-28T19:30:07.994000Z",
+        "net_position": -317564,
+        "open_interest": 2046914,
+        "released_at": "2026-09-04T19:30:10.112000Z",
         "report_type": "TFF_FUTURES_ONLY",
-        "row_id": "row-m56r_juv3-imk8",
-        "short_position": 465730,
-        "source_report_id": "26082513874AF",
+        "row_id": "row-mcv4-vndt_xq46",
+        "short_position": 482875,
+        "source_report_id": "26090113874AF",
         "trader_category": "leveraged_funds"
       },
-      "expected_next_update": "2026-09-04",
+      "expected_next_update": "2026-09-11",
       "frequency": "weekly",
       "interpretation": null,
       "label": "CFTC E-mini S&P 500 leveraged-funds net % OI",
@@ -1619,11 +1619,11 @@
         "why_it_matters": "It is a transparent proxy for changes in leveraged-fund E-mini S&P 500 positioning."
       },
       "metric_id": "cftc_e_mini_sp500_leveraged_funds_net_pct_oi",
-      "observation_date": "2026-08-25",
+      "observation_date": "2026-09-01",
       "provenance": [
         {
           "name": "CFTC Public Reporting Environment",
-          "retrieved_at": "2026-09-04T11:55:44.803714Z",
+          "retrieved_at": "2026-09-05T00:14:11.526575Z",
           "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
           "source_id": "cftc_pre",
           "tier": "OFFICIAL",
@@ -1633,17 +1633,13 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-09-04T11:55:44.803714Z",
-        "last_success_at": "2026-09-04T11:55:44.803714Z",
-        "sample_size": 164,
+        "last_attempt_at": "2026-09-05T00:14:11.526575Z",
+        "last_success_at": "2026-09-05T00:14:11.526575Z",
+        "sample_size": 165,
         "status": "OK"
       },
-      "released_at": "2026-08-28T19:30:07.994000Z",
+      "released_at": "2026-09-04T19:30:10.112000Z",
       "short_series": [
-        {
-          "date": "2026-03-31",
-          "value": -11.983557
-        },
         {
           "date": "2026-04-07",
           "value": -12.673489
@@ -1727,70 +1723,74 @@
         {
           "date": "2026-08-25",
           "value": -15.408358
+        },
+        {
+          "date": "2026-09-01",
+          "value": -15.514281
         }
       ],
       "source": {
         "name": "CFTC Public Reporting Environment",
-        "retrieved_at": "2026-09-04T11:55:44.803714Z",
+        "retrieved_at": "2026-09-05T00:14:11.526575Z",
         "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
         "source_id": "cftc_pre",
         "tier": "OFFICIAL",
         "url": "https://publicreporting.cftc.gov/"
       },
       "statistics": {
-        "change_12_weeks": 7.889836,
-        "change_8_weeks": 2.915913,
-        "net_percent_open_interest": -15.408357852614476,
-        "net_position": -315204,
-        "open_interest": 2045669,
-        "sample_size": 164,
-        "z_score_3_year": 0.214998,
+        "change_12_weeks": 4.982876,
+        "change_8_weeks": 2.858403,
+        "net_percent_open_interest": -15.514281498880754,
+        "net_position": -317564,
+        "open_interest": 2046914,
+        "sample_size": 165,
+        "z_score_3_year": 0.188422,
         "z_score_3_year_sample_size": 156
       },
       "unavailability_reason": null,
       "unit": "percent_open_interest",
-      "updated_at": "2026-09-04T11:55:44.803714Z",
-      "value": -15.408358
+      "updated_at": "2026-09-05T00:14:11.526575Z",
+      "value": -15.514281
     },
     "cftc_nasdaq100_consolidated_asset_manager_net_pct_oi": {
       "availability": "ACTIVE_FREE",
       "changes": {
-        "eight_weeks": 0.049901,
-        "five_observations": -0.584427,
-        "four_weeks": -1.271257,
-        "one_observation": 1.350069,
-        "one_week": 1.350069,
-        "twelve_weeks": -0.173737,
-        "twenty_observations": 0.40968
+        "eight_weeks": -3.595512,
+        "five_observations": -1.5624,
+        "four_weeks": 3.255496,
+        "one_observation": -0.291143,
+        "one_week": -0.291143,
+        "twelve_weeks": -2.472516,
+        "twenty_observations": -5.203912
       },
       "context": {
         "confidence": "HIGH",
-        "direction": "MORE_NET_LONG",
+        "direction": "MORE_NET_SHORT",
         "is_proxy": false,
         "technical_flags": []
       },
       "details": {
-        "asset_manager_pct_long": 34.3,
-        "asset_manager_pct_short": 11.2,
-        "asset_manager_spread": 4809,
+        "asset_manager_pct_long": 34.2,
+        "asset_manager_pct_short": 11.4,
+        "asset_manager_spread": 5308,
         "cftc_commodity_code": "209 ",
         "cftc_market_code": "CME ",
         "commodity_name": "NASDAQ  BROADBASED INDICES",
         "contract_code": "20974+",
         "contract_name": "NASDAQ-100 Consolidated",
         "contract_units": "(NASDAQ 100 INDEX X $20)",
-        "long_position": 110437,
+        "long_position": 109428,
         "market_and_exchange_name": "NASDAQ-100 Consolidated - CHICAGO MERCANTILE EXCHANGE",
-        "net_position": 74231,
-        "open_interest": 322190,
-        "released_at": "2026-08-28T19:30:07.994000Z",
+        "net_position": 72886,
+        "open_interest": 320401,
+        "released_at": "2026-09-04T19:30:10.112000Z",
         "report_type": "TFF_FUTURES_ONLY",
-        "row_id": "row-5k5v_2cfa_42d6",
-        "short_position": 36206,
-        "source_report_id": "26082520974+F",
+        "row_id": "row-6zvp_rzca.ezav",
+        "short_position": 36542,
+        "source_report_id": "26090120974+F",
         "trader_category": "asset_manager"
       },
-      "expected_next_update": "2026-09-04",
+      "expected_next_update": "2026-09-11",
       "frequency": "weekly",
       "interpretation": null,
       "label": "CFTC Nasdaq-100 consolidated asset-manager net % OI",
@@ -1812,11 +1812,11 @@
         "why_it_matters": "It separates Nasdaq-100 institutional-category positioning from S&P 500 exposure."
       },
       "metric_id": "cftc_nasdaq100_consolidated_asset_manager_net_pct_oi",
-      "observation_date": "2026-08-25",
+      "observation_date": "2026-09-01",
       "provenance": [
         {
           "name": "CFTC Public Reporting Environment",
-          "retrieved_at": "2026-09-04T11:55:44.803714Z",
+          "retrieved_at": "2026-09-05T00:14:11.526575Z",
           "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
           "source_id": "cftc_pre",
           "tier": "OFFICIAL",
@@ -1826,17 +1826,13 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-09-04T11:55:44.803714Z",
-        "last_success_at": "2026-09-04T11:55:44.803714Z",
-        "sample_size": 164,
+        "last_attempt_at": "2026-09-05T00:14:11.526575Z",
+        "last_success_at": "2026-09-05T00:14:11.526575Z",
+        "sample_size": 165,
         "status": "OK"
       },
-      "released_at": "2026-08-28T19:30:07.994000Z",
+      "released_at": "2026-09-04T19:30:10.112000Z",
       "short_series": [
-        {
-          "date": "2026-03-31",
-          "value": 22.855148
-        },
         {
           "date": "2026-04-07",
           "value": 22.629831
@@ -1920,41 +1916,45 @@
         {
           "date": "2026-08-25",
           "value": 23.039511
+        },
+        {
+          "date": "2026-09-01",
+          "value": 22.748368
         }
       ],
       "source": {
         "name": "CFTC Public Reporting Environment",
-        "retrieved_at": "2026-09-04T11:55:44.803714Z",
+        "retrieved_at": "2026-09-05T00:14:11.526575Z",
         "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
         "source_id": "cftc_pre",
         "tier": "OFFICIAL",
         "url": "https://publicreporting.cftc.gov/"
       },
       "statistics": {
-        "change_12_weeks": -0.173737,
-        "change_8_weeks": 0.049901,
-        "net_percent_open_interest": 23.03951084763649,
-        "net_position": 74231,
-        "open_interest": 322190,
-        "sample_size": 164,
-        "z_score_3_year": -0.438241,
+        "change_12_weeks": -2.472516,
+        "change_8_weeks": -3.595512,
+        "net_percent_open_interest": 22.74836845078511,
+        "net_position": 72886,
+        "open_interest": 320401,
+        "sample_size": 165,
+        "z_score_3_year": -0.497295,
         "z_score_3_year_sample_size": 156
       },
       "unavailability_reason": null,
       "unit": "percent_open_interest",
-      "updated_at": "2026-09-04T11:55:44.803714Z",
-      "value": 23.039511
+      "updated_at": "2026-09-05T00:14:11.526575Z",
+      "value": 22.748368
     },
     "cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi": {
       "availability": "ACTIVE_PROXY",
       "changes": {
-        "eight_weeks": 13.195766,
-        "five_observations": 15.324135,
-        "four_weeks": 10.31223,
-        "one_observation": 7.520996,
-        "one_week": 7.520996,
-        "twelve_weeks": 7.885057,
-        "twenty_observations": 3.655681
+        "eight_weeks": 16.960427,
+        "five_observations": 18.438275,
+        "four_weeks": 24.435835,
+        "one_observation": 8.126045,
+        "one_week": 8.126045,
+        "twelve_weeks": 11.323548,
+        "twenty_observations": 15.668059
       },
       "context": {
         "confidence": "HIGH",
@@ -1969,21 +1969,21 @@
         "contract_code": "20974+",
         "contract_name": "NASDAQ-100 Consolidated",
         "contract_units": "(NASDAQ 100 INDEX X $20)",
-        "leveraged_funds_pct_long": 14.5,
-        "leveraged_funds_pct_short": 28.2,
-        "leveraged_funds_spread": 14398,
-        "long_position": 46573,
+        "leveraged_funds_pct_long": 15.6,
+        "leveraged_funds_pct_short": 21.2,
+        "leveraged_funds_spread": 14852,
+        "long_position": 49945,
         "market_and_exchange_name": "NASDAQ-100 Consolidated - CHICAGO MERCANTILE EXCHANGE",
-        "net_position": -44316,
-        "open_interest": 322190,
-        "released_at": "2026-08-28T19:30:07.994000Z",
+        "net_position": -18034,
+        "open_interest": 320401,
+        "released_at": "2026-09-04T19:30:10.112000Z",
         "report_type": "TFF_FUTURES_ONLY",
-        "row_id": "row-5k5v_2cfa_42d6",
-        "short_position": 90889,
-        "source_report_id": "26082520974+F",
+        "row_id": "row-6zvp_rzca.ezav",
+        "short_position": 67979,
+        "source_report_id": "26090120974+F",
         "trader_category": "leveraged_funds"
       },
-      "expected_next_update": "2026-09-04",
+      "expected_next_update": "2026-09-11",
       "frequency": "weekly",
       "interpretation": null,
       "label": "CFTC Nasdaq-100 consolidated leveraged-funds net % OI",
@@ -2005,11 +2005,11 @@
         "why_it_matters": "It is a transparent proxy for changes in leveraged Nasdaq-100 futures positioning."
       },
       "metric_id": "cftc_nasdaq100_consolidated_leveraged_funds_net_pct_oi",
-      "observation_date": "2026-08-25",
+      "observation_date": "2026-09-01",
       "provenance": [
         {
           "name": "CFTC Public Reporting Environment",
-          "retrieved_at": "2026-09-04T11:55:44.803714Z",
+          "retrieved_at": "2026-09-05T00:14:11.526575Z",
           "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
           "source_id": "cftc_pre",
           "tier": "OFFICIAL",
@@ -2019,17 +2019,13 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-09-04T11:55:44.803714Z",
-        "last_success_at": "2026-09-04T11:55:44.803714Z",
-        "sample_size": 164,
+        "last_attempt_at": "2026-09-05T00:14:11.526575Z",
+        "last_success_at": "2026-09-05T00:14:11.526575Z",
+        "sample_size": 165,
         "status": "OK"
       },
-      "released_at": "2026-08-28T19:30:07.994000Z",
+      "released_at": "2026-09-04T19:30:10.112000Z",
       "short_series": [
-        {
-          "date": "2026-03-31",
-          "value": -16.218335
-        },
         {
           "date": "2026-04-07",
           "value": -17.410298
@@ -2113,30 +2109,34 @@
         {
           "date": "2026-08-25",
           "value": -13.754617
+        },
+        {
+          "date": "2026-09-01",
+          "value": -5.628572
         }
       ],
       "source": {
         "name": "CFTC Public Reporting Environment",
-        "retrieved_at": "2026-09-04T11:55:44.803714Z",
+        "retrieved_at": "2026-09-05T00:14:11.526575Z",
         "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
         "source_id": "cftc_pre",
         "tier": "OFFICIAL",
         "url": "https://publicreporting.cftc.gov/"
       },
       "statistics": {
-        "change_12_weeks": 7.885057,
-        "change_8_weeks": 13.195766,
-        "net_percent_open_interest": -13.754616840994444,
-        "net_position": -44316,
-        "open_interest": 322190,
-        "sample_size": 164,
-        "z_score_3_year": -0.115601,
+        "change_12_weeks": 11.323548,
+        "change_8_weeks": 16.960427,
+        "net_percent_open_interest": -5.628571696093333,
+        "net_position": -18034,
+        "open_interest": 320401,
+        "sample_size": 165,
+        "z_score_3_year": 0.979913,
         "z_score_3_year_sample_size": 156
       },
       "unavailability_reason": null,
       "unit": "percent_open_interest",
-      "updated_at": "2026-09-04T11:55:44.803714Z",
-      "value": -13.754617
+      "updated_at": "2026-09-05T00:14:11.526575Z",
+      "value": -5.628572
     },
     "cross_asset_correlation": {
       "availability": "UNAVAILABLE_FREE",
@@ -2712,7 +2712,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-09-04T11:55:44.803714Z",
+          "retrieved_at": "2026-09-05T00:14:11.526575Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -2720,7 +2720,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-09-04T11:55:44.803714Z",
+          "retrieved_at": "2026-09-05T00:14:11.526575Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -2730,7 +2730,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-09-04T11:55:44.803714Z",
+        "last_attempt_at": "2026-09-05T00:14:11.526575Z",
         "last_success_at": "2026-09-04T11:55:44.803714Z",
         "sample_size": 517,
         "status": "OK"
@@ -2828,7 +2828,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-09-04T11:55:44.803714Z",
+        "retrieved_at": "2026-09-05T00:14:11.526575Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -2846,7 +2846,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-09-04T11:55:44.803714Z",
+      "updated_at": "2026-09-05T00:14:11.526575Z",
       "value": -2.0
     },
     "fed_total_assets": {
@@ -2932,7 +2932,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-09-04T00:26:51.901451Z",
+          "retrieved_at": "2026-09-05T00:14:11.526575Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -2942,8 +2942,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-09-04T00:26:51.901451Z",
-        "last_success_at": "2026-09-04T00:26:51.901451Z",
+        "last_attempt_at": "2026-09-05T00:14:11.526575Z",
+        "last_success_at": "2026-09-05T00:14:11.526575Z",
         "sample_size": 317,
         "status": "OK"
       },
@@ -3040,7 +3040,7 @@
       ],
       "source": {
         "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-        "retrieved_at": "2026-09-04T00:26:51.901451Z",
+        "retrieved_at": "2026-09-05T00:14:11.526575Z",
         "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
         "source_id": "fred_government",
         "tier": "DISTRIBUTOR",
@@ -3054,7 +3054,7 @@
       },
       "unavailability_reason": null,
       "unit": "USD bn",
-      "updated_at": "2026-09-04T00:26:51.901451Z",
+      "updated_at": "2026-09-05T00:14:11.526575Z",
       "value": 6737.204
     },
     "finra_margin_debt": {
@@ -4534,7 +4534,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-09-04T11:55:44.803714Z",
+          "retrieved_at": "2026-09-05T00:14:11.526575Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -4542,7 +4542,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-09-04T11:55:44.803714Z",
+          "retrieved_at": "2026-09-05T00:14:11.526575Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -4552,7 +4552,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-09-04T11:55:44.803714Z",
+        "last_attempt_at": "2026-09-05T00:14:11.526575Z",
         "last_success_at": "2026-09-04T11:55:44.803714Z",
         "sample_size": 517,
         "status": "OK"
@@ -4650,7 +4650,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-09-04T11:55:44.803714Z",
+        "retrieved_at": "2026-09-05T00:14:11.526575Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -4668,7 +4668,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-09-04T11:55:44.803714Z",
+      "updated_at": "2026-09-05T00:14:11.526575Z",
       "value": -2.0
     },
     "on_rrp_accepted": {
@@ -5072,7 +5072,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-09-04T00:26:51.901451Z",
+          "retrieved_at": "2026-09-05T00:14:11.526575Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -5082,8 +5082,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-09-04T00:26:51.901451Z",
-        "last_success_at": "2026-09-04T00:26:51.901451Z",
+        "last_attempt_at": "2026-09-05T00:14:11.526575Z",
+        "last_success_at": "2026-09-05T00:14:11.526575Z",
         "sample_size": 317,
         "status": "OK"
       },
@@ -5180,7 +5180,7 @@
       ],
       "source": {
         "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-        "retrieved_at": "2026-09-04T00:26:51.901451Z",
+        "retrieved_at": "2026-09-05T00:14:11.526575Z",
         "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
         "source_id": "fred_government",
         "tier": "DISTRIBUTOR",
@@ -5196,7 +5196,7 @@
       },
       "unavailability_reason": null,
       "unit": "USD bn",
-      "updated_at": "2026-09-04T00:26:51.901451Z",
+      "updated_at": "2026-09-05T00:14:11.526575Z",
       "value": 2894.531
     },
     "sec_form4_nonderivative_ps_count_ratio_20d": {
@@ -5245,7 +5245,7 @@
       "provenance": [
         {
           "name": "SEC EDGAR APIs and filing data",
-          "retrieved_at": "2026-09-04T11:55:44.803714Z",
+          "retrieved_at": "2026-09-05T00:14:11.526575Z",
           "rights_note": "Cite the filing and accession; do not republish long issuer-authored passages.",
           "source_id": "sec_edgar",
           "tier": "OFFICIAL",
@@ -5255,8 +5255,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-09-04T11:55:44.803714Z",
-        "last_success_at": "2026-09-04T11:55:44.803714Z",
+        "last_attempt_at": "2026-09-05T00:14:11.526575Z",
+        "last_success_at": "2026-09-05T00:14:11.526575Z",
         "sample_size": 18,
         "status": "OK"
       },
@@ -5337,7 +5337,7 @@
       ],
       "source": {
         "name": "SEC EDGAR APIs and filing data",
-        "retrieved_at": "2026-09-04T11:55:44.803714Z",
+        "retrieved_at": "2026-09-05T00:14:11.526575Z",
         "rights_note": "Cite the filing and accession; do not republish long issuer-authored passages.",
         "source_id": "sec_edgar",
         "tier": "OFFICIAL",
@@ -5374,7 +5374,7 @@
       },
       "unavailability_reason": null,
       "unit": "ratio",
-      "updated_at": "2026-09-04T11:55:44.803714Z",
+      "updated_at": "2026-09-05T00:14:11.526575Z",
       "value": 0.197038
     },
     "sofr": {
@@ -5756,7 +5756,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-09-04T11:55:44.803714Z",
+          "retrieved_at": "2026-09-05T00:14:11.526575Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -5764,7 +5764,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-09-04T11:55:44.803714Z",
+          "retrieved_at": "2026-09-05T00:14:11.526575Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -5774,7 +5774,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-09-04T11:55:44.803714Z",
+        "last_attempt_at": "2026-09-05T00:14:11.526575Z",
         "last_success_at": "2026-09-04T11:55:44.803714Z",
         "sample_size": 514,
         "status": "OK"
@@ -5872,7 +5872,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-09-04T11:55:44.803714Z",
+        "retrieved_at": "2026-09-05T00:14:11.526575Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -5890,7 +5890,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-09-04T11:55:44.803714Z",
+      "updated_at": "2026-09-05T00:14:11.526575Z",
       "value": 0.0
     },
     "spx_0dte_share": {
@@ -6821,7 +6821,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-09-04T00:26:51.901451Z",
+          "retrieved_at": "2026-09-05T00:14:11.526575Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -6831,8 +6831,8 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-09-04T00:26:51.901451Z",
-        "last_success_at": "2026-09-04T00:26:51.901451Z",
+        "last_attempt_at": "2026-09-05T00:14:11.526575Z",
+        "last_success_at": "2026-09-05T00:14:11.526575Z",
         "sample_size": 317,
         "status": "OK"
       },
@@ -6929,7 +6929,7 @@
       ],
       "source": {
         "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-        "retrieved_at": "2026-09-04T00:26:51.901451Z",
+        "retrieved_at": "2026-09-05T00:14:11.526575Z",
         "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
         "source_id": "fred_government",
         "tier": "DISTRIBUTOR",
@@ -6943,7 +6943,7 @@
       },
       "unavailability_reason": null,
       "unit": "USD bn",
-      "updated_at": "2026-09-04T00:26:51.901451Z",
+      "updated_at": "2026-09-05T00:14:11.526575Z",
       "value": 967.935
     },
     "tgcr": {
@@ -7229,7 +7229,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-09-04T11:55:44.803714Z",
+          "retrieved_at": "2026-09-05T00:14:11.526575Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -7237,7 +7237,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-09-04T11:55:44.803714Z",
+          "retrieved_at": "2026-09-05T00:14:11.526575Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -7247,7 +7247,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-09-04T11:55:44.803714Z",
+        "last_attempt_at": "2026-09-05T00:14:11.526575Z",
         "last_success_at": "2026-09-04T11:55:44.803714Z",
         "sample_size": 514,
         "status": "OK"
@@ -7345,7 +7345,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-09-04T11:55:44.803714Z",
+        "retrieved_at": "2026-09-05T00:14:11.526575Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -7363,7 +7363,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-09-04T11:55:44.803714Z",
+      "updated_at": "2026-09-05T00:14:11.526575Z",
       "value": -2.0
     },
     "trend_following_positioning_proxy": {
@@ -7504,7 +7504,7 @@
     }
   },
   "overall_assessment": "NEUTRAL",
-  "pipeline_updated_at": "2026-09-04T11:55:44.803714Z",
+  "pipeline_updated_at": "2026-09-05T00:14:11.526575Z",
   "schema_version": "2.3.0",
   "source_health": {
     "error": 0,
@@ -7516,18 +7516,18 @@
   "sources": {
     "cftc_tff_futures_only": {
       "collector_id": "cftc_tff_futures_only",
-      "expected_next_update": "2026-09-04",
+      "expected_next_update": "2026-09-11",
       "failure_reason": null,
       "freshness": "FRESH",
-      "last_attempt_at": "2026-09-04T11:55:44.803714Z",
-      "last_success_at": "2026-09-04T11:55:44.803714Z",
+      "last_attempt_at": "2026-09-05T00:14:11.526575Z",
+      "last_success_at": "2026-09-05T00:14:11.526575Z",
       "name": "CFTC Public Reporting Environment",
-      "observation_date": "2026-08-25",
-      "released_at": "2026-08-28T19:30:07.994000Z",
+      "observation_date": "2026-09-01",
+      "released_at": "2026-09-04T19:30:10.112000Z",
       "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
       "status": "OK",
       "tier": "OFFICIAL",
-      "updated_at": "2026-09-04T11:55:44.803714Z",
+      "updated_at": "2026-09-05T00:14:11.526575Z",
       "url": "https://publicreporting.cftc.gov/"
     },
     "fred_h41": {
@@ -7535,15 +7535,15 @@
       "expected_next_update": "2026-09-03",
       "failure_reason": null,
       "freshness": "FRESH",
-      "last_attempt_at": "2026-09-04T00:26:51.901451Z",
-      "last_success_at": "2026-09-04T00:26:51.901451Z",
+      "last_attempt_at": "2026-09-05T00:14:11.526575Z",
+      "last_success_at": "2026-09-05T00:14:11.526575Z",
       "name": "Federal Reserve Economic Data API, reviewed government-origin series",
       "observation_date": "2026-09-02",
       "released_at": null,
       "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
       "status": "OK",
       "tier": "DISTRIBUTOR",
-      "updated_at": "2026-09-04T00:26:51.901451Z",
+      "updated_at": "2026-09-05T00:14:11.526575Z",
       "url": "https://fred.stlouisfed.org/docs/api/fred/"
     },
     "fred_iorb": {
@@ -7647,15 +7647,15 @@
       "expected_next_update": "2026-09-04",
       "failure_reason": null,
       "freshness": "FRESH",
-      "last_attempt_at": "2026-09-04T11:55:44.803714Z",
-      "last_success_at": "2026-09-04T11:55:44.803714Z",
+      "last_attempt_at": "2026-09-05T00:14:11.526575Z",
+      "last_success_at": "2026-09-05T00:14:11.526575Z",
       "name": "SEC EDGAR APIs and filing data",
       "observation_date": "2026-09-03",
       "released_at": "2026-09-04T01:58:57Z",
       "rights_note": "Cite the filing and accession; do not republish long issuer-authored passages.",
       "status": "OK",
       "tier": "OFFICIAL",
-      "updated_at": "2026-09-04T11:55:44.803714Z",
+      "updated_at": "2026-09-05T00:14:11.526575Z",
       "url": "https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data"
     },
     "treasury_auctions": {
@@ -7815,7 +7815,7 @@
           "id": "trend_positioning",
           "label": "Trend / positioning",
           "status": "MIXED",
-          "summary": "ES Asset Manager: MORE_NET_SHORT; ES Leveraged Funds: MORE_NET_LONG; NQ consolidated Asset Manager: MORE_NET_LONG; NQ consolidated Leveraged Funds: MORE_NET_LONG",
+          "summary": "ES Asset Manager: MORE_NET_SHORT; ES Leveraged Funds: MORE_NET_LONG; NQ consolidated Asset Manager: MORE_NET_SHORT; NQ consolidated Leveraged Funds: MORE_NET_LONG",
           "triggered": null
         },
         {
