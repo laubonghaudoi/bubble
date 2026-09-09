@@ -1,10 +1,10 @@
 {
   "availability": "ACTIVE_PROXY",
-  "expected_next_update": "2026-09-07",
+  "expected_next_update": "2026-09-09",
   "frequency": "business_daily",
   "label": "SEC Form 4 reported P/S count ratio · 20D proxy",
   "metric_id": "sec_form4_nonderivative_ps_count_ratio_20d",
-  "observation_date": "2026-09-04",
+  "observation_date": "2026-09-08",
   "observations": [
     {
       "date": "2026-08-11",
@@ -81,26 +81,30 @@
     {
       "date": "2026-09-04",
       "value": 0.198983
+    },
+    {
+      "date": "2026-09-08",
+      "value": 0.195489
     }
   ],
   "quality": {
     "failure_reason": null,
-    "freshness": "LATE",
-    "last_attempt_at": "2026-09-08T11:55:59.461469Z",
-    "last_success_at": "2026-09-08T11:55:59.461469Z",
-    "sample_size": 19,
+    "freshness": "FRESH",
+    "last_attempt_at": "2026-09-09T12:05:59.819501Z",
+    "last_success_at": "2026-09-09T12:05:59.819501Z",
+    "sample_size": 20,
     "status": "OK"
   },
-  "released_at": "2026-09-05T01:56:31Z",
+  "released_at": "2026-09-09T01:55:50Z",
   "schema_version": "2.3.0",
   "source": {
     "name": "SEC EDGAR APIs and filing data",
-    "retrieved_at": "2026-09-08T11:55:59.461469Z",
+    "retrieved_at": "2026-09-09T12:05:59.819501Z",
     "rights_note": "Cite the filing and accession; do not republish long issuer-authored passages.",
     "source_id": "sec_edgar",
     "tier": "OFFICIAL",
     "url": "https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data"
   },
   "unit": "ratio",
-  "updated_at": "2026-09-08T11:55:59.461469Z"
+  "updated_at": "2026-09-09T12:05:59.819501Z"
 }

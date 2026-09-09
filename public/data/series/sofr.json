@@ -1,10 +1,10 @@
 {
   "availability": "ACTIVE_FREE",
-  "expected_next_update": "2026-09-04",
+  "expected_next_update": "2026-09-09",
   "frequency": "business_daily",
   "label": "SOFR",
   "metric_id": "sofr",
-  "observation_date": "2026-09-03",
+  "observation_date": "2026-09-08",
   "observations": [
     {
       "date": "2024-08-12",
@@ -2065,26 +2065,34 @@
     {
       "date": "2026-09-03",
       "value": 3.66
+    },
+    {
+      "date": "2026-09-04",
+      "value": 3.65
+    },
+    {
+      "date": "2026-09-08",
+      "value": 3.64
     }
   ],
   "quality": {
     "failure_reason": null,
-    "freshness": "LATE",
-    "last_attempt_at": "2026-09-08T11:55:59.461469Z",
-    "last_success_at": "2026-09-08T11:55:59.461469Z",
-    "sample_size": 515,
+    "freshness": "FRESH",
+    "last_attempt_at": "2026-09-09T12:05:59.819501Z",
+    "last_success_at": "2026-09-09T12:05:59.819501Z",
+    "sample_size": 517,
     "status": "OK"
   },
   "released_at": null,
   "schema_version": "2.3.0",
   "source": {
     "name": "Federal Reserve Bank of New York Markets Data API",
-    "retrieved_at": "2026-09-08T11:55:59.461469Z",
+    "retrieved_at": "2026-09-09T12:05:59.819501Z",
     "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
     "source_id": "nyfed_markets",
     "tier": "OFFICIAL",
     "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
   },
   "unit": "percent",
-  "updated_at": "2026-09-08T11:55:59.461469Z"
+  "updated_at": "2026-09-09T12:05:59.819501Z"
 }

@@ -12301,12 +12301,22 @@
         ]
       ],
       "date": "2026-09-08",
+      "deadlines": [
+        "2026-09-15->2026-09-15"
+      ],
       "flags": [
+        "TAX_WINDOW",
         "TREASURY_SETTLEMENT"
       ],
       "large_treasury_settlement": false,
-      "note": "Treasury 結算可能短暫抽走銀行體系現金。",
+      "note": "已審核稅款限期前後一個 business day，現金流可能受技術因素影響。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
+      "sources": [
+        "https://www.irs.gov/pub/irs-pdf/f1040es.pdf"
+      ],
+      "tax_types": [
+        "INDIVIDUAL_ESTIMATED_TAX"
+      ],
       "trailing_nonzero_sample_size": 383,
       "trailing_p90_usd_bn": 289.8,
       "treasury_settlement_usd_bn": 247.0
@@ -12343,6 +12353,21 @@
     {
       "auction_keys": [
         [
+          "912797VL8",
+          "2026-09-10",
+          "2026-09-15"
+        ],
+        [
+          "912797VW4",
+          "2026-09-10",
+          "2026-09-15"
+        ],
+        [
+          "912797WP8",
+          "2026-09-09",
+          "2026-09-15"
+        ],
+        [
           "912810UW6",
           "2026-09-10",
           "2026-09-15"
@@ -12360,16 +12385,17 @@
       ],
       "date": "2026-09-15",
       "flags": [
+        "LARGE_TREASURY_SETTLEMENT",
         "TREASURY_SETTLEMENT"
       ],
-      "large_treasury_settlement": false,
-      "note": "Treasury 結算可能短暫抽走銀行體系現金。",
-      "security_count": 3,
+      "large_treasury_settlement": true,
+      "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
+      "security_count": 6,
       "trailing_nonzero_sample_size": 383,
       "trailing_p90_usd_bn": 289.8,
-      "treasury_settlement_usd_bn": 119.0
+      "treasury_settlement_usd_bn": 366.0
     }
   ],
-  "generated_at": "2026-09-08T11:55:59.461469Z",
+  "generated_at": "2026-09-09T12:05:59.819501Z",
   "schema_version": "2.3.0"
 }
