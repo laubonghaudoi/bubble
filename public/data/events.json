@@ -12263,22 +12263,6 @@
       "treasury_settlement_usd_bn": 247.0
     },
     {
-      "date": "2026-09-09",
-      "deadlines": [
-        "2026-09-15->2026-09-15"
-      ],
-      "flags": [
-        "TAX_WINDOW"
-      ],
-      "note": "已審核稅款限期前後一個 business day，現金流可能受技術因素影響。",
-      "sources": [
-        "https://www.irs.gov/pub/irs-pdf/f1040es.pdf"
-      ],
-      "tax_types": [
-        "INDIVIDUAL_ESTIMATED_TAX"
-      ]
-    },
-    {
       "auction_keys": [
         [
           "912797UL9",
@@ -12297,12 +12281,22 @@
         ]
       ],
       "date": "2026-09-10",
+      "deadlines": [
+        "2026-09-15->2026-09-15"
+      ],
       "flags": [
+        "TAX_WINDOW",
         "TREASURY_SETTLEMENT"
       ],
       "large_treasury_settlement": false,
-      "note": "Treasury 結算可能短暫抽走銀行體系現金。",
+      "note": "已審核稅款限期前後一個 business day，現金流可能受技術因素影響。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
+      "sources": [
+        "https://www.irs.gov/pub/irs-pdf/f1040es.pdf"
+      ],
+      "tax_types": [
+        "INDIVIDUAL_ESTIMATED_TAX"
+      ],
       "trailing_nonzero_sample_size": 384,
       "trailing_p90_usd_bn": 289.7,
       "treasury_settlement_usd_bn": 246.0
@@ -12420,6 +12414,6 @@
       "treasury_settlement_usd_bn": 19.0
     }
   ],
-  "generated_at": "2026-09-12T00:26:18.615745Z",
+  "generated_at": "2026-09-12T11:25:11.548585Z",
   "schema_version": "2.3.0"
 }
