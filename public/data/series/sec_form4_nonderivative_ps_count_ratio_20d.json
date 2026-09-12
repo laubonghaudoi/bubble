@@ -98,8 +98,8 @@
   "quality": {
     "failure_reason": null,
     "freshness": "FRESH",
-    "last_attempt_at": "2026-09-11T11:58:42.771189Z",
-    "last_success_at": "2026-09-11T11:58:42.771189Z",
+    "last_attempt_at": "2026-09-12T00:26:18.615745Z",
+    "last_success_at": "2026-09-12T00:26:18.615745Z",
     "sample_size": 22,
     "status": "OK"
   },
@@ -107,12 +107,12 @@
   "schema_version": "2.3.0",
   "source": {
     "name": "SEC EDGAR APIs and filing data",
-    "retrieved_at": "2026-09-11T11:58:42.771189Z",
+    "retrieved_at": "2026-09-12T00:26:18.615745Z",
     "rights_note": "Cite the filing and accession; do not republish long issuer-authored passages.",
     "source_id": "sec_edgar",
     "tier": "OFFICIAL",
     "url": "https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data"
   },
   "unit": "ratio",
-  "updated_at": "2026-09-11T11:58:42.771189Z"
+  "updated_at": "2026-09-12T00:26:18.615745Z"
 }

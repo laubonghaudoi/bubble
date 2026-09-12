@@ -1,10 +1,10 @@
 {
   "availability": "ACTIVE_FREE",
-  "expected_next_update": "2026-09-11",
+  "expected_next_update": "2026-09-18",
   "frequency": "weekly",
   "label": "CFTC E-mini S&P 500 asset-manager net % OI",
   "metric_id": "cftc_e_mini_sp500_asset_manager_net_pct_oi",
-  "observation_date": "2026-09-01",
+  "observation_date": "2026-09-08",
   "observations": [
     {
       "asset_manager_pct_long": 49.1,
@@ -3953,26 +3953,50 @@
       "source_report_id": "26090113874AF",
       "trader_category": "asset_manager",
       "value": 45.638459
+    },
+    {
+      "asset_manager_pct_long": 55.7,
+      "asset_manager_pct_short": 11.6,
+      "asset_manager_spread": 85028,
+      "cftc_commodity_code": "138 ",
+      "cftc_market_code": "CME ",
+      "commodity_name": "S&P BROAD BASED STOCK INDICES",
+      "contract_code": "13874A",
+      "contract_name": "E-MINI S&P 500",
+      "contract_units": "($50 X S&P 500 INDEX)",
+      "date": "2026-09-08",
+      "long_position": 1153305,
+      "market_and_exchange_name": "E-MINI S&P 500 - CHICAGO MERCANTILE EXCHANGE",
+      "net_percent_open_interest_raw": 44.036352298154874,
+      "net_position": 912361,
+      "open_interest": 2071836,
+      "released_at": "2026-09-11T19:30:10.157000Z",
+      "report_type": "TFF_FUTURES_ONLY",
+      "row_id": "row-2fgx~s25q_czyd",
+      "short_position": 240944,
+      "source_report_id": "26090813874AF",
+      "trader_category": "asset_manager",
+      "value": 44.036352
     }
   ],
   "quality": {
     "failure_reason": null,
     "freshness": "FRESH",
-    "last_attempt_at": "2026-09-11T11:58:42.771189Z",
-    "last_success_at": "2026-09-11T11:58:42.771189Z",
-    "sample_size": 165,
+    "last_attempt_at": "2026-09-12T00:26:18.615745Z",
+    "last_success_at": "2026-09-12T00:26:18.615745Z",
+    "sample_size": 166,
     "status": "OK"
   },
-  "released_at": "2026-09-04T19:30:10.112000Z",
+  "released_at": "2026-09-11T19:30:10.157000Z",
   "schema_version": "2.3.0",
   "source": {
     "name": "CFTC Public Reporting Environment",
-    "retrieved_at": "2026-09-11T11:58:42.771189Z",
+    "retrieved_at": "2026-09-12T00:26:18.615745Z",
     "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
     "source_id": "cftc_pre",
     "tier": "OFFICIAL",
     "url": "https://publicreporting.cftc.gov/"
   },
   "unit": "percent_open_interest",
-  "updated_at": "2026-09-11T11:58:42.771189Z"
+  "updated_at": "2026-09-12T00:26:18.615745Z"
 }
