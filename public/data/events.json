@@ -12311,13 +12311,23 @@
         ]
       ],
       "date": "2026-09-15",
+      "deadlines": [
+        "2026-09-15->2026-09-15"
+      ],
       "flags": [
         "LARGE_TREASURY_SETTLEMENT",
+        "TAX_WINDOW",
         "TREASURY_SETTLEMENT"
       ],
       "large_treasury_settlement": true,
-      "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
+      "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 已審核稅款限期前後一個 business day，現金流可能受技術因素影響。 Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 6,
+      "sources": [
+        "https://www.irs.gov/pub/irs-pdf/f1040es.pdf"
+      ],
+      "tax_types": [
+        "INDIVIDUAL_ESTIMATED_TAX"
+      ],
       "trailing_nonzero_sample_size": 383,
       "trailing_p90_usd_bn": 289.8,
       "treasury_settlement_usd_bn": 366.0
@@ -12373,6 +12383,35 @@
     {
       "auction_keys": [
         [
+          "912797VM6",
+          "2026-09-17",
+          "2026-09-22"
+        ],
+        [
+          "912797VX2",
+          "2026-09-17",
+          "2026-09-22"
+        ],
+        [
+          "912797WQ6",
+          "2026-09-16",
+          "2026-09-22"
+        ]
+      ],
+      "date": "2026-09-22",
+      "flags": [
+        "TREASURY_SETTLEMENT"
+      ],
+      "large_treasury_settlement": false,
+      "note": "Treasury 結算可能短暫抽走銀行體系現金。",
+      "security_count": 3,
+      "trailing_nonzero_sample_size": 383,
+      "trailing_p90_usd_bn": 290.0,
+      "treasury_settlement_usd_bn": 247.0
+    },
+    {
+      "auction_keys": [
+        [
           "91282CRE3",
           "2026-09-17",
           "2026-09-30"
@@ -12385,11 +12424,11 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 1,
-      "trailing_nonzero_sample_size": 380,
+      "trailing_nonzero_sample_size": 381,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 19.0
     }
   ],
-  "generated_at": "2026-09-15T12:24:10.776488Z",
+  "generated_at": "2026-09-16T12:22:03.457529Z",
   "schema_version": "2.3.0"
 }
