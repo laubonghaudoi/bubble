@@ -12419,8 +12419,43 @@
       "trailing_nonzero_sample_size": 384,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 202.0
+    },
+    {
+      "auction_keys": [
+        [
+          "912797UY1",
+          "2026-09-29",
+          "2026-10-01"
+        ],
+        [
+          "912797VJ3",
+          "2026-09-28",
+          "2026-10-01"
+        ],
+        [
+          "912797WJ2",
+          "2026-09-29",
+          "2026-10-01"
+        ],
+        [
+          "912797WM5",
+          "2026-09-28",
+          "2026-10-01"
+        ]
+      ],
+      "date": "2026-10-01",
+      "flags": [
+        "LARGE_TREASURY_SETTLEMENT",
+        "TREASURY_SETTLEMENT"
+      ],
+      "large_treasury_settlement": true,
+      "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
+      "security_count": 4,
+      "trailing_nonzero_sample_size": 385,
+      "trailing_p90_usd_bn": 290.0,
+      "treasury_settlement_usd_bn": 316.0
     }
   ],
-  "generated_at": "2026-09-25T00:54:21.282743Z",
+  "generated_at": "2026-09-25T12:29:57.573783Z",
   "schema_version": "2.3.0"
 }
