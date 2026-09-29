@@ -1,10 +1,10 @@
 {
   "availability": "ACTIVE_FREE",
-  "expected_next_update": "2026-09-25",
+  "expected_next_update": "2026-09-28",
   "frequency": "business_daily",
   "label": "Treasury General Account daily balance",
   "metric_id": "tga_daily",
-  "observation_date": "2026-09-24",
+  "observation_date": "2026-09-25",
   "observations": [
     {
       "date": "2025-01-07",
@@ -2165,26 +2165,31 @@
       "date": "2026-09-24",
       "source_field": "open_today_bal",
       "value": 924.627
+    },
+    {
+      "date": "2026-09-25",
+      "source_field": "open_today_bal",
+      "value": 945.29
     }
   ],
   "quality": {
     "failure_reason": null,
-    "freshness": "FRESH",
-    "last_attempt_at": "2026-09-26T12:00:05.025894Z",
-    "last_success_at": "2026-09-26T12:00:05.025894Z",
-    "sample_size": 432,
+    "freshness": "LATE",
+    "last_attempt_at": "2026-09-29T13:39:43.341290Z",
+    "last_success_at": "2026-09-29T13:39:43.341290Z",
+    "sample_size": 433,
     "status": "OK"
   },
   "released_at": null,
   "schema_version": "2.3.0",
   "source": {
     "name": "U.S. Treasury FiscalData API",
-    "retrieved_at": "2026-09-26T12:00:05.025894Z",
+    "retrieved_at": "2026-09-29T13:39:43.341290Z",
     "rights_note": "Cite FiscalData and preserve the dataset as-of date.",
     "source_id": "treasury_fiscaldata",
     "tier": "OFFICIAL",
     "url": "https://fiscaldata.treasury.gov/api-documentation/"
   },
   "unit": "USD bn",
-  "updated_at": "2026-09-26T12:00:05.025894Z"
+  "updated_at": "2026-09-29T13:39:43.341290Z"
 }
