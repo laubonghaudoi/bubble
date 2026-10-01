@@ -855,7 +855,7 @@
   ],
   "quality": {
     "failure_reason": null,
-    "freshness": "FRESH",
+    "freshness": "LATE",
     "last_attempt_at": "2026-09-02T17:09:28.951575Z",
     "last_success_at": "2026-09-02T17:09:28.951575Z",
     "sample_size": 47,

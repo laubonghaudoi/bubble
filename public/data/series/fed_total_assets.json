@@ -1289,11 +1289,11 @@
   ],
   "quality": {
     "failure_reason": null,
-    "freshness": "FRESH",
+    "freshness": "LATE",
     "last_attempt_at": "2026-09-26T00:45:10.603471Z",
     "last_success_at": "2026-09-26T00:45:10.603471Z",
     "sample_size": 320,
-    "status": "OK"
+    "status": "NOT_RELEASED_YET"
   },
   "released_at": null,
   "schema_version": "2.3.0",
