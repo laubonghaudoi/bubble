@@ -1,10 +1,10 @@
 {
   "availability": "ACTIVE_FREE",
-  "expected_next_update": "2026-09-24",
+  "expected_next_update": "2026-10-01",
   "frequency": "weekly",
   "label": "Reserve balances with Federal Reserve Banks",
   "metric_id": "reserve_balances",
-  "observation_date": "2026-09-23",
+  "observation_date": "2026-09-30",
   "observations": [
     {
       "date": "2020-08-12",
@@ -1285,26 +1285,30 @@
     {
       "date": "2026-09-23",
       "value": 2930.193
+    },
+    {
+      "date": "2026-09-30",
+      "value": 2948.09
     }
   ],
   "quality": {
     "failure_reason": null,
-    "freshness": "LATE",
-    "last_attempt_at": "2026-09-26T00:45:10.603471Z",
-    "last_success_at": "2026-09-26T00:45:10.603471Z",
-    "sample_size": 320,
-    "status": "NOT_RELEASED_YET"
+    "freshness": "FRESH",
+    "last_attempt_at": "2026-10-02T01:49:55.744422Z",
+    "last_success_at": "2026-10-02T01:49:55.744422Z",
+    "sample_size": 321,
+    "status": "OK"
   },
   "released_at": null,
   "schema_version": "2.3.0",
   "source": {
     "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-    "retrieved_at": "2026-09-26T00:45:10.603471Z",
+    "retrieved_at": "2026-10-02T01:49:55.744422Z",
     "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
     "source_id": "fred_government",
     "tier": "DISTRIBUTOR",
     "url": "https://fred.stlouisfed.org/docs/api/fred/"
   },
   "unit": "USD bn",
-  "updated_at": "2026-09-26T00:45:10.603471Z"
+  "updated_at": "2026-10-02T01:49:55.744422Z"
 }
