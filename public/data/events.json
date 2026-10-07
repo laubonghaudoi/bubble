@@ -12401,6 +12401,36 @@
     {
       "auction_keys": [
         [
+          "912797VW4",
+          "2026-10-08",
+          "2026-10-13"
+        ],
+        [
+          "912797WE3",
+          "2026-10-08",
+          "2026-10-13"
+        ],
+        [
+          "912797WY9",
+          "2026-10-07",
+          "2026-10-13"
+        ]
+      ],
+      "date": "2026-10-13",
+      "flags": [
+        "LARGE_TREASURY_SETTLEMENT",
+        "TREASURY_SETTLEMENT"
+      ],
+      "large_treasury_settlement": true,
+      "note": "Treasury 結算高於 trailing 3-year 非零日 p90。 Treasury 結算可能短暫抽走銀行體系現金。",
+      "security_count": 3,
+      "trailing_nonzero_sample_size": 383,
+      "trailing_p90_usd_bn": 290.0,
+      "treasury_settlement_usd_bn": 290.0
+    },
+    {
+      "auction_keys": [
+        [
           "912810UW6",
           "2026-10-08",
           "2026-10-15"
@@ -12423,11 +12453,11 @@
       "large_treasury_settlement": false,
       "note": "Treasury 結算可能短暫抽走銀行體系現金。",
       "security_count": 3,
-      "trailing_nonzero_sample_size": 383,
+      "trailing_nonzero_sample_size": 384,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 119.0
     }
   ],
-  "generated_at": "2026-10-06T13:51:19.680836Z",
+  "generated_at": "2026-10-07T14:08:26.764348Z",
   "schema_version": "2.3.0"
 }
