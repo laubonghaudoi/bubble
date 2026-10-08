@@ -4054,8 +4054,8 @@
   "quality": {
     "failure_reason": null,
     "freshness": "FRESH",
-    "last_attempt_at": "2026-10-07T14:08:26.764348Z",
-    "last_success_at": "2026-10-07T14:08:26.764348Z",
+    "last_attempt_at": "2026-10-08T14:18:43.872529Z",
+    "last_success_at": "2026-10-08T14:18:43.872529Z",
     "sample_size": 169,
     "status": "OK"
   },
@@ -4063,12 +4063,12 @@
   "schema_version": "2.3.0",
   "source": {
     "name": "CFTC Public Reporting Environment",
-    "retrieved_at": "2026-10-07T14:08:26.764348Z",
+    "retrieved_at": "2026-10-08T14:18:43.872529Z",
     "rights_note": "Attribute CFTC; third-party material remains subject to its own rights.",
     "source_id": "cftc_pre",
     "tier": "OFFICIAL",
     "url": "https://publicreporting.cftc.gov/"
   },
   "unit": "percent_open_interest",
-  "updated_at": "2026-10-07T14:08:26.764348Z"
+  "updated_at": "2026-10-08T14:18:43.872529Z"
 }
