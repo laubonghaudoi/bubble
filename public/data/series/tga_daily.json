@@ -2219,9 +2219,9 @@
   ],
   "quality": {
     "failure_reason": null,
-    "freshness": "FRESH",
-    "last_attempt_at": "2026-10-10T13:12:28.644701Z",
-    "last_success_at": "2026-10-10T13:12:28.644701Z",
+    "freshness": "LATE",
+    "last_attempt_at": "2026-10-13T14:44:11.339045Z",
+    "last_success_at": "2026-10-13T14:44:11.339045Z",
     "sample_size": 442,
     "status": "OK"
   },
@@ -2229,12 +2229,12 @@
   "schema_version": "2.3.0",
   "source": {
     "name": "U.S. Treasury FiscalData API",
-    "retrieved_at": "2026-10-10T13:12:28.644701Z",
+    "retrieved_at": "2026-10-13T14:44:11.339045Z",
     "rights_note": "Cite FiscalData and preserve the dataset as-of date.",
     "source_id": "treasury_fiscaldata",
     "tier": "OFFICIAL",
     "url": "https://fiscaldata.treasury.gov/api-documentation/"
   },
   "unit": "USD bn",
-  "updated_at": "2026-10-10T13:12:28.644701Z"
+  "updated_at": "2026-10-13T14:44:11.339045Z"
 }
