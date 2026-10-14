@@ -12414,8 +12414,37 @@
       "trailing_nonzero_sample_size": 384,
       "trailing_p90_usd_bn": 290.0,
       "treasury_settlement_usd_bn": 391.0
+    },
+    {
+      "auction_keys": [
+        [
+          "912797VX2",
+          "2026-10-15",
+          "2026-10-20"
+        ],
+        [
+          "912797WF0",
+          "2026-10-15",
+          "2026-10-20"
+        ],
+        [
+          "912797WZ6",
+          "2026-10-14",
+          "2026-10-20"
+        ]
+      ],
+      "date": "2026-10-20",
+      "flags": [
+        "TREASURY_SETTLEMENT"
+      ],
+      "large_treasury_settlement": false,
+      "note": "Treasury 結算可能短暫抽走銀行體系現金。",
+      "security_count": 3,
+      "trailing_nonzero_sample_size": 382,
+      "trailing_p90_usd_bn": 295.4,
+      "treasury_settlement_usd_bn": 290.0
     }
   ],
-  "generated_at": "2026-10-13T14:44:11.339045Z",
+  "generated_at": "2026-10-14T12:36:08.494942Z",
   "schema_version": "2.3.0"
 }
