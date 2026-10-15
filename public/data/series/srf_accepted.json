@@ -381,12 +381,12 @@
       "exercise_accepted_amount_usd_bn": 0.0,
       "exercise_operation_count": 0,
       "has_technical_exercise": false,
-      "operation_count": 2,
+      "operation_count": 1,
       "rate_pct": 3.75,
       "rates_pct": [
         3.75
       ],
-      "released_at": "2025-12-26T18:45:46Z",
+      "released_at": "2025-12-26T13:31:04Z",
       "submitted_amount_usd_bn": 17.251,
       "technical_exercise": false,
       "value": 17.251
@@ -7322,8 +7322,8 @@
       "value": 0.0
     },
     {
-      "accepted_amount_usd_bn": 0.0,
-      "alert_eligible_accepted_amount_usd_bn": 0.0,
+      "accepted_amount_usd_bn": 0.001,
+      "alert_eligible_accepted_amount_usd_bn": 0.001,
       "breakdown": {
         "agency_debt": {
           "accepted_amount_usd_bn": 0.0,
@@ -7336,9 +7336,9 @@
           "submitted_amount_usd_bn": 0.0
         },
         "treasury": {
-          "accepted_amount_usd_bn": 0.0,
-          "alert_eligible_accepted_amount_usd_bn": 0.0,
-          "submitted_amount_usd_bn": 0.0
+          "accepted_amount_usd_bn": 0.001,
+          "alert_eligible_accepted_amount_usd_bn": 0.001,
+          "submitted_amount_usd_bn": 0.001
         }
       },
       "classification_complete": true,
@@ -7346,35 +7346,35 @@
       "exercise_accepted_amount_usd_bn": 0.0,
       "exercise_operation_count": 0,
       "has_technical_exercise": false,
-      "operation_count": 1,
+      "operation_count": 2,
       "rate_pct": 4.0,
       "rates_pct": [
         4.0
       ],
-      "released_at": "2026-10-14T12:30:26Z",
-      "submitted_amount_usd_bn": 0.0,
+      "released_at": "2026-10-14T17:45:38Z",
+      "submitted_amount_usd_bn": 0.001,
       "technical_exercise": false,
-      "value": 0.0
+      "value": 0.001
     }
   ],
   "quality": {
     "failure_reason": null,
     "freshness": "FRESH",
-    "last_attempt_at": "2026-10-14T12:36:08.494942Z",
-    "last_success_at": "2026-10-14T12:36:08.494942Z",
+    "last_attempt_at": "2026-10-15T12:22:58.026860Z",
+    "last_success_at": "2026-10-15T12:22:58.026860Z",
     "sample_size": 210,
     "status": "OK"
   },
-  "released_at": "2026-10-14T12:30:26Z",
+  "released_at": "2026-10-14T17:45:38Z",
   "schema_version": "2.3.0",
   "source": {
     "name": "Federal Reserve Bank of New York Markets Data API",
-    "retrieved_at": "2026-10-14T12:36:08.494942Z",
+    "retrieved_at": "2026-10-15T12:22:58.026860Z",
     "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
     "source_id": "nyfed_markets",
     "tier": "OFFICIAL",
     "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
   },
   "unit": "USD bn",
-  "updated_at": "2026-10-14T12:36:08.494942Z"
+  "updated_at": "2026-10-15T12:22:58.026860Z"
 }

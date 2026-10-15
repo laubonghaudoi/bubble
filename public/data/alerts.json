@@ -1,5 +1,11 @@
 {
-  "alerts": [],
-  "generated_at": "2026-10-14T12:36:08.494942Z",
+  "alerts": [
+    {
+      "detail": "技術事件只降低 confidence；severity 由獨立 evidence blocks 決定。",
+      "level": "UNAVAILABLE",
+      "title": "Liquidity Fuel P0 assessment"
+    }
+  ],
+  "generated_at": "2026-10-15T12:22:58.026860Z",
   "schema_version": "2.3.0"
 }
