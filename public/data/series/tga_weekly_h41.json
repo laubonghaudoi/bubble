@@ -1,10 +1,10 @@
 {
   "availability": "ACTIVE_FREE",
-  "expected_next_update": "2026-10-22",
+  "expected_next_update": "2026-10-29",
   "frequency": "weekly",
   "label": "Treasury General Account H.4.1 cross-check",
   "metric_id": "tga_weekly_h41",
-  "observation_date": "2026-10-21",
+  "observation_date": "2026-10-28",
   "observations": [
     {
       "date": "2020-08-12",
@@ -1301,26 +1301,30 @@
     {
       "date": "2026-10-21",
       "value": 952.002
+    },
+    {
+      "date": "2026-10-28",
+      "value": 999.727
     }
   ],
   "quality": {
     "failure_reason": null,
-    "freshness": "LATE",
-    "last_attempt_at": "2026-10-24T00:54:02.312281Z",
-    "last_success_at": "2026-10-24T00:54:02.312281Z",
-    "sample_size": 324,
-    "status": "NOT_RELEASED_YET"
+    "freshness": "FRESH",
+    "last_attempt_at": "2026-10-30T02:10:21.246158Z",
+    "last_success_at": "2026-10-30T02:10:21.246158Z",
+    "sample_size": 325,
+    "status": "OK"
   },
   "released_at": null,
   "schema_version": "2.3.0",
   "source": {
     "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-    "retrieved_at": "2026-10-24T00:54:02.312281Z",
+    "retrieved_at": "2026-10-30T02:10:21.246158Z",
     "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
     "source_id": "fred_government",
     "tier": "DISTRIBUTOR",
     "url": "https://fred.stlouisfed.org/docs/api/fred/"
   },
   "unit": "USD bn",
-  "updated_at": "2026-10-24T00:54:02.312281Z"
+  "updated_at": "2026-10-30T02:10:21.246158Z"
 }

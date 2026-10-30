@@ -4,38 +4,40 @@
   "alerts": [
     {
       "detail": "技術事件只降低 confidence；severity 由獨立 evidence blocks 決定。",
-      "level": "UNAVAILABLE",
+      "level": "STRESS",
       "title": "Liquidity Fuel P0 assessment"
     }
   ],
   "composite": {
-    "confidence": "LOW",
-    "elevated_triggered": false,
+    "confidence": "HIGH",
+    "elevated_triggered": true,
     "funding_confirmation_count": 2,
     "funding_confirmation_ids": [
       "bgcr",
       "tgcr"
     ],
-    "latest_above_watch_threshold": false,
-    "level": "UNAVAILABLE",
+    "latest_above_watch_threshold": true,
+    "level": "STRESS",
     "positive_streak_met": true,
-    "quality_status": "NOT_RELEASED_YET",
+    "quality_status": "OK",
     "reserve_4w_at_or_below_trailing_5y_p10": false,
     "srf_positive_operation_days_latest_3": 2,
-    "stress_reasons": [],
-    "stress_triggered": false,
+    "stress_reasons": [
+      "SRF_NONTECHNICAL_USE_2_OF_3"
+    ],
+    "stress_triggered": true,
     "technical_flags": [],
     "thresholds": {
       "multiple_funding_confirmations": 3,
       "positive_streak_observations": 3,
       "sofr_iorb_watch_bp": 3.0
     },
-    "watch_triggered": false
+    "watch_triggered": true
   },
   "decision_models": {
     "p0_video_liquidity": {
       "availability_reason": null,
-      "confidence": "MEDIUM",
+      "confidence": "HIGH",
       "crisis_context": {
         "as_of": null,
         "note": null,
@@ -43,9 +45,9 @@
         "reviewer": null,
         "status": "UNKNOWN"
       },
-      "data_status": "LAST_GOOD",
+      "data_status": "CURRENT",
       "enabled": true,
-      "evaluated_at": "2026-10-29T13:53:26.054921Z",
+      "evaluated_at": "2026-10-30T02:10:21.246158Z",
       "formulas": {
         "extreme": {
           "candidate": false,
@@ -67,17 +69,17 @@
               ],
               "clause_id": "reserve_below_extreme",
               "current_unit": "USD bn",
-              "current_value": 2962.607,
-              "evaluation_state": "LAST_GOOD",
-              "freshness": "LATE",
+              "current_value": 2893.77,
+              "evaluation_state": "CURRENT",
+              "freshness": "FRESH",
               "label": "Reserve Balances < 2.5T",
               "met": false,
               "metric_id": "reserve_balances",
               "note": "This threshold belongs to the cited source model, not all reserve regimes.",
-              "observation_date": "2026-10-21",
+              "observation_date": "2026-10-28",
               "operator": "<",
               "order": 1,
-              "quality_status": "NOT_RELEASED_YET",
+              "quality_status": "OK",
               "released_at": null,
               "threshold": 2500.0,
               "threshold_unit": "USD bn"
@@ -99,17 +101,17 @@
               ],
               "clause_id": "reserve_rapid_decline",
               "current_unit": "USD bn",
-              "current_value": 32.414,
-              "evaluation_state": "LAST_GOOD",
-              "freshness": "LATE",
+              "current_value": -54.32,
+              "evaluation_state": "CURRENT",
+              "freshness": "FRESH",
               "label": "Four-week decline ≤ trailing five-year p10",
               "met": false,
               "metric_id": "reserve_balances",
               "note": "The current four-week change is compared with the precomputed trailing p10.",
-              "observation_date": "2026-10-21",
+              "observation_date": "2026-10-28",
               "operator": "<=",
               "order": 2,
-              "quality_status": "NOT_RELEASED_YET",
+              "quality_status": "OK",
               "released_at": null,
               "threshold": -198.96,
               "threshold_unit": "USD bn"
@@ -204,17 +206,17 @@
               ],
               "clause_id": "reserve_below_red",
               "current_unit": "USD bn",
-              "current_value": 2962.607,
-              "evaluation_state": "LAST_GOOD",
-              "freshness": "LATE",
+              "current_value": 2893.77,
+              "evaluation_state": "CURRENT",
+              "freshness": "FRESH",
               "label": "Reserve Balances < 2.8T",
               "met": false,
               "metric_id": "reserve_balances",
               "note": "This source-model threshold is not a Federal Reserve official crisis line.",
-              "observation_date": "2026-10-21",
+              "observation_date": "2026-10-28",
               "operator": "<",
               "order": 2,
-              "quality_status": "NOT_RELEASED_YET",
+              "quality_status": "OK",
               "released_at": null,
               "threshold": 2800.0,
               "threshold_unit": "USD bn"
@@ -307,17 +309,17 @@
                   ],
                   "clause_id": "reserve_below_red",
                   "current_unit": "USD bn",
-                  "current_value": 2962.607,
-                  "evaluation_state": "LAST_GOOD",
-                  "freshness": "LATE",
+                  "current_value": 2893.77,
+                  "evaluation_state": "CURRENT",
+                  "freshness": "FRESH",
                   "label": "Reserve Balances < 2.8T",
                   "met": false,
                   "metric_id": "reserve_balances",
                   "note": "This source-model threshold is not a Federal Reserve official crisis line.",
-                  "observation_date": "2026-10-21",
+                  "observation_date": "2026-10-28",
                   "operator": "<",
                   "order": 2,
-                  "quality_status": "NOT_RELEASED_YET",
+                  "quality_status": "OK",
                   "released_at": null,
                   "threshold": 2800.0,
                   "threshold_unit": "USD bn"
@@ -422,17 +424,17 @@
               ],
               "clause_id": "reserve_below_yellow",
               "current_unit": "USD bn",
-              "current_value": 2962.607,
-              "evaluation_state": "LAST_GOOD",
-              "freshness": "LATE",
+              "current_value": 2893.77,
+              "evaluation_state": "CURRENT",
+              "freshness": "FRESH",
               "label": "Reserve Balances < 2.9T",
-              "met": false,
+              "met": true,
               "metric_id": "reserve_balances",
               "note": "This source-model threshold is not a universal reserve-scarcity boundary.",
-              "observation_date": "2026-10-21",
+              "observation_date": "2026-10-28",
               "operator": "<",
               "order": 2,
-              "quality_status": "NOT_RELEASED_YET",
+              "quality_status": "OK",
               "released_at": null,
               "threshold": 2900.0,
               "threshold_unit": "USD bn"
@@ -454,17 +456,17 @@
               ],
               "clause_id": "reserve_change_4w_negative",
               "current_unit": "USD bn",
-              "current_value": 32.414,
-              "evaluation_state": "LAST_GOOD",
-              "freshness": "LATE",
+              "current_value": -54.32,
+              "evaluation_state": "CURRENT",
+              "freshness": "FRESH",
               "label": "Four-week Reserve Balances change < 0",
-              "met": false,
+              "met": true,
               "metric_id": "reserve_balances",
               "note": "A negative change establishes direction only; it does not by itself mean stress.",
-              "observation_date": "2026-10-21",
+              "observation_date": "2026-10-28",
               "operator": "<",
               "order": 3,
-              "quality_status": "NOT_RELEASED_YET",
+              "quality_status": "OK",
               "released_at": null,
               "threshold": 0,
               "threshold_unit": "USD bn"
@@ -505,7 +507,7 @@
           "display_tex": "\\begin{aligned}\\operatorname{YELLOW}_{t}\\iff{}&(n_t^{+}\\ge 3)\\\\&\\land(r_t<2.9)\\\\&\\land(\\Delta_{4\\mathrm{w}}r_t<0)\\\\&\\land(g_t\\ge 0.95)\\end{aligned}",
           "expression": "POSITIVE STREAK ≥ 3 ∧ RESERVES < 2.9T ∧ Δ4W RESERVES < 0 ∧ TGA ≥ 0.95T",
           "plain_language": "SOFR−IORB 已連續至少 3 個有效觀察值為正，而且準備金跌穿 2.9T、四星期方向繼續向下，同時 TGA 已升至至少 0.95T，四項必須同時成立。",
-          "triggered": false
+          "triggered": true
         }
       },
       "label": "影片 P0 黃／紅警報",
@@ -730,8 +732,7 @@
       ],
       "notes": [
         "Video-model thresholds are source-specific reference rules, not universal reserve-scarcity laws.",
-        "This decision model does not replace the audited NORMAL/WATCH/ELEVATED/STRESS P0 engine.",
-        "At least one clause uses a last-good value because a new release is not yet available."
+        "This decision model does not replace the audited NORMAL/WATCH/ELEVATED/STRESS P0 engine."
       ],
       "operationalizations": {
         "exclude_technical_exercises": true,
@@ -798,17 +799,17 @@
     "bullets": [
       {
         "alternative": "單一日變化亦可能來自結算、稅款或市場微結構，唔等於準備金短缺。",
-        "confidence": "LOW",
+        "confidence": "HIGH",
         "confirmation": "EFFR/TGCR/BGCR 當中 2 條同時向上確認。",
-        "judgment": "Deterministic P0 assessment：UNAVAILABLE；Overview overall 只代表 Liquidity Fuel。",
+        "judgment": "Deterministic P0 assessment：STRESS；Overview overall 只代表 Liquidity Fuel。",
         "meaning": "正數代表 secured overnight funding 相對 IORB 變貴。",
         "metric_id": "sofr_iorb_spread_bp",
         "observation": "SOFR−IORB 最新為 +4.0 bp。"
       }
     ],
-    "headline": "P0 證據不足，今次不作中性推斷。"
+    "headline": "多個獨立 Liquidity Fuel evidence blocks 同時惡化。"
   },
-  "generated_at": "2026-10-29T13:53:26.054921Z",
+  "generated_at": "2026-10-30T02:10:21.246158Z",
   "manual_ready_count": 3,
   "market_date": "2026-10-28",
   "metrics": {
@@ -1168,7 +1169,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-10-29T13:53:26.054921Z",
+          "retrieved_at": "2026-10-30T02:10:21.246158Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -1176,7 +1177,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-10-29T13:53:26.054921Z",
+          "retrieved_at": "2026-10-30T02:10:21.246158Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -1186,7 +1187,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-10-29T13:53:26.054921Z",
+        "last_attempt_at": "2026-10-30T02:10:21.246158Z",
         "last_success_at": "2026-10-29T13:53:26.054921Z",
         "sample_size": 552,
         "status": "OK"
@@ -1284,7 +1285,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-10-29T13:53:26.054921Z",
+        "retrieved_at": "2026-10-30T02:10:21.246158Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -1302,7 +1303,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-10-29T13:53:26.054921Z",
+      "updated_at": "2026-10-30T02:10:21.246158Z",
       "value": 2.0
     },
     "cboe_skew_tail_risk_proxy": {
@@ -2719,7 +2720,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-10-29T13:53:26.054921Z",
+          "retrieved_at": "2026-10-30T02:10:21.246158Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -2727,7 +2728,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-10-29T13:53:26.054921Z",
+          "retrieved_at": "2026-10-30T02:10:21.246158Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -2737,7 +2738,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-10-29T13:53:26.054921Z",
+        "last_attempt_at": "2026-10-30T02:10:21.246158Z",
         "last_success_at": "2026-10-29T13:53:26.054921Z",
         "sample_size": 555,
         "status": "OK"
@@ -2835,7 +2836,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-10-29T13:53:26.054921Z",
+        "retrieved_at": "2026-10-30T02:10:21.246158Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -2853,41 +2854,41 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-10-29T13:53:26.054921Z",
+      "updated_at": "2026-10-30T02:10:21.246158Z",
       "value": -2.0
     },
     "fed_total_assets": {
       "availability": "ACTIVE_FREE",
       "changes": {
-        "eight_weeks": 22.692,
-        "five_observations": 7.056,
-        "four_weeks": 5.9,
-        "one_observation": -2.035,
-        "one_week": -2.035,
-        "twelve_weeks": 15.414,
-        "twenty_observations": 42.109
+        "eight_weeks": 8.431,
+        "five_observations": -2.069,
+        "four_weeks": 2.604,
+        "one_observation": -7.969,
+        "one_week": -7.969,
+        "twelve_weeks": -2.932,
+        "twenty_observations": 20.238
       },
       "context": {
-        "confidence": "MEDIUM",
+        "confidence": "HIGH",
         "is_proxy": false,
         "technical_flags": []
       },
-      "expected_next_update": "2026-10-22",
+      "expected_next_update": "2026-10-29",
       "frequency": "weekly",
       "interpretation": {
         "cannot_infer": "資產收縮唔可以單獨證明市場壓力或者預測風險資產方向。",
         "classification_type": "DIRECTIONAL",
-        "confidence": "MEDIUM",
+        "confidence": "HIGH",
         "confirm_with": [
           "reserve_balances",
           "tga_daily",
           "on_rrp_accepted"
         ],
         "current_reasons": [
-          "4W impulse：5.9 USD bn。",
-          "Expanding prior impulses：319；最低要求 104。"
+          "4W impulse：2.604 USD bn。",
+          "Expanding prior impulses：320；最低要求 104。"
         ],
-        "data_state": "LAST_GOOD",
+        "data_state": "CURRENT",
         "headline": "Fed assets 4W impulse 狀態：BROADLY_FLAT。",
         "impact": "EASING",
         "next_boundary": null,
@@ -2904,13 +2905,13 @@
             "basis": "STATISTICAL_BAND",
             "kind": "PERCENTILE_GAUGE",
             "label": "4W ASSET IMPULSE",
-            "percentile": 0.626959,
-            "sample_size": 319,
+            "percentile": 0.6125,
+            "sample_size": 320,
             "slope": null,
             "slope_unit": "USD bn/observation",
             "state": "BROADLY_FLAT",
             "unit": "USD bn",
-            "value": 5.9
+            "value": 2.604
           }
         ],
         "what_it_measures": "Federal Reserve H.4.1 總資產及其四周變化。"
@@ -2935,11 +2936,11 @@
         "why_it_matters": "Weekly change shows the broad direction of balance-sheet runoff or expansion."
       },
       "metric_id": "fed_total_assets",
-      "observation_date": "2026-10-21",
+      "observation_date": "2026-10-28",
       "provenance": [
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-10-24T00:54:02.312281Z",
+          "retrieved_at": "2026-10-30T02:10:21.246158Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -2948,18 +2949,14 @@
       ],
       "quality": {
         "failure_reason": null,
-        "freshness": "LATE",
-        "last_attempt_at": "2026-10-24T00:54:02.312281Z",
-        "last_success_at": "2026-10-24T00:54:02.312281Z",
-        "sample_size": 324,
-        "status": "NOT_RELEASED_YET"
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-10-30T02:10:21.246158Z",
+        "last_success_at": "2026-10-30T02:10:21.246158Z",
+        "sample_size": 325,
+        "status": "OK"
       },
       "released_at": null,
       "short_series": [
-        {
-          "date": "2026-05-27",
-          "value": 6704.383
-        },
         {
           "date": "2026-06-03",
           "value": 6711.495
@@ -3043,26 +3040,30 @@
         {
           "date": "2026-10-21",
           "value": 6753.604
+        },
+        {
+          "date": "2026-10-28",
+          "value": 6745.635
         }
       ],
       "source": {
         "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-        "retrieved_at": "2026-10-24T00:54:02.312281Z",
+        "retrieved_at": "2026-10-30T02:10:21.246158Z",
         "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
         "source_id": "fred_government",
         "tier": "DISTRIBUTOR",
         "url": "https://fred.stlouisfed.org/docs/api/fred/"
       },
       "statistics": {
-        "change_1w": -2.035,
-        "change_4w": 5.9,
-        "level": 6753.604,
-        "observations_used": 324
+        "change_1w": -7.969,
+        "change_4w": 2.604,
+        "level": 6745.635,
+        "observations_used": 325
       },
       "unavailability_reason": null,
       "unit": "USD bn",
-      "updated_at": "2026-10-24T00:54:02.312281Z",
-      "value": 6753.604
+      "updated_at": "2026-10-30T02:10:21.246158Z",
+      "value": 6745.635
     },
     "finra_margin_debt": {
       "availability": "UNAVAILABLE_FREE",
@@ -4541,7 +4542,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-10-29T13:53:26.054921Z",
+          "retrieved_at": "2026-10-30T02:10:21.246158Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -4549,7 +4550,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-10-29T13:53:26.054921Z",
+          "retrieved_at": "2026-10-30T02:10:21.246158Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -4559,7 +4560,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-10-29T13:53:26.054921Z",
+        "last_attempt_at": "2026-10-30T02:10:21.246158Z",
         "last_success_at": "2026-10-29T13:53:26.054921Z",
         "sample_size": 555,
         "status": "OK"
@@ -4657,7 +4658,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-10-29T13:53:26.054921Z",
+        "retrieved_at": "2026-10-30T02:10:21.246158Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -4675,7 +4676,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-10-29T13:53:26.054921Z",
+      "updated_at": "2026-10-30T02:10:21.246158Z",
       "value": -2.0
     },
     "on_rrp_accepted": {
@@ -4906,25 +4907,25 @@
     "reserve_balances": {
       "availability": "ACTIVE_FREE",
       "changes": {
-        "eight_weeks": 37.671,
-        "five_observations": -51.187,
-        "four_weeks": 32.414,
-        "one_observation": -59.533,
-        "one_week": -59.533,
-        "twelve_weeks": -21.963,
-        "twenty_observations": -51.295
+        "eight_weeks": -0.761,
+        "five_observations": -36.423,
+        "four_weeks": -54.32,
+        "one_observation": -68.837,
+        "one_week": -68.837,
+        "twelve_weeks": -99.579,
+        "twenty_observations": -186.953
       },
       "context": {
-        "confidence": "MEDIUM",
+        "confidence": "HIGH",
         "is_proxy": false,
         "technical_flags": []
       },
-      "expected_next_update": "2026-10-22",
+      "expected_next_update": "2026-10-29",
       "frequency": "weekly",
       "interpretation": {
         "cannot_infer": "影片門檻唔係 Fed 官方跨時期危機線；準備金需求會隨制度改變。",
         "classification_type": "SOURCE_PLUS_STATISTICAL",
-        "confidence": "MEDIUM",
+        "confidence": "HIGH",
         "confirm_with": [
           "sofr_iorb_spread_bp",
           "srf_accepted",
@@ -4932,30 +4933,30 @@
           "fed_total_assets"
         ],
         "current_reasons": [
-          "最新 level 為 2962.61 USD bn。",
-          "4W change：32.414 USD bn；既有 trailing-5Y p10：-198.96。"
+          "最新 level 為 2893.77 USD bn。",
+          "4W change：-54.32 USD bn；既有 trailing-5Y p10：-198.96。"
         ],
-        "data_state": "LAST_GOOD",
-        "headline": "Reserve level 為 ABOVE_VIDEO_YELLOW_ZONE；4W speed 為 REPLENISHING。",
-        "impact": "EASING",
+        "data_state": "CURRENT",
+        "headline": "Reserve level 為 VIDEO_YELLOW_ZONE；4W speed 為 ORDINARY_DRAIN。",
+        "impact": "TIGHTENING",
         "next_boundary": {
           "basis": "VIDEO_SOURCE_RULE",
-          "current": 2962.607,
-          "distance": 62.607,
-          "label": "VIDEO YELLOW ZONE",
+          "current": 2893.77,
+          "distance": 93.77,
+          "label": "RED CONFIRMATION ZONE",
           "rule": "reserve level falls below next source line",
-          "threshold": 2900.0,
+          "threshold": 2800.0,
           "unit": "USD bn"
         },
-        "numeric_direction": "RISING",
+        "numeric_direction": "FALLING",
         "role": "RESERVE_STOCK",
         "rule_basis": [
           "VIDEO_SOURCE_RULE",
           "DASHBOARD_OPERATIONALIZATION",
           "STATISTICAL_BAND"
         ],
-        "severity": "NORMAL",
-        "state": "ABOVE_VIDEO_YELLOW_ZONE · REPLENISHING",
+        "severity": "YELLOW",
+        "state": "VIDEO_YELLOW_ZONE · ORDINARY_DRAIN",
         "views": [
           {
             "kind": "REGIME_LADDER",
@@ -4963,10 +4964,10 @@
             "note": "影片門檻唔係 Fed 官方跨時期危機線。",
             "rows": [
               {
-                "active": true,
+                "active": false,
                 "basis": "VIDEO_SOURCE_RULE",
                 "label": "ABOVE VIDEO YELLOW ZONE",
-                "met": true,
+                "met": false,
                 "operator": ">=",
                 "rule": "above_video_yellow_zone",
                 "threshold": 2900.0,
@@ -4974,10 +4975,10 @@
                 "upper_threshold": null
               },
               {
-                "active": false,
+                "active": true,
                 "basis": "VIDEO_SOURCE_RULE",
                 "label": "VIDEO YELLOW ZONE",
-                "met": false,
+                "met": true,
                 "operator": ">= AND <",
                 "rule": "video_yellow_zone",
                 "threshold": 2800.0,
@@ -5014,10 +5015,10 @@
             "note": "Trailing-5Y p10 uses 260 change endpoints; the source level zones remain separate.",
             "rows": [
               {
-                "active": true,
+                "active": false,
                 "basis": "DASHBOARD_OPERATIONALIZATION",
                 "label": "REPLENISHING",
-                "met": true,
+                "met": false,
                 "operator": ">",
                 "rule": "4W reserve change > 0",
                 "threshold": 0.0,
@@ -5025,10 +5026,10 @@
                 "upper_threshold": null
               },
               {
-                "active": false,
+                "active": true,
                 "basis": "STATISTICAL_BAND",
                 "label": "ORDINARY DRAIN",
-                "met": false,
+                "met": true,
                 "operator": "> p10 AND <=",
                 "rule": "trailing-5Y p10 < 4W reserve change <= 0",
                 "threshold": -198.96,
@@ -5072,11 +5073,11 @@
         "why_it_matters": "The level and four-week change provide balance-sheet context for funding spreads."
       },
       "metric_id": "reserve_balances",
-      "observation_date": "2026-10-21",
+      "observation_date": "2026-10-28",
       "provenance": [
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-10-24T00:54:02.312281Z",
+          "retrieved_at": "2026-10-30T02:10:21.246158Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -5085,18 +5086,14 @@
       ],
       "quality": {
         "failure_reason": null,
-        "freshness": "LATE",
-        "last_attempt_at": "2026-10-24T00:54:02.312281Z",
-        "last_success_at": "2026-10-24T00:54:02.312281Z",
-        "sample_size": 324,
-        "status": "NOT_RELEASED_YET"
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-10-30T02:10:21.246158Z",
+        "last_success_at": "2026-10-30T02:10:21.246158Z",
+        "sample_size": 325,
+        "status": "OK"
       },
       "released_at": null,
       "short_series": [
-        {
-          "date": "2026-05-27",
-          "value": 3066.56
-        },
         {
           "date": "2026-06-03",
           "value": 3013.902
@@ -5180,28 +5177,32 @@
         {
           "date": "2026-10-21",
           "value": 2962.607
+        },
+        {
+          "date": "2026-10-28",
+          "value": 2893.77
         }
       ],
       "source": {
         "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-        "retrieved_at": "2026-10-24T00:54:02.312281Z",
+        "retrieved_at": "2026-10-30T02:10:21.246158Z",
         "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
         "source_id": "fred_government",
         "tier": "DISTRIBUTOR",
         "url": "https://fred.stlouisfed.org/docs/api/fred/"
       },
       "statistics": {
-        "change_1w": -59.533,
-        "change_4w": 32.414,
-        "level": 2962.607,
-        "observations_used": 324,
+        "change_1w": -68.837,
+        "change_4w": -54.32,
+        "level": 2893.77,
+        "observations_used": 325,
         "trailing_5y_p10": -198.96,
         "trailing_sample_size": 260
       },
       "unavailability_reason": null,
       "unit": "USD bn",
-      "updated_at": "2026-10-24T00:54:02.312281Z",
-      "value": 2962.607
+      "updated_at": "2026-10-30T02:10:21.246158Z",
+      "value": 2893.77
     },
     "sec_form4_nonderivative_ps_count_ratio_20d": {
       "availability": "ACTIVE_PROXY",
@@ -5637,8 +5638,8 @@
         "impact": "EASING",
         "next_boundary": {
           "basis": "VIDEO_SOURCE_RULE",
-          "current": 2962.607,
-          "distance": 162.607,
+          "current": 2893.77,
+          "distance": 93.77,
           "label": "FULL RED ROUTE A · RESERVE CONFIRMATION",
           "rule": "reserves < red reserve line",
           "threshold": 2800.0,
@@ -5776,7 +5777,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-10-29T13:53:26.054921Z",
+          "retrieved_at": "2026-10-30T02:10:21.246158Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -5784,7 +5785,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-10-29T13:53:26.054921Z",
+          "retrieved_at": "2026-10-30T02:10:21.246158Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -5794,7 +5795,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-10-29T13:53:26.054921Z",
+        "last_attempt_at": "2026-10-30T02:10:21.246158Z",
         "last_success_at": "2026-10-29T13:53:26.054921Z",
         "sample_size": 552,
         "status": "OK"
@@ -5892,7 +5893,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-10-29T13:53:26.054921Z",
+        "retrieved_at": "2026-10-30T02:10:21.246158Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -5910,7 +5911,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-10-29T13:53:26.054921Z",
+      "updated_at": "2026-10-30T02:10:21.246158Z",
       "value": 4.0
     },
     "spx_0dte_share": {
@@ -6752,55 +6753,55 @@
     "tga_weekly_h41": {
       "availability": "ACTIVE_FREE",
       "changes": {
-        "eight_weeks": 1.266,
-        "five_observations": 74.974,
-        "four_weeks": -25.082,
-        "one_observation": 68.629,
-        "one_week": 68.629,
-        "twelve_weeks": 41.226,
-        "twenty_observations": 76.289
+        "eight_weeks": 31.792,
+        "five_observations": 22.643,
+        "four_weeks": 51.053,
+        "one_observation": 47.725,
+        "one_week": 47.725,
+        "twelve_weeks": 92.403,
+        "twenty_observations": 171.605
       },
       "context": {
-        "confidence": "MEDIUM",
+        "confidence": "HIGH",
         "is_proxy": false,
         "technical_flags": []
       },
-      "expected_next_update": "2026-10-22",
+      "expected_next_update": "2026-10-29",
       "frequency": "weekly",
       "interpretation": {
         "cannot_infer": "Timing difference 或 divergence 唔會產生另一套 liquidity severity。",
         "classification_type": "CROSS_CHECK",
-        "confidence": "MEDIUM",
+        "confidence": "HIGH",
         "confirm_with": [
           "tga_daily"
         ],
         "current_reasons": [
-          "同日 absolute difference：6.849 USD bn。",
-          "Prior common-date sample：93；只作 cross-check。"
+          "同日 absolute difference：UNKNOWN USD bn。",
+          "Prior common-date sample：94；只作 cross-check。"
         ],
-        "data_state": "LAST_GOOD",
-        "headline": "Weekly/daily TGA cross-check：INSUFFICIENT_HISTORY。",
+        "data_state": "CURRENT",
+        "headline": "Weekly H.4.1 同 daily TGA 暫無同日配對。",
         "impact": "AMBIGUOUS",
         "next_boundary": null,
-        "numeric_direction": "FALLING",
+        "numeric_direction": "RISING",
         "role": "CROSS_CHECK",
         "rule_basis": [
           "CONTEXT_ONLY",
           "STATISTICAL_BAND"
         ],
-        "severity": "CONTEXT_ONLY",
-        "state": "INSUFFICIENT_HISTORY",
+        "severity": "UNKNOWN",
+        "state": "NOT_RELEASED",
         "views": [
           {
             "basis": "STATISTICAL_BAND",
             "comparison_metric_id": "tga_daily",
-            "difference": 6.849,
+            "difference": null,
             "kind": "CROSS_CHECK",
             "label": "H.4.1 / FISCALDATA COMMON-DATE CHECK",
             "percentile": null,
             "primary_metric_id": "tga_weekly_h41",
-            "sample_size": 93,
-            "state": "INSUFFICIENT_HISTORY",
+            "sample_size": 94,
+            "state": "NOT_RELEASED",
             "unit": "USD bn"
           }
         ],
@@ -6826,11 +6827,11 @@
         "why_it_matters": "It cross-checks the higher-frequency Treasury daily balance within a weekly release."
       },
       "metric_id": "tga_weekly_h41",
-      "observation_date": "2026-10-21",
+      "observation_date": "2026-10-28",
       "provenance": [
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-10-24T00:54:02.312281Z",
+          "retrieved_at": "2026-10-30T02:10:21.246158Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -6839,18 +6840,14 @@
       ],
       "quality": {
         "failure_reason": null,
-        "freshness": "LATE",
-        "last_attempt_at": "2026-10-24T00:54:02.312281Z",
-        "last_success_at": "2026-10-24T00:54:02.312281Z",
-        "sample_size": 324,
-        "status": "NOT_RELEASED_YET"
+        "freshness": "FRESH",
+        "last_attempt_at": "2026-10-30T02:10:21.246158Z",
+        "last_success_at": "2026-10-30T02:10:21.246158Z",
+        "sample_size": 325,
+        "status": "OK"
       },
       "released_at": null,
       "short_series": [
-        {
-          "date": "2026-05-27",
-          "value": 830.296
-        },
         {
           "date": "2026-06-03",
           "value": 875.713
@@ -6934,26 +6931,30 @@
         {
           "date": "2026-10-21",
           "value": 952.002
+        },
+        {
+          "date": "2026-10-28",
+          "value": 999.727
         }
       ],
       "source": {
         "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-        "retrieved_at": "2026-10-24T00:54:02.312281Z",
+        "retrieved_at": "2026-10-30T02:10:21.246158Z",
         "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
         "source_id": "fred_government",
         "tier": "DISTRIBUTOR",
         "url": "https://fred.stlouisfed.org/docs/api/fred/"
       },
       "statistics": {
-        "change_1w": 68.629,
-        "change_4w": -25.082,
-        "level": 952.002,
-        "observations_used": 324
+        "change_1w": 47.725,
+        "change_4w": 51.053,
+        "level": 999.727,
+        "observations_used": 325
       },
       "unavailability_reason": null,
       "unit": "USD bn",
-      "updated_at": "2026-10-24T00:54:02.312281Z",
-      "value": 952.002
+      "updated_at": "2026-10-30T02:10:21.246158Z",
+      "value": 999.727
     },
     "tgcr": {
       "availability": "ACTIVE_FREE",
@@ -7238,7 +7239,7 @@
       "provenance": [
         {
           "name": "Federal Reserve Bank of New York Markets Data API",
-          "retrieved_at": "2026-10-29T13:53:26.054921Z",
+          "retrieved_at": "2026-10-30T02:10:21.246158Z",
           "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
           "source_id": "nyfed_markets",
           "tier": "OFFICIAL",
@@ -7246,7 +7247,7 @@
         },
         {
           "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-          "retrieved_at": "2026-10-29T13:53:26.054921Z",
+          "retrieved_at": "2026-10-30T02:10:21.246158Z",
           "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
           "source_id": "fred_government",
           "tier": "DISTRIBUTOR",
@@ -7256,7 +7257,7 @@
       "quality": {
         "failure_reason": null,
         "freshness": "FRESH",
-        "last_attempt_at": "2026-10-29T13:53:26.054921Z",
+        "last_attempt_at": "2026-10-30T02:10:21.246158Z",
         "last_success_at": "2026-10-29T13:53:26.054921Z",
         "sample_size": 552,
         "status": "OK"
@@ -7354,7 +7355,7 @@
       ],
       "source": {
         "name": "Federal Reserve Bank of New York Markets Data API",
-        "retrieved_at": "2026-10-29T13:53:26.054921Z",
+        "retrieved_at": "2026-10-30T02:10:21.246158Z",
         "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
         "source_id": "nyfed_markets",
         "tier": "OFFICIAL",
@@ -7372,7 +7373,7 @@
       },
       "unavailability_reason": null,
       "unit": "bp",
-      "updated_at": "2026-10-29T13:53:26.054921Z",
+      "updated_at": "2026-10-30T02:10:21.246158Z",
       "value": 2.0
     },
     "trend_following_positioning_proxy": {
@@ -7512,14 +7513,14 @@
       "value": null
     }
   },
-  "overall_assessment": "UNAVAILABLE",
-  "pipeline_updated_at": "2026-10-29T13:53:26.054921Z",
+  "overall_assessment": "STRESS",
+  "pipeline_updated_at": "2026-10-30T02:10:21.246158Z",
   "schema_version": "2.3.0",
   "source_health": {
     "error": 0,
     "not_applicable": 0,
-    "not_released_yet": 1,
-    "ok": 10,
+    "not_released_yet": 0,
+    "ok": 11,
     "stale": 0
   },
   "sources": {
@@ -7541,18 +7542,18 @@
     },
     "fred_h41": {
       "collector_id": "fred_h41",
-      "expected_next_update": "2026-10-22",
+      "expected_next_update": "2026-10-29",
       "failure_reason": null,
-      "freshness": "LATE",
-      "last_attempt_at": "2026-10-24T00:54:02.312281Z",
-      "last_success_at": "2026-10-24T00:54:02.312281Z",
+      "freshness": "FRESH",
+      "last_attempt_at": "2026-10-30T02:10:21.246158Z",
+      "last_success_at": "2026-10-30T02:10:21.246158Z",
       "name": "Federal Reserve Economic Data API, reviewed government-origin series",
-      "observation_date": "2026-10-21",
+      "observation_date": "2026-10-28",
       "released_at": null,
       "rights_note": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Only the reviewed government-origin series allowlist is eligible.",
-      "status": "NOT_RELEASED_YET",
+      "status": "OK",
       "tier": "DISTRIBUTOR",
-      "updated_at": "2026-10-24T00:54:02.312281Z",
+      "updated_at": "2026-10-30T02:10:21.246158Z",
       "url": "https://fred.stlouisfed.org/docs/api/fred/"
     },
     "fred_iorb": {
@@ -7753,13 +7754,13 @@
       "total_blocks": 4
     },
     "liquidity_fuel": {
-      "assessment": "UNAVAILABLE",
-      "available_blocks": 3,
-      "confidence": "LOW",
+      "assessment": "STRESS",
+      "available_blocks": 4,
+      "confidence": "HIGH",
       "evidence_blocks": [
         {
           "available": true,
-          "confidence": "LOW",
+          "confidence": "HIGH",
           "direction": "TIGHTER",
           "id": "funding_price",
           "label": "SOFR−IORB",
@@ -7769,7 +7770,7 @@
         },
         {
           "available": true,
-          "confidence": "LOW",
+          "confidence": "HIGH",
           "direction": "TIGHTER",
           "id": "funding_confirmations",
           "label": "EFFR / TGCR / BGCR confirmation",
@@ -7779,7 +7780,7 @@
         },
         {
           "available": true,
-          "confidence": "LOW",
+          "confidence": "HIGH",
           "direction": "MORE_USE",
           "id": "srf_backstop",
           "label": "SRF accepted",
@@ -7788,14 +7789,14 @@
           "triggered": true
         },
         {
-          "available": false,
-          "confidence": "UNKNOWN",
-          "direction": "UNKNOWN",
+          "available": true,
+          "confidence": "HIGH",
+          "direction": "STABLE",
           "id": "reserve_quantity",
           "label": "Reserve balances 4W",
-          "status": "UNAVAILABLE",
+          "status": "NO P10 BREACH",
           "summary": "2.9T/2.8T/2.5T 只係參考線，並非固定壓力門檻。",
-          "triggered": null
+          "triggered": false
         }
       ],
       "mode": "DETERMINISTIC",
