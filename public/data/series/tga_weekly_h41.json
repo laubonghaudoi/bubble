@@ -1309,11 +1309,11 @@
   ],
   "quality": {
     "failure_reason": null,
-    "freshness": "FRESH",
+    "freshness": "LATE",
     "last_attempt_at": "2026-10-31T01:43:05.023152Z",
     "last_success_at": "2026-10-31T01:43:05.023152Z",
     "sample_size": 325,
-    "status": "OK"
+    "status": "NOT_RELEASED_YET"
   },
   "released_at": null,
   "schema_version": "2.3.0",
