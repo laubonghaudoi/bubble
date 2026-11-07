@@ -976,12 +976,12 @@
       "exercise_accepted_amount_usd_bn": 0.0,
       "exercise_operation_count": 0,
       "has_technical_exercise": false,
-      "operation_count": 2,
+      "operation_count": 1,
       "rate_pct": 3.75,
       "rates_pct": [
         3.75
       ],
-      "released_at": "2026-01-22T18:45:35Z",
+      "released_at": "2026-01-22T13:30:42Z",
       "submitted_amount_usd_bn": 0.0,
       "technical_exercise": false,
       "value": 0.0
@@ -7941,12 +7941,12 @@
       "exercise_accepted_amount_usd_bn": 0.0,
       "exercise_operation_count": 0,
       "has_technical_exercise": false,
-      "operation_count": 1,
+      "operation_count": 2,
       "rate_pct": 4.0,
       "rates_pct": [
         4.0
       ],
-      "released_at": "2026-11-06T13:31:14Z",
+      "released_at": "2026-11-06T18:45:40Z",
       "submitted_amount_usd_bn": 0.0,
       "technical_exercise": false,
       "value": 0.0
@@ -7955,21 +7955,21 @@
   "quality": {
     "failure_reason": null,
     "freshness": "FRESH",
-    "last_attempt_at": "2026-11-06T14:44:14.204151Z",
-    "last_success_at": "2026-11-06T14:44:14.204151Z",
+    "last_attempt_at": "2026-11-07T13:41:33.453552Z",
+    "last_success_at": "2026-11-07T13:41:33.453552Z",
     "sample_size": 227,
     "status": "OK"
   },
-  "released_at": "2026-11-06T13:31:14Z",
+  "released_at": "2026-11-06T18:45:40Z",
   "schema_version": "2.3.0",
   "source": {
     "name": "Federal Reserve Bank of New York Markets Data API",
-    "retrieved_at": "2026-11-06T14:44:14.204151Z",
+    "retrieved_at": "2026-11-07T13:41:33.453552Z",
     "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
     "source_id": "nyfed_markets",
     "tier": "OFFICIAL",
     "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
   },
   "unit": "USD bn",
-  "updated_at": "2026-11-06T14:44:14.204151Z"
+  "updated_at": "2026-11-07T13:41:33.453552Z"
 }
