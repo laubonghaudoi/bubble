@@ -1,10 +1,10 @@
 {
   "availability": "ACTIVE_FREE",
-  "expected_next_update": "2026-11-10",
+  "expected_next_update": "2026-11-11",
   "frequency": "business_daily",
   "label": "ON RRP accepted amount",
   "metric_id": "on_rrp_accepted",
-  "observation_date": "2026-11-09",
+  "observation_date": "2026-11-10",
   "observations": [
     {
       "date": "2025-01-10",
@@ -4575,26 +4575,36 @@
       "source_total_amt_submitted": 252000000.0,
       "submitted_usd_bn": 0.252,
       "value": 0.252
+    },
+    {
+      "date": "2026-11-10",
+      "operation_count": 1,
+      "released_at": "2026-11-10T18:15:23Z",
+      "source_amount_unit": "USD",
+      "source_total_amt_accepted": 152000000.0,
+      "source_total_amt_submitted": 152000000.0,
+      "submitted_usd_bn": 0.152,
+      "value": 0.152
     }
   ],
   "quality": {
     "failure_reason": null,
     "freshness": "FRESH",
-    "last_attempt_at": "2026-11-10T15:21:42.293151Z",
-    "last_success_at": "2026-11-10T15:21:42.293151Z",
-    "sample_size": 457,
+    "last_attempt_at": "2026-11-11T14:52:05.467376Z",
+    "last_success_at": "2026-11-11T14:52:05.467376Z",
+    "sample_size": 458,
     "status": "OK"
   },
-  "released_at": "2026-11-09T18:15:28Z",
+  "released_at": "2026-11-10T18:15:23Z",
   "schema_version": "2.3.0",
   "source": {
     "name": "Federal Reserve Bank of New York Markets Data API",
-    "retrieved_at": "2026-11-10T15:21:42.293151Z",
+    "retrieved_at": "2026-11-11T14:52:05.467376Z",
     "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
     "source_id": "nyfed_markets",
     "tier": "OFFICIAL",
     "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
   },
   "unit": "USD bn",
-  "updated_at": "2026-11-10T15:21:42.293151Z"
+  "updated_at": "2026-11-11T14:52:05.467376Z"
 }
