@@ -260,18 +260,18 @@
     }
   ],
   "quality": {
-    "failure_reason": null,
-    "freshness": "FRESH",
-    "last_attempt_at": "2026-11-13T15:01:41.309483Z",
+    "failure_reason": "SEC Form 4 collection incomplete: conflicting duplicate accession metadata; incomplete index days: 2026-11-06",
+    "freshness": "STALE",
+    "last_attempt_at": "2026-11-14T02:34:37.075197Z",
     "last_success_at": "2026-11-13T15:01:41.309483Z",
     "sample_size": 63,
-    "status": "OK"
+    "status": "STALE"
   },
   "released_at": "2026-11-13T02:55:03Z",
   "schema_version": "2.3.0",
   "source": {
     "name": "SEC EDGAR APIs and filing data",
-    "retrieved_at": "2026-11-13T15:01:41.309483Z",
+    "retrieved_at": "2026-11-14T02:34:37.075197Z",
     "rights_note": "Cite the filing and accession; do not republish long issuer-authored passages.",
     "source_id": "sec_edgar",
     "tier": "OFFICIAL",
