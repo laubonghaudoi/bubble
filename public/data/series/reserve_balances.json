@@ -1317,11 +1317,11 @@
   ],
   "quality": {
     "failure_reason": null,
-    "freshness": "FRESH",
+    "freshness": "LATE",
     "last_attempt_at": "2026-11-14T02:34:37.075197Z",
     "last_success_at": "2026-11-14T02:34:37.075197Z",
     "sample_size": 327,
-    "status": "OK"
+    "status": "NOT_RELEASED_YET"
   },
   "released_at": null,
   "schema_version": "2.3.0",
