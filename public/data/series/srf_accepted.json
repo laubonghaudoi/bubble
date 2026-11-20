@@ -1,10 +1,10 @@
 {
   "availability": "ACTIVE_FREE",
-  "expected_next_update": "2026-11-20",
+  "expected_next_update": "2026-11-23",
   "frequency": "business_daily",
   "label": "Standing Repo Facility accepted amount",
   "metric_id": "srf_accepted",
-  "observation_date": "2026-11-19",
+  "observation_date": "2026-11-20",
   "observations": [
     {
       "accepted_amount_usd_bn": 0.001,
@@ -8197,6 +8197,41 @@
       "value": 0.0
     },
     {
+      "accepted_amount_usd_bn": 0.003,
+      "alert_eligible_accepted_amount_usd_bn": 0.003,
+      "breakdown": {
+        "agency_debt": {
+          "accepted_amount_usd_bn": 0.001,
+          "alert_eligible_accepted_amount_usd_bn": 0.001,
+          "submitted_amount_usd_bn": 0.001
+        },
+        "agency_mbs": {
+          "accepted_amount_usd_bn": 0.001,
+          "alert_eligible_accepted_amount_usd_bn": 0.001,
+          "submitted_amount_usd_bn": 0.001
+        },
+        "treasury": {
+          "accepted_amount_usd_bn": 0.001,
+          "alert_eligible_accepted_amount_usd_bn": 0.001,
+          "submitted_amount_usd_bn": 0.001
+        }
+      },
+      "classification_complete": true,
+      "date": "2026-11-19",
+      "exercise_accepted_amount_usd_bn": 0.0,
+      "exercise_operation_count": 0,
+      "has_technical_exercise": false,
+      "operation_count": 2,
+      "rate_pct": 4.0,
+      "rates_pct": [
+        4.0
+      ],
+      "released_at": "2026-11-19T18:45:39Z",
+      "submitted_amount_usd_bn": 0.003,
+      "technical_exercise": false,
+      "value": 0.003
+    },
+    {
       "accepted_amount_usd_bn": 0.0,
       "alert_eligible_accepted_amount_usd_bn": 0.0,
       "breakdown": {
@@ -8217,7 +8252,7 @@
         }
       },
       "classification_complete": true,
-      "date": "2026-11-19",
+      "date": "2026-11-20",
       "exercise_accepted_amount_usd_bn": 0.0,
       "exercise_operation_count": 0,
       "has_technical_exercise": false,
@@ -8226,7 +8261,7 @@
       "rates_pct": [
         4.0
       ],
-      "released_at": "2026-11-19T13:31:07Z",
+      "released_at": "2026-11-20T13:30:09Z",
       "submitted_amount_usd_bn": 0.0,
       "technical_exercise": false,
       "value": 0.0
@@ -8235,21 +8270,21 @@
   "quality": {
     "failure_reason": null,
     "freshness": "FRESH",
-    "last_attempt_at": "2026-11-19T16:13:58.070836Z",
-    "last_success_at": "2026-11-19T16:13:58.070836Z",
-    "sample_size": 235,
+    "last_attempt_at": "2026-11-20T15:52:25.761112Z",
+    "last_success_at": "2026-11-20T15:52:25.761112Z",
+    "sample_size": 236,
     "status": "OK"
   },
-  "released_at": "2026-11-19T13:31:07Z",
+  "released_at": "2026-11-20T13:30:09Z",
   "schema_version": "2.3.0",
   "source": {
     "name": "Federal Reserve Bank of New York Markets Data API",
-    "retrieved_at": "2026-11-19T16:13:58.070836Z",
+    "retrieved_at": "2026-11-20T15:52:25.761112Z",
     "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
     "source_id": "nyfed_markets",
     "tier": "OFFICIAL",
     "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
   },
   "unit": "USD bn",
-  "updated_at": "2026-11-19T16:13:58.070836Z"
+  "updated_at": "2026-11-20T15:52:25.761112Z"
 }
