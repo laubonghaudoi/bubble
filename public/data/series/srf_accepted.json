@@ -1267,8 +1267,8 @@
       "value": 0.002
     },
     {
-      "accepted_amount_usd_bn": 0.001,
-      "alert_eligible_accepted_amount_usd_bn": 0.001,
+      "accepted_amount_usd_bn": 0.0,
+      "alert_eligible_accepted_amount_usd_bn": 0.0,
       "breakdown": {
         "agency_debt": {
           "accepted_amount_usd_bn": 0.0,
@@ -1281,9 +1281,9 @@
           "submitted_amount_usd_bn": 0.0
         },
         "treasury": {
-          "accepted_amount_usd_bn": 0.001,
-          "alert_eligible_accepted_amount_usd_bn": 0.001,
-          "submitted_amount_usd_bn": 0.001
+          "accepted_amount_usd_bn": 0.0,
+          "alert_eligible_accepted_amount_usd_bn": 0.0,
+          "submitted_amount_usd_bn": 0.0
         }
       },
       "classification_complete": true,
@@ -1291,15 +1291,15 @@
       "exercise_accepted_amount_usd_bn": 0.0,
       "exercise_operation_count": 0,
       "has_technical_exercise": false,
-      "operation_count": 2,
+      "operation_count": 1,
       "rate_pct": 3.75,
       "rates_pct": [
         3.75
       ],
-      "released_at": "2026-02-04T18:45:31Z",
-      "submitted_amount_usd_bn": 0.001,
+      "released_at": "2026-02-04T13:30:34Z",
+      "submitted_amount_usd_bn": 0.0,
       "technical_exercise": false,
-      "value": 0.001
+      "value": 0.0
     },
     {
       "accepted_amount_usd_bn": 0.003,
@@ -8232,8 +8232,8 @@
       "value": 0.003
     },
     {
-      "accepted_amount_usd_bn": 0.0,
-      "alert_eligible_accepted_amount_usd_bn": 0.0,
+      "accepted_amount_usd_bn": 0.001,
+      "alert_eligible_accepted_amount_usd_bn": 0.001,
       "breakdown": {
         "agency_debt": {
           "accepted_amount_usd_bn": 0.0,
@@ -8246,9 +8246,9 @@
           "submitted_amount_usd_bn": 0.0
         },
         "treasury": {
-          "accepted_amount_usd_bn": 0.0,
-          "alert_eligible_accepted_amount_usd_bn": 0.0,
-          "submitted_amount_usd_bn": 0.0
+          "accepted_amount_usd_bn": 0.001,
+          "alert_eligible_accepted_amount_usd_bn": 0.001,
+          "submitted_amount_usd_bn": 0.001
         }
       },
       "classification_complete": true,
@@ -8256,35 +8256,35 @@
       "exercise_accepted_amount_usd_bn": 0.0,
       "exercise_operation_count": 0,
       "has_technical_exercise": false,
-      "operation_count": 1,
+      "operation_count": 2,
       "rate_pct": 4.0,
       "rates_pct": [
         4.0
       ],
-      "released_at": "2026-11-20T13:30:09Z",
-      "submitted_amount_usd_bn": 0.0,
+      "released_at": "2026-11-20T18:45:11Z",
+      "submitted_amount_usd_bn": 0.001,
       "technical_exercise": false,
-      "value": 0.0
+      "value": 0.001
     }
   ],
   "quality": {
     "failure_reason": null,
     "freshness": "FRESH",
-    "last_attempt_at": "2026-11-20T15:52:25.761112Z",
-    "last_success_at": "2026-11-20T15:52:25.761112Z",
+    "last_attempt_at": "2026-11-21T15:02:01.171448Z",
+    "last_success_at": "2026-11-21T15:02:01.171448Z",
     "sample_size": 236,
     "status": "OK"
   },
-  "released_at": "2026-11-20T13:30:09Z",
+  "released_at": "2026-11-20T18:45:11Z",
   "schema_version": "2.3.0",
   "source": {
     "name": "Federal Reserve Bank of New York Markets Data API",
-    "retrieved_at": "2026-11-20T15:52:25.761112Z",
+    "retrieved_at": "2026-11-21T15:02:01.171448Z",
     "rights_note": "© 2026 Federal Reserve Bank of New York. Content from the New York Fed subject to the Terms of Use at newyorkfed.org; required reference-rate republication disclaimer is displayed with the dashboard.",
     "source_id": "nyfed_markets",
     "tier": "OFFICIAL",
     "url": "https://markets.newyorkfed.org/static/docs/markets-api.html"
   },
   "unit": "USD bn",
-  "updated_at": "2026-11-20T15:52:25.761112Z"
+  "updated_at": "2026-11-21T15:02:01.171448Z"
 }
